@@ -1,0 +1,8 @@
+{
+  "name": "CitizenScore",
+  "description": "Scores individuals on social behaviour to gate access to services.",
+  "roles": ["provider"],
+  "purpose": "Social scoring",
+  "sector": "GovTech",
+  "prohibited_practices": ["5.1.c"]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "CrimePredict",
+  "description": "Assesses the risk of reoffending to support law-enforcement decisions.",
+  "roles": ["provider"],
+  "purpose": "Reoffending-risk assessment",
+  "sector": "Public safety",
+  "annex_iii_area": "III.6.d"
+}

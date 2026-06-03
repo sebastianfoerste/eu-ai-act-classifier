@@ -1,0 +1,8 @@
+{
+  "name": "CreditSightScore",
+  "description": "Generates consumer creditworthiness scores for lenders.",
+  "roles": ["provider"],
+  "purpose": "Credit scoring",
+  "sector": "Fintech",
+  "annex_iii_area": "III.5.b"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "MoodHire",
+  "description": "Infers candidate emotions from video interviews to score culture fit.",
+  "roles": ["provider"],
+  "purpose": "Emotion recognition in hiring",
+  "sector": "HR technology",
+  "prohibited_practices": ["5.1.f"]
+}

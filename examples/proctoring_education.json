@@ -1,0 +1,8 @@
+{
+  "name": "ExamWatch",
+  "description": "Monitors students via webcam to detect prohibited behaviour during online exams.",
+  "roles": ["provider"],
+  "purpose": "Exam proctoring",
+  "sector": "EdTech",
+  "annex_iii_area": "III.3.d"
+}

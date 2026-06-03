@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "eu-ai-act-classifier"
+version = "0.1.0"
+description = "Deterministic EU AI Act (Reg (EU) 2024/1689) risk-tier and obligation classifier with pinpoint citations and a lawyer review gate."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Sebastian Förste" }]
+keywords = ["eu-ai-act", "ai-governance", "legal-engineering", "compliance", "regtech", "mcp"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Legal Industry",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business",
+]
+
+# One core dependency: Pydantic for typed models. Everything else is standard library.
+dependencies = ["pydantic>=2.6"]
+
+[project.optional-dependencies]
+# The agent-callable surface. Kept optional so the core engine has no MCP dependency.
+mcp = ["mcp>=1.2"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+eu-ai-act-classify = "eu_ai_act_classifier.cli:main"
+
+[project.urls]
+Source = "https://github.com/sebastianfoerste/eu-ai-act-classifier"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/eu_ai_act_classifier"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
