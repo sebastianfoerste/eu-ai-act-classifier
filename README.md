@@ -95,7 +95,8 @@ support chatbot, a credit-scoring model, an emotion-recognition hiring tool, a
 foundation model above the systemic-risk threshold and a derogation edge case.
 Each ships with its expected classification and is asserted on every test run
 (`tests/test_examples.py`), so a rule change that moves any of them fails the
-build. See [`examples/README.md`](examples/README.md).
+build. See [`examples/README.md`](examples/README.md) and
+[`docs/launch-readiness.md`](docs/launch-readiness.md).
 
 ## How the law is encoded
 

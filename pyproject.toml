@@ -7,7 +7,7 @@ name = "eu-ai-act-classifier"
 version = "0.1.0"
 description = "Deterministic EU AI Act (Reg (EU) 2024/1689) risk-tier and obligation classifier with pinpoint citations and a lawyer review gate."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 license = { text = "MIT" }
 authors = [{ name = "Sebastian Förste" }]
 keywords = ["eu-ai-act", "ai-governance", "legal-engineering", "compliance", "regtech", "mcp"]
@@ -37,7 +37,7 @@ packages = ["src/eu_ai_act_classifier"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py312"
+target-version = "py313"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
