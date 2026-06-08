@@ -1,8 +1,8 @@
-"""Gate 2 — high-risk classification (Art. 6 + Annex III AIA).
+"""Gate 2: high-risk classification (Art. 6 + Annex III AIA).
 
 Two routes to high-risk: the Annex I product-safety route (Art. 6(1)) and the
 Annex III use-case route (Art. 6(2)). The Annex III route is subject to the
-Art. 6(3) derogation — but profiling of natural persons forecloses the
+Art. 6(3) derogation, but profiling of natural persons forecloses the
 derogation entirely (Art. 6(3) subpara. 2). An asserted-but-unconfirmed
 derogation is not silently applied: the system stays high-risk and the call is
 handed to review, because Art. 6(3)/(4) require a documented assessment before
@@ -19,7 +19,7 @@ from .base import GateOutput
 def evaluate(profile) -> GateOutput:
     out = GateOutput()
 
-    # Route 1 — Annex I product-safety (Art. 6(1))
+    # Route 1: Annex I product-safety (Art. 6(1))
     if profile.annex_i_safety_component and profile.annex_i_third_party_assessment:
         out.tier_vote = RiskTier.HIGH
         out.findings.append(
@@ -36,7 +36,7 @@ def evaluate(profile) -> GateOutput:
             )
         )
 
-    # Route 2 — Annex III use cases (Art. 6(2))
+    # Route 2: Annex III use cases (Art. 6(2))
     area = profile.annex_iii_area
     if area is None:
         return out

@@ -1,126 +1,185 @@
 # EU AI Act Classifier
 
-A deterministic engine that classifies an AI system under the EU AI Act
-(Regulation (EU) 2024/1689) and returns the risk tier, the obligations that
-attach with pinpoint article citations, the documentation a provider or
-deployer must hold, and an explicit lawyer-review gate for the calls that turn
-on facts the engine cannot settle. CLI and Python library; an optional MCP
-server makes it callable by an agent.
+A deterministic EU AI Act triage engine for AI-system intake, risk classification,
+source provenance, obligation tracking and draft legal work products.
 
-It answers the question a general counsel at an AI-native company faces every
-week: *is this feature high-risk, and what do we owe?* It does so as testable
-software instead of a recurring manual read-through. It is a screening tool that
-a practising lawyer supervises. It is not legal advice, and it does not produce
-a conformity assessment.
+The classifier applies Regulation (EU) 2024/1689 as the binding Level 1 source.
+It also records provisional AI Omnibus dates and optional Commission guidance
+overlays as separate, nonbinding context. Legal outputs remain draft-only and
+review-gated.
 
-## What it does
+## What It Does
 
-Five gates run in order over a typed system profile:
+The engine runs six gates over a typed `SystemProfile`.
 
-1. **Prohibited practices**: Art. 5 AIA. A hit is a hard stop.
-2. **High-risk**: Art. 6 + Annex III, including the Art. 6(3) derogation and the profiling carve-out that forecloses it.
-3. **General-purpose AI models**: Art. 51-55 AIA, with the 10^25 FLOP systemic-risk presumption.
-4. **Transparency**: Art. 50 AIA, stacked on top of any tier.
-5. **Minimal**: the default.
+1. Scope and intake: AI-system status, intended-purpose source, EU nexus,
+   excluded-use flags, placement dates, significant changes and public-authority
+   use.
+2. Prohibited practices: Art. 5 AIA.
+3. High-risk classification: Art. 6, Annex I and Annex III.
+4. General-purpose AI models: Arts. 51, 53, 55 and 56 AIA.
+5. Transparency: Art. 50 AIA.
+6. Resolution: risk tier, disposition, obligation graph, timeline and open
+   legal questions.
 
-The output is a `ClassificationReport`: tier, role, findings with citation and
-severity, the obligation set, the documentation to maintain, the transparency
-duties, the Art. 113 application timeline, and, where a fact must be characterised
-by a lawyer, a `requires_review` disposition naming the open question.
+Existing alpha profiles remain compatible. Missing new scope fields default to
+an in-scope AI system so the original 14 synthetic examples keep their expected
+results.
 
-## Architecture
+## Source Statuses
 
-```mermaid
-flowchart TD
-  A[SystemProfile typed facts] --> P[Gate 1: Art. 5 prohibited]
-  P --> H[Gate 2: Art. 6 + Annex III high-risk]
-  H --> G[Gate 3: Art. 51-55 GPAI]
-  G --> T[Gate 4: Art. 50 transparency]
-  T --> E[Engine: resolve tier, attach obligations]
-  E --> R[ClassificationReport]
-  R --> J[JSON for pipelines]
-  R --> M[Human-readable report]
-  R --> Q[Review gate: requires_review + open questions]
-```
+Reports and draft artifacts use a versioned source manifest.
 
-The engine is generic. The substance, namely which use case is which Annex III
-point and which article carries which duty, lives in `catalog.py` and the gate
-modules. That split is deliberate: the rule sets are the lawyer's contribution;
-the engine only subsumes characterised facts under them. Every line of output
-traces to a provision a reviewer can open.
+Binding Level 1 text:
+Regulation (EU) 2024/1689 and the Art. 113 application timeline.
 
-## The review gate
+Provisional political agreement:
+The AI Omnibus political agreement, including 2 December 2027 for Annex III
+high-risk systems and 2 August 2028 for product-embedded high-risk systems.
+These dates are labelled provisional until formal adoption and Official Journal
+publication.
 
-The engine does not bluff. Two honesty mechanisms are built into the output:
+Nonbinding guidance:
+Commission prohibited-practices guidance, AI-system-definition guidance, draft
+high-risk guidance, AI Act Service Desk materials, the GPAI Code of Practice,
+GPAI provider guidance and future transparency guidance.
 
-- **`requires_review`**: when a determination turns on a fact the engine cannot
-  settle, such as an asserted Art. 6(3) derogation, an undisclosed
-  training-compute figure or a deployer's entity type for the Art. 27 FRIA, the
-  engine refuses to assert a conclusion and names the open question.
-- **`unverified citation, pending source check`**: a citation that is not
-  confirmed against the consolidated EUR-Lex text is flagged in the output, not
-  silently asserted. Currently this is the residual catch-all for an Annex III
-  area whose specific point is unsettled; areas 6 and 7 sub-points are verified.
+Guidance overlays are advisory notes. They do not override the binding
+classification logic.
 
-## Quick start
+## Outputs
+
+`ClassificationReport` contains:
+
+1. Risk tier and disposition.
+2. Scope assessment and transitional notes.
+3. Findings with citation status.
+4. Backward-compatible obligation, documentation and transparency fields.
+5. Structured `obligation_graph` items with trigger, actor, evidence artifact,
+   application date, review status and source metadata.
+6. Binding and provisional timelines rendered separately.
+7. Source manifest with URL, retrieval date, legal status, citation label and
+   implementation note.
+8. Optional advisory overlay notes.
+9. Open legal questions and unverified citations.
+
+## Quick Start
 
 ```bash
-uv venv && uv pip install -e ".[dev]"
+uv venv
+uv pip install -e ".[dev]"
 
-eu-ai-act-classify examples/cv_screening.json            # human-readable report
+eu-ai-act-classify examples/cv_screening.json
 eu-ai-act-classify examples/foundation_model_systemic.json --json
-cat examples/credit_scoring.json | eu-ai-act-classify -  # read from stdin
-eu-ai-act-classify examples/employment_derogation.json --strict   # exit 1 on prohibited / requires_review
+cat examples/credit_scoring.json | eu-ai-act-classify -
+eu-ai-act-classify examples/employment_derogation.json --strict
 ```
 
-`--strict` lets the classifier sit in a CI step or a product-intake pipeline as
-a quality gate, the way a linter does.
+Use `--advisory` to include nonbinding guidance notes.
 
-## Use it as an agent tool (MCP)
+Use `--sources` to emit the source manifest as JSON.
+
+Generate draft work products only when an output directory is supplied:
+
+```bash
+eu-ai-act-classify examples/credit_scoring.json \
+  --artifact all \
+  --artifacts-dir ./draft-artifacts
+```
+
+Available artifact names:
+
+1. `art-6-4-assessment`
+2. `fria`
+3. `annex-iv-checklist`
+4. `post-market-monitoring-plan`
+5. `serious-incident-register`
+6. `gpai-model-documentation`
+7. `training-content-summary`
+
+Artifacts are drafts. They are not legal advice, not conformity assessments and
+not final regulatory filings.
+
+## MCP And Local API
+
+The MCP server remains available:
 
 ```bash
 uv pip install -e ".[mcp]"
 python -m eu_ai_act_classifier.mcp_server
 ```
 
-The server exposes `classify_ai_system` (returns the structured report) and
-`classify_ai_system_text` (returns the rendered report). A product-intake agent
-can call it with a system profile and get back a cited, tiered, review-gated
-classification: the legal layer as a callable tool.
+The local JSON bridge is used by the optional web cockpit:
 
-## The eval set
+```bash
+eu-ai-act-local-api schema
+echo '{"profile":{"name":"x"}}' | eu-ai-act-local-api classify
+```
 
-`examples/` holds 14 worked systems spanning every tier: a CV screener, a
-support chatbot, a credit-scoring model, an emotion-recognition hiring tool, a
-foundation model above the systemic-risk threshold and a derogation edge case.
-Each ships with its expected classification and is asserted on every test run
-(`tests/test_examples.py`), so a rule change that moves any of them fails the
-build. See [`examples/README.md`](examples/README.md) and
-[`docs/launch-readiness.md`](docs/launch-readiness.md).
+The bridge exposes schema, classify, sources and artifacts commands. It keeps
+the Python classifier as the legal source of truth.
 
-## How the law is encoded
+## Optional Web Cockpit
 
-Citations are pinpoint and follow the convention `Art. 6(2) AIA`,
-`Annex III(5)(b) AIA`. The classifier works at Level 1, the Regulation. Level 2
-delegated acts and Level 3 guidance, including Commission guidelines and the
-GPAI Code of Practice, are out of scope and noted as such. Nothing is invented:
-an uncertain pinpoint is flagged, never guessed.
+The `web/` folder contains a local Next.js App Router cockpit with:
+
+1. System inventory.
+2. Guided questionnaire.
+3. Risk map.
+4. Open legal questions.
+5. Reviewer notes.
+6. Source provenance.
+7. Obligation tracker.
+8. Export pack preview.
+
+Run it locally:
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+The web app uses in-memory state for v1. It does not persist client, matter,
+candidate, account or privileged data.
+
+Route surface:
+
+1. `GET /api/health`
+2. `GET /api/schema`
+3. `POST /api/classify`
+4. `GET /api/sources`
+5. `POST /api/artifacts`
+
+## Eval Set
+
+`examples/` holds 14 synthetic systems spanning prohibited, high-risk, limited
+risk, minimal risk, GPAI and review-required cases. The expected results are
+asserted in `tests/test_examples.py`.
+
+`examples/guidance/` holds Commission-derived guidance examples and stored beta
+Compliance Checker comparisons. They are nonbinding review evidence and are
+tested separately from the binding classifier logic.
+
+See [examples/README.md](examples/README.md) and
+[docs/launch-readiness.md](docs/launch-readiness.md).
 
 ## Stack
 
-Python 3.12+, Pydantic v2 for typed models, standard library for everything
-else. The core has one dependency. uv, pytest, ruff, GitHub Actions CI. The MCP
-server is an optional extra.
+Python 3.13+, Pydantic v2, pytest, ruff and uv for the classifier.
 
-## Status and scope
+Next.js App Router, React and lucide-react for the optional local cockpit.
 
-Alpha. The five gates cover the classification architecture end-to-end; the
-Annex III sub-point coverage and the obligation catalogs are complete for the
-common cases and explicit about their edges. Not in scope: Level 2/3 instruments,
-conformity-assessment workflow, and any claim to replace legal judgment.
+The core classifier has one runtime dependency. MCP and the web cockpit remain
+optional surfaces.
 
-This is a screening tool, not legal advice. Determinations marked
-`requires_review` turn on facts the engine cannot settle.
+## Safety
+
+This is a screening tool for supervised legal review. It does not produce legal
+advice, a conformity assessment or a binding regulatory conclusion.
+
+Determinations marked `requires_review` turn on facts the engine cannot settle.
+Generated work products require human legal review before use.
 
 ## License
 

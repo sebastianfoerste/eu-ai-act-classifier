@@ -9,7 +9,7 @@ on facts the engine cannot settle on its own.
 The screening fields are deliberately granular booleans. The legal judgment
 sits in *how the facts are characterised* (does this tool "materially
 influence" a hiring decision?); the engine only applies rules to characterised
-facts. That division — lawyer characterises, engine subsumes — is what keeps
+facts. That division, lawyer characterises and engine subsumes, is what keeps
 the output deterministic and auditable.
 """
 
@@ -27,12 +27,14 @@ class Role(StrEnum):
     DEPLOYER = "deployer"
     IMPORTER = "importer"
     DISTRIBUTOR = "distributor"
+    AUTHORIZED_REPRESENTATIVE = "authorized_representative"
     GPAI_PROVIDER = "gpai_provider"
 
 
 class RiskTier(StrEnum):
     """The AIA's risk tiers, ordered by severity (see :data:`TIER_ORDER`)."""
 
+    OUT_OF_SCOPE = "outside_scope"
     PROHIBITED = "prohibited"
     HIGH = "high_risk"
     LIMITED = "limited_risk"  # transparency obligations only (Art. 50 AIA)
@@ -44,6 +46,7 @@ TIER_ORDER: dict[RiskTier, int] = {
     RiskTier.HIGH: 2,
     RiskTier.LIMITED: 1,
     RiskTier.MINIMAL: 0,
+    RiskTier.OUT_OF_SCOPE: -1,
 }
 
 
@@ -59,6 +62,39 @@ class Disposition(StrEnum):
 
     DETERMINED = "determined"
     REQUIRES_REVIEW = "requires_review"
+
+
+class SourceStatus(StrEnum):
+    """Legal status of the source supporting a report element."""
+
+    BINDING_LEVEL_1 = "binding_level_1"
+    PROVISIONAL_POLITICAL_AGREEMENT = "provisional_political_agreement"
+    NONBINDING_GUIDANCE = "nonbinding_guidance"
+
+
+class ScopeStatus(StrEnum):
+    """Whether the submitted profile is within the AI Act triage perimeter."""
+
+    IN_SCOPE = "in_scope"
+    OUTSIDE_SCOPE = "outside_ai_act_scope"
+    REQUIRES_REVIEW = "scope_requires_review"
+
+
+class ReviewStatus(StrEnum):
+    """Review posture for obligations and generated work products."""
+
+    DRAFT = "draft"
+    REVIEW_REQUIRED = "review_required"
+    DETERMINED = "determined"
+
+
+class ExcludedUse(StrEnum):
+    """Common AI Act scope exclusions or carve-outs that need visible review."""
+
+    MILITARY_DEFENCE_NATIONAL_SECURITY = "military_defence_national_security"
+    RESEARCH_DEVELOPMENT_TESTING = "research_development_testing"
+    PERSONAL_NON_PROFESSIONAL = "personal_non_professional"
+    FREE_OPEN_SOURCE = "free_open_source"
 
 
 class AnnexIII(StrEnum):
@@ -115,7 +151,7 @@ class Derogation(BaseModel):
     """Art. 6(3) AIA derogation facts for an Annex III system.
 
     An Annex III system is *not* high-risk if it does not pose a significant
-    risk of harm — but only where one of the four conditions holds AND the
+    risk of harm, but only where one of the four conditions holds AND the
     system does not perform profiling of natural persons. Profiling always
     keeps the system high-risk (Art. 6(3) subpara. 2 AIA).
     """
@@ -137,7 +173,7 @@ class Derogation(BaseModel):
 
 
 class SystemProfile(BaseModel):
-    """Structured description of an AI system — the facts, as characterised."""
+    """Structured description of an AI system with characterised facts."""
 
     model_config = {"extra": "forbid"}
 
@@ -146,6 +182,23 @@ class SystemProfile(BaseModel):
     roles: list[Role] = Field(default_factory=lambda: [Role.PROVIDER])
     purpose: str = ""
     sector: str = ""
+
+    # Scope and intake screens. Defaults preserve the alpha examples: a submitted
+    # profile is treated as an in-scope AI system unless the caller says otherwise.
+    is_ai_system: bool | None = True
+    intended_purpose_source: str = ""
+    eu_nexus: bool | None = True
+    excluded_use_flags: list[ExcludedUse] = Field(default_factory=list)
+    placing_on_market_date: str | None = None
+    putting_into_service_date: str | None = None
+    significant_change_after_application_date: bool | None = None
+    public_authority_use: bool = False
+    deployer_public_law_body: bool | None = None
+    deployer_private_public_service: bool | None = None
+    provider_established_outside_eu: bool = False
+    has_authorised_representative: bool | None = None
+    substantially_modifies_system: bool = False
+    puts_name_or_trademark_on_system: bool = False
 
     # General-purpose AI model (Chapter V AIA)
     is_gpai_model: bool = False
@@ -180,6 +233,18 @@ class SystemProfile(BaseModel):
     def is_deployer(self) -> bool:
         return Role.DEPLOYER in self.roles
 
+    @property
+    def is_importer(self) -> bool:
+        return Role.IMPORTER in self.roles
+
+    @property
+    def is_distributor(self) -> bool:
+        return Role.DISTRIBUTOR in self.roles
+
+    @property
+    def is_authorized_representative(self) -> bool:
+        return Role.AUTHORIZED_REPRESENTATIVE in self.roles
+
 
 class Finding(BaseModel):
     """One classification result with its citation and severity."""
@@ -207,6 +272,52 @@ class TimelineItem(BaseModel):
     provision: str
     applies_from: str
     note: str
+    source_status: SourceStatus = SourceStatus.BINDING_LEVEL_1
+    source_id: str = "ai-act-2024-1689"
+    source_url: str = ""
+
+
+class RegulatorySource(BaseModel):
+    source_id: str
+    title: str
+    legal_status: SourceStatus
+    url: str
+    retrieved_on: str
+    citation_label: str
+    implementation_note: str
+
+
+class ScopeAssessment(BaseModel):
+    status: ScopeStatus = ScopeStatus.IN_SCOPE
+    is_ai_system: bool | None = True
+    intended_purpose_source: str = ""
+    eu_nexus: bool | None = True
+    excluded_use_flags: list[ExcludedUse] = Field(default_factory=list)
+    transitional_status: str = "No transitional limitation identified from the submitted facts."
+    notes: list[str] = Field(default_factory=list)
+
+
+class ObligationGraphItem(BaseModel):
+    obligation_id: str
+    article: str
+    actor: Role
+    trigger: str
+    requirement: str
+    evidence_artifact: str
+    source_status: SourceStatus
+    source_url: str
+    application_date: str
+    review_status: ReviewStatus
+
+
+class AdvisoryNote(BaseModel):
+    note_id: str
+    title: str
+    detail: str
+    source_id: str
+    source_status: SourceStatus = SourceStatus.NONBINDING_GUIDANCE
+    source_url: str
+    review_status: ReviewStatus = ReviewStatus.REVIEW_REQUIRED
 
 
 class ClassificationReport(BaseModel):
@@ -216,6 +327,7 @@ class ClassificationReport(BaseModel):
     regulation: str
     risk_tier: RiskTier
     disposition: Disposition
+    scope: ScopeAssessment = Field(default_factory=ScopeAssessment)
     roles: list[Role]
     is_gpai: bool = False
     gpai_systemic: bool = False
@@ -223,7 +335,10 @@ class ClassificationReport(BaseModel):
     obligations: list[Obligation] = Field(default_factory=list)
     documentation_required: list[Obligation] = Field(default_factory=list)
     transparency_obligations: list[Obligation] = Field(default_factory=list)
+    obligation_graph: list[ObligationGraphItem] = Field(default_factory=list)
     timeline: list[TimelineItem] = Field(default_factory=list)
+    source_manifest: list[RegulatorySource] = Field(default_factory=list)
+    advisory_notes: list[AdvisoryNote] = Field(default_factory=list)
     open_questions: list[str] = Field(default_factory=list)
     unverified_citations: list[str] = Field(default_factory=list)
     disclaimer: str = (

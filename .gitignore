@@ -10,3 +10,6 @@ build/
 .mypy_cache/
 .DS_Store
 uv.lock
+web/.next/
+web/node_modules/
+web/out/

@@ -2,32 +2,17 @@
 
 This note helps a reviewer evaluate the EU AI Act Classifier quickly.
 
-## What this repo proves
+## What This Repo Proves
 
-The classifier turns Regulation (EU) 2024/1689 into a deterministic screening
-function. A typed `SystemProfile` produces a cited `ClassificationReport` with
-risk tier, role-specific obligations, documentation duties, application
-timeline and open legal questions.
+The classifier turns Regulation (EU) 2024/1689 into a deterministic triage
+product. A typed `SystemProfile` produces a cited `ClassificationReport` with
+scope status, risk tier, source provenance, obligations, draft artifacts and
+open legal questions.
 
-The core proof is legal engineering discipline: characterised facts in,
-pinpoint citations out, and a review gate where the engine cannot settle the
-fact pattern.
+The proof is legal engineering discipline: characterised facts in, source-backed
+outputs out, and review gates where the engine cannot settle the fact pattern.
 
-## Architecture
-
-```mermaid
-flowchart TD
-  A[SystemProfile] --> B[Prohibited-practice gate]
-  B --> C[High-risk gate]
-  C --> D[GPAI gate]
-  D --> E[Transparency gate]
-  E --> F[ClassificationReport]
-  F --> G[JSON output]
-  F --> H[Human-readable report]
-  F --> I[Lawyer review gate]
-```
-
-## Local launch path
+## Local Launch Path
 
 ```bash
 uv venv
@@ -35,6 +20,15 @@ uv pip install -e ".[dev]"
 eu-ai-act-classify examples/cv_screening.json
 eu-ai-act-classify examples/foundation_model_systemic.json --json
 eu-ai-act-classify examples/employment_derogation.json --strict
+eu-ai-act-classify examples/credit_scoring.json --artifact all --artifacts-dir ./draft-artifacts
+```
+
+Optional cockpit:
+
+```bash
+cd web
+npm install
+npm run dev
 ```
 
 ## Checks
@@ -43,22 +37,42 @@ eu-ai-act-classify examples/employment_derogation.json --strict
 uv run ruff check .
 uv run ruff format --check .
 uv run pytest
+cd web && npm run build
+cd web && npm audit --json
 ```
 
-## Sample data rule
+## Sample Data Rule
 
 Use synthetic AI-system profiles only. Do not add client product designs,
 privileged risk assessments, internal launch materials or personal data to the
 example set.
 
-## Safety posture
+## Source Review
+
+Inspect `src/eu_ai_act_classifier/citations.py` first. It separates binding
+Level 1 text, provisional political agreement and nonbinding guidance.
+
+Inspect `docs/methodology.md` next. It explains the scope gate, FRIA logic,
+obligation graph and artifact posture.
+
+## Good Evaluator Route
+
+Review these surfaces:
+
+1. `README.md`
+2. `docs/methodology.md`
+3. `src/eu_ai_act_classifier/engine.py`
+4. `src/eu_ai_act_classifier/obligation_graph.py`
+5. `src/eu_ai_act_classifier/artifacts.py`
+6. `examples/`
+7. `examples/guidance/`
+8. `tests/`
+9. `web/`
+
+The key signal is that uncertainty remains visible through `requires_review`,
+`open_questions`, `unverified_citations` and draft-only artifact notices.
+
+## Safety Posture
 
 This is a screening tool for supervised legal review. It does not produce legal
 advice, a conformity assessment or a binding regulatory conclusion.
-
-## Good evaluator route
-
-A reviewer should inspect `README.md`, `docs/methodology.md`, `catalog.py`,
-the gate modules, `examples/`, `tests/test_examples.py` and the CLI. The key
-signal is that legal uncertainty remains visible through `requires_review` and
-`unverified_citations`.

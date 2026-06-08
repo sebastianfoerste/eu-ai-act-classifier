@@ -1,0 +1,26 @@
+from __future__ import annotations
+
+from eu_ai_act_classifier.local_api import artifacts_payload, classify_payload, schema_payload
+
+
+def test_local_api_schema_exposes_cockpit_contract() -> None:
+    schema = schema_payload()
+
+    assert "provider" in schema["roles"]
+    assert "fria" in schema["artifacts"]
+    assert schema["review_posture"] == "draft_only_human_review_required"
+
+
+def test_local_api_classify_returns_report_json() -> None:
+    payload = classify_payload({"profile": {"name": "x"}})
+
+    assert payload["system"] == "x"
+    assert payload["scope"]["status"] == "in_scope"
+
+
+def test_local_api_artifacts_preview_is_draft_only() -> None:
+    payload = artifacts_payload({"profile": {"name": "x"}, "artifact": "fria"})
+
+    assert payload["review_status"] == "draft_only_human_review_required"
+    assert payload["artifacts"][0]["name"] == "fria"
+    assert "Draft only" in payload["artifacts"][0]["content"]

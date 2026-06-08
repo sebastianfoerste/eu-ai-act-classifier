@@ -1,4 +1,4 @@
-"""Gate 4 — transparency obligations (Art. 50 AIA).
+"""Gate 4: transparency obligations (Art. 50 AIA).
 
 These obligations attach on top of any tier: a high-risk system that also acts
 as a chatbot owes both its high-risk duties and the Art. 50(1) disclosure. On

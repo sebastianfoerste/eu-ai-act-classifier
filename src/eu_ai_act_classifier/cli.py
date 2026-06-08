@@ -12,10 +12,13 @@ quality gate, the same way a linter does.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from pathlib import Path
 
 from pydantic import ValidationError
 
+from .artifacts import ARTIFACT_NAMES, selected_artifacts, write_artifacts
 from .engine import classify
 from .models import Disposition, RiskTier, SystemProfile
 from .report import render_report
@@ -35,7 +38,30 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Exit 1 if the system is prohibited or the classification requires review.",
     )
+    parser.add_argument(
+        "--advisory",
+        action="store_true",
+        help="Include nonbinding Commission guidance notes in the report.",
+    )
+    parser.add_argument(
+        "--sources",
+        action="store_true",
+        help="Emit the regulatory source manifest as JSON.",
+    )
+    parser.add_argument(
+        "--artifact",
+        choices=sorted(ARTIFACT_NAMES | {"all"}),
+        help="Generate one draft legal work product, or all work products.",
+    )
+    parser.add_argument(
+        "--artifacts-dir",
+        help="Directory for draft legal work products. Required with --artifact.",
+    )
     args = parser.parse_args(argv)
+
+    if args.artifact and not args.artifacts_dir:
+        print("error: --artifact requires --artifacts-dir", file=sys.stderr)
+        return 2
 
     try:
         if args.profile == "-":
@@ -53,12 +79,29 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: invalid SystemProfile:\n{exc}", file=sys.stderr)
         return 2
 
-    report = classify(profile)
+    report = classify(profile, include_advisory=args.advisory)
 
-    if args.json:
+    if args.sources:
+        source_json = [source.model_dump(mode="json") for source in report.source_manifest]
+        print(json.dumps(source_json, indent=2))
+    elif args.json:
         print(report.model_dump_json(indent=2))
     else:
         print(render_report(report))
+
+    if args.artifact and args.artifacts_dir:
+        try:
+            selected_artifacts(args.artifact)
+            paths = write_artifacts(args.artifact, Path(args.artifacts_dir), report)
+        except OSError as exc:
+            print(f"error: cannot write artifacts: {exc}", file=sys.stderr)
+            return 2
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        for path in paths:
+            output = sys.stderr if args.json or args.sources else sys.stdout
+            print(f"artifact: {path}", file=output)
 
     if args.strict and (
         report.risk_tier is RiskTier.PROHIBITED or report.disposition is Disposition.REQUIRES_REVIEW

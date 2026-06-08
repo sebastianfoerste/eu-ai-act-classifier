@@ -1,141 +1,93 @@
-# Sample output
+# Sample Output
 
-Real runs of `eu-ai-act-classify` against three of the example profiles, so the
-output is visible without installing anything. Reproduce with
-`eu-ai-act-classify examples/<file>.json`.
+This page shows the shape of the v0.2 output. The exact obligation list may grow
+as the source registry and obligation graph are extended.
 
-## High-risk provider — credit scoring
+## CLI Report
 
-Input (`examples/credit_scoring.json`):
+Command:
 
-```json
-{
-  "name": "CreditSightScore",
-  "description": "Generates consumer creditworthiness scores for lenders.",
-  "roles": ["provider"],
-  "purpose": "Credit scoring",
-  "sector": "Fintech",
-  "annex_iii_area": "III.5.b"
-}
+```bash
+eu-ai-act-classify examples/credit_scoring.json --advisory
 ```
 
-Output:
+Selected output:
 
 ```text
-==============================================================================
-EU AI Act classification — CreditSightScore
-==============================================================================
-Risk tier:    HIGH-RISK (Art. 6 AIA)
-Disposition:  DETERMINED
-Roles:        provider
+EU AI Act classification: CreditSightScore
+Risk tier: HIGH-RISK (Art. 6 AIA)
+Disposition: DETERMINED
+Scope status: in_scope
+Roles: provider
+
+Scope and intake:
+  AI system: True
+  EU nexus: True
+  Transitional status: No transitional limitation identified from the submitted facts.
 
 Findings:
-  [high] Annex III(5)(b) AIA — High-risk: Creditworthiness evaluation and credit scoring
-      Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.
+  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring
 
-Obligations:
-  - Art. 9 AIA — Risk management system: Establish, document and maintain a continuous risk management system.
-  - Art. 10 AIA — Data and data governance: Apply data governance to training, validation and testing data sets.
-  - Art. 11 AIA — Technical documentation: Draw up technical documentation (Annex IV) before placing on the market.
-  - Art. 12 AIA — Record-keeping (logging): Enable automatic recording of events (logs) over the system's lifetime.
-  - Art. 13 AIA — Transparency to deployers: Provide instructions for use enabling deployers to comply.
-  - Art. 14 AIA — Human oversight: Design the system for effective oversight by natural persons.
-  - Art. 15 AIA — Accuracy, robustness, cybersecurity: Achieve appropriate accuracy, robustness and cybersecurity.
-  - Art. 17 AIA — Quality management system: Put a quality management system in place.
-  - Art. 43 AIA — Conformity assessment: Undergo the applicable conformity assessment before market placement.
-  - Art. 47 AIA — EU declaration of conformity: Draw up and keep an EU declaration of conformity.
-  - Art. 48 AIA — CE marking: Affix the CE marking to indicate conformity.
-  - Art. 49 AIA — Registration: Register the system in the EU database before market placement.
-  - Art. 72 AIA — Post-market monitoring: Operate a post-market monitoring system.
-  - Art. 73 AIA — Serious incident reporting: Report serious incidents to the market surveillance authority.
+Obligation graph:
+  - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix, review: draft
+  - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file, review: review_required
+  - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan, review: draft
 
-Documentation to maintain:
-  - Art. 11 AIA + Annex IV — Technical documentation: Annex IV technical documentation, kept current.
-  - Art. 9 AIA — Risk management file: Documented risk management system and its results.
-  - Art. 13 AIA — Instructions for use: Instructions enabling deployer compliance.
-  - Art. 17 AIA — QMS documentation: Written quality management system policies and procedures.
-  - Art. 47 AIA — EU declaration of conformity: Signed EU declaration of conformity.
+Binding application timeline:
+  2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
+  2025-08-02: Chapter V (general-purpose AI models)
+  2026-08-02: General application, incl. Annex III high-risk systems
+  2027-08-02: Art. 6(1) / Annex I high-risk (product-safety route)
 
-Application timeline (Art. 113 AIA):
-  2025-02-02 — Chapters I-II, incl. Art. 5 (prohibited practices)
-  2025-08-02 — Chapter V (general-purpose AI models)
-  2026-08-02 — General application, incl. Annex III high-risk systems
-  2027-08-02 — Art. 6(1) / Annex I high-risk (product-safety route)
+Provisional political-agreement timeline:
+  2027-12-02: AI Omnibus: Annex III high-risk systems
+  2028-08-02: AI Omnibus: product-embedded high-risk systems
+
+Source manifest:
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-06-08
+  - Council and Parliament provisional agreement, 7 May 2026: provisional_political_agreement, retrieved 2026-06-08
 ```
 
-## GPAI model with systemic risk
+## Artifact Draft
 
-Input (`examples/foundation_model_systemic.json`) — note `training_flops` above the 10^25 presumption:
+Command:
+
+```bash
+eu-ai-act-classify examples/credit_scoring.json --artifact fria --artifacts-dir ./draft-artifacts
+```
+
+The generated Markdown draft includes:
+
+1. Draft-only notice.
+2. System, risk tier, disposition and scope status.
+3. Review status.
+4. Checklist.
+5. Relevant obligation graph items.
+6. Open questions.
+7. Source manifest.
+
+## GPAI JSON
+
+Command:
+
+```bash
+eu-ai-act-classify examples/foundation_model_systemic.json --json
+```
+
+Selected fields:
 
 ```json
 {
-  "name": "Atlas-70B",
-  "roles": ["gpai_provider", "provider"],
-  "is_gpai_model": true,
-  "training_flops": 5e25
+  "risk_tier": "minimal_risk",
+  "is_gpai": true,
+  "gpai_systemic": true,
+  "obligation_graph": [
+    {
+      "obligation_id": "gpai.provider.53.a",
+      "article": "Art. 53(1)(a) AIA",
+      "actor": "gpai_provider",
+      "evidence_artifact": "GPAI model documentation checklist."
+    }
+  ]
 }
 ```
-
-Output (abridged to the findings and obligations):
-
-```text
-Risk tier:    MINIMAL RISK
-Disposition:  DETERMINED
-Roles:        gpai_provider, provider
-GPAI:         general-purpose AI model with systemic risk (Art. 51 AIA)
-
-Findings:
-  [high] Art. 51 AIA — General-purpose AI model with systemic risk
-      Systemic risk on the basis of training compute above the 10^25 FLOP presumption (Art. 51(2) AIA).
-
-Obligations:
-  - Art. 53(1)(a) AIA — Model technical documentation: Draw up and keep technical documentation per Annex XI.
-  - Art. 53(1)(b) AIA — Information to downstream providers: Provide downstream providers with information per Annex XII.
-  - Art. 53(1)(c) AIA — Copyright policy: Put in place a policy to comply with Union copyright law.
-  - Art. 53(1)(d) AIA — Training-content summary: Publish a sufficiently detailed summary of training content.
-  - Art. 55(1)(a) AIA — Model evaluation: Perform model evaluation, including adversarial testing.
-  - Art. 55(1)(b) AIA — Systemic-risk mitigation: Assess and mitigate systemic risks at Union level.
-  - Art. 55(1)(c) AIA — Serious-incident tracking: Track, document and report serious incidents.
-  - Art. 55(1)(d) AIA — Cybersecurity: Ensure an adequate level of cybersecurity protection.
-```
-
-The system tier is minimal — a general-purpose model is not itself an Annex III
-use case — but Chapter V duties attach to the model provider regardless.
-
-## Machine-readable output (`--json`)
-
-Input (`examples/support_chatbot.json`) classified with `--json`:
-
-```json
-{
-  "system": "HelpDesk Assistant",
-  "risk_tier": "limited_risk",
-  "disposition": "determined",
-  "roles": ["provider"],
-  "is_gpai": false,
-  "gpai_systemic": false,
-  "findings": [
-    {
-      "rule_id": "TRANSPARENCY.50",
-      "citation": "Art. 50(1) AIA",
-      "citation_verified": true,
-      "title": "Transparency obligations apply",
-      "severity": "medium",
-      "tier": "limited_risk"
-    }
-  ],
-  "transparency_obligations": [
-    {
-      "article": "Art. 50(1) AIA",
-      "title": "Inform persons of AI interaction",
-      "applies_to": "provider",
-      "requirement": "Inform natural persons that they are interacting with an AI system, unless obvious."
-    }
-  ],
-  "open_questions": [],
-  "unverified_citations": []
-}
-```
-
-The JSON is the surface an intake pipeline or an agent consumes (timeline and
-disclaimer fields omitted here for length).

@@ -1,4 +1,4 @@
-"""Gate 1 — prohibited practices (Art. 5 AIA).
+"""Gate 1: prohibited practices (Art. 5 AIA).
 
 A prohibited practice is a hard stop: the system may not be placed on the
 market or put into service. This gate runs first and, if it fires, dominates

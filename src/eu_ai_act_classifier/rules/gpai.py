@@ -1,4 +1,4 @@
-"""Gate 3 — general-purpose AI models (Chapter V AIA).
+"""Gate 3: general-purpose AI models (Chapter V AIA).
 
 GPAI status is orthogonal to the system risk tier: a model provider carries
 Chapter V duties whatever tier the downstream system lands in. Systemic risk
@@ -54,7 +54,7 @@ def evaluate(profile) -> GateOutput:
 
     if profile.training_flops is None and not profile.gpai_systemic_risk_designated:
         out.open_questions.append(
-            "GPAI model: training compute (FLOP) not provided and no Commission designation — "
+            "GPAI model: training compute (FLOP) not provided and no Commission designation, "
             "systemic-risk status under Art. 51 AIA cannot be determined. Provide training_flops "
             "or confirm designation."
         )

@@ -1,6 +1,6 @@
 """MCP server exposing the classifier as an agent-callable tool.
 
-An agent — for example a product-intake agent on an AI platform — can call
+An agent, for example a product-intake agent on an AI platform, can call
 ``classify_ai_system`` with a system profile and get back a cited, tiered,
 review-gated classification. The ``mcp`` dependency is optional and imported
 lazily, so the core engine never depends on it.
@@ -29,7 +29,9 @@ def build_server() -> Any:
     server = FastMCP("eu-ai-act-classifier")
 
     @server.tool()
-    def classify_ai_system(profile: dict[str, Any]) -> dict[str, Any]:
+    def classify_ai_system(
+        profile: dict[str, Any], include_advisory: bool = False
+    ) -> dict[str, Any]:
         """Classify an AI system under the EU AI Act (Reg (EU) 2024/1689).
 
         `profile` is a SystemProfile object (name, roles, annex_iii_area,
@@ -38,13 +40,15 @@ def build_server() -> Any:
         obligations with article citations, required documentation, open
         questions for review, and any citations pending verification.
         """
-        report = classify(SystemProfile.model_validate(profile))
+        report = classify(SystemProfile.model_validate(profile), include_advisory=include_advisory)
         return report.model_dump(mode="json")
 
     @server.tool()
-    def classify_ai_system_text(profile: dict[str, Any]) -> str:
+    def classify_ai_system_text(profile: dict[str, Any], include_advisory: bool = False) -> str:
         """As classify_ai_system, but returns the human-readable report text."""
-        return render_report(classify(SystemProfile.model_validate(profile)))
+        return render_report(
+            classify(SystemProfile.model_validate(profile), include_advisory=include_advisory)
+        )
 
     return server
 

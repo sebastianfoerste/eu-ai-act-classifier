@@ -1,0 +1,32 @@
+[
+  {
+    "guidance_example_id": "draft-guidance-machinery-safety-stop",
+    "checker": "EU AI Act Compliance Checker beta",
+    "checker_url": "https://ai-act-service-desk.ec.europa.eu/en/eu-ai-act-compliance-checker",
+    "retrieved_on": "2026-06-08",
+    "checker_status": "nonbinding_beta",
+    "stored_result": "high_risk",
+    "classifier_result": "high_risk",
+    "manual_review_note": "Stored as nonbinding evidence only. The beta checker does not represent a Commission assessment."
+  },
+  {
+    "guidance_example_id": "draft-guidance-quality-service-monitoring",
+    "checker": "EU AI Act Compliance Checker beta",
+    "checker_url": "https://ai-act-service-desk.ec.europa.eu/en/eu-ai-act-compliance-checker",
+    "retrieved_on": "2026-06-08",
+    "checker_status": "nonbinding_beta",
+    "stored_result": "minimal_risk",
+    "classifier_result": "minimal_risk",
+    "manual_review_note": "Stored as nonbinding evidence only. The beta checker does not represent a Commission assessment."
+  },
+  {
+    "guidance_example_id": "draft-guidance-employment-recruitment",
+    "checker": "EU AI Act Compliance Checker beta",
+    "checker_url": "https://ai-act-service-desk.ec.europa.eu/en/eu-ai-act-compliance-checker",
+    "retrieved_on": "2026-06-08",
+    "checker_status": "nonbinding_beta",
+    "stored_result": "high_risk",
+    "classifier_result": "high_risk",
+    "manual_review_note": "Stored as nonbinding evidence only. The beta checker does not represent a Commission assessment."
+  }
+]

@@ -265,6 +265,65 @@ def high_risk_deployer_obligations(*, fria_required: bool) -> list[Obligation]:
     return out
 
 
+def high_risk_importer_obligations() -> list[Obligation]:
+    i = Role.IMPORTER
+    return [
+        Obligation(
+            article="Art. 23 AIA",
+            title="Importer obligations",
+            applies_to=i,
+            requirement=(
+                "Verify provider conformity, documentation, CE marking and instructions "
+                "before placing a high-risk AI system on the market."
+            ),
+        )
+    ]
+
+
+def high_risk_distributor_obligations() -> list[Obligation]:
+    d = Role.DISTRIBUTOR
+    return [
+        Obligation(
+            article="Art. 24 AIA",
+            title="Distributor obligations",
+            applies_to=d,
+            requirement=(
+                "Verify CE marking, EU declaration, instructions and provider or importer "
+                "compliance signals before making the system available."
+            ),
+        )
+    ]
+
+
+def high_risk_authorized_representative_obligations() -> list[Obligation]:
+    a = Role.AUTHORIZED_REPRESENTATIVE
+    return [
+        Obligation(
+            article="Art. 22 AIA",
+            title="Authorised representative obligations",
+            applies_to=a,
+            requirement=(
+                "Maintain the written mandate, documentation access and authority "
+                "cooperation process for a non-EU provider."
+            ),
+        )
+    ]
+
+
+def high_risk_value_chain_obligations() -> list[Obligation]:
+    return [
+        Obligation(
+            article="Art. 25 AIA",
+            title="Value-chain provider responsibility",
+            applies_to=Role.PROVIDER,
+            requirement=(
+                "Assess whether substantial modification or own-name placement shifts "
+                "provider obligations along the AI value chain."
+            ),
+        )
+    ]
+
+
 def high_risk_documentation() -> list[Obligation]:
     """The artifacts a high-risk provider must be able to produce on demand."""
     p = Role.PROVIDER

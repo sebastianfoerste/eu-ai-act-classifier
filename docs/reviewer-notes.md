@@ -1,33 +1,60 @@
 # Reviewer Notes
 
-This classifier is intentionally conservative. It is designed to screen AI-system profiles, surface obligations and route open questions to a qualified reviewer. It does not replace legal judgment, conformity assessment work or organisation-specific advice.
+The classifier is intentionally conservative. It screens AI-system profiles,
+surfaces obligations and routes open questions to a qualified reviewer.
 
-## Cases where the classifier should refuse to be overconfident
+It does not replace legal judgment, conformity assessment work or
+organisation-specific advice.
 
-### 1. Article 6(3) derogation claims
+## Review Triggers
 
-If a system is in an Annex III area but the user asserts that it does not pose a significant risk, the classifier should flag the claim for review. Whether the derogation is available turns on product facts, actual use, safeguards and documentation that a static profile cannot settle alone.
+### Scope
 
-### 2. Profiling carve-out
+If AI-system status, EU nexus, intended purpose, excluded-use flags or Article
+111 transition facts are incomplete, the classifier records a scope review
+question.
 
-Where profiling is involved, the classifier should not silently apply a lower-risk path. The profiling carve-out can close off the Article 6(3) route and should be reviewed explicitly.
+### Article 6(3) Derogation Claims
 
-### 3. GPAI systemic-risk threshold
+If a system is in an Annex III area and the user asserts that it does not pose a
+significant risk, the classifier keeps the tier high-risk and flags the claim
+for review. The Art. 6(4) work product can then document the assessment.
 
-If training compute, model capability, provider role or downstream integration facts are incomplete, the classifier should return an open question rather than infer whether the systemic-risk presumption applies.
+### Profiling
 
-### 4. Deployer obligations and FRIA
+Where profiling of natural persons is involved, the classifier should not apply
+the Art. 6(3) path. The profiling carve-out closes that route.
 
-Some obligations depend on whether the organisation is a provider, deployer, importer, distributor, public body or other relevant actor. Where that role is unclear, the classifier should route the matter for legal review.
+### GPAI Systemic Risk
 
-### 5. Mixed product surfaces
+If training compute, provider role or Commission designation facts are
+incomplete, the classifier returns an open question rather than inferring
+systemic-risk status.
 
-AI products often combine several features, such as search, summarisation, scoring, recommendations and workflow automation. The classifier should treat the highest-risk relevant feature as the review driver and disclose the basis for that routing.
+### FRIA
 
-## Practical review rule
+Creditworthiness and life and health insurance deployer cases receive an
+automatic Art. 27 FRIA obligation.
 
-A green or minimal-risk classification is only useful if the input facts are complete and stable. If the product, user group, data category, deployment context or customer sector changes, the classification should be rerun and reviewed.
+Critical infrastructure deployer cases do not receive the generic FRIA review
+question because Annex III point 2 is excluded from the Art. 27 trigger.
 
-## Data boundary
+For other high-risk deployer cases, review public-law body status and private
+public-service status.
 
-Examples in this repository are synthetic and public-safe. They should not be replaced with client data, privileged material, confidential information or personal data.
+### Mixed Product Surfaces
+
+AI products often combine search, summarisation, scoring, recommendations and
+workflow automation. The classifier should route the highest-risk relevant
+feature and disclose the basis.
+
+## Practical Review Rule
+
+A minimal-risk or determined classification is only useful if the input facts
+are complete and stable. If the product, user group, data category, deployment
+context or customer sector changes, rerun and review the classification.
+
+## Data Boundary
+
+Examples in this repository are synthetic and public-safe. Do not replace them
+with client data, privileged material, confidential information or personal data.

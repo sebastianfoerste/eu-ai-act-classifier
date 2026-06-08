@@ -58,3 +58,50 @@ def test_unsure_area_is_conservative_high_and_review() -> None:
     report = classify(profile)
     assert report.risk_tier is RiskTier.HIGH
     assert report.disposition is Disposition.REQUIRES_REVIEW
+
+
+def test_critical_infrastructure_deployer_has_no_fria_question() -> None:
+    profile = SystemProfile(
+        name="grid monitor",
+        roles=[Role.DEPLOYER],
+        annex_iii_area=AnnexIII.CRITICAL_INFRASTRUCTURE,
+    )
+    report = classify(profile)
+
+    assert "Art. 27 AIA" not in {ob.article for ob in report.obligations}
+    assert not any("Art. 27 AIA" in question for question in report.open_questions)
+
+
+def test_life_health_insurance_deployer_requires_fria() -> None:
+    profile = SystemProfile(
+        name="insurance pricing",
+        roles=[Role.DEPLOYER],
+        annex_iii_area=AnnexIII.INSURANCE_LIFE_HEALTH,
+    )
+    report = classify(profile)
+
+    assert "Art. 27 AIA" in {ob.article for ob in report.obligations}
+
+
+def test_public_law_deployer_requires_fria() -> None:
+    profile = SystemProfile(
+        name="public service triage",
+        roles=[Role.DEPLOYER],
+        annex_iii_area=AnnexIII.ESSENTIAL_PUBLIC_BENEFITS,
+        deployer_public_law_body=True,
+    )
+    report = classify(profile)
+
+    assert "Art. 27 AIA" in {ob.article for ob in report.obligations}
+
+
+def test_private_public_service_deployer_requires_fria() -> None:
+    profile = SystemProfile(
+        name="public transport triage",
+        roles=[Role.DEPLOYER],
+        annex_iii_area=AnnexIII.ESSENTIAL_PUBLIC_BENEFITS,
+        deployer_private_public_service=True,
+    )
+    report = classify(profile)
+
+    assert "Art. 27 AIA" in {ob.article for ob in report.obligations}

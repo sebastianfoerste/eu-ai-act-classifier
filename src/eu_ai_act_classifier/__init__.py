@@ -15,22 +15,30 @@ from .models import (
     ClassificationReport,
     Derogation,
     Disposition,
+    ExcludedUse,
     ProhibitedPractice,
+    ReviewStatus,
     RiskTier,
     Role,
+    ScopeStatus,
+    SourceStatus,
     SystemProfile,
 )
 from .report import render_report
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = [
     "AnnexIII",
     "ClassificationReport",
     "Derogation",
     "Disposition",
+    "ExcludedUse",
     "ProhibitedPractice",
+    "ReviewStatus",
     "RiskTier",
     "Role",
+    "ScopeStatus",
+    "SourceStatus",
     "SystemProfile",
     "classify",
     "render_report",

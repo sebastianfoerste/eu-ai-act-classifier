@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "eu-ai-act-classifier"
-version = "0.1.0"
+version = "0.2.0"
 description = "Deterministic EU AI Act (Reg (EU) 2024/1689) risk-tier and obligation classifier with pinpoint citations and a lawyer review gate."
 readme = "README.md"
 requires-python = ">=3.13"
@@ -12,9 +12,9 @@ license = { text = "MIT" }
 authors = [{ name = "Sebastian Förste" }]
 keywords = ["eu-ai-act", "ai-governance", "legal-engineering", "compliance", "regtech", "mcp"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Legal Industry",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Office/Business",
 ]
 
@@ -28,6 +28,7 @@ dev = ["pytest>=8.0", "ruff>=0.6"]
 
 [project.scripts]
 eu-ai-act-classify = "eu_ai_act_classifier.cli:main"
+eu-ai-act-local-api = "eu_ai_act_classifier.local_api:main"
 
 [project.urls]
 Source = "https://github.com/sebastianfoerste/eu-ai-act-classifier"

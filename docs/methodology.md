@@ -1,69 +1,118 @@
-# Methodology — how the regulation is encoded
+# Methodology
 
-This document records the mapping between Regulation (EU) 2024/1689 (the AI Act,
-"AIA") and the rules in `catalog.py` and `rules/`. It is the part a reviewing
-lawyer audits.
+This document records how Regulation (EU) 2024/1689 is encoded in the
+classifier. It is the legal audit surface.
 
-## Division of labour
+## Division Of Labour
 
 The engine subsumes characterised facts under rules. It does not characterise
-facts. The judgment — *does this tool materially influence a hiring decision?*,
-*is this a "narrow procedural task"?* — stays with the lawyer who fills in the
-`SystemProfile`. This is the same division a `Gutachten` makes between the
-abstract rule (Obersatz) and its application to facts (Untersatz). Encoding the
-Obersatz is safe; the Untersatz is where the engine defers.
+facts. The lawyer or reviewer decides whether the submitted system qualifies as
+an AI system, what the intended purpose is, whether Annex I or Annex III is
+triggered, and whether an asserted derogation is evidenced.
 
-## The five gates
+That division keeps the output deterministic. The `SystemProfile` states the
+facts. The engine applies the rules and makes uncertainty visible.
 
-| Gate | Legal basis | Output |
-| --- | --- | --- |
-| Prohibited | Art. 5(1)(a)–(h) AIA | Hard stop; dominates every tier |
-| High-risk | Art. 6(1) (Annex I route), Art. 6(2)+(3) (Annex III route) | High-risk tier; obligations attach by role |
-| GPAI | Art. 51 (systemic threshold), Art. 53 (baseline), Art. 55 (systemic) | Chapter V duties, orthogonal to the system tier |
-| Transparency | Art. 50(1)–(4) AIA | Limited-risk tier; stacks on any higher tier |
-| Minimal | — | Default |
+## Gate Order
 
-## Decisions worth recording
+1. Scope and intake: Art. 2, Art. 3(1), intended purpose, EU nexus, exclusions
+   and Article 111 transition facts.
+2. Prohibited practices: Art. 5(1)(a) to (h) AIA. A hit is a hard stop.
+3. High-risk classification: Art. 6(1), Art. 6(2), Art. 6(3), Annex I and
+   Annex III.
+4. GPAI: Art. 51 systemic threshold and Arts. 53, 55 and 56 obligations.
+5. Transparency: Art. 50(1) to (4) AIA.
+6. Resolution: highest tier, review disposition, source-backed obligations,
+   timeline and open legal questions.
 
-**Conservative default on Annex III.** An Annex III use case is treated as
-high-risk unless a derogation is affirmatively established. An asserted but
-unconfirmed Art. 6(3) derogation does not silently downgrade the system: the
-tier stays high-risk and the disposition becomes `requires_review`. This tracks
-Art. 6(3)/(4), which require a documented assessment (and registration) before a
-system leaves the high-risk tier.
+## Source Statuses
 
-**Profiling forecloses the derogation.** Where the system performs profiling of
-natural persons, the Art. 6(3) derogation is unavailable (Art. 6(3) subpara. 2),
-so the engine resolves directly to high-risk with no review needed.
+Binding Level 1 text drives classification and obligations. The primary source
+is Regulation (EU) 2024/1689.
 
-**GPAI is orthogonal.** A general-purpose model provider carries Chapter V duties
-whatever tier the downstream system occupies. Systemic risk follows the 10^25
-FLOP presumption (Art. 51(2)) or a Commission designation (Art. 51(1)(b)). Where
-compute is undisclosed and there is no designation, systemic status is left open
-rather than assumed away.
+Provisional political agreement is recorded separately. The AI Omnibus dates
+are included as provisional implementation context and remain outside binding
+logic until formal adoption and Official Journal publication.
 
-**FRIA.** A fundamental rights impact assessment (Art. 27) is attached
-automatically for deployers of Annex III(5)(b) creditworthiness and (5)(c)
-insurance systems. For other high-risk deployments the engine raises an open
-question, because Art. 27 also turns on the deployer's status (a body governed by
-public law, or a private operator providing a public service) — a fact the engine
-does not hold.
+Nonbinding guidance appears only as advisory overlay or eval context. The
+overlay can point reviewers to Commission materials, the AI Act Service Desk,
+the GPAI Code of Practice and draft high-risk guidance. It never changes the
+binding classification.
 
-## Citation policy
+## High-Risk Logic
 
-- Citations are pinpoint: `Art. 6(2) AIA`, `Annex III(5)(b) AIA`.
-- The classifier operates at **Level 1** (the Regulation). **Level 2** delegated
-  and implementing acts and **Level 3** guidance (Commission guidelines, the GPAI
-  Code of Practice) are out of scope and noted where relevant.
-- A citation that is not confirmed against the consolidated EUR-Lex text is
-  flagged `noch zu verifizieren` in the output and carried in
-  `report.unverified_citations`. Areas 6 (law enforcement) and 7 (migration)
-  sub-points are verified. The only remaining flag is the residual `UNSURE`
-  catch-all, used when an Annex III area is implicated but the specific point is
-  unsettled. Nothing is invented.
+Annex I product-safety systems are high-risk where both the safety-component
+route and third-party assessment route are asserted.
 
-## Out of scope
+Annex III systems are treated as high-risk unless an Art. 6(3) derogation is
+asserted. An asserted derogation keeps the tier high-risk and changes the
+disposition to `requires_review`, because Art. 6(4) requires documentation and
+registration. Profiling of natural persons forecloses the derogation.
 
-Conformity-assessment workflow, Level 2/3 instruments, sector-specific Annex I
-harmonisation legislation, and any substitution for legal judgment. This is a
-screening tool a practising lawyer supervises.
+The residual `AnnexIII.UNSURE` value is conservative. It marks the system
+high-risk and records an unverified citation for review.
+
+## FRIA Logic
+
+Art. 27 is automatic for deployers of Annex III point 5(b) creditworthiness and
+point 5(c) life and health insurance.
+
+Art. 27 is also attached where the submitted facts establish a public-law
+deployer or a private entity providing public services.
+
+Annex III point 2 critical infrastructure is excluded from the Art. 27 trigger.
+The engine suppresses the generic FRIA open question for that case.
+
+Where the deployment is high-risk and the deployer status is incomplete, the
+engine raises a review question instead of asserting a FRIA conclusion.
+
+## Obligation Graph
+
+The legacy obligation lists remain for compatibility. The richer
+`obligation_graph` is the product surface for review workflows.
+
+Each graph item records:
+
+1. Obligation ID.
+2. Article.
+3. Actor role.
+4. Trigger.
+5. Requirement.
+6. Evidence artifact.
+7. Source status.
+8. Source URL.
+9. Application date.
+10. Review status.
+
+The graph covers high-risk provider, deployer, importer, distributor,
+authorised representative, value-chain, GPAI, transparency, post-market
+monitoring and serious-incident duties.
+
+## Draft Work Products
+
+Artifact generation is draft-only. Generated files include a source manifest,
+open questions and a review status. They do not claim to be legal advice,
+conformity assessments or final regulatory filings.
+
+The artifacts are:
+
+1. Art. 6(4) non-high-risk assessment.
+2. Art. 27 FRIA.
+3. Annex IV technical documentation checklist.
+4. Post-market monitoring plan.
+5. Serious-incident register.
+6. GPAI model documentation checklist.
+7. Training-content summary checklist.
+
+## Citation Policy
+
+Citations are pinpoint, for example `Art. 6(2) AIA` and `Annex III(5)(b) AIA`.
+
+Unconfirmed pinpoints are flagged `noch zu verifizieren` and carried in
+`report.unverified_citations`. Nothing is invented.
+
+## Boundaries
+
+The classifier is a triage and review tool. It does not replace legal judgment,
+conformity assessment work, notified-body processes, regulator filings or
+organisation-specific advice.
