@@ -1,12 +1,31 @@
 # EU AI Act Classifier
 
-A deterministic EU AI Act triage engine for AI-system intake, risk classification,
-source provenance, obligation tracking and draft legal work products.
+AI governance teams need a fast way to triage AI-system facts under Regulation
+(EU) 2024/1689 without turning a demo into a legal-advice machine. The hard
+part is not producing a confident label. The hard part is showing which facts
+trigger the legal route, which source supports the route and where human review
+is still required.
 
-The classifier applies Regulation (EU) 2024/1689 as the binding Level 1 source.
-It also records provisional AI Omnibus dates and optional Commission guidance
-overlays as separate, nonbinding context. Legal outputs remain draft-only and
-review-gated.
+EU AI Act Classifier is a deterministic Python classifier, CLI, MCP tool and
+optional local cockpit. It applies the binding Level 1 text, keeps provisional
+dates separate, adds nonbinding guidance only as an advisory overlay and emits
+draft-only reports for supervised legal review.
+
+Quick evaluator command:
+
+```bash
+uv run eu-ai-act-classify examples/credit_scoring.json
+```
+
+Sample output:
+
+```text
+EU AI Act classification: CreditSightScore
+Risk tier: HIGH-RISK (Art. 6 AIA)
+Disposition: DETERMINED
+Scope status: in_scope
+Roles: provider
+```
 
 ## What It Does
 
@@ -46,6 +65,17 @@ GPAI provider guidance and future transparency guidance.
 
 Guidance overlays are advisory notes. They do not override the binding
 classification logic.
+
+## Risk-Tier Map
+
+| Tier | Trigger | Citation | Obligation | Review status |
+| --- | --- | --- | --- | --- |
+| Prohibited | Art. 5 practice, such as social scoring | Art. 5 AIA | Do not place, put into service or use | Blocker, legal review required |
+| High risk | Annex I product route or Annex III area | Art. 6, Annex I, Annex III AIA | Provider, deployer and value-chain obligations | Determined or requires review |
+| GPAI | General-purpose AI model facts | Arts. 51, 53, 55 and 56 AIA | GPAI provider documentation and systemic-risk duties | Determined or requires review |
+| Limited risk | Transparency-only system | Art. 50 AIA | User-facing transparency duties | Determined |
+| Minimal risk | No higher-tier trigger | No specific higher-tier trigger | No classifier-derived AIA duty | Determined, keep governance record |
+| Requires review | Ambiguous facts or unverified legal route | Depends on open question | Route to qualified reviewer | Human review required |
 
 ## Outputs
 
@@ -164,6 +194,35 @@ tested separately from the binding classifier logic.
 See [examples/README.md](examples/README.md) and
 [docs/launch-readiness.md](docs/launch-readiness.md).
 
+## Optional Cockpit Snapshot
+
+The web cockpit is an optional reviewer surface. The Python classifier remains
+the legal source of truth.
+
+```text
+Inventory -> Guided intake -> Python classify bridge -> Risk map
+          -> Open questions -> Source provenance -> Obligation tracker
+          -> Draft export preview
+
+Current sample:
+System: CreditSightScore
+Tier: high_risk
+Disposition: determined
+Primary citation: Annex III(5)(b) AIA
+Review note: draft only, lawyer review before reliance
+```
+
+## Known Legal Limits
+
+- Guidance changes. Commission, AI Office and national materials can change and
+  remain nonbinding unless adopted through the relevant legal route.
+- National implementation. Market-surveillance practice, penalties and
+  notified-body practice may vary by Member State.
+- Fact dependency. The engine applies rules to characterised facts; it does not
+  decide disputed intended purpose, operator role or factual deployment scope.
+- Lawyer review. `requires_review`, draft artifacts and advisory overlays must
+  be reviewed before reliance.
+
 ## Stack
 
 Python 3.13+, Pydantic v2, pytest, ruff and uv for the classifier.
@@ -180,6 +239,8 @@ advice, a conformity assessment or a binding regulatory conclusion.
 
 Determinations marked `requires_review` turn on facts the engine cannot settle.
 Generated work products require human legal review before use.
+
+See [Deterministic Classification Versus Legal Advice](docs/deterministic-classification-vs-legal-advice.md).
 
 ## License
 

@@ -74,6 +74,13 @@ Draft work products always include a review notice and source manifest.
 
 The web cockpit uses local in-memory state for v1.
 
+## Cockpit Source-of-Truth Boundary
+
+The cockpit is a local review workspace. It may help a reviewer inspect intake
+facts, open questions, obligations and draft artifacts, but it does not contain
+separate legal logic. The route bridge calls the Python package and renders the
+returned `ClassificationReport`.
+
 ## Testing
 
 The base eval set has 14 synthetic examples. The guidance corpus adds

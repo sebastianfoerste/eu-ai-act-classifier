@@ -72,6 +72,13 @@ Review these surfaces:
 The key signal is that uncertainty remains visible through `requires_review`,
 `open_questions`, `unverified_citations` and draft-only artifact notices.
 
+## Known Legal Limits
+
+Guidance may change, national implementation may differ, market-surveillance
+practice may evolve and incomplete facts can move a case into
+`requires_review`. The classifier applies deterministic rules to characterised
+facts. It does not make the factual characterisation for the reviewer.
+
 ## Safety Posture
 
 This is a screening tool for supervised legal review. It does not produce legal
