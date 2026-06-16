@@ -18,9 +18,7 @@ def _golden_payload() -> dict[str, object]:
         "scope_status": report.scope.status.value,
         "finding_citations": [finding.citation for finding in report.findings],
         "obligation_articles": [obligation.article for obligation in report.obligations],
-        "timeline_source_statuses": sorted(
-            {item.source_status.value for item in report.timeline}
-        ),
+        "timeline_source_statuses": sorted({item.source_status.value for item in report.timeline}),
         "source_manifest_statuses": sorted(
             {source.legal_status.value for source in report.source_manifest}
         ),
