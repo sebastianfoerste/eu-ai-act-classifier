@@ -1,0 +1,10 @@
+{
+  "name": "NexusCustom-Reason",
+  "description": "General-purpose model fine-tuned for chemical synthesis planning, designated as systemic due to high potential for misuse.",
+  "roles": ["gpai_provider", "provider"],
+  "purpose": "Chemical formulation support",
+  "sector": "Scientific-Inference",
+  "is_gpai_model": true,
+  "training_flops": 1e24,
+  "gpai_systemic_risk_designated": true
+}

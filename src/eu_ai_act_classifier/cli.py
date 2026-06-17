@@ -29,7 +29,12 @@ def main(argv: list[str] | None = None) -> int:
         prog="eu-ai-act-classify",
         description="Classify an AI system under the EU AI Act (Reg (EU) 2024/1689).",
     )
-    parser.add_argument("profile", help="Path to a SystemProfile JSON file, or '-' for stdin.")
+    parser.add_argument(
+        "profile",
+        nargs="?",
+        default=None,
+        help="Path to a SystemProfile JSON file, or '-' for stdin.",
+    )
     parser.add_argument(
         "--json", action="store_true", help="Emit the ClassificationReport as JSON."
     )
@@ -57,7 +62,28 @@ def main(argv: list[str] | None = None) -> int:
         "--artifacts-dir",
         help="Directory for draft legal work products. Required with --artifact.",
     )
+    parser.add_argument(
+        "--verify-sources",
+        action="store_true",
+        help="Verify official regulatory source URLs.",
+    )
+    parser.add_argument(
+        "--update",
+        action="store_true",
+        help="Update source retrieval date to today.",
+    )
     args = parser.parse_args(argv)
+
+    if args.verify_sources:
+        from .verify_sources import verify_sources
+
+        verify_sources(update=args.update)
+        return 0
+
+    if not args.profile:
+        print("error: the following arguments are required: profile", file=sys.stderr)
+        parser.print_help()
+        return 2
 
     if args.artifact and not args.artifacts_dir:
         print("error: --artifact requires --artifacts-dir", file=sys.stderr)

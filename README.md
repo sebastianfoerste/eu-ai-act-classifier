@@ -45,6 +45,35 @@ Existing alpha profiles remain compatible. Missing new scope fields default to
 an in-scope AI system so the original 14 synthetic examples keep their expected
 results.
 
+## Reviewer Demo Path
+
+Use the CLI first. It is the authoritative product surface and does not require
+web dependencies:
+
+```bash
+uv run pytest
+uv run eu-ai-act-classify examples/credit_scoring.json --strict
+uv run eu-ai-act-classify examples/credit_scoring.json --sources
+uv run eu-ai-act-classify examples/credit_scoring.json \
+  --artifact all \
+  --artifacts-dir /tmp/eu-ai-act-draft-pack
+```
+
+Then inspect `/tmp/eu-ai-act-draft-pack`. The generated files are draft review
+artifacts, not legal opinions, conformity assessments or filing documents.
+
+Run the optional cockpit only after the Python checks pass:
+
+```bash
+cd web
+npm install
+npm run build
+npm run dev
+```
+
+The cockpit is a local reviewer interface over the Python bridge. It does not
+change the classifier result and it does not persist client or matter data.
+
 ## Source Statuses
 
 Reports and draft artifacts use a versioned source manifest.
@@ -173,6 +202,10 @@ npm run dev
 The web app uses in-memory state for v1. It does not persist client, matter,
 candidate, account or privileged data.
 
+The cockpit now shows loading, bridge-error and empty-artifact states explicitly.
+If the local JSON bridge fails, retry metadata or run the CLI commands above to
+separate a UI issue from a classifier issue.
+
 Route surface:
 
 1. `GET /api/health`
@@ -241,6 +274,22 @@ Determinations marked `requires_review` turn on facts the engine cannot settle.
 Generated work products require human legal review before use.
 
 See [Deterministic Classification Versus Legal Advice](docs/deterministic-classification-vs-legal-advice.md).
+
+## Reviewer Checklist
+
+Use this checklist when evaluating the repository as a portfolio project or employer demo:
+
+- [ ] Run `uv run pytest` - 74 tests pass with no external dependencies.
+- [ ] Run `uv run eu-ai-act-classify examples/credit_scoring.json --strict` - CLI produces risk tier, disposition and obligation graph.
+- [ ] Run `uv run eu-ai-act-classify examples/credit_scoring.json --sources` - source manifest shows binding, provisional and advisory separation.
+- [ ] Run `uv run eu-ai-act-classify examples/credit_scoring.json --artifact all --artifacts-dir /tmp/eu-ai-act-draft-pack` - draft artifact pack written to `/tmp`.
+- [ ] Review `tests/test_local_api.py` - confirms `review_status: draft_only_human_review_required` on all artifact outputs.
+- [ ] Review `docs/deterministic-classification-vs-legal-advice.md` - confirms classification logic and legal limits.
+- [ ] Review `docs/sample-output.md` - confirms report language is review-gated.
+- [ ] Review `PRIVACY.md` - confirm synthetic-only demo boundary.
+- [ ] Review `docs/DEMO_ASSET_PLAN.md` for demo guidance and hosting readiness assessment.
+- [ ] Confirm all 14 synthetic example profiles still produce their expected classification tier.
+
 
 ## License
 

@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-from eu_ai_act_classifier.local_api import artifacts_payload, classify_payload, schema_payload
+from eu_ai_act_classifier.local_api import (
+    artifacts_payload,
+    classify_payload,
+    schema_payload,
+    sources_payload,
+)
 
 
 def test_local_api_schema_exposes_cockpit_contract() -> None:
@@ -24,3 +29,20 @@ def test_local_api_artifacts_preview_is_draft_only() -> None:
     assert payload["review_status"] == "draft_only_human_review_required"
     assert payload["artifacts"][0]["name"] == "fria"
     assert "Draft only" in payload["artifacts"][0]["content"]
+    assert payload["source_manifest"]
+
+
+def test_local_api_sources_payload_keeps_legal_status_visible() -> None:
+    payload = sources_payload()
+
+    assert payload
+    assert {source["legal_status"] for source in payload}
+    assert all(source["url"].startswith("https://") for source in payload)
+
+
+def test_local_api_artifacts_all_returns_named_review_pack() -> None:
+    payload = artifacts_payload({"profile": {"name": "x"}, "artifact": "all"})
+
+    artifact_names = {artifact["name"] for artifact in payload["artifacts"]}
+    assert {"fria", "annex-iv-checklist"}.issubset(artifact_names)
+    assert payload["review_status"] == "draft_only_human_review_required"

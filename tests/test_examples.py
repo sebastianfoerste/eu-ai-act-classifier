@@ -29,6 +29,9 @@ EXPECTATIONS: dict[str, tuple[RiskTier, Disposition]] = {
     "spam_filter.json": (RiskTier.MINIMAL, Disposition.DETERMINED),
     "foundation_model_systemic.json": (RiskTier.MINIMAL, Disposition.DETERMINED),
     "foundation_model_unknown_compute.json": (RiskTier.MINIMAL, Disposition.REQUIRES_REVIEW),
+    "gpai_non_systemic.json": (RiskTier.MINIMAL, Disposition.DETERMINED),
+    "gpai_systemic_by_flops.json": (RiskTier.MINIMAL, Disposition.DETERMINED),
+    "gpai_systemic_designated.json": (RiskTier.MINIMAL, Disposition.DETERMINED),
 }
 
 

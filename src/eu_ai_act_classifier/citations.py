@@ -54,7 +54,7 @@ TRANSPARENCY_GUIDANCE_URL = (
 )
 
 
-SOURCE_RETRIEVED_ON = "2026-06-08"
+SOURCE_RETRIEVED_ON = "2026-06-17"
 
 
 def source_manifest() -> list[RegulatorySource]:

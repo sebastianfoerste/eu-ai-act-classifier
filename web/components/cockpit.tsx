@@ -169,6 +169,7 @@ export function Cockpit() {
   }
 
   const sourceRows = report?.source_manifest.length ? report.source_manifest : sources;
+  const isClassifying = status === "Classifying";
 
   return (
     <main className="shell">
@@ -183,17 +184,28 @@ export function Cockpit() {
             className="iconButton"
             type="button"
             title="Run classification"
+            aria-label="Run classification"
+            aria-busy={isClassifying}
+            disabled={isClassifying}
             onClick={() => void runClassification()}
           >
             <RefreshCw size={18} aria-hidden />
           </button>
-          <button className="iconButton" type="button" title="New intake" onClick={loadBlank}>
+          <button className="iconButton" type="button" title="New intake" aria-label="Start new intake" onClick={loadBlank}>
             <Plus size={18} aria-hidden />
           </button>
         </div>
       </header>
 
-      {error ? <div className="errorBanner">{error}</div> : null}
+      {error ? (
+        <div className="errorBanner" role="alert">
+          <strong>Classification bridge needs attention.</strong>
+          <span>{error}</span>
+          <button className="secondaryButton" type="button" onClick={() => void loadMetadata()}>
+            Retry metadata
+          </button>
+        </div>
+      ) : null}
 
       <div className="cockpitGrid">
         <section className="panel inventoryPanel" aria-labelledby="inventory-heading">
@@ -228,10 +240,12 @@ export function Cockpit() {
             <button
               className="primaryButton"
               type="button"
+              disabled={isClassifying}
+              aria-busy={isClassifying}
               onClick={() => void runClassification()}
             >
               <ClipboardCheck size={16} aria-hidden />
-              Classify
+              {isClassifying ? "Classifying" : "Classify"}
             </button>
           </div>
 
@@ -535,25 +549,42 @@ export function Cockpit() {
               className="iconButton"
               type="button"
               title="Download draft artifact"
+              aria-label="Download selected draft artifact"
+              disabled={!activeArtifactPreview}
               onClick={() => downloadArtifact(activeArtifactPreview)}
             >
               <Download size={18} aria-hidden />
             </button>
           </div>
-          <label className="field">
-            <span>Draft artifact</span>
-            <select
-              value={activeArtifactPreview?.name ?? activeArtifact}
-              onChange={(event) => setActiveArtifact(event.target.value)}
-            >
-              {(artifacts?.artifacts ?? []).map((artifact) => (
-                <option key={artifact.name} value={artifact.name}>
-                  {formatLabel(artifact.name)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <pre>{activeArtifactPreview?.content ?? "No artifact preview available."}</pre>
+          {isClassifying ? (
+            <p className="emptyState" aria-live="polite">
+              Preparing draft review artifacts from the current profile.
+            </p>
+          ) : artifacts ? (
+            <>
+              <label className="field">
+                <span>Draft artifact</span>
+                <select
+                  value={activeArtifactPreview?.name ?? activeArtifact}
+                  onChange={(event) => setActiveArtifact(event.target.value)}
+                >
+                  {artifacts.artifacts.map((artifact) => (
+                    <option key={artifact.name} value={artifact.name}>
+                      {formatLabel(artifact.name)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p className="reviewNotice">
+                Draft-only output. A qualified reviewer must verify facts, source status and legal route before reliance.
+              </p>
+              <pre>{activeArtifactPreview?.content ?? "No artifact preview available."}</pre>
+            </>
+          ) : (
+            <p className="emptyState">
+              Run a classification to preview draft artifacts. Nothing here is a final legal assessment.
+            </p>
+          )}
         </section>
       </div>
     </main>

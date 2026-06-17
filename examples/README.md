@@ -1,6 +1,6 @@
 # Example Systems
 
-Each file is a `SystemProfile`. The 14 base examples double as fixtures in
+Each file is a `SystemProfile`. The 17 base examples double as fixtures in
 `tests/test_examples.py`; expected classification is asserted on every run.
 
 ## Base Eval Set
@@ -46,6 +46,12 @@ with systemic risk under Arts. 51, 53 and 55 AIA.
 `foundation_model_unknown_compute.json`: Minimal system-level risk,
 requires_review. GPAI compute undisclosed, systemic status open under Art. 51
 AIA.
+
+`gpai_non_systemic.json`: Minimal system-level risk, determined. GPAI model without systemic risk under Art. 53 AIA.
+
+`gpai_systemic_by_flops.json`: Minimal system-level risk, determined. GPAI model with systemic risk based on FLOPs threshold under Art. 51(2) AIA.
+
+`gpai_systemic_designated.json`: Minimal system-level risk, determined. GPAI model with systemic risk by Commission designation under Art. 51(1)(b) AIA.
 
 ## Guidance Corpus
 
