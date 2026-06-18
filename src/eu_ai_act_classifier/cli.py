@@ -77,8 +77,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.verify_sources:
         from .verify_sources import verify_sources
 
-        verify_sources(update=args.update)
-        return 0
+        return 0 if verify_sources(update=args.update) else 1
 
     if not args.profile:
         print("error: the following arguments are required: profile", file=sys.stderr)

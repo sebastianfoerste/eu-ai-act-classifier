@@ -1,7 +1,8 @@
 import { spawn } from "node:child_process";
 import path from "node:path";
 
-const REPO_ROOT = process.env.CLASSIFIER_REPO_ROOT ?? path.resolve(process.cwd(), "..");
+const REPO_ROOT =
+  process.env.CLASSIFIER_REPO_ROOT ?? path.resolve(/* turbopackIgnore: true */ process.cwd(), "..");
 const TIMEOUT_MS = 20000;
 
 export async function runClassifierBridge(command: string, payload?: unknown): Promise<unknown> {

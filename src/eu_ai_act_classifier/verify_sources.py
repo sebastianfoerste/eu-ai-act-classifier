@@ -1,9 +1,10 @@
 import json
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
-from datetime import datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 try:
@@ -48,26 +49,42 @@ URLS = {
 def verify_sources(update: bool = False):
     print("Verifying EU AI Act source URLs...")
     results = []
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
+    retrieved_on = date.today().isoformat()
+    success = True
 
     for name, url in URLS.items():
         status = None
         error_msg = None
-        try:
-            req = urllib.request.Request(url, headers=headers)
-            req.get_method = lambda: "GET"
-            with urllib.request.urlopen(req, timeout=10) as response:
-                status = response.status
-        except urllib.error.HTTPError as e:
-            status = e.code
-            error_msg = str(e)
-        except Exception as e:
-            status = 0
-            error_msg = str(e)
+        for attempt in range(3):
+            try:
+                req = urllib.request.Request(url, headers=headers)
+                req.get_method = lambda: "GET"
+                with urllib.request.urlopen(req, timeout=15) as response:
+                    status = response.status
+                    error_msg = None
+                    break
+            except urllib.error.HTTPError as e:
+                status = e.code
+                error_msg = str(e)
+            except Exception as e:
+                status = 0
+                error_msg = str(e)
+            if attempt < 2:
+                time.sleep(1)
 
         print(f"[{status or 'Error'}] {name}: {url}")
         if error_msg:
             print(f"  Warning: {error_msg}")
+        if status is None or status < 200 or status >= 300:
+            success = False
 
         results.append(
             {
@@ -75,7 +92,7 @@ def verify_sources(update: bool = False):
                 "url": url,
                 "status": status,
                 "error": error_msg,
-                "verified_at": datetime.utcnow().isoformat() + "Z",
+                "verified_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             }
         )
 
@@ -85,7 +102,7 @@ def verify_sources(update: bool = False):
         dist_dir.mkdir(parents=True, exist_ok=True)
         meta_file = dist_dir / "verified_sources.json"
 
-        meta_data = {"retrieved_on": "2026-06-17", "results": results}
+        meta_data = {"retrieved_on": retrieved_on, "results": results}
         with open(meta_file, "w", encoding="utf-8") as f:
             json.dump(meta_data, f, indent=2)
         print(f"Wrote verification metadata to {meta_file}")
@@ -96,11 +113,12 @@ def verify_sources(update: bool = False):
             content = citations_file.read_text(encoding="utf-8")
             new_content = re.sub(
                 r'SOURCE_RETRIEVED_ON\s*=\s*"[^"]+"',
-                'SOURCE_RETRIEVED_ON = "2026-06-17"',
+                f'SOURCE_RETRIEVED_ON = "{retrieved_on}"',
                 content,
             )
             citations_file.write_text(new_content, encoding="utf-8")
-            print(f"Updated SOURCE_RETRIEVED_ON to '2026-06-17' in {citations_file}")
+            print(f"Updated SOURCE_RETRIEVED_ON to '{retrieved_on}' in {citations_file}")
+    return success
 
 
 if __name__ == "__main__":
