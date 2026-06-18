@@ -286,6 +286,7 @@ Use this checklist when evaluating the repository as a portfolio project or empl
 - [ ] Review `tests/test_local_api.py` - confirms `review_status: draft_only_human_review_required` on all artifact outputs.
 - [ ] Review `docs/deterministic-classification-vs-legal-advice.md` - confirms classification logic and legal limits.
 - [ ] Review `docs/sample-output.md` - confirms report language is review-gated.
+- [ ] Review [docs/sample-review-dossier.md](docs/sample-review-dossier.md) - confirms synthetic review dossier with CLI outputs.
 - [ ] Review `PRIVACY.md` - confirm synthetic-only demo boundary.
 - [ ] Review `docs/DEMO_ASSET_PLAN.md` for demo guidance and hosting readiness assessment.
 - [ ] Confirm all 14 synthetic example profiles still produce their expected classification tier.
