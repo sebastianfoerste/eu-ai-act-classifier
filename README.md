@@ -159,6 +159,14 @@ Available artifact names:
 Artifacts are drafts. They are not legal advice, not conformity assessments and
 not final regulatory filings.
 
+Generate a complete draft review dossier bundle with report JSON, source
+manifest, open questions, obligation graph summary and draft artifacts:
+
+```bash
+eu-ai-act-classify examples/credit_scoring.json \
+  --dossier-dir ./review-dossier
+```
+
 ## MCP And Local API
 
 The MCP server remains available:
@@ -173,10 +181,11 @@ The local JSON bridge is used by the optional web cockpit:
 ```bash
 eu-ai-act-local-api schema
 echo '{"profile":{"name":"x"}}' | eu-ai-act-local-api classify
+echo '{"profile":{"name":"x"}}' | eu-ai-act-local-api dossier
 ```
 
-The bridge exposes schema, classify, sources and artifacts commands. It keeps
-the Python classifier as the legal source of truth.
+The bridge exposes schema, classify, sources, artifacts and dossier commands.
+It keeps the Python classifier as the legal source of truth.
 
 ## Optional Web Cockpit
 
@@ -213,6 +222,7 @@ Route surface:
 3. `POST /api/classify`
 4. `GET /api/sources`
 5. `POST /api/artifacts`
+6. `POST /api/dossier`
 
 ## Eval Set
 
@@ -283,6 +293,7 @@ Use this checklist when evaluating the repository as a portfolio project or empl
 - [ ] Run `uv run eu-ai-act-classify examples/credit_scoring.json --strict` - CLI produces risk tier, disposition and obligation graph.
 - [ ] Run `uv run eu-ai-act-classify examples/credit_scoring.json --sources` - source manifest shows binding, provisional and advisory separation.
 - [ ] Run `uv run eu-ai-act-classify examples/credit_scoring.json --artifact all --artifacts-dir /tmp/eu-ai-act-draft-pack` - draft artifact pack written to `/tmp`.
+- [ ] Run `uv run eu-ai-act-classify examples/credit_scoring.json --dossier-dir /tmp/eu-ai-act-review-dossier` - review dossier bundle written to `/tmp`.
 - [ ] Review `tests/test_local_api.py` - confirms `review_status: draft_only_human_review_required` on all artifact outputs.
 - [ ] Review `docs/deterministic-classification-vs-legal-advice.md` - confirms classification logic and legal limits.
 - [ ] Review `docs/sample-output.md` - confirms report language is review-gated.

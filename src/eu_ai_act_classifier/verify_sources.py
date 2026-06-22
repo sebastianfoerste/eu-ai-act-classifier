@@ -4,7 +4,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 try:
@@ -92,7 +92,7 @@ def verify_sources(update: bool = False):
                 "url": url,
                 "status": status,
                 "error": error_msg,
-                "verified_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                "verified_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
             }
         )
 

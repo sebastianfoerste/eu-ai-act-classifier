@@ -15,6 +15,7 @@ from pydantic import ValidationError
 
 from .artifacts import ARTIFACT_NAMES, render_artifact, selected_artifacts
 from .citations import source_manifest
+from .dossier import REVIEW_DOSSIER_SCHEMA, build_review_dossier
 from .engine import classify
 from .models import (
     AnnexIII,
@@ -32,6 +33,7 @@ def schema_payload() -> dict[str, Any]:
         "prohibited_practices": [practice.value for practice in ProhibitedPractice],
         "excluded_use_flags": [flag.value for flag in ExcludedUse],
         "artifacts": sorted(ARTIFACT_NAMES),
+        "dossier_schema": REVIEW_DOSSIER_SCHEMA,
         "review_posture": "draft_only_human_review_required",
     }
 
@@ -73,9 +75,26 @@ def artifacts_payload(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def dossier_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    profile_data = payload.get("profile", payload)
+    include_advisory = bool(payload.get("include_advisory", False))
+    artifact_selection = str(payload.get("artifact", "all"))
+    report = classify(
+        SystemProfile.model_validate(profile_data),
+        include_advisory=include_advisory,
+    )
+    return build_review_dossier(
+        report,
+        artifact_selection=artifact_selection,
+    ).model_dump(mode="json", by_alias=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="eu-ai-act-local-api")
-    parser.add_argument("command", choices=["schema", "classify", "sources", "artifacts"])
+    parser.add_argument(
+        "command",
+        choices=["schema", "classify", "sources", "artifacts", "dossier"],
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -86,8 +105,10 @@ def main(argv: list[str] | None = None) -> int:
             result = classify_payload(payload)
         elif args.command == "sources":
             result = sources_payload()
-        else:
+        elif args.command == "artifacts":
             result = artifacts_payload(payload)
+        else:
+            result = dossier_payload(payload)
     except (ValidationError, ValueError) as exc:
         print(json.dumps({"error": str(exc)}), file=sys.stderr)
         return 2

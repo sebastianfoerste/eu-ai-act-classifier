@@ -19,6 +19,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from .artifacts import ARTIFACT_NAMES, selected_artifacts, write_artifacts
+from .dossier import write_review_dossier
 from .engine import classify
 from .models import Disposition, RiskTier, SystemProfile
 from .report import render_report
@@ -61,6 +62,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--artifacts-dir",
         help="Directory for draft legal work products. Required with --artifact.",
+    )
+    parser.add_argument(
+        "--dossier-dir",
+        help="Directory for a complete draft review dossier bundle.",
     )
     parser.add_argument(
         "--verify-sources",
@@ -127,6 +132,19 @@ def main(argv: list[str] | None = None) -> int:
         for path in paths:
             output = sys.stderr if args.json or args.sources else sys.stdout
             print(f"artifact: {path}", file=output)
+
+    if args.dossier_dir:
+        try:
+            paths = write_review_dossier(Path(args.dossier_dir), report)
+        except OSError as exc:
+            print(f"error: cannot write dossier: {exc}", file=sys.stderr)
+            return 2
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        for path in paths:
+            output = sys.stderr if args.json or args.sources else sys.stdout
+            print(f"dossier: {path}", file=output)
 
     if args.strict and (
         report.risk_tier is RiskTier.PROHIBITED or report.disposition is Disposition.REQUIRES_REVIEW

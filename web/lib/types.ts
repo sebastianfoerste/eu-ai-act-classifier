@@ -156,6 +156,27 @@ export type ArtifactResponse = {
   source_manifest: RegulatorySource[];
 };
 
+export type ReviewDossierArtifact = ArtifactPreview & {
+  draft_only: boolean;
+};
+
+export type ReviewDossier = {
+  schema: "eu-ai-act.review-dossier.v1";
+  system: string;
+  risk_tier: string;
+  disposition: string;
+  scope_status: string;
+  review_status: "draft_only_human_review_required";
+  draft_notice: string;
+  next_actions: string[];
+  classification_report: ClassificationReport;
+  obligation_graph: ObligationGraphItem[];
+  open_questions: string[];
+  source_manifest: RegulatorySource[];
+  source_summary: Record<string, number>;
+  artifacts: ReviewDossierArtifact[];
+};
+
 export type InventoryItem = {
   id: string;
   name: string;
