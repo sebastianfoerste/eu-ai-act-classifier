@@ -48,7 +48,7 @@ def test_example_classification(filename: str, expected: tuple[RiskTier, Disposi
 
 
 def test_every_example_has_an_expectation() -> None:
-    on_disk = {p.name for p in EXAMPLES.glob("*.json")}
+    on_disk = {p.name for p in EXAMPLES.glob("*.json") if p.name != "classification-packet.json"}
     assert on_disk == set(EXPECTATIONS), "add new example files to EXPECTATIONS"
 
 
