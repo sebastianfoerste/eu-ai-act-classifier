@@ -191,6 +191,8 @@ It keeps the Python classifier as the legal source of truth.
 
 ## Optional Web Cockpit
 
+![Web cockpit: a guided intake for CreditSightScore classified high-risk, with the system inventory, risk map, reviewer notes, source provenance, the Article 9-15 obligation tracker and a draft export pack](docs/cockpit.png)
+
 The `web/` folder contains a local Next.js App Router cockpit with:
 
 1. System inventory.
