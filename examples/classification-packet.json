@@ -1,0 +1,500 @@
+{
+  "system": "CreditSightScore",
+  "regulation": "Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024",
+  "risk_tier": "high_risk",
+  "disposition": "determined",
+  "scope": {
+    "status": "in_scope",
+    "is_ai_system": true,
+    "intended_purpose_source": "",
+    "eu_nexus": true,
+    "excluded_use_flags": [],
+    "transitional_status": "No transitional limitation identified from the submitted facts.",
+    "notes": []
+  },
+  "roles": [
+    "provider"
+  ],
+  "is_gpai": false,
+  "gpai_systemic": false,
+  "findings": [
+    {
+      "rule_id": "HIGHRISK.III.5.b",
+      "citation": "Annex III(5)(b) AIA",
+      "citation_verified": true,
+      "title": "High-risk: Creditworthiness evaluation and credit scoring",
+      "detail": "Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.",
+      "severity": "high",
+      "tier": "high_risk"
+    }
+  ],
+  "obligations": [
+    {
+      "article": "Art. 9 AIA",
+      "citation_verified": true,
+      "title": "Risk management system",
+      "applies_to": "provider",
+      "requirement": "Establish, document and maintain a continuous risk management system."
+    },
+    {
+      "article": "Art. 10 AIA",
+      "citation_verified": true,
+      "title": "Data and data governance",
+      "applies_to": "provider",
+      "requirement": "Apply data governance to training, validation and testing data sets."
+    },
+    {
+      "article": "Art. 11 AIA",
+      "citation_verified": true,
+      "title": "Technical documentation",
+      "applies_to": "provider",
+      "requirement": "Draw up technical documentation (Annex IV) before placing on the market."
+    },
+    {
+      "article": "Art. 12 AIA",
+      "citation_verified": true,
+      "title": "Record-keeping (logging)",
+      "applies_to": "provider",
+      "requirement": "Enable automatic recording of events (logs) over the system's lifetime."
+    },
+    {
+      "article": "Art. 13 AIA",
+      "citation_verified": true,
+      "title": "Transparency to deployers",
+      "applies_to": "provider",
+      "requirement": "Provide instructions for use enabling deployers to comply."
+    },
+    {
+      "article": "Art. 14 AIA",
+      "citation_verified": true,
+      "title": "Human oversight",
+      "applies_to": "provider",
+      "requirement": "Design the system for effective oversight by natural persons."
+    },
+    {
+      "article": "Art. 15 AIA",
+      "citation_verified": true,
+      "title": "Accuracy, robustness, cybersecurity",
+      "applies_to": "provider",
+      "requirement": "Achieve appropriate accuracy, robustness and cybersecurity."
+    },
+    {
+      "article": "Art. 17 AIA",
+      "citation_verified": true,
+      "title": "Quality management system",
+      "applies_to": "provider",
+      "requirement": "Put a quality management system in place."
+    },
+    {
+      "article": "Art. 43 AIA",
+      "citation_verified": true,
+      "title": "Conformity assessment",
+      "applies_to": "provider",
+      "requirement": "Undergo the applicable conformity assessment before market placement."
+    },
+    {
+      "article": "Art. 47 AIA",
+      "citation_verified": true,
+      "title": "EU declaration of conformity",
+      "applies_to": "provider",
+      "requirement": "Draw up and keep an EU declaration of conformity."
+    },
+    {
+      "article": "Art. 48 AIA",
+      "citation_verified": true,
+      "title": "CE marking",
+      "applies_to": "provider",
+      "requirement": "Affix the CE marking to indicate conformity."
+    },
+    {
+      "article": "Art. 49 AIA",
+      "citation_verified": true,
+      "title": "Registration",
+      "applies_to": "provider",
+      "requirement": "Register the system in the EU database before market placement."
+    },
+    {
+      "article": "Art. 72 AIA",
+      "citation_verified": true,
+      "title": "Post-market monitoring",
+      "applies_to": "provider",
+      "requirement": "Operate a post-market monitoring system."
+    },
+    {
+      "article": "Art. 73 AIA",
+      "citation_verified": true,
+      "title": "Serious incident reporting",
+      "applies_to": "provider",
+      "requirement": "Report serious incidents to the market surveillance authority."
+    }
+  ],
+  "documentation_required": [
+    {
+      "article": "Art. 11 AIA + Annex IV",
+      "citation_verified": true,
+      "title": "Technical documentation",
+      "applies_to": "provider",
+      "requirement": "Annex IV technical documentation, kept current."
+    },
+    {
+      "article": "Art. 9 AIA",
+      "citation_verified": true,
+      "title": "Risk management file",
+      "applies_to": "provider",
+      "requirement": "Documented risk management system and its results."
+    },
+    {
+      "article": "Art. 13 AIA",
+      "citation_verified": true,
+      "title": "Instructions for use",
+      "applies_to": "provider",
+      "requirement": "Instructions enabling deployer compliance."
+    },
+    {
+      "article": "Art. 17 AIA",
+      "citation_verified": true,
+      "title": "QMS documentation",
+      "applies_to": "provider",
+      "requirement": "Written quality management system policies and procedures."
+    },
+    {
+      "article": "Art. 47 AIA",
+      "citation_verified": true,
+      "title": "EU declaration of conformity",
+      "applies_to": "provider",
+      "requirement": "Signed EU declaration of conformity."
+    }
+  ],
+  "transparency_obligations": [],
+  "obligation_graph": [
+    {
+      "obligation_id": "high-risk.provider.16",
+      "article": "Art. 16 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Ensure the high-risk system complies with Chapter III requirements.",
+      "evidence_artifact": "Provider compliance responsibility matrix.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "determined"
+    },
+    {
+      "obligation_id": "high-risk.provider.17",
+      "article": "Art. 17 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Maintain a quality management system.",
+      "evidence_artifact": "Quality management system file.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "determined"
+    },
+    {
+      "obligation_id": "high-risk.provider.18",
+      "article": "Art. 18 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Keep technical documentation, logs and conformity documentation.",
+      "evidence_artifact": "Document retention register.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "determined"
+    },
+    {
+      "obligation_id": "high-risk.provider.19",
+      "article": "Art. 19 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Keep automatically generated logs where under provider control.",
+      "evidence_artifact": "Logging retention policy.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "determined"
+    },
+    {
+      "obligation_id": "high-risk.provider.20",
+      "article": "Art. 20 AIA",
+      "actor": "provider",
+      "trigger": "Risk or nonconformity after placing on the market.",
+      "requirement": "Take corrective action and inform relevant parties where required.",
+      "evidence_artifact": "Corrective-action and notification log.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "review_required"
+    },
+    {
+      "obligation_id": "high-risk.provider.21",
+      "article": "Art. 21 AIA",
+      "actor": "provider",
+      "trigger": "Competent-authority request.",
+      "requirement": "Cooperate with competent authorities and provide requested information.",
+      "evidence_artifact": "Authority cooperation protocol.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "review_required"
+    },
+    {
+      "obligation_id": "high-risk.provider.40",
+      "article": "Art. 40 AIA",
+      "actor": "provider",
+      "trigger": "High-risk requirements where harmonised standards are available.",
+      "requirement": "Track applicable harmonised standards and standardisation deliverables.",
+      "evidence_artifact": "Standards applicability matrix.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "review_required"
+    },
+    {
+      "obligation_id": "high-risk.provider.41",
+      "article": "Art. 41 AIA",
+      "actor": "provider",
+      "trigger": "Common specifications become applicable.",
+      "requirement": "Assess common specifications where harmonised standards are unavailable or insufficient.",
+      "evidence_artifact": "Common specifications assessment.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "review_required"
+    },
+    {
+      "obligation_id": "high-risk.provider.42",
+      "article": "Art. 42 AIA",
+      "actor": "provider",
+      "trigger": "Use of standards or specifications for presumption of conformity.",
+      "requirement": "Map implemented controls to standards, specifications or alternative evidence.",
+      "evidence_artifact": "Presumption of conformity mapping.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "review_required"
+    },
+    {
+      "obligation_id": "high-risk.provider.43",
+      "article": "Art. 43 AIA",
+      "actor": "provider",
+      "trigger": "Before placing high-risk AI system on the market or putting into service.",
+      "requirement": "Complete the applicable conformity assessment.",
+      "evidence_artifact": "Conformity assessment file.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "review_required"
+    },
+    {
+      "obligation_id": "high-risk.provider.44",
+      "article": "Art. 44 AIA",
+      "actor": "provider",
+      "trigger": "Certificate issued by notified body where applicable.",
+      "requirement": "Track certificate validity, changes and renewal obligations.",
+      "evidence_artifact": "Certificate register.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "review_required"
+    },
+    {
+      "obligation_id": "high-risk.provider.47",
+      "article": "Art. 47 AIA",
+      "actor": "provider",
+      "trigger": "Conformity established.",
+      "requirement": "Draw up and keep the EU declaration of conformity.",
+      "evidence_artifact": "EU declaration of conformity.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "determined"
+    },
+    {
+      "obligation_id": "high-risk.provider.48",
+      "article": "Art. 48 AIA",
+      "actor": "provider",
+      "trigger": "Conformity established for a high-risk AI system.",
+      "requirement": "Affix CE marking where required.",
+      "evidence_artifact": "CE marking record.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "determined"
+    },
+    {
+      "obligation_id": "high-risk.provider.49",
+      "article": "Art. 49 AIA",
+      "actor": "provider",
+      "trigger": "Before placing an Annex III high-risk AI system on the market or putting it into service.",
+      "requirement": "Register the provider and system in the EU database where required.",
+      "evidence_artifact": "EU database registration record.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "review_required"
+    },
+    {
+      "obligation_id": "high-risk.provider.72",
+      "article": "Art. 72 AIA",
+      "actor": "provider",
+      "trigger": "High-risk AI system lifecycle.",
+      "requirement": "Operate a post-market monitoring system and plan.",
+      "evidence_artifact": "Post-market monitoring plan.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "determined"
+    },
+    {
+      "obligation_id": "high-risk.provider.73",
+      "article": "Art. 73 AIA",
+      "actor": "provider",
+      "trigger": "Serious incident identified.",
+      "requirement": "Report serious incidents to the market surveillance authority.",
+      "evidence_artifact": "Serious incident register.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "application_date": "2026-08-02",
+      "review_status": "review_required"
+    }
+  ],
+  "timeline": [
+    {
+      "provision": "Chapters I-II, incl. Art. 5 (prohibited practices)",
+      "applies_from": "2025-02-02",
+      "note": "Prohibitions apply from 2 February 2025 (Art. 113(a) AIA).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-2024-1689",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng"
+    },
+    {
+      "provision": "Chapter V (general-purpose AI models)",
+      "applies_from": "2025-08-02",
+      "note": "GPAI obligations apply from 2 August 2025 (Art. 113(b) AIA).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-2024-1689",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng"
+    },
+    {
+      "provision": "General application, incl. Annex III high-risk systems",
+      "applies_from": "2026-08-02",
+      "note": "Most obligations apply from 2 August 2026 (Art. 113 AIA).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-2024-1689",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng"
+    },
+    {
+      "provision": "Art. 6(1) / Annex I high-risk (product-safety route)",
+      "applies_from": "2027-08-02",
+      "note": "Annex I high-risk obligations apply from 2 August 2027 (Art. 113(c) AIA).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-2024-1689",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng"
+    },
+    {
+      "provision": "AI Omnibus: Annex III high-risk systems",
+      "applies_from": "2027-12-02",
+      "note": "Provisional political agreement points to 2 December 2027 for stand-alone Annex III high-risk systems. This is not binding until formal adoption and Official Journal publication.",
+      "source_status": "provisional_political_agreement",
+      "source_id": "ai-omnibus-political-agreement-2026",
+      "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/pdf/"
+    },
+    {
+      "provision": "AI Omnibus: product-embedded high-risk systems",
+      "applies_from": "2028-08-02",
+      "note": "Provisional political agreement points to 2 August 2028 for high-risk AI systems embedded in products.",
+      "source_status": "provisional_political_agreement",
+      "source_id": "ai-omnibus-political-agreement-2026",
+      "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/pdf/"
+    }
+  ],
+  "source_manifest": [
+    {
+      "source_id": "ai-act-2024-1689",
+      "title": "Regulation (EU) 2024/1689, Artificial Intelligence Act",
+      "legal_status": "binding_level_1",
+      "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "retrieved_on": "2026-06-18",
+      "citation_label": "Regulation (EU) 2024/1689",
+      "implementation_note": "Binding Level 1 source for classifications and obligations."
+    },
+    {
+      "source_id": "ai-omnibus-political-agreement-2026",
+      "title": "AI Omnibus provisional political agreement",
+      "legal_status": "provisional_political_agreement",
+      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/pdf/",
+      "retrieved_on": "2026-06-18",
+      "citation_label": "Council and Parliament provisional agreement, 7 May 2026",
+      "implementation_note": "Provisional context only until formal adoption and Official Journal publication."
+    },
+    {
+      "source_id": "ai-act-service-desk",
+      "title": "AI Act Service Desk",
+      "legal_status": "nonbinding_guidance",
+      "url": "https://ai-act-service-desk.ec.europa.eu/en/ai-act-explorer",
+      "retrieved_on": "2026-06-18",
+      "citation_label": "AI Act Service Desk",
+      "implementation_note": "Official explanatory and navigation layer, not legal advice."
+    },
+    {
+      "source_id": "prohibited-practices-guidelines",
+      "title": "Commission guidelines on prohibited AI practices",
+      "legal_status": "nonbinding_guidance",
+      "url": "https://digital-strategy.ec.europa.eu/en/library/commission-publishes-guidelines-prohibited-artificial-intelligence-ai-practices-defined-ai-act",
+      "retrieved_on": "2026-06-18",
+      "citation_label": "Commission prohibited-practices guidelines",
+      "implementation_note": "Nonbinding Commission interpretation and practical examples."
+    },
+    {
+      "source_id": "ai-system-definition-guidelines",
+      "title": "Commission guidelines on the AI system definition",
+      "legal_status": "nonbinding_guidance",
+      "url": "https://digital-strategy.ec.europa.eu/en/library/commission-publishes-guidelines-ai-system-definition-facilitate-first-ai-acts-rules-application",
+      "retrieved_on": "2026-06-18",
+      "citation_label": "Commission AI-system-definition guidelines",
+      "implementation_note": "Nonbinding support for scope assessment."
+    },
+    {
+      "source_id": "draft-high-risk-guidelines-2026",
+      "title": "Draft Commission guidelines on high-risk AI classification",
+      "legal_status": "nonbinding_guidance",
+      "url": "https://digital-strategy.ec.europa.eu/en/library/draft-commission-guidelines-classification-high-risk-ai-systems",
+      "retrieved_on": "2026-06-18",
+      "citation_label": "Draft high-risk classification guidelines",
+      "implementation_note": "Draft guidance used as advisory overlay and eval context."
+    },
+    {
+      "source_id": "gpai-code-of-practice",
+      "title": "General-Purpose AI Code of Practice",
+      "legal_status": "nonbinding_guidance",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai",
+      "retrieved_on": "2026-06-18",
+      "citation_label": "GPAI Code of Practice",
+      "implementation_note": "Voluntary tool for GPAI obligations, separate from Level 1 logic."
+    },
+    {
+      "source_id": "gpai-provider-guidelines",
+      "title": "Guidelines for providers of general-purpose AI models",
+      "legal_status": "nonbinding_guidance",
+      "url": "https://digital-strategy.ec.europa.eu/en/node/13982/printable/pdf",
+      "retrieved_on": "2026-06-18",
+      "citation_label": "GPAI provider guidelines",
+      "implementation_note": "Nonbinding scope and compliance support for GPAI model providers."
+    },
+    {
+      "source_id": "transparency-guidance",
+      "title": "Transparency guidance status tracker",
+      "legal_status": "nonbinding_guidance",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "retrieved_on": "2026-06-18",
+      "citation_label": "Transparency guidance tracker",
+      "implementation_note": "Placeholder advisory source until final Art. 50 guidance is published."
+    }
+  ],
+  "advisory_notes": [],
+  "open_questions": [],
+  "unverified_citations": [],
+  "disclaimer": "This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle."
+}

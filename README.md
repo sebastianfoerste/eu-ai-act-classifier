@@ -1,32 +1,56 @@
-# EU AI Act Classifier
+# eu-ai-act-classifier
 
-AI governance teams need a fast way to triage AI-system facts under Regulation
-(EU) 2024/1689 without turning a demo into a legal-advice machine. The hard
-part is not producing a confident label. The hard part is showing which facts
-trigger the legal route, which source supports the route and where human review
-is still required.
+Deterministic EU AI Act first-pass classifier — cited risk tiers, obligations, timelines, review status; CLI + MCP-style tools. Not legal advice; data is synthetic.
 
-EU AI Act Classifier is a deterministic Python classifier, CLI, MCP tool and
-optional local cockpit. It applies the binding Level 1 text, keeps provisional
-dates separate, adds nonbinding guidance only as an advisory overlay and emits
-draft-only reports for supervised legal review.
+> **If you don't code:** scroll to [What the demo produces](#what-the-demo-produces). This repo ships a sample output you can read in the browser. The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
-Quick evaluator command:
+![demo](docs/demo.png)
+
+## Run it
 
 ```bash
-uv run eu-ai-act-classify examples/credit_scoring.json
+git clone https://github.com/sebastianfoerste/eu-ai-act-classifier
+cd eu-ai-act-classifier
+uv sync
+uv run python -m src.eu_ai_act_classifier.cli examples/credit_scoring.json
 ```
 
-![High-risk determination: credit scoring classified under Annex III(5)(b) with the provider obligation set cited to Articles 9-15, 43 and the Art. 113 timeline](docs/classification.svg)
+Runs end to end, offline and deterministically.
 
-Sample output:
+## What the demo produces
 
-```text
+The classifier runs a gates-based review over a system profile and outputs a high-contrast report detailing the risk tier, binding timeline, regulatory sources, and applicable obligations. You can read the committed sample output: [`examples/classification-packet.md`](examples/classification-packet.md) and [`examples/classification-packet.json`](examples/classification-packet.json).
+
+```markdown
 EU AI Act classification: CreditSightScore
 Risk tier: HIGH-RISK (Art. 6 AIA)
 Disposition: DETERMINED
 Scope status: in_scope
 Roles: provider
+
+Obligations:
+  - Art. 9 AIA: Risk management system. Establish, document and maintain a continuous risk management system.
+  - Art. 10 AIA: Data and data governance. Apply data governance to training, validation and testing data sets.
+  - Art. 11 AIA: Technical documentation. Draw up technical documentation (Annex IV) before placing on the market.
+```
+
+In the sample run, every tier and obligation is cited to an Article and carries an explicit review status.
+
+## What it checks / does
+
+| Gates / Steps | Focus | Verification Method |
+|---|---|---|
+| Scope and Intake | Alignment | Checks AI-system status, EU nexus, and transitional dates |
+| Prohibited Practices | Art. 5 verification | Flags prohibited use cases (e.g. biometric categorization, social scoring) |
+| High-Risk & GPAI | Art. 6 / Annex III / GPAI | Classifies obligations based on deployment areas and compute scale |
+
+---
+
+> **What workflow does this improve?** Fast, source-grounded regulatory screening for AI systems.
+> **Who is the user?** AI Governance, Legal Ops, and Compliance teams.
+> **Where does human review happen?** Always. Flags indicating `review_required` highlight factual areas that need legal judgment.
+> **What is blocked until approval?** Deployment and compliance certification.
+> **What would I tell Product?** Which features (e.g., scoring, profiling) trigger the "High-Risk" tier so they can design around them.
 ```
 
 ## What It Does
