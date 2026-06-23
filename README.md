@@ -17,6 +17,8 @@ Quick evaluator command:
 uv run eu-ai-act-classify examples/credit_scoring.json
 ```
 
+![High-risk determination: credit scoring classified under Annex III(5)(b) with the provider obligation set cited to Articles 9-15, 43 and the Art. 113 timeline](docs/classification.svg)
+
 Sample output:
 
 ```text
