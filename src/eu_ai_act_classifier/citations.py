@@ -7,11 +7,14 @@ here in the shorter ``Art. 5(1)(f) AIA`` form for readability.
 
 A citation carries a ``verified`` flag. ``verified=False`` means the exact
 sub-point lettering is pending confirmation against the consolidated EUR-Lex
-text. The two Annex III areas (law enforcement, migration) were renumbered
-between trilogue drafts, so their sub-point letters are flagged rather than
-asserted. The engine propagates this flag into its output so a reviewing
-lawyer sees precisely which pinpoints are not yet locked, instead of trusting
-a citation that was guessed.
+text. All asserted Annex III sub-point letters (areas 1-8, including law
+enforcement and migration) and the Art. 5(1) prohibited-practice letters
+(a)-(h) were checked against the consolidated EUR-Lex text on 2026-06-23;
+only the residual ``UNSURE`` bucket — an Annex III area is implicated but the
+specific point is unsettled on the facts — carries the ``noch zu verifizieren``
+flag. The engine propagates this flag into its output so a reviewing lawyer
+sees precisely which pinpoints are not yet locked, instead of trusting a
+citation that was guessed.
 """
 
 from __future__ import annotations
