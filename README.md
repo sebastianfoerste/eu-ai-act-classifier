@@ -335,3 +335,23 @@ Use this checklist when evaluating the repository as a portfolio project or empl
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Human-authored legal judgment
+AI tools assisted the implementation, but the parts that carry the value are
+human-authored: the legal answer sets, risk taxonomy, escalation logic, citations,
+and review states. The point of this repository is not code volume — it is showing
+how legal judgment can be made structured, testable, and reviewable.
+
+## Why this matters
+"Is our system high-risk under the AI Act?" is asked constantly and answered badly.
+This gives a structured first pass: cited risk tier, triggered obligations, timeline,
+and an explicit review status that flags the genuine judgment calls for a lawyer.
+
+## Known limitations
+A first-pass classifier over a structured description; not legal advice.
+1. Does not read product documentation or resolve the flagged judgment calls.
+2. The Annex/Article mapping is illustrative — confirm against the current text and
+   guidance.
+3. Single-pass classification; no conformity-assessment workflow yet.
+Next production step: a conformity-assessment checklist for confirmed high-risk
+systems and evidence/template links per obligation.
