@@ -70,8 +70,7 @@ def test_inventory_loads_example_profiles_and_source_manifest() -> None:
     assert all(citation.source_class for citation in all_citations)
     assert all(citation.quote is not None for citation in all_citations)
     assert all(
-        citation.offset_start == 0 and citation.offset_end is not None
-        for citation in all_citations
+        citation.offset_start == 0 and citation.offset_end is not None for citation in all_citations
     )
     assert {row.source_manifest_status for row in inventory.systems} <= {
         "complete",

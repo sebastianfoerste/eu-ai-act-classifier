@@ -313,9 +313,9 @@ def _binding_source(report: ClassificationReport) -> RegulatorySource | None:
     return sources.get("ai-act-2024-1689") or next(iter(report.source_manifest), None)
 
 
-def _source_class(source: RegulatorySource) -> Literal[
-    "binding_law", "official_guidance", "provisional_context", "advisory_source"
-]:
+def _source_class(
+    source: RegulatorySource,
+) -> Literal["binding_law", "official_guidance", "provisional_context", "advisory_source"]:
     status = source.legal_status.value
     if status == "binding_level_1":
         return "binding_law"
