@@ -28,7 +28,7 @@ def test_inventory_loads_example_profiles_and_source_manifest() -> None:
     )
     assert inventory.reviewTable.reviewTableScale.rowCount == inventory.reviewTable.summary["rows"]
     assert inventory.reviewTable.reviewTableScale.maxVaultDocuments == 100_000
-    assert inventory.reviewTable.reviewTableScale.columnCount == 9
+    assert inventory.reviewTable.reviewTableScale.columnCount == 10
     assert (
         inventory.reviewTable.promptBrief.schema_id == "eu-ai-act-classifier.system-prompt-brief.v1"
     )
@@ -54,11 +54,25 @@ def test_inventory_loads_example_profiles_and_source_manifest() -> None:
     }
     assert len(inventory.systems) == 4
     assert all(row.pinpoint_citations for row in inventory.reviewTable.rows)
+    assert {row.cell_status for row in inventory.reviewTable.rows} <= {
+        "complete",
+        "review_required",
+        "blocked",
+    }
     assert {
         citation.source_id
         for row in inventory.reviewTable.rows
         for citation in row.pinpoint_citations
     } <= set(inventory.sourceRefs)
+    all_citations = [
+        citation for row in inventory.reviewTable.rows for citation in row.pinpoint_citations
+    ]
+    assert all(citation.source_class for citation in all_citations)
+    assert all(citation.quote is not None for citation in all_citations)
+    assert all(
+        citation.offset_start == 0 and citation.offset_end is not None
+        for citation in all_citations
+    )
     assert {row.source_manifest_status for row in inventory.systems} <= {
         "complete",
         "review_required",
@@ -100,6 +114,12 @@ def test_inventory_uses_classifier_risk_and_obligation_metadata() -> None:
         for item in review_rows
         for citation in item.pinpoint_citations
     )
+    assert any(
+        citation.source_class == "binding_law"
+        for item in review_rows
+        for citation in item.pinpoint_citations
+    )
+    assert all(item.cell_status == "complete" for item in review_rows)
     assert all(item.review_status == "determined" for item in review_rows)
     assert any(
         connector.key == "obligation-graph"
@@ -146,6 +166,7 @@ def test_inventory_preserves_unverified_citation_state() -> None:
     )
 
     assert risk_row.source_status == "review_required"
+    assert risk_row.cell_status == "review_required"
     assert any(not citation.verified for citation in risk_row.pinpoint_citations)
     assert any(
         citation.derived_from == "classifier_finding" for citation in risk_row.pinpoint_citations

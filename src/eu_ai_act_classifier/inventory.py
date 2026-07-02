@@ -35,12 +35,21 @@ class AISystemInventoryRow(BaseModel):
 
 class AISystemPinpointCitation(BaseModel):
     source_id: str
+    source_class: Literal[
+        "binding_law",
+        "official_guidance",
+        "provisional_context",
+        "advisory_source",
+    ]
     citation_label: str
     url: str
     verified: bool
     legal_status_class: str
     source_status: str
     support_ref: str
+    quote: str | None = None
+    offset_start: int | None = None
+    offset_end: int | None = None
     derived_from: Literal["classifier_finding", "obligation_graph", "source_manifest"]
 
 
@@ -56,6 +65,7 @@ class AISystemReviewTableRow(BaseModel):
     draft_artifacts: list[str]
     pinpoint_citations: list[AISystemPinpointCitation]
     reviewer_notes: list[str]
+    cell_status: Literal["complete", "review_required", "blocked"]
     review_status: Literal["determined", "review_required", "blocked"]
     next_action: str
 
@@ -303,6 +313,19 @@ def _binding_source(report: ClassificationReport) -> RegulatorySource | None:
     return sources.get("ai-act-2024-1689") or next(iter(report.source_manifest), None)
 
 
+def _source_class(source: RegulatorySource) -> Literal[
+    "binding_law", "official_guidance", "provisional_context", "advisory_source"
+]:
+    status = source.legal_status.value
+    if status == "binding_level_1":
+        return "binding_law"
+    if status == "provisional_political_agreement":
+        return "provisional_context"
+    if "guidance" in status:
+        return "official_guidance"
+    return "advisory_source"
+
+
 def _pinpoint(
     source: RegulatorySource,
     *,
@@ -310,14 +333,19 @@ def _pinpoint(
     verified: bool,
     derived_from: Literal["classifier_finding", "obligation_graph", "source_manifest"],
 ) -> AISystemPinpointCitation:
+    quote = f"{source.citation_label}: {support_ref}"
     return AISystemPinpointCitation(
         source_id=source.source_id,
+        source_class=_source_class(source),
         citation_label=source.citation_label,
         url=source.url,
         verified=verified,
         legal_status_class=source.legal_status.value,
         source_status=source.legal_status.value,
         support_ref=support_ref,
+        quote=quote,
+        offset_start=0,
+        offset_end=len(quote),
         derived_from=derived_from,
     )
 
@@ -391,6 +419,21 @@ def _source_projection_for_factor(
     return _fallback_source_projection(report)
 
 
+def _cell_status(
+    *,
+    source_status: Literal["complete", "review_required", "missing"],
+    review_status: Literal["determined", "review_required", "blocked"],
+    citations: list[AISystemPinpointCitation],
+) -> Literal["complete", "review_required", "blocked"]:
+    if review_status == "blocked":
+        return "blocked"
+    if source_status != "complete":
+        return "review_required"
+    if any(not citation.verified for citation in citations):
+        return "review_required"
+    return "complete"
+
+
 def _review_table_rows(
     profile: SystemProfile,
     report: ClassificationReport,
@@ -442,19 +485,27 @@ def _review_table_rows(
         ),
     ]
 
-    return [
-        AISystemReviewTableRow(
-            row_id=f"{inventory_row.system_id}:{factor_id}",
-            factor_id=factor_id,
-            factor_label=factor_label,
-            classifier_value=classifier_value,
-            obligation_refs=obligation_refs[:12],
-            next_action=next_action,
-            pinpoint_citations=_source_projection_for_factor(factor_id, report)[:12],
-            **base,
+    rows: list[AISystemReviewTableRow] = []
+    for factor_id, factor_label, classifier_value, obligation_refs, next_action in factor_rows:
+        citations = _source_projection_for_factor(factor_id, report)[:12]
+        rows.append(
+            AISystemReviewTableRow(
+                row_id=f"{inventory_row.system_id}:{factor_id}",
+                factor_id=factor_id,
+                factor_label=factor_label,
+                classifier_value=classifier_value,
+                obligation_refs=obligation_refs[:12],
+                next_action=next_action,
+                pinpoint_citations=citations,
+                cell_status=_cell_status(
+                    source_status=source_status,
+                    review_status=inventory_row.review_status,
+                    citations=citations,
+                ),
+                **base,
+            )
         )
-        for factor_id, factor_label, classifier_value, obligation_refs, next_action in factor_rows
-    ]
+    return rows
 
 
 def _build_review_table(
@@ -498,7 +549,7 @@ def _build_review_table(
 
 
 def _review_table_scale(rows: list[AISystemReviewTableRow]) -> AISystemReviewTableScale:
-    column_count = 9
+    column_count = 10
     return AISystemReviewTableScale(
         rowCount=len(rows),
         columnCount=column_count,

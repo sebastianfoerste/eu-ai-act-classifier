@@ -779,6 +779,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
               <th>Pinpoint</th>
               <th>Obligations</th>
               <th>Artifacts</th>
+              <th>Cell</th>
               <th>Review</th>
               <th>Next action</th>
             </tr>
@@ -799,6 +800,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
                       <strong>{row.pinpoint_citations[0].support_ref}</strong>
                       <small>
                         {row.pinpoint_citations[0].citation_label},{" "}
+                        {formatLabel(row.pinpoint_citations[0].source_class)},{" "}
                         {formatLabel(row.pinpoint_citations[0].legal_status_class)},{" "}
                         {row.pinpoint_citations[0].verified ? "verified" : "review required"}
                       </small>
@@ -809,6 +811,9 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
                 </td>
                 <td>{row.obligation_refs.length}</td>
                 <td>{row.draft_artifacts.length}</td>
+                <td>
+                  <StatusPill label={formatLabel(row.cell_status)} tone={reviewTone(row.cell_status)} />
+                </td>
                 <td>
                   <StatusPill label={formatLabel(row.review_status)} tone={reviewTone(row.review_status)} />
                   <small>{row.reviewer_notes.length ? `${row.reviewer_notes.length} notes` : "no notes"}</small>

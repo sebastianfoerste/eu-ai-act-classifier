@@ -219,12 +219,16 @@ export type AISystemInventory = {
 
 export type AISystemPinpointCitation = {
   source_id: string;
+  source_class: "binding_law" | "official_guidance" | "provisional_context" | "advisory_source";
   citation_label: string;
   url: string;
   verified: boolean;
   legal_status_class: string;
   source_status: string;
   support_ref: string;
+  quote?: string | null;
+  offset_start?: number | null;
+  offset_end?: number | null;
   derived_from: "classifier_finding" | "obligation_graph" | "source_manifest";
 };
 
@@ -240,6 +244,7 @@ export type AISystemReviewTableRow = {
   draft_artifacts: string[];
   pinpoint_citations: AISystemPinpointCitation[];
   reviewer_notes: string[];
+  cell_status: "complete" | "review_required" | "blocked";
   review_status: "determined" | "review_required" | "blocked";
   next_action: string;
 };

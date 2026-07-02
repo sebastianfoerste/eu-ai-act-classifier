@@ -51,3 +51,8 @@ recorded.
 The system review table may restate classifier output, source status and draft
 artifact references. It must not add article-level conclusions beyond the
 existing deterministic classifier result.
+
+Review rows expose `cellStatus` for the factor-level review state. Pinpoint
+citations expose source id, citation label, URL, verification flag, legal status
+class, source class, quote snippet and optional offsets when the source
+manifest supports them.
