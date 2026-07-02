@@ -20,7 +20,7 @@
     "manual_review_note": "Stored as nonbinding evidence only. The beta checker does not represent a Commission assessment."
   },
   {
-    "guidance_example_id": "draft-guidance-employment-recruitment",
+    "guidance_example_id": "draft-guidance-employment-selection",
     "checker": "EU AI Act Compliance Checker beta",
     "checker_url": "https://ai-act-service-desk.ec.europa.eu/en/eu-ai-act-compliance-checker",
     "retrieved_on": "2026-06-08",

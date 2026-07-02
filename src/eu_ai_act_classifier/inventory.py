@@ -16,7 +16,7 @@ from .models import ClassificationReport, Disposition, RegulatorySource, RiskTie
 
 INVENTORY_SCHEMA = "eu-ai-act-classifier.system-inventory.v1"
 SYSTEM_REVIEW_TABLE_SCHEMA = "eu-ai-act-classifier.system-review-table.v1"
-SYSTEM_AOS_REVIEW_SCHEMA = "eu-ai-act-classifier.system-aos-review.v1"
+SYSTEM_REVIEW_PROFILE_SCHEMA = "eu-ai-act-classifier.system-review-profile.v1"
 
 
 class AISystemInventoryRow(BaseModel):
@@ -126,7 +126,7 @@ class AISystemReviewTableScale(BaseModel):
     needleInHaystackStrategy: str
 
 
-class AISystemAOSLayer(BaseModel):
+class AISystemReviewLayer(BaseModel):
     key: Literal[
         "large_language_models",
         "agentic_harness",
@@ -142,7 +142,7 @@ class AISystemAOSLayer(BaseModel):
     gate: str
 
 
-class AISystemAOSSkill(BaseModel):
+class AISystemReviewSkill(BaseModel):
     id: str
     label: str
     objective: str
@@ -151,11 +151,11 @@ class AISystemAOSSkill(BaseModel):
     externalActionAllowed: bool = False
 
 
-class AISystemAOSReviewProfile(BaseModel):
-    schema_id: str = Field(SYSTEM_AOS_REVIEW_SCHEMA, alias="schema")
-    aosLayers: list[AISystemAOSLayer]
+class AISystemReviewProfile(BaseModel):
+    schema_id: str = Field(SYSTEM_REVIEW_PROFILE_SCHEMA, alias="schema")
+    reviewLayers: list[AISystemReviewLayer]
     agentPlan: dict[Literal["plan", "execute", "review", "deliver"], str]
-    skills: list[AISystemAOSSkill]
+    skills: list[AISystemReviewSkill]
     tabularReview: dict[str, object]
     trustedSources: dict[str, object]
     editorDraft: dict[str, object]
@@ -164,7 +164,7 @@ class AISystemAOSReviewProfile(BaseModel):
     monitors: dict[str, object]
     lists: dict[str, object]
     securityGovernance: dict[str, object]
-    legoraIntegration: Literal["none"] = "none"
+    vendorIntegration: Literal["none"] = "none"
     externalActionAllowed: bool = False
     reviewNotice: str
 
@@ -179,7 +179,7 @@ class AISystemReviewTable(BaseModel):
     controlProfile: AISystemReviewControlProfile
     reviewTableScale: AISystemReviewTableScale
     promptBrief: AISystemPromptBrief
-    aosProfile: AISystemAOSReviewProfile
+    reviewProfile: AISystemReviewProfile
     reviewNotice: str
 
 
@@ -534,7 +534,7 @@ def _build_review_table(
         controlProfile=control_profile,
         reviewTableScale=review_table_scale,
         promptBrief=prompt_brief,
-        aosProfile=_system_aos_profile(
+        reviewProfile=_system_review_profile(
             rows=rows,
             summary=summary,
             control_profile=control_profile,
@@ -748,52 +748,52 @@ def _review_control_profile(
     )
 
 
-def _system_aos_profile(
+def _system_review_profile(
     *,
     rows: list[AISystemReviewTableRow],
     summary: dict[str, int],
     control_profile: AISystemReviewControlProfile,
     review_table_scale: AISystemReviewTableScale,
     prompt_brief: AISystemPromptBrief,
-) -> AISystemAOSReviewProfile:
+) -> AISystemReviewProfile:
     complete_sources = sum(row.source_status == "complete" for row in rows)
     verified_citations = sum(
         citation.verified for row in rows for citation in row.pinpoint_citations
     )
     total_citations = sum(len(row.pinpoint_citations) for row in rows)
     obligation_rows = sum(bool(row.obligation_refs) for row in rows)
-    return AISystemAOSReviewProfile(
-        schema=SYSTEM_AOS_REVIEW_SCHEMA,
-        aosLayers=[
-            AISystemAOSLayer(
+    return AISystemReviewProfile(
+        schema=SYSTEM_REVIEW_PROFILE_SCHEMA,
+        reviewLayers=[
+            AISystemReviewLayer(
                 key="large_language_models",
                 label="Large language model routing",
                 status="blocked",
                 evidence="Inventory projection uses the deterministic Python classifier.",
                 gate="No LLM route or external output is used for classification.",
             ),
-            AISystemAOSLayer(
+            AISystemReviewLayer(
                 key="agentic_harness",
                 label="Agentic harness",
                 status="metadata_only",
                 evidence="Prompt brief can seed draft-only review notes.",
                 gate="No autonomous legal conclusion is added beyond classifier output.",
             ),
-            AISystemAOSLayer(
+            AISystemReviewLayer(
                 key="data_integrations",
                 label="Data and integrations",
                 status="implemented",
                 evidence="Example profiles, source manifest and obligation graph are linked.",
                 gate="Synthetic examples only unless a user explicitly loads a profile.",
             ),
-            AISystemAOSLayer(
+            AISystemReviewLayer(
                 key="context_knowledge",
                 label="Context and knowledge",
                 status="implemented",
                 evidence=f"{complete_sources}/{len(rows)} row(s) have complete source status.",
                 gate="Source-manifest status remains visible in every review row.",
             ),
-            AISystemAOSLayer(
+            AISystemReviewLayer(
                 key="legal_capabilities",
                 label="Legal capabilities",
                 status="implemented",
@@ -804,14 +804,14 @@ def _system_aos_profile(
                 ),
                 gate="Qualified review is required before deployment or external reliance.",
             ),
-            AISystemAOSLayer(
+            AISystemReviewLayer(
                 key="products_interfaces",
                 label="Products and interfaces",
                 status="implemented",
                 evidence="Inventory, review table, prompt brief and draft artifacts are exposed.",
                 gate="Artifacts remain draft-only.",
             ),
-            AISystemAOSLayer(
+            AISystemReviewLayer(
                 key="security_governance",
                 label="Security and governance",
                 status="implemented",
@@ -828,21 +828,21 @@ def _system_aos_profile(
             ),
         },
         skills=[
-            AISystemAOSSkill(
+            AISystemReviewSkill(
                 id="system-factor-review",
                 label="System factor review",
                 objective=prompt_brief.objective,
                 outputSchema=prompt_brief.outputFormat,
                 reviewGate=prompt_brief.reviewGate,
             ),
-            AISystemAOSSkill(
+            AISystemReviewSkill(
                 id="obligation-graph-review",
                 label="Obligation graph review",
                 objective="Review obligation graph references and draft artifact coverage.",
                 outputSchema=["obligation refs", "draft artifacts", "source status", "next action"],
                 reviewGate="Obligation graph output remains draft compliance work.",
             ),
-            AISystemAOSSkill(
+            AISystemReviewSkill(
                 id="source-manifest-check",
                 label="Source manifest check",
                 objective="Verify source id, citation label, URL and legal-status class per row.",
@@ -921,10 +921,10 @@ def _system_aos_profile(
             "auditTrail": "review_table_digest",
             "approvalGate": "required_for_deployment_or_external_reliance",
         },
-        legoraIntegration="none",
+        vendorIntegration="none",
         externalActionAllowed=False,
         reviewNotice=(
-            "Legora-inspired product pattern, no Legora integration or dependency. "
+            "Review-profile metadata generated from local system-inventory evidence. "
             "The deterministic classifier remains the boundary for legal characterisation."
         ),
     )

@@ -11,7 +11,7 @@ Each file is a `SystemProfile`. The 17 base examples double as fixtures in
 `emotion_hiring.json`: Prohibited, determined. Emotion recognition in hiring
 under Art. 5(1)(f) AIA.
 
-`cv_screening.json`: High-risk, determined. Recruitment under Annex III(4)(a)
+`cv_screening.json`: High-risk, determined. Employment selection under Annex III(4)(a)
 AIA.
 
 `credit_scoring.json`: High-risk, determined. Credit scoring under Annex

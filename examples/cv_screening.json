@@ -1,8 +1,8 @@
 {
   "name": "TalentRank CV Screener",
-  "description": "Ranks and filters job applicants from CV text for recruiters.",
+  "description": "Ranks and filters job applicants from CV text for human reviewers.",
   "roles": ["provider"],
-  "purpose": "Recruitment and candidate selection",
+  "purpose": "Employment selection and candidate screening",
   "sector": "HR technology",
   "annex_iii_area": "III.4.a"
 }

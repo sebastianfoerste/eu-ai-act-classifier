@@ -4,7 +4,7 @@ from eu_ai_act_classifier import AnnexIII, SystemProfile, classify
 
 
 def test_advisory_overlay_is_opt_in() -> None:
-    profile = SystemProfile(name="cv", annex_iii_area=AnnexIII.EMPLOYMENT_RECRUITMENT)
+    profile = SystemProfile(name="cv", annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION)
 
     without = classify(profile)
     with_overlay = classify(profile, include_advisory=True)

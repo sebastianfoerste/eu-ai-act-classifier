@@ -26,7 +26,7 @@ def test_annex_i_product_safety_route() -> None:
 def test_profiling_forecloses_derogation() -> None:
     profile = SystemProfile(
         name="x",
-        annex_iii_area=AnnexIII.EMPLOYMENT_RECRUITMENT,
+        annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
         derogation=Derogation(narrow_procedural_task=True, performs_profiling=True),
     )
     report = classify(profile)
@@ -37,7 +37,7 @@ def test_profiling_forecloses_derogation() -> None:
 def test_derogation_triggers_review() -> None:
     profile = SystemProfile(
         name="x",
-        annex_iii_area=AnnexIII.EMPLOYMENT_RECRUITMENT,
+        annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
         derogation=Derogation(narrow_procedural_task=True),
     )
     report = classify(profile)

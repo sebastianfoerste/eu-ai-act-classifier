@@ -32,20 +32,20 @@ def test_inventory_loads_example_profiles_and_source_manifest() -> None:
     assert (
         inventory.reviewTable.promptBrief.schema_id == "eu-ai-act-classifier.system-prompt-brief.v1"
     )
-    assert inventory.reviewTable.aosProfile.schema_id == (
-        "eu-ai-act-classifier.system-aos-review.v1"
+    assert inventory.reviewTable.reviewProfile.schema_id == (
+        "eu-ai-act-classifier.system-review-profile.v1"
     )
-    assert inventory.reviewTable.aosProfile.legoraIntegration == "none"
-    assert inventory.reviewTable.aosProfile.externalActionAllowed is False
-    assert inventory.reviewTable.aosProfile.tabularReview["externalActionAllowed"] is False
-    assert inventory.reviewTable.aosProfile.portalRoom["externalGuestAccessAllowed"] is False
-    assert inventory.reviewTable.aosProfile.trustedSources["sourceMode"] == (
+    assert inventory.reviewTable.reviewProfile.vendorIntegration == "none"
+    assert inventory.reviewTable.reviewProfile.externalActionAllowed is False
+    assert inventory.reviewTable.reviewProfile.tabularReview["externalActionAllowed"] is False
+    assert inventory.reviewTable.reviewProfile.portalRoom["externalGuestAccessAllowed"] is False
+    assert inventory.reviewTable.reviewProfile.trustedSources["sourceMode"] == (
         "source_manifest_and_obligation_graph"
     )
-    assert inventory.reviewTable.aosProfile.securityGovernance["approvalGate"] == (
+    assert inventory.reviewTable.reviewProfile.securityGovernance["approvalGate"] == (
         "required_for_deployment_or_external_reliance"
     )
-    assert "no Legora integration or dependency" in inventory.reviewTable.aosProfile.reviewNotice
+    assert "deterministic classifier remains the boundary" in inventory.reviewTable.reviewProfile.reviewNotice
     assert "Review gate: draft only" in inventory.reviewTable.promptBrief.suggestedPrompt
     assert {item.key for item in inventory.reviewTable.promptBrief.guidedInputs} >= {
         "system_factor",
@@ -85,7 +85,7 @@ def test_inventory_uses_classifier_risk_and_obligation_metadata() -> None:
         roles=[Role.PROVIDER, Role.DEPLOYER],
         purpose="Screen candidates for hiring decisions",
         sector="Employment",
-        annex_iii_area=AnnexIII.EMPLOYMENT_RECRUITMENT,
+        annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
         deployer_public_law_body=False,
         deployer_private_public_service=False,
     )

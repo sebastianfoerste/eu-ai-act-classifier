@@ -24,7 +24,7 @@ assessment, replace counsel or predict an authority decision.
 
 For example, the code can apply Annex III once the intended purpose is
 characterised. It cannot determine from an incomplete product narrative whether
-the intended purpose is recruitment, creditworthiness, law enforcement or a
+the intended purpose is employment selection, creditworthiness, law enforcement or a
 general analytics use.
 
 ## Source discipline

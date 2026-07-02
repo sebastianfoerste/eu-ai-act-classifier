@@ -51,7 +51,7 @@ def test_artifact_rendering_contains_review_notice_and_sources() -> None:
     report = classify(
         SystemProfile(
             name="shift sorter",
-            annex_iii_area=AnnexIII.EMPLOYMENT_RECRUITMENT,
+            annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
         )
     )
     artifact = render_artifact("art-6-4-assessment", report)

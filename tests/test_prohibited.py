@@ -21,7 +21,7 @@ def test_single_prohibited_practice() -> None:
 def test_prohibited_dominates_high_risk() -> None:
     profile = SystemProfile(
         name="x",
-        annex_iii_area=AnnexIII.EMPLOYMENT_RECRUITMENT,
+        annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
         prohibited_practices=[ProhibitedPractice.SOCIAL_SCORING],
     )
     assert classify(profile).risk_tier is RiskTier.PROHIBITED

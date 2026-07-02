@@ -2,6 +2,8 @@
 
 See [CASE_STUDY.md](CASE_STUDY.md) for the problem, controls, and limitations.
 
+Launch readiness is tracked in [docs/launch-readiness.md](docs/launch-readiness.md).
+
 Deterministic EU AI Act first-pass classifier: cited risk tiers, obligations, timelines, review status, CLI and MCP-style tools. Not legal advice; data is synthetic.
 
 > **If you don't code:** scroll to [What the demo produces](#what-the-demo-produces). This repo ships a sample output you can read in the browser. The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.

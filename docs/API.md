@@ -3,7 +3,7 @@
 The Python classifier is the source of truth. The local API bridge and optional
 web cockpit only expose deterministic projections for review.
 
-Legora-inspired product pattern, no Legora integration or dependency.
+Review-profile metadata generated from local system-inventory evidence.
 
 ## Local Commands
 
@@ -25,11 +25,11 @@ Important nested contracts:
 2. `eu-ai-act-classifier.review-control-profile.v1`
 3. `eu-ai-act-classifier.system-review-table-scale.v1`
 4. `eu-ai-act-classifier.system-prompt-brief.v1`
-5. `eu-ai-act-classifier.system-aos-review.v1`
+5. `eu-ai-act-classifier.system-review-profile.v1`
 
-The aOS review profile exposes:
+The review profile exposes:
 
-1. `aosLayers`
+1. `reviewLayers`
 2. `agentPlan`
 3. `skills`
 4. `tabularReview`

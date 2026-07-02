@@ -40,8 +40,8 @@
     }
   },
   {
-    "id": "draft-guidance-employment-recruitment",
-    "title": "Recruitment ranking system",
+    "id": "draft-guidance-employment-selection",
+    "title": "Employment selection ranking system",
     "source_url": "https://ai-act-service-desk.ec.europa.eu/en/high-risk-use-cases-certain-sensitive-areas",
     "source_status": "nonbinding_guidance",
     "authority_status": "draft_explanatory",
@@ -52,9 +52,9 @@
     },
     "profile": {
       "name": "Candidate Ranker",
-      "description": "Ranks applicants for recruiter review.",
+      "description": "Ranks applicants for human review.",
       "roles": ["provider"],
-      "purpose": "Recruitment ranking",
+      "purpose": "Employment selection ranking",
       "sector": "HR technology",
       "annex_iii_area": "III.4.a"
     }

@@ -39,9 +39,9 @@ ANNEX_III: dict[AnnexIII, tuple[Citation, str]] = {
         cite("Annex III(3)(d) AIA"),
         "Education: monitoring prohibited behaviour during tests",
     ),
-    AnnexIII.EMPLOYMENT_RECRUITMENT: (
+    AnnexIII.EMPLOYMENT_SELECTION: (
         cite("Annex III(4)(a) AIA"),
-        "Employment: recruitment and selection",
+        "Employment selection and worker management",
     ),
     AnnexIII.EMPLOYMENT_MANAGEMENT: (
         cite("Annex III(4)(b) AIA"),

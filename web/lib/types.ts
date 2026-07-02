@@ -249,7 +249,7 @@ export type AISystemReviewTableRow = {
   next_action: string;
 };
 
-export type AISystemAOSLayer = {
+export type AISystemReviewLayer = {
   key:
     | "large_language_models"
     | "agentic_harness"
@@ -264,7 +264,7 @@ export type AISystemAOSLayer = {
   gate: string;
 };
 
-export type AISystemAOSSkill = {
+export type AISystemReviewSkill = {
   id: string;
   label: string;
   objective: string;
@@ -273,17 +273,17 @@ export type AISystemAOSSkill = {
   externalActionAllowed: boolean;
 };
 
-export type AISystemAOSProfile = {
-  schema?: "eu-ai-act-classifier.system-aos-review.v1";
-  schema_id?: "eu-ai-act-classifier.system-aos-review.v1";
-  aosLayers: AISystemAOSLayer[];
+export type AISystemReviewProfile = {
+  schema?: "eu-ai-act-classifier.system-review-profile.v1";
+  schema_id?: "eu-ai-act-classifier.system-review-profile.v1";
+  reviewLayers: AISystemReviewLayer[];
   agentPlan: {
     plan: string;
     execute: string;
     review: string;
     deliver: string;
   };
-  skills: AISystemAOSSkill[];
+  skills: AISystemReviewSkill[];
   tabularReview: Record<string, string | number | boolean>;
   trustedSources: Record<string, string | number | boolean>;
   editorDraft: Record<string, string | boolean>;
@@ -300,7 +300,7 @@ export type AISystemAOSProfile = {
     }[];
   };
   securityGovernance: Record<string, string | boolean>;
-  legoraIntegration: "none";
+  vendorIntegration: "none";
   externalActionAllowed: boolean;
   reviewNotice: string;
 };
@@ -366,6 +366,6 @@ export type AISystemReviewTable = {
     failureConditions: string[];
     suggestedPrompt: string;
   };
-  aosProfile: AISystemAOSProfile;
+  reviewProfile: AISystemReviewProfile;
   reviewNotice: string;
 };
