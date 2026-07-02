@@ -32,20 +32,23 @@ def test_inventory_loads_example_profiles_and_source_manifest() -> None:
     assert (
         inventory.reviewTable.promptBrief.schema_id == "eu-ai-act-classifier.system-prompt-brief.v1"
     )
-    assert inventory.reviewTable.reviewProfile.schema_id == (
-        "eu-ai-act-classifier.system-review-profile.v1"
+    assert inventory.reviewTable.inventoryControls.schema_id == (
+        "eu-ai-act-classifier.system-inventory-controls.v1"
     )
-    assert inventory.reviewTable.reviewProfile.vendorIntegration == "none"
-    assert inventory.reviewTable.reviewProfile.externalActionAllowed is False
-    assert inventory.reviewTable.reviewProfile.tabularReview["externalActionAllowed"] is False
-    assert inventory.reviewTable.reviewProfile.portalRoom["externalGuestAccessAllowed"] is False
-    assert inventory.reviewTable.reviewProfile.trustedSources["sourceMode"] == (
+    assert inventory.reviewTable.inventoryControls.vendorIntegration == "none"
+    assert inventory.reviewTable.inventoryControls.externalActionAllowed is False
+    assert inventory.reviewTable.inventoryControls.tabularReview["externalActionAllowed"] is False
+    assert inventory.reviewTable.inventoryControls.portalRoom["externalGuestAccessAllowed"] is False
+    assert inventory.reviewTable.inventoryControls.trustedSources["sourceMode"] == (
         "source_manifest_and_obligation_graph"
     )
-    assert inventory.reviewTable.reviewProfile.securityGovernance["approvalGate"] == (
+    assert inventory.reviewTable.inventoryControls.securityGovernance["approvalGate"] == (
         "required_for_deployment_or_external_reliance"
     )
-    assert "deterministic classifier remains the boundary" in inventory.reviewTable.reviewProfile.reviewNotice
+    assert (
+        "deterministic classifier remains the boundary"
+        in inventory.reviewTable.inventoryControls.reviewNotice
+    )
     assert "Review gate: draft only" in inventory.reviewTable.promptBrief.suggestedPrompt
     assert {item.key for item in inventory.reviewTable.promptBrief.guidedInputs} >= {
         "system_factor",

@@ -16,7 +16,7 @@ from .models import ClassificationReport, Disposition, RegulatorySource, RiskTie
 
 INVENTORY_SCHEMA = "eu-ai-act-classifier.system-inventory.v1"
 SYSTEM_REVIEW_TABLE_SCHEMA = "eu-ai-act-classifier.system-review-table.v1"
-SYSTEM_REVIEW_PROFILE_SCHEMA = "eu-ai-act-classifier.system-review-profile.v1"
+SYSTEM_INVENTORY_CONTROLS_SCHEMA = "eu-ai-act-classifier.system-inventory-controls.v1"
 
 
 class AISystemInventoryRow(BaseModel):
@@ -151,8 +151,8 @@ class AISystemReviewSkill(BaseModel):
     externalActionAllowed: bool = False
 
 
-class AISystemReviewProfile(BaseModel):
-    schema_id: str = Field(SYSTEM_REVIEW_PROFILE_SCHEMA, alias="schema")
+class AISystemInventoryControls(BaseModel):
+    schema_id: str = Field(SYSTEM_INVENTORY_CONTROLS_SCHEMA, alias="schema")
     reviewLayers: list[AISystemReviewLayer]
     agentPlan: dict[Literal["plan", "execute", "review", "deliver"], str]
     skills: list[AISystemReviewSkill]
@@ -179,7 +179,7 @@ class AISystemReviewTable(BaseModel):
     controlProfile: AISystemReviewControlProfile
     reviewTableScale: AISystemReviewTableScale
     promptBrief: AISystemPromptBrief
-    reviewProfile: AISystemReviewProfile
+    inventoryControls: AISystemInventoryControls
     reviewNotice: str
 
 
@@ -534,7 +534,7 @@ def _build_review_table(
         controlProfile=control_profile,
         reviewTableScale=review_table_scale,
         promptBrief=prompt_brief,
-        reviewProfile=_system_review_profile(
+        inventoryControls=_system_inventory_controls(
             rows=rows,
             summary=summary,
             control_profile=control_profile,
@@ -748,22 +748,22 @@ def _review_control_profile(
     )
 
 
-def _system_review_profile(
+def _system_inventory_controls(
     *,
     rows: list[AISystemReviewTableRow],
     summary: dict[str, int],
     control_profile: AISystemReviewControlProfile,
     review_table_scale: AISystemReviewTableScale,
     prompt_brief: AISystemPromptBrief,
-) -> AISystemReviewProfile:
+) -> AISystemInventoryControls:
     complete_sources = sum(row.source_status == "complete" for row in rows)
     verified_citations = sum(
         citation.verified for row in rows for citation in row.pinpoint_citations
     )
     total_citations = sum(len(row.pinpoint_citations) for row in rows)
     obligation_rows = sum(bool(row.obligation_refs) for row in rows)
-    return AISystemReviewProfile(
-        schema=SYSTEM_REVIEW_PROFILE_SCHEMA,
+    return AISystemInventoryControls(
+        schema=SYSTEM_INVENTORY_CONTROLS_SCHEMA,
         reviewLayers=[
             AISystemReviewLayer(
                 key="large_language_models",

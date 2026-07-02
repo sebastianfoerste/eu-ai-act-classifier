@@ -273,9 +273,9 @@ export type AISystemReviewSkill = {
   externalActionAllowed: boolean;
 };
 
-export type AISystemReviewProfile = {
-  schema?: "eu-ai-act-classifier.system-review-profile.v1";
-  schema_id?: "eu-ai-act-classifier.system-review-profile.v1";
+export type AISystemInventoryControls = {
+  schema?: "eu-ai-act-classifier.system-inventory-controls.v1";
+  schema_id?: "eu-ai-act-classifier.system-inventory-controls.v1";
   reviewLayers: AISystemReviewLayer[];
   agentPlan: {
     plan: string;
@@ -366,6 +366,6 @@ export type AISystemReviewTable = {
     failureConditions: string[];
     suggestedPrompt: string;
   };
-  reviewProfile: AISystemReviewProfile;
+  inventoryControls: AISystemInventoryControls;
   reviewNotice: string;
 };

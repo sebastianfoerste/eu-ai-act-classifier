@@ -653,39 +653,42 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
       </p>
       <div className="reviewTableHeader">
         <div>
-          <h3>System Review Profile</h3>
-          <p>{inventory.reviewTable.reviewProfile.reviewNotice}</p>
+          <h3>System Inventory Controls</h3>
+          <p>{inventory.reviewTable.inventoryControls.reviewNotice}</p>
         </div>
         <StatusPill
           label={
-            inventory.reviewTable.reviewProfile.externalActionAllowed
+            inventory.reviewTable.inventoryControls.externalActionAllowed
               ? "external allowed"
               : "external blocked"
           }
-          tone={inventory.reviewTable.reviewProfile.externalActionAllowed ? "success" : "danger"}
+          tone={inventory.reviewTable.inventoryControls.externalActionAllowed ? "success" : "danger"}
         />
       </div>
       <div className="riskMap">
         <div>
           <span>Schema</span>
           <strong>
-            {inventory.reviewTable.reviewProfile.schema ?? inventory.reviewTable.reviewProfile.schema_id}
+            {inventory.reviewTable.inventoryControls.schema ??
+              inventory.reviewTable.inventoryControls.schema_id}
           </strong>
         </div>
         <div>
           <span>Skills</span>
-          <strong>{inventory.reviewTable.reviewProfile.skills.length}</strong>
+          <strong>{inventory.reviewTable.inventoryControls.skills.length}</strong>
         </div>
         <div>
           <span>Trusted citations</span>
           <strong>
-            {inventory.reviewTable.reviewProfile.trustedSources.verifiedCitations}/
-            {inventory.reviewTable.reviewProfile.trustedSources.totalCitations}
+            {inventory.reviewTable.inventoryControls.trustedSources.verifiedCitations}/
+            {inventory.reviewTable.inventoryControls.trustedSources.totalCitations}
           </strong>
         </div>
         <div>
           <span>Word package</span>
-          <strong>{formatLabel(String(inventory.reviewTable.reviewProfile.wordExportPackage.status))}</strong>
+          <strong>
+            {formatLabel(String(inventory.reviewTable.inventoryControls.wordExportPackage.status))}
+          </strong>
         </div>
       </div>
       <div className="controlGrid">
@@ -700,7 +703,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
               </tr>
             </thead>
             <tbody>
-              {inventory.reviewTable.reviewProfile.reviewLayers.map((layer) => (
+              {inventory.reviewTable.inventoryControls.reviewLayers.map((layer) => (
                 <tr key={layer.key}>
                   <td>{layer.label}</td>
                   <td>
@@ -723,7 +726,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
               </tr>
             </thead>
             <tbody>
-              {inventory.reviewTable.reviewProfile.skills.map((skill) => (
+              {inventory.reviewTable.inventoryControls.skills.map((skill) => (
                 <tr key={skill.id}>
                   <td>{skill.label}</td>
                   <td>{skill.objective}</td>
