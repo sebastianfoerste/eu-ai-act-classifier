@@ -3,8 +3,6 @@
 The Python classifier is the source of truth. The local API bridge and optional
 web cockpit only expose deterministic projections for review.
 
-Review-profile metadata generated from local system-inventory evidence.
-
 ## Local Commands
 
 ```bash
@@ -25,22 +23,7 @@ Important nested contracts:
 2. `eu-ai-act-classifier.review-control-profile.v1`
 3. `eu-ai-act-classifier.system-review-table-scale.v1`
 4. `eu-ai-act-classifier.system-prompt-brief.v1`
-5. `eu-ai-act-classifier.system-review-profile.v1`
-
-The review profile exposes:
-
-1. `reviewLayers`
-2. `agentPlan`
-3. `skills`
-4. `tabularReview`
-5. `trustedSources`
-6. `editorDraft`
-7. `wordExportPackage`
-8. `portalRoom`
-9. `monitors`
-10. `lists`
-11. `securityGovernance`
-12. `externalActionAllowed`
+5. Review-gate metadata for draft artifacts and blocked external action state.
 
 `externalActionAllowed` is always `false`. Regulator, customer, deployment and
 public-facing outputs remain draft-only until qualified human review is

@@ -85,13 +85,16 @@ echo '{"profile":{"name":"x"}}' | eu-ai-act-local-api dossier
 
 The bridge exposes schema, inventory, classify, sources, artifacts and dossier commands. It keeps the Python classifier as the legal source of truth.
 
-The inventory payload includes an agentic-system review profile under `eu-ai-act-classifier.system-review.v1`. It is a product pattern only, with no vendor integration or dependency. External action is blocked and all deployment, regulator, customer and public-facing use remains review-gated.
+The inventory payload includes a system review table with classifier-backed rows,
+source status, open facts, obligations, draft artifacts and review state.
+External action is blocked and all deployment, regulator, customer and
+public-facing use remains review-gated.
 
 ## Optional Web Cockpit
 
 ![Web cockpit: a guided intake for CreditSightScore classified high-risk, with the system inventory, risk map, reviewer notes, source provenance, the Article 9-15 obligation tracker and a draft export pack](docs/cockpit.png)
 
-The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker, export pack preview, and a system review profile.
+The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
 
 Run it locally:
 
