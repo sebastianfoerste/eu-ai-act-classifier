@@ -180,6 +180,97 @@ small {
   margin-top: 16px;
 }
 
+.inventoryTrackerPanel {
+  margin-top: 16px;
+}
+
+.reviewTableHeader {
+  align-items: flex-end;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.reviewTableHeader h3 {
+  margin: 0 0 4px;
+}
+
+.reviewTableHeader p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+.controlGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.promptBrief {
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 14px;
+}
+
+.promptBrief small {
+  color: var(--violet);
+  display: block;
+  font-size: 11px;
+  font-weight: 720;
+  text-transform: uppercase;
+}
+
+.promptBrief h3 {
+  margin: 4px 0;
+}
+
+.promptBrief p,
+.promptBrief dd {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.promptBrief dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.promptBrief dt {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 720;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+
+.promptBrief pre {
+  background: #111827;
+  border-radius: 8px;
+  color: #f8fafc;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  margin: 0;
+  max-height: 220px;
+  overflow: auto;
+  padding: 12px;
+  white-space: pre-wrap;
+}
+
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -419,6 +510,13 @@ td {
   vertical-align: top;
 }
 
+td small {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+  margin-top: 4px;
+}
+
 th {
   color: var(--muted);
   font-size: 12px;
@@ -465,7 +563,9 @@ th {
 
 @media (max-width: 1180px) {
   .cockpitGrid,
-  .lowerGrid {
+  .lowerGrid,
+  .controlGrid,
+  .promptBrief dl {
     grid-template-columns: 1fr;
   }
 

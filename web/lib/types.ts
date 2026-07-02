@@ -183,3 +183,184 @@ export type InventoryItem = {
   owner: string;
   profile: SystemProfile;
 };
+
+export type AISystemInventoryRow = {
+  system_id: string;
+  name: string;
+  role: string;
+  risk_tier: string;
+  disposition: string;
+  source_manifest_status: "complete" | "review_required" | "missing";
+  open_facts: string[];
+  obligations: string[];
+  draft_artifacts: string[];
+  review_status: "determined" | "review_required" | "blocked";
+  next_action: string;
+};
+
+export type AISystemInventory = {
+  schema?: "eu-ai-act-classifier.system-inventory.v1";
+  schema_id?: "eu-ai-act-classifier.system-inventory.v1";
+  sourceMode: "example_profiles" | "runtime_projection";
+  generatedAt: string;
+  subjectId: string;
+  module: "eu-ai-act-classifier";
+  sourceRefs: string[];
+  evidenceArtifacts: string[];
+  reviewStatus: "determined" | "review_required" | "blocked";
+  blockers: string[];
+  warnings: string[];
+  exportAllowed: boolean;
+  externalActionAllowed: boolean;
+  nextAction: string;
+  systems: AISystemInventoryRow[];
+  reviewTable: AISystemReviewTable;
+};
+
+export type AISystemPinpointCitation = {
+  source_id: string;
+  citation_label: string;
+  url: string;
+  verified: boolean;
+  legal_status_class: string;
+  source_status: string;
+  support_ref: string;
+  derived_from: "classifier_finding" | "obligation_graph" | "source_manifest";
+};
+
+export type AISystemReviewTableRow = {
+  row_id: string;
+  system_id: string;
+  system_name: string;
+  factor_id: string;
+  factor_label: string;
+  classifier_value: string;
+  source_status: "complete" | "review_required" | "missing";
+  obligation_refs: string[];
+  draft_artifacts: string[];
+  pinpoint_citations: AISystemPinpointCitation[];
+  reviewer_notes: string[];
+  review_status: "determined" | "review_required" | "blocked";
+  next_action: string;
+};
+
+export type AISystemAOSLayer = {
+  key:
+    | "large_language_models"
+    | "agentic_harness"
+    | "data_integrations"
+    | "context_knowledge"
+    | "legal_capabilities"
+    | "products_interfaces"
+    | "security_governance";
+  label: string;
+  status: "implemented" | "metadata_only" | "blocked";
+  evidence: string;
+  gate: string;
+};
+
+export type AISystemAOSSkill = {
+  id: string;
+  label: string;
+  objective: string;
+  outputSchema: string[];
+  reviewGate: string;
+  externalActionAllowed: boolean;
+};
+
+export type AISystemAOSProfile = {
+  schema?: "eu-ai-act-classifier.system-aos-review.v1";
+  schema_id?: "eu-ai-act-classifier.system-aos-review.v1";
+  aosLayers: AISystemAOSLayer[];
+  agentPlan: {
+    plan: string;
+    execute: string;
+    review: string;
+    deliver: string;
+  };
+  skills: AISystemAOSSkill[];
+  tabularReview: Record<string, string | number | boolean>;
+  trustedSources: Record<string, string | number | boolean>;
+  editorDraft: Record<string, string | boolean>;
+  wordExportPackage: Record<string, string | string[] | boolean>;
+  portalRoom: Record<string, string | boolean>;
+  monitors: Record<string, string | string[]>;
+  lists: {
+    status: string;
+    items: {
+      key: string;
+      label: string;
+      owner: string;
+      signOffRequired: boolean;
+    }[];
+  };
+  securityGovernance: Record<string, string | boolean>;
+  legoraIntegration: "none";
+  externalActionAllowed: boolean;
+  reviewNotice: string;
+};
+
+export type AISystemReviewTable = {
+  schema?: "eu-ai-act-classifier.system-review-table.v1";
+  schema_id?: "eu-ai-act-classifier.system-review-table.v1";
+  generatedAt: string;
+  summary: {
+    rows: number;
+    blocked: number;
+    review_required: number;
+    determined: number;
+  };
+  rows: AISystemReviewTableRow[];
+  controlProfile: {
+    schema?: "eu-ai-act-classifier.review-control-profile.v1";
+    schema_id?: "eu-ai-act-classifier.review-control-profile.v1";
+    externalActionAllowed: boolean;
+    routeSummary: string;
+    contextWindowStrategy: string;
+    workflowRoutes: {
+      key: string;
+      label: string;
+      route: "deterministic_classifier" | "draft_artifact_builder" | "external_action";
+      status: "determined" | "review_required" | "blocked";
+      gate: string;
+    }[];
+    sourceConnectors: {
+      key: string;
+      label: string;
+      status: "enabled" | "review_required" | "blocked";
+      scope: string;
+      gate: string;
+    }[];
+  };
+  reviewTableScale: {
+    schema?: "eu-ai-act-classifier.system-review-table-scale.v1";
+    schema_id?: "eu-ai-act-classifier.system-review-table-scale.v1";
+    rowCount: number;
+    columnCount: number;
+    estimatedCellTasks: number;
+    maxVaultDocuments: number;
+    resetStrategy: string;
+    needleInHaystackStrategy: string;
+  };
+  promptBrief: {
+    schema?: "eu-ai-act-classifier.system-prompt-brief.v1";
+    schema_id?: "eu-ai-act-classifier.system-prompt-brief.v1";
+    objective: string;
+    actor: string;
+    jurisdiction: string;
+    sourceHierarchy: string[];
+    requiredInputs: string[];
+    guidedInputs: {
+      key: string;
+      label: string;
+      prompt: string;
+      required: boolean;
+    }[];
+    outputFormat: string[];
+    reviewGate: string;
+    failureConditions: string[];
+    suggestedPrompt: string;
+  };
+  aosProfile: AISystemAOSProfile;
+  reviewNotice: string;
+};

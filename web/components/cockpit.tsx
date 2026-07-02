@@ -15,6 +15,7 @@ import { baseProfile, emptyDerogation, inventory } from "../lib/samples";
 import type {
   ArtifactPreview,
   ArtifactResponse,
+  AISystemInventory,
   ClassificationReport,
   InventoryItem,
   NullableBoolean,
@@ -43,6 +44,7 @@ const fallbackSchema: SchemaPayload = {
 export function Cockpit() {
   const [schema, setSchema] = useState<SchemaPayload>(fallbackSchema);
   const [sources, setSources] = useState<RegulatorySource[]>([]);
+  const [systemInventory, setSystemInventory] = useState<AISystemInventory | null>(null);
   const [profile, setProfile] = useState<SystemProfile>(() => cloneProfile(inventory[0].profile));
   const [selectedId, setSelectedId] = useState(inventory[0].id);
   const [includeAdvisory, setIncludeAdvisory] = useState(true);
@@ -79,6 +81,8 @@ export function Cockpit() {
       ]);
       setSchema(schemaResult);
       setSources(sourceResult);
+      const inventoryResult = await fetchJson<AISystemInventory>("/api/inventory");
+      setSystemInventory(inventoryResult);
     } catch (metadataError) {
       setError(String(metadataError));
     }
@@ -479,6 +483,8 @@ export function Cockpit() {
         </aside>
       </div>
 
+      {systemInventory ? <SystemInventoryPanel inventory={systemInventory} /> : null}
+
       <div className="lowerGrid">
         <section className="panel trackerPanel" aria-labelledby="tracker-heading">
           <div className="panelHeader">
@@ -588,6 +594,320 @@ export function Cockpit() {
         </section>
       </div>
     </main>
+  );
+}
+
+function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
+  return (
+    <section className="panel inventoryTrackerPanel" aria-labelledby="system-inventory-heading">
+      <div className="panelHeader">
+        <div>
+          <h2 id="system-inventory-heading">AI Systems Inventory</h2>
+          <p>
+            {inventory.systems.length} profiles, {inventory.sourceRefs.length} source refs, {inventory.evidenceArtifacts.length} draft artifacts
+          </p>
+        </div>
+        <StatusPill label={formatLabel(inventory.reviewStatus)} tone={reviewTone(inventory.reviewStatus)} />
+      </div>
+      <div className="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>System</th>
+              <th>Role</th>
+              <th>Risk tier</th>
+              <th>Disposition</th>
+              <th>Sources</th>
+              <th>Open facts</th>
+              <th>Obligations</th>
+              <th>Draft artifacts</th>
+              <th>Review</th>
+              <th>Next action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {inventory.systems.map((system) => (
+              <tr key={system.system_id}>
+                <td>
+                  <strong>{system.name}</strong>
+                  <small>{system.system_id}</small>
+                </td>
+                <td>{formatLabel(system.role)}</td>
+                <td>{riskLabel(system.risk_tier)}</td>
+                <td>{formatLabel(system.disposition)}</td>
+                <td>{formatLabel(system.source_manifest_status)}</td>
+                <td>{system.open_facts.length ? system.open_facts.length : "none"}</td>
+                <td>{system.obligations.length}</td>
+                <td>{system.draft_artifacts.length}</td>
+                <td>
+                  <StatusPill label={formatLabel(system.review_status)} tone={reviewTone(system.review_status)} />
+                </td>
+                <td>{system.next_action}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="reviewNotice">
+        {inventory.schema ?? inventory.schema_id}, {inventory.sourceMode}, generated {inventory.generatedAt}
+      </p>
+      <div className="reviewTableHeader">
+        <div>
+          <h3>System aOS Review Profile</h3>
+          <p>{inventory.reviewTable.aosProfile.reviewNotice}</p>
+        </div>
+        <StatusPill
+          label={
+            inventory.reviewTable.aosProfile.externalActionAllowed
+              ? "external allowed"
+              : "external blocked"
+          }
+          tone={inventory.reviewTable.aosProfile.externalActionAllowed ? "success" : "danger"}
+        />
+      </div>
+      <div className="riskMap">
+        <div>
+          <span>Schema</span>
+          <strong>
+            {inventory.reviewTable.aosProfile.schema ?? inventory.reviewTable.aosProfile.schema_id}
+          </strong>
+        </div>
+        <div>
+          <span>Skills</span>
+          <strong>{inventory.reviewTable.aosProfile.skills.length}</strong>
+        </div>
+        <div>
+          <span>Trusted citations</span>
+          <strong>
+            {inventory.reviewTable.aosProfile.trustedSources.verifiedCitations}/
+            {inventory.reviewTable.aosProfile.trustedSources.totalCitations}
+          </strong>
+        </div>
+        <div>
+          <span>Word package</span>
+          <strong>{formatLabel(String(inventory.reviewTable.aosProfile.wordExportPackage.status))}</strong>
+        </div>
+      </div>
+      <div className="controlGrid">
+        <div className="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Status</th>
+                <th>Evidence</th>
+                <th>Gate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inventory.reviewTable.aosProfile.aosLayers.map((layer) => (
+                <tr key={layer.key}>
+                  <td>{layer.label}</td>
+                  <td>
+                    <StatusPill label={formatLabel(layer.status)} tone={reviewTone(layer.status)} />
+                  </td>
+                  <td>{layer.evidence}</td>
+                  <td>{layer.gate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Skill</th>
+                <th>Objective</th>
+                <th>Review gate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inventory.reviewTable.aosProfile.skills.map((skill) => (
+                <tr key={skill.id}>
+                  <td>{skill.label}</td>
+                  <td>{skill.objective}</td>
+                  <td>{skill.reviewGate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="reviewTableHeader">
+        <div>
+          <h3>System Review Table</h3>
+          <p>
+            {inventory.reviewTable.summary.rows} rows, {inventory.reviewTable.summary.review_required} requiring review, {inventory.reviewTable.summary.blocked} blocked
+          </p>
+        </div>
+        <StatusPill
+          label={formatLabel(inventory.reviewTable.summary.blocked ? "blocked" : inventory.reviewStatus)}
+          tone={inventory.reviewTable.summary.blocked ? "danger" : reviewTone(inventory.reviewStatus)}
+        />
+      </div>
+      <div className="riskMap">
+        <div>
+          <span>Cell tasks</span>
+          <strong>{inventory.reviewTable.reviewTableScale.estimatedCellTasks}</strong>
+        </div>
+        <div>
+          <span>Columns</span>
+          <strong>{inventory.reviewTable.reviewTableScale.columnCount}</strong>
+        </div>
+        <div>
+          <span>Vault docs</span>
+          <strong>{inventory.reviewTable.reviewTableScale.maxVaultDocuments}</strong>
+        </div>
+        <div>
+          <span>Reset</span>
+          <strong>{inventory.reviewTable.reviewTableScale.rowCount} rows</strong>
+        </div>
+      </div>
+      <p className="reviewNotice">
+        {inventory.reviewTable.reviewTableScale.resetStrategy}{" "}
+        {inventory.reviewTable.reviewTableScale.needleInHaystackStrategy}
+      </p>
+      <div className="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>System</th>
+              <th>Factor</th>
+              <th>Classifier value</th>
+              <th>Sources</th>
+              <th>Pinpoint</th>
+              <th>Obligations</th>
+              <th>Artifacts</th>
+              <th>Review</th>
+              <th>Next action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {inventory.reviewTable.rows.slice(0, 12).map((row) => (
+              <tr key={row.row_id}>
+                <td>
+                  <strong>{row.system_name}</strong>
+                  <small>{row.system_id}</small>
+                </td>
+                <td>{row.factor_label}</td>
+                <td>{formatLabel(row.classifier_value)}</td>
+                <td>{formatLabel(row.source_status)}</td>
+                <td>
+                  {row.pinpoint_citations.length ? (
+                    <>
+                      <strong>{row.pinpoint_citations[0].support_ref}</strong>
+                      <small>
+                        {row.pinpoint_citations[0].citation_label},{" "}
+                        {formatLabel(row.pinpoint_citations[0].legal_status_class)},{" "}
+                        {row.pinpoint_citations[0].verified ? "verified" : "review required"}
+                      </small>
+                    </>
+                  ) : (
+                    "none"
+                  )}
+                </td>
+                <td>{row.obligation_refs.length}</td>
+                <td>{row.draft_artifacts.length}</td>
+                <td>
+                  <StatusPill label={formatLabel(row.review_status)} tone={reviewTone(row.review_status)} />
+                  <small>{row.reviewer_notes.length ? `${row.reviewer_notes.length} notes` : "no notes"}</small>
+                </td>
+                <td>{row.next_action}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="reviewTableHeader">
+        <div>
+          <h3>Review Control Profile</h3>
+          <p>{inventory.reviewTable.controlProfile.routeSummary}</p>
+        </div>
+        <StatusPill
+          label={inventory.reviewTable.controlProfile.externalActionAllowed ? "external allowed" : "external blocked"}
+          tone={inventory.reviewTable.controlProfile.externalActionAllowed ? "success" : "danger"}
+        />
+      </div>
+      <div className="controlGrid">
+        <div className="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Route</th>
+                <th>Mode</th>
+                <th>Status</th>
+                <th>Gate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inventory.reviewTable.controlProfile.workflowRoutes.map((route) => (
+                <tr key={route.key}>
+                  <td>{route.label}</td>
+                  <td>{formatLabel(route.route)}</td>
+                  <td>
+                    <StatusPill label={formatLabel(route.status)} tone={reviewTone(route.status)} />
+                  </td>
+                  <td>{route.gate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Connector</th>
+                <th>Status</th>
+                <th>Scope</th>
+                <th>Gate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inventory.reviewTable.controlProfile.sourceConnectors.map((connector) => (
+                <tr key={connector.key}>
+                  <td>{connector.label}</td>
+                  <td>
+                    <StatusPill label={formatLabel(connector.status)} tone={reviewTone(connector.status)} />
+                  </td>
+                  <td>{connector.scope}</td>
+                  <td>{connector.gate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p className="reviewNotice">{inventory.reviewTable.controlProfile.contextWindowStrategy}</p>
+      <div className="promptBrief">
+        <div>
+          <small>{inventory.reviewTable.promptBrief.schema ?? inventory.reviewTable.promptBrief.schema_id}</small>
+          <h3>Prompt Improvement Brief</h3>
+          <p>{inventory.reviewTable.promptBrief.objective}</p>
+        </div>
+        <dl>
+          <div>
+            <dt>Actor</dt>
+            <dd>{inventory.reviewTable.promptBrief.actor}</dd>
+          </div>
+          <div>
+            <dt>Sources</dt>
+            <dd>{inventory.reviewTable.promptBrief.sourceHierarchy.join(" · ")}</dd>
+          </div>
+          <div>
+            <dt>Review gate</dt>
+            <dd>{inventory.reviewTable.promptBrief.reviewGate}</dd>
+          </div>
+          <div>
+            <dt>Guided inputs</dt>
+            <dd>{inventory.reviewTable.promptBrief.guidedInputs.map((input) => input.label).join(" · ")}</dd>
+          </div>
+        </dl>
+        <pre>{inventory.reviewTable.promptBrief.suggestedPrompt}</pre>
+      </div>
+      <p className="reviewNotice">{inventory.reviewTable.reviewNotice}</p>
+    </section>
   );
 }
 
@@ -814,6 +1134,16 @@ function riskTone(value?: string) {
   }
   if (value === "limited_risk") {
     return "info";
+  }
+  return "success";
+}
+
+function reviewTone(value?: string) {
+  if (value === "blocked") {
+    return "danger";
+  }
+  if (value === "review_required") {
+    return "warning";
   }
   return "success";
 }

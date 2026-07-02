@@ -17,6 +17,7 @@ from .artifacts import ARTIFACT_NAMES, render_artifact, selected_artifacts
 from .citations import source_manifest
 from .dossier import REVIEW_DOSSIER_SCHEMA, build_review_dossier
 from .engine import classify
+from .inventory import build_example_inventory
 from .models import (
     AnnexIII,
     ExcludedUse,
@@ -50,6 +51,10 @@ def classify_payload(payload: dict[str, Any]) -> dict[str, Any]:
 
 def sources_payload() -> list[dict[str, Any]]:
     return [source.model_dump(mode="json") for source in source_manifest()]
+
+
+def inventory_payload() -> dict[str, Any]:
+    return build_example_inventory().model_dump(mode="json", by_alias=True)
 
 
 def artifacts_payload(payload: dict[str, Any]) -> dict[str, Any]:
@@ -93,7 +98,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="eu-ai-act-local-api")
     parser.add_argument(
         "command",
-        choices=["schema", "classify", "sources", "artifacts", "dossier"],
+        choices=["schema", "classify", "sources", "inventory", "artifacts", "dossier"],
     )
     args = parser.parse_args(argv)
 
@@ -105,6 +110,8 @@ def main(argv: list[str] | None = None) -> int:
             result = classify_payload(payload)
         elif args.command == "sources":
             result = sources_payload()
+        elif args.command == "inventory":
+            result = inventory_payload()
         elif args.command == "artifacts":
             result = artifacts_payload(payload)
         else:
