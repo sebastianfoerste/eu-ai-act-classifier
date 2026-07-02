@@ -208,12 +208,18 @@ The local JSON bridge is used by the optional web cockpit:
 
 ```bash
 eu-ai-act-local-api schema
+eu-ai-act-local-api inventory
 echo '{"profile":{"name":"x"}}' | eu-ai-act-local-api classify
 echo '{"profile":{"name":"x"}}' | eu-ai-act-local-api dossier
 ```
 
-The bridge exposes schema, classify, sources, artifacts and dossier commands.
+The bridge exposes schema, inventory, classify, sources, artifacts and dossier commands.
 It keeps the Python classifier as the legal source of truth.
+
+The inventory payload includes a Legora-inspired aOS review profile under
+`eu-ai-act-classifier.system-aos-review.v1`. It is a product pattern only, with
+no Legora integration or dependency. External action is blocked and all
+deployment, regulator, customer and public-facing use remains review-gated.
 
 ## Optional Web Cockpit
 
@@ -229,6 +235,7 @@ The `web/` folder contains a local Next.js App Router cockpit with:
 6. Source provenance.
 7. Obligation tracker.
 8. Export pack preview.
+9. System aOS review profile.
 
 Run it locally:
 
@@ -253,6 +260,7 @@ Route surface:
 4. `GET /api/sources`
 5. `POST /api/artifacts`
 6. `POST /api/dossier`
+7. `GET /api/inventory`
 
 ## Eval Set
 
