@@ -590,8 +590,7 @@ def _prompt_brief(
             "reviewer next action",
         ],
         reviewGate=(
-            "Draft-only. Qualified review is required before deployment or "
-            "external reliance."
+            "Draft-only. Qualified review is required before deployment or external reliance."
         ),
         failureConditions=failure_conditions,
         suggestedPrompt="\n".join(
@@ -889,19 +888,12 @@ def build_system_inventory(
     generated_at_value = generated_at or _now()
     classified = [(profile, classify(profile, include_advisory=True)) for profile in profiles]
     profile_reports = [
-        (profile, report, _inventory_row(profile, report))
-        for profile, report in classified
+        (profile, report, _inventory_row(profile, report)) for profile, report in classified
     ]
     rows = [inventory_row for _, _, inventory_row in profile_reports]
-    blockers = [
-        f"{row.system_id}: prohibited"
-        for row in rows
-        if row.review_status == "blocked"
-    ]
+    blockers = [f"{row.system_id}: prohibited" for row in rows if row.review_status == "blocked"]
     warnings = [
-        f"{row.system_id}: open facts"
-        for row in rows
-        if row.review_status == "review_required"
+        f"{row.system_id}: open facts" for row in rows if row.review_status == "review_required"
     ]
     review_status: Literal["determined", "review_required", "blocked"]
     if blockers:
@@ -911,11 +903,7 @@ def build_system_inventory(
     else:
         review_status = "determined"
     source_refs = sorted(
-        {
-            source.source_id
-            for _, report in classified
-            for source in report.source_manifest
-        }
+        {source.source_id for _, report in classified for source in report.source_manifest}
     )
 
     return AISystemInventory(

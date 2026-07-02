@@ -30,8 +30,7 @@ def test_inventory_loads_example_profiles_and_source_manifest() -> None:
     assert inventory.reviewTable.reviewTableScale.maxVaultDocuments == 100_000
     assert inventory.reviewTable.reviewTableScale.columnCount == 9
     assert (
-        inventory.reviewTable.promptBrief.schema_id
-        == "eu-ai-act-classifier.system-prompt-brief.v1"
+        inventory.reviewTable.promptBrief.schema_id == "eu-ai-act-classifier.system-prompt-brief.v1"
     )
     assert inventory.reviewTable.aosProfile.schema_id == (
         "eu-ai-act-classifier.system-aos-review.v1"
@@ -48,9 +47,11 @@ def test_inventory_loads_example_profiles_and_source_manifest() -> None:
     )
     assert "no Legora integration or dependency" in inventory.reviewTable.aosProfile.reviewNotice
     assert "Review gate: draft only" in inventory.reviewTable.promptBrief.suggestedPrompt
-    assert {
-        item.key for item in inventory.reviewTable.promptBrief.guidedInputs
-    } >= {"system_factor", "obligation_graph", "external_use_gate"}
+    assert {item.key for item in inventory.reviewTable.promptBrief.guidedInputs} >= {
+        "system_factor",
+        "obligation_graph",
+        "external_use_gate",
+    }
     assert len(inventory.systems) == 4
     assert all(row.pinpoint_citations for row in inventory.reviewTable.rows)
     assert {
@@ -141,14 +142,11 @@ def test_inventory_preserves_unverified_citation_state() -> None:
     )
     inventory = build_system_inventory([profile], generated_at="2026-06-27T10:00:00+00:00")
     risk_row = next(
-        row
-        for row in inventory.reviewTable.rows
-        if row.factor_id == "risk_classification"
+        row for row in inventory.reviewTable.rows if row.factor_id == "risk_classification"
     )
 
     assert risk_row.source_status == "review_required"
     assert any(not citation.verified for citation in risk_row.pinpoint_citations)
     assert any(
-        citation.derived_from == "classifier_finding"
-        for citation in risk_row.pinpoint_citations
+        citation.derived_from == "classifier_finding" for citation in risk_row.pinpoint_citations
     )
