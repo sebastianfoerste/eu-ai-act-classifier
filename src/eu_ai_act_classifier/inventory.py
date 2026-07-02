@@ -924,7 +924,7 @@ def _system_review_profile(
         vendorIntegration="none",
         externalActionAllowed=False,
         reviewNotice=(
-            "Review-profile metadata generated from local system-inventory evidence. "
+            "Local system-inventory evidence only. "
             "The deterministic classifier remains the boundary for legal characterisation."
         ),
     )
