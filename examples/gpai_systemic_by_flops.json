@@ -1,0 +1,9 @@
+{
+  "name": "NexusUltra-Large",
+  "description": "General-purpose foundation model trained on massive corpus with high reasoning capacity.",
+  "roles": ["gpai_provider", "provider"],
+  "purpose": "Multimodal text and reasoning generation",
+  "sector": "AI-Research",
+  "is_gpai_model": true,
+  "training_flops": 2e25
+}

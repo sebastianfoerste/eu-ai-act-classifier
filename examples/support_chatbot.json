@@ -1,0 +1,8 @@
+{
+  "name": "HelpDesk Assistant",
+  "description": "Customer support chatbot answering product questions in-app.",
+  "roles": ["provider"],
+  "purpose": "Customer support",
+  "sector": "SaaS",
+  "interacts_with_natural_persons": true
+}

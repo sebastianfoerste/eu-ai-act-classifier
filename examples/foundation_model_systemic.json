@@ -1,0 +1,9 @@
+{
+  "name": "Atlas-70B",
+  "description": "General-purpose foundation model offered via API to downstream developers.",
+  "roles": ["gpai_provider", "provider"],
+  "purpose": "General-purpose text generation",
+  "sector": "AI",
+  "is_gpai_model": true,
+  "training_flops": 5e25
+}

@@ -1,0 +1,8 @@
+{
+  "name": "FaceSwap Studio",
+  "description": "Lets users generate deepfake videos depicting real people.",
+  "roles": ["deployer"],
+  "purpose": "Synthetic media generation",
+  "sector": "Media",
+  "generates_deepfakes": true
+}

@@ -1,0 +1,8 @@
+{
+  "name": "BankCo loan underwriting",
+  "description": "A bank deploying a third-party credit scoring model for consumer loan decisions.",
+  "roles": ["deployer"],
+  "purpose": "Loan underwriting",
+  "sector": "Banking",
+  "annex_iii_area": "III.5.b"
+}

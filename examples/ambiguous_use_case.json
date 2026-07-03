@@ -1,0 +1,8 @@
+{
+  "name": "InsightEngine",
+  "description": "A general analytics tool that may fall within an Annex III area; the specific point is unsettled.",
+  "roles": ["provider"],
+  "purpose": "Analytics",
+  "sector": "Cross-industry",
+  "annex_iii_area": "III.unsure"
+}

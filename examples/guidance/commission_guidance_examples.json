@@ -1,0 +1,62 @@
+[
+  {
+    "id": "draft-guidance-machinery-safety-stop",
+    "title": "Machinery vision system that triggers a safe stop",
+    "source_url": "https://ai-act-service-desk.ec.europa.eu/en/high-risk-ai-regulated-products",
+    "source_status": "nonbinding_guidance",
+    "authority_status": "draft_explanatory",
+    "retrieved_on": "2026-06-08",
+    "expected": {
+      "risk_tier": "high_risk",
+      "disposition": "determined"
+    },
+    "profile": {
+      "name": "Robot Cell Safe Stop",
+      "description": "Computer vision detects human presence in a robot cell and triggers a safe stop.",
+      "roles": ["provider"],
+      "purpose": "Safety stop for machinery",
+      "sector": "Industrial machinery",
+      "annex_i_safety_component": true,
+      "annex_i_third_party_assessment": true
+    }
+  },
+  {
+    "id": "draft-guidance-quality-service-monitoring",
+    "title": "Quality-of-service monitoring without safety function",
+    "source_url": "https://ai-act-service-desk.ec.europa.eu/en/high-risk-ai-regulated-products",
+    "source_status": "nonbinding_guidance",
+    "authority_status": "draft_explanatory",
+    "retrieved_on": "2026-06-08",
+    "expected": {
+      "risk_tier": "minimal_risk",
+      "disposition": "determined"
+    },
+    "profile": {
+      "name": "Service Quality Monitor",
+      "description": "AI monitors non-safety quality-of-service indicators.",
+      "roles": ["provider"],
+      "purpose": "Quality-of-service monitoring",
+      "sector": "SaaS"
+    }
+  },
+  {
+    "id": "draft-guidance-employment-selection",
+    "title": "Employment selection ranking system",
+    "source_url": "https://ai-act-service-desk.ec.europa.eu/en/high-risk-use-cases-certain-sensitive-areas",
+    "source_status": "nonbinding_guidance",
+    "authority_status": "draft_explanatory",
+    "retrieved_on": "2026-06-08",
+    "expected": {
+      "risk_tier": "high_risk",
+      "disposition": "determined"
+    },
+    "profile": {
+      "name": "Candidate Ranker",
+      "description": "Ranks applicants for human review.",
+      "roles": ["provider"],
+      "purpose": "Employment selection ranking",
+      "sector": "HR technology",
+      "annex_iii_area": "III.4.a"
+    }
+  }
+]

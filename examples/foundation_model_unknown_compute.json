@@ -1,0 +1,8 @@
+{
+  "name": "Nimbus-Base",
+  "description": "General-purpose model; training compute not disclosed by the provider.",
+  "roles": ["gpai_provider"],
+  "purpose": "General-purpose generation",
+  "sector": "AI",
+  "is_gpai_model": true
+}

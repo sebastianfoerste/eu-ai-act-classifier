@@ -1,0 +1,9 @@
+{
+  "name": "ShiftSorter",
+  "description": "Routes incoming applications into role folders. No scoring, ranking or profiling.",
+  "roles": ["provider"],
+  "purpose": "Application routing",
+  "sector": "HR technology",
+  "annex_iii_area": "III.4.a",
+  "derogation": { "narrow_procedural_task": true, "performs_profiling": false }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "NexusLite-13B",
+  "description": "General-purpose foundation model for lightweight NLP classification tasks.",
+  "roles": ["gpai_provider", "provider"],
+  "purpose": "Text classification and sentiment analysis",
+  "sector": "AI-Analytics",
+  "is_gpai_model": true,
+  "training_flops": 1e24
+}

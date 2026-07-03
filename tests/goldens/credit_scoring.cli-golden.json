@@ -1,0 +1,34 @@
+{
+  "system": "CreditSightScore",
+  "risk_tier": "high_risk",
+  "disposition": "determined",
+  "scope_status": "in_scope",
+  "finding_citations": [
+    "Annex III(5)(b) AIA"
+  ],
+  "obligation_articles": [
+    "Art. 9 AIA",
+    "Art. 10 AIA",
+    "Art. 11 AIA",
+    "Art. 12 AIA",
+    "Art. 13 AIA",
+    "Art. 14 AIA",
+    "Art. 15 AIA",
+    "Art. 17 AIA",
+    "Art. 43 AIA",
+    "Art. 47 AIA",
+    "Art. 48 AIA",
+    "Art. 49 AIA",
+    "Art. 72 AIA",
+    "Art. 73 AIA"
+  ],
+  "timeline_source_statuses": [
+    "binding_level_1",
+    "provisional_political_agreement"
+  ],
+  "source_manifest_statuses": [
+    "binding_level_1",
+    "nonbinding_guidance",
+    "provisional_political_agreement"
+  ]
+}

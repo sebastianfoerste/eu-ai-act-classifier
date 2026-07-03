@@ -1,0 +1,7 @@
+{
+  "name": "InboxGuard",
+  "description": "Classifies inbound email as spam or not spam.",
+  "roles": ["provider"],
+  "purpose": "Email filtering",
+  "sector": "SaaS"
+}
