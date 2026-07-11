@@ -48,7 +48,7 @@ In the sample run, every tier and obligation is cited to an Article and carries 
 | Prohibited Practices | Art. 5 verification | Flags prohibited use cases |
 | High-Risk & GPAI | Art. 6 / Annex III / GPAI | Classifies obligations based on deployment areas and compute scale |
 
-## Reviewer Demo Path
+## Local Verification
 
 Use the CLI first. It is the authoritative product surface and does not require web dependencies:
 
