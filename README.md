@@ -3,6 +3,7 @@
 See [CASE_STUDY.md](CASE_STUDY.md) for the problem, controls, and limitations.
 
 Launch readiness is tracked in [docs/launch-readiness.md](docs/launch-readiness.md).
+Deployment notes for the optional cockpit are in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 Deterministic EU AI Act first-pass classifier: cited risk tiers, obligations, timelines, review status, CLI and MCP-style tools. Not legal advice; data is synthetic.
 
@@ -83,7 +84,9 @@ echo '{"profile":{"name":"x"}}' | eu-ai-act-local-api classify
 echo '{"profile":{"name":"x"}}' | eu-ai-act-local-api dossier
 ```
 
-The bridge exposes schema, inventory, classify, sources, artifacts and dossier commands. It keeps the Python classifier as the legal source of truth.
+The bridge exposes schema, inventory, classify, sources, workspace, artifacts and dossier commands. It keeps the Python classifier as the legal source of truth.
+
+`eu-ai-act-local-api workspace` and `/workspace` expose the same deterministic portfolio workspace: an AI-system vault, guided assessment workflows and a fleet command center. All deployment and external-use decisions remain review-gated.
 
 The inventory payload includes a system review table with classifier-backed rows,
 source status, open facts, obligations, draft artifacts and review state.
@@ -95,6 +98,8 @@ public-facing use remains review-gated.
 ![Web cockpit: a guided intake for CreditSightScore classified high-risk, with the system inventory, risk map, reviewer notes, source provenance, the Article 9-15 obligation tracker and a draft export pack](docs/cockpit.png)
 
 The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
+
+Confirmed public demo: [web-opal-chi-38.vercel.app](https://web-opal-chi-38.vercel.app). The CLI remains the authoritative legal-rule surface; the hosted cockpit is a fixture demo.
 
 Run it locally:
 
