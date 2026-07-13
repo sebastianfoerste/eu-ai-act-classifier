@@ -9,7 +9,7 @@ vi.mock("../../../lib/python", () => ({
 
 const bridge = vi.mocked(runClassifierBridge);
 
-describe("local Legora workspace route", () => {
+describe("local collaboration workspace route", () => {
   beforeEach(() => {
     bridge.mockReset();
   });
@@ -20,7 +20,7 @@ describe("local Legora workspace route", () => {
     const response = await GET();
 
     expect(response.status).toBe(200);
-    expect(bridge).toHaveBeenCalledWith("legora");
+    expect(bridge).toHaveBeenCalledWith("collaboration");
     await expect(response.json()).resolves.toMatchObject({
       collaboration: { schema: "review.collaboration.v1" },
     });
@@ -30,20 +30,20 @@ describe("local Legora workspace route", () => {
     bridge.mockResolvedValue({ collaboration: { cells: [{ revision: 2 }] } });
     const payload = { action: "comment", targetId: "factor:role", expectedRevision: 1 };
 
-    const response = await POST(new Request("http://local/api/legora", {
+    const response = await POST(new Request("http://local/api/collaboration", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(payload),
     }));
 
     expect(response.status).toBe(200);
-    expect(bridge).toHaveBeenCalledWith("legora", payload);
+    expect(bridge).toHaveBeenCalledWith("collaboration", payload);
   });
 
   it("preserves stale-write conflicts at the web boundary", async () => {
     bridge.mockRejectedValue(new Error("409 Conflict: stale review cell revision"));
 
-    const response = await POST(new Request("http://local/api/legora", {
+    const response = await POST(new Request("http://local/api/collaboration", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ action: "lock", expectedRevision: 1 }),

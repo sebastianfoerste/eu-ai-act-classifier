@@ -103,7 +103,7 @@ def _inventory_digest(inventory: AISystemInventory) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
-def build_collaboration_workspace(inventory: AISystemInventory) -> CollaborationWorkspace:
+def build_collaboration_state(inventory: AISystemInventory) -> CollaborationWorkspace:
     return CollaborationWorkspace(
         inventory_digest=_inventory_digest(inventory),
         cells=[
@@ -378,7 +378,7 @@ def build_self_assessment_portal(
     )
 
 
-def build_legora_workspace(
+def build_collaboration_workspace(
     *,
     collaboration: CollaborationWorkspace | None = None,
     assessment_answers: dict[str, object] | None = None,
@@ -386,8 +386,8 @@ def build_legora_workspace(
     inventory = build_example_inventory()
     definitions, runs = build_policy_workflows(inventory)
     return {
-        "schema": "eu-ai-act.legora-workspace.v1",
-        "collaboration": (collaboration or build_collaboration_workspace(inventory)).model_dump(
+        "schema": "eu-ai-act.collaboration-workspace.v1",
+        "collaboration": (collaboration or build_collaboration_state(inventory)).model_dump(
             mode="json", by_alias=True
         ),
         "workflowDefinitions": [
@@ -410,12 +410,12 @@ def apply_workspace_action(
     current = (
         load_workspace(runtime_path, inventory)
         if runtime_path.exists()
-        else build_collaboration_workspace(inventory)
+        else build_collaboration_state(inventory)
     )
     action = str(payload.get("action", "snapshot"))
     occurred_at = now or datetime.now(UTC)
     if action == "snapshot":
-        return build_legora_workspace(collaboration=current)
+        return build_collaboration_workspace(collaboration=current)
     target_id = str(payload.get("targetId", ""))
     expected_revision = int(payload.get("expectedRevision", 0))
     actor = str(payload.get("actor", "Local reviewer")).strip() or "Local reviewer"
@@ -465,11 +465,11 @@ def apply_workspace_action(
             inventory,
         )
     elif action == "self_assess":
-        return build_legora_workspace(
+        return build_collaboration_workspace(
             collaboration=current,
             assessment_answers=dict(payload.get("answers", {})),
         )
     else:
         raise ValueError(f"unsupported workspace action: {action}")
     save_workspace(current, runtime_path)
-    return build_legora_workspace(collaboration=current)
+    return build_collaboration_workspace(collaboration=current)

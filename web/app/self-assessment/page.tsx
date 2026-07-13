@@ -2,7 +2,7 @@ import { runClassifierBridge } from "../../lib/python";
 import { WorkspaceClient, type Workspace } from "./workspace-client";
 
 export default async function SelfAssessmentPage() {
-  const workspace = (await runClassifierBridge("legora", {
+  const workspace = (await runClassifierBridge("collaboration", {
     action: "snapshot",
   })) as Workspace;
   return (

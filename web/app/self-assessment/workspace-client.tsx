@@ -24,7 +24,7 @@ export type Workspace = {
 };
 
 async function mutate(payload: Record<string, unknown>): Promise<Workspace> {
-  const response = await fetch("/api/legora", {
+  const response = await fetch("/api/collaboration", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(payload),
