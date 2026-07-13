@@ -18,6 +18,7 @@ from .citations import source_manifest
 from .dossier import REVIEW_DOSSIER_SCHEMA, build_review_dossier
 from .engine import classify
 from .inventory import build_example_inventory
+from .legora_workspace import build_legora_workspace
 from .models import (
     AnnexIII,
     ExcludedUse,
@@ -25,6 +26,7 @@ from .models import (
     Role,
     SystemProfile,
 )
+from .portfolio_workspace import build_example_portfolio_workspace
 
 
 def schema_payload() -> dict[str, Any]:
@@ -55,6 +57,10 @@ def sources_payload() -> list[dict[str, Any]]:
 
 def inventory_payload() -> dict[str, Any]:
     return build_example_inventory().model_dump(mode="json", by_alias=True)
+
+
+def workspace_payload() -> dict[str, Any]:
+    return build_example_portfolio_workspace().model_dump(mode="json", by_alias=True)
 
 
 def artifacts_payload(payload: dict[str, Any]) -> dict[str, Any]:
@@ -98,7 +104,16 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="eu-ai-act-local-api")
     parser.add_argument(
         "command",
-        choices=["schema", "classify", "sources", "inventory", "artifacts", "dossier"],
+        choices=[
+            "schema",
+            "classify",
+            "sources",
+            "inventory",
+            "workspace",
+            "legora",
+            "artifacts",
+            "dossier",
+        ],
     )
     args = parser.parse_args(argv)
 
@@ -112,6 +127,10 @@ def main(argv: list[str] | None = None) -> int:
             result = sources_payload()
         elif args.command == "inventory":
             result = inventory_payload()
+        elif args.command == "workspace":
+            result = workspace_payload()
+        elif args.command == "legora":
+            result = build_legora_workspace()
         elif args.command == "artifacts":
             result = artifacts_payload(payload)
         else:

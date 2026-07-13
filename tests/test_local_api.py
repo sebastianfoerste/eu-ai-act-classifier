@@ -58,3 +58,14 @@ def test_local_api_dossier_returns_review_bundle() -> None:
     assert payload["classification_report"]["system"] == "x"
     assert payload["source_manifest"]
     assert payload["artifacts"][0]["name"] == "fria"
+
+
+def test_local_api_dossier_all_is_a_single_authoritative_cockpit_snapshot() -> None:
+    payload = dossier_payload({"profile": {"name": "Authoritative cockpit"}, "artifact": "all"})
+
+    assert payload["classification_report"]["system"] == payload["system"]
+    assert payload["source_manifest"] == payload["classification_report"]["source_manifest"]
+    assert {artifact["name"] for artifact in payload["artifacts"]} >= {
+        "fria",
+        "annex-iv-checklist",
+    }

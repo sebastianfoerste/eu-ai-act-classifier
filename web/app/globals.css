@@ -546,6 +546,28 @@ th {
   font-weight: 720;
 }
 
+.dossierSummary {
+  background: #eef5ff;
+  border: 1px solid #c7d8ff;
+  border-radius: 8px;
+  color: #1b427e;
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 11px 12px;
+}
+
+.dossierSummary strong {
+  font-size: 13px;
+}
+
+.dossierSummary span,
+.dossierSummary small {
+  color: #43658e;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .exportPanel pre {
   background: #111827;
   border-radius: 8px;
