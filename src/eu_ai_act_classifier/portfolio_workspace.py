@@ -151,9 +151,7 @@ def _workflow(system: AISystemInventoryRow, inventory: AISystemInventory) -> Ass
     status: Literal["complete", "review_required", "blocked"] = (
         "blocked" if blocked else "review_required" if review_required else "complete"
     )
-    review_rows = [
-        row for row in inventory.reviewTable.rows if row.system_id == system.system_id
-    ]
+    review_rows = [row for row in inventory.reviewTable.rows if row.system_id == system.system_id]
     factor_status = {row.factor_id: row.cell_status for row in review_rows}
     steps = [
         AssessmentWorkflowStep(
