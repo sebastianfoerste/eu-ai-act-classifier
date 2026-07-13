@@ -16,10 +16,10 @@ from pydantic import ValidationError
 
 from .artifacts import ARTIFACT_NAMES, render_artifact, selected_artifacts
 from .citations import source_manifest
+from .collaboration_workspace import apply_workspace_action
 from .dossier import REVIEW_DOSSIER_SCHEMA, build_review_dossier
 from .engine import classify
 from .inventory import build_example_inventory
-from .legora_workspace import apply_workspace_action
 from .models import (
     AnnexIII,
     ExcludedUse,
@@ -111,7 +111,7 @@ def main(argv: list[str] | None = None) -> int:
             "sources",
             "inventory",
             "workspace",
-            "legora",
+            "collaboration",
             "artifacts",
             "dossier",
         ],
@@ -130,10 +130,10 @@ def main(argv: list[str] | None = None) -> int:
             result = inventory_payload()
         elif args.command == "workspace":
             result = workspace_payload()
-        elif args.command == "legora":
+        elif args.command == "collaboration":
             result = apply_workspace_action(
                 payload,
-                Path("runtime-data/legora-workspace.json"),
+                Path("runtime-data/collaboration-workspace.json"),
             )
         elif args.command == "artifacts":
             result = artifacts_payload(payload)

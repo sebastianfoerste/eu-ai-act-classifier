@@ -103,7 +103,7 @@ def _inventory_digest(inventory: AISystemInventory) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
-def build_collaboration_workspace(inventory: AISystemInventory) -> CollaborationWorkspace:
+def build_collaboration_state(inventory: AISystemInventory) -> CollaborationWorkspace:
     return CollaborationWorkspace(
         inventory_digest=_inventory_digest(inventory),
         cells=[
@@ -135,13 +135,14 @@ def lock_cell(
         raise ValueError(
             f"409 Conflict: expected revision {expected_revision}, received {cell.revision}"
         )
-    if (
-        cell.locked_by
-        and cell.locked_by != actor
-        and cell.lock_expires_at
-        and datetime.fromisoformat(cell.lock_expires_at) > now
-    ):
-        raise ValueError(f"409 Conflict: review cell is locked by {cell.locked_by}")
+    if cell.locked_by and cell.locked_by != actor and cell.lock_expires_at:
+        lock_expiry = datetime.fromisoformat(cell.lock_expires_at)
+        now_utc = now if now.tzinfo is not None else now.replace(tzinfo=UTC)
+        lock_expiry_utc = (
+            lock_expiry if lock_expiry.tzinfo is not None else lock_expiry.replace(tzinfo=UTC)
+        )
+        if lock_expiry_utc > now_utc:
+            raise ValueError(f"409 Conflict: review cell is locked by {cell.locked_by}")
     cell.revision += 1
     cell.locked_by = actor
     cell.lock_expires_at = (now + timedelta(minutes=15)).isoformat()
@@ -336,6 +337,8 @@ def build_policy_workflows(
 def build_self_assessment_portal(
     inventory: AISystemInventory, answers: dict[str, object] | None = None
 ) -> SelfAssessmentPortal:
+    if not inventory.systems:
+        raise ValueError("cannot build self-assessment portal with an empty system inventory")
     first = inventory.systems[0]
     blockers = [
         system.system_id for system in inventory.systems if system.review_status == "blocked"
@@ -344,7 +347,7 @@ def build_self_assessment_portal(
     missing_answers = sorted(
         question_id
         for question_id in {"purpose", "role", "eu_nexus", "evidence"}
-        if not str(submitted.get(question_id, "")).strip()
+        if not str(submitted.get(question_id) or "").strip()
     )
     return SelfAssessmentPortal(
         questions=[
@@ -375,7 +378,7 @@ def build_self_assessment_portal(
     )
 
 
-def build_legora_workspace(
+def build_collaboration_workspace(
     *,
     collaboration: CollaborationWorkspace | None = None,
     assessment_answers: dict[str, object] | None = None,
@@ -383,8 +386,8 @@ def build_legora_workspace(
     inventory = build_example_inventory()
     definitions, runs = build_policy_workflows(inventory)
     return {
-        "schema": "eu-ai-act.legora-workspace.v1",
-        "collaboration": (collaboration or build_collaboration_workspace(inventory)).model_dump(
+        "schema": "eu-ai-act.collaboration-workspace.v1",
+        "collaboration": (collaboration or build_collaboration_state(inventory)).model_dump(
             mode="json", by_alias=True
         ),
         "workflowDefinitions": [
@@ -407,12 +410,12 @@ def apply_workspace_action(
     current = (
         load_workspace(runtime_path, inventory)
         if runtime_path.exists()
-        else build_collaboration_workspace(inventory)
+        else build_collaboration_state(inventory)
     )
     action = str(payload.get("action", "snapshot"))
     occurred_at = now or datetime.now(UTC)
     if action == "snapshot":
-        return build_legora_workspace(collaboration=current)
+        return build_collaboration_workspace(collaboration=current)
     target_id = str(payload.get("targetId", ""))
     expected_revision = int(payload.get("expectedRevision", 0))
     actor = str(payload.get("actor", "Local reviewer")).strip() or "Local reviewer"
@@ -428,7 +431,7 @@ def apply_workspace_action(
         current = add_comment(
             current,
             target_id=target_id,
-            body=str(payload.get("body", "")),
+            body=str(payload.get("body") or ""),
             actor=actor,
             expected_revision=expected_revision,
             now=occurred_at,
@@ -455,16 +458,18 @@ def apply_workspace_action(
         )
     elif action == "import":
         raw = payload.get("workspace")
+        if raw is None:
+            raise ValueError("missing workspace payload for import action")
         current = import_workspace(
             json.dumps(raw) if not isinstance(raw, str) else raw,
             inventory,
         )
     elif action == "self_assess":
-        return build_legora_workspace(
+        return build_collaboration_workspace(
             collaboration=current,
             assessment_answers=dict(payload.get("answers", {})),
         )
     else:
         raise ValueError(f"unsupported workspace action: {action}")
     save_workspace(current, runtime_path)
-    return build_legora_workspace(collaboration=current)
+    return build_collaboration_workspace(collaboration=current)

@@ -2,21 +2,22 @@ from datetime import UTC, datetime
 
 import pytest
 
-from eu_ai_act_classifier.inventory import build_example_inventory
-from eu_ai_act_classifier.legora_workspace import (
+from eu_ai_act_classifier.collaboration_workspace import (
     add_comment,
     apply_workspace_action,
+    build_collaboration_state,
     build_collaboration_workspace,
-    build_legora_workspace,
+    build_self_assessment_portal,
     load_workspace,
     lock_cell,
     save_workspace,
 )
+from eu_ai_act_classifier.inventory import build_example_inventory
 
 
 def test_collaboration_uses_stable_cells_and_stale_revision_conflicts(tmp_path) -> None:
     inventory = build_example_inventory()
-    workspace = build_collaboration_workspace(inventory)
+    workspace = build_collaboration_state(inventory)
     locked = lock_cell(
         workspace,
         target_id=workspace.cells[0].target_id,
@@ -37,7 +38,7 @@ def test_collaboration_uses_stable_cells_and_stale_revision_conflicts(tmp_path) 
 
 
 def test_workflows_and_portal_remain_review_gated() -> None:
-    workspace = build_legora_workspace()
+    workspace = build_collaboration_workspace()
     assert all(
         "human_review" in definition["steps"] for definition in workspace["workflowDefinitions"]
     )
@@ -50,7 +51,7 @@ def test_workflows_and_portal_remain_review_gated() -> None:
 
 def test_comments_and_overrides_persist_without_changing_deterministic_baseline(tmp_path) -> None:
     inventory = build_example_inventory()
-    workspace = build_collaboration_workspace(inventory)
+    workspace = build_collaboration_state(inventory)
     target = workspace.cells[0].target_id
     original = workspace.cells[0].deterministic_status
     commented = add_comment(
@@ -93,3 +94,34 @@ def test_self_assessment_missing_answers_remain_blocking(tmp_path) -> None:
     packet = snapshot["selfAssessmentPortal"]["draftPacket"]
     assert sorted(packet["missingAnswers"]) == ["eu_nexus", "evidence", "role"]
     assert snapshot["selfAssessmentPortal"]["exportAllowed"] is False
+
+
+def test_lock_normalizes_naive_and_aware_timestamps() -> None:
+    workspace = build_collaboration_state(build_example_inventory())
+    target = workspace.cells[0].target_id
+    locked = lock_cell(
+        workspace,
+        target_id=target,
+        actor="Reviewer A",
+        expected_revision=1,
+        now=datetime(2026, 7, 13),
+    )
+    with pytest.raises(ValueError, match="locked by Reviewer A"):
+        lock_cell(
+            locked,
+            target_id=target,
+            actor="Reviewer B",
+            expected_revision=2,
+            now=datetime(2026, 7, 13, tzinfo=UTC),
+        )
+
+
+def test_empty_inventory_and_null_payloads_fail_closed(tmp_path) -> None:
+    inventory = build_example_inventory().model_copy(update={"systems": []})
+    with pytest.raises(ValueError, match="empty system inventory"):
+        build_self_assessment_portal(inventory)
+    with pytest.raises(ValueError, match="missing workspace payload"):
+        apply_workspace_action(
+            {"action": "import", "workspace": None},
+            tmp_path / "workspace.json",
+        )

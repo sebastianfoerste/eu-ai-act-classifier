@@ -49,7 +49,7 @@ In the sample run, every tier and obligation is cited to an Article and carries 
 | Prohibited Practices | Art. 5 verification | Flags prohibited use cases |
 | High-Risk & GPAI | Art. 6 / Annex III / GPAI | Classifies obligations based on deployment areas and compute scale |
 
-## Reviewer Demo Path
+## Local Verification
 
 Use the CLI first. It is the authoritative product surface and does not require web dependencies:
 
@@ -128,7 +128,7 @@ Python 3.13+, Pydantic v2, pytest, ruff and uv for the classifier. Next.js App R
 
 ## Collaborative assessment workspace
 
-The local `legora` bridge command and `/self-assessment` route add stable inventory review cells, optimistic locks, versioned classification and policy workflows, and a synthetic self-assessment portal. Mutable state exports as `review.collaboration.v1`; deterministic classifier results remain separate from reviewer overrides and blocked classifications remain deployment-blocking.
+The local `collaboration` bridge command and `/self-assessment` route add stable inventory review cells, optimistic locks, versioned classification and policy workflows, and a synthetic self-assessment portal. Mutable state exports as `review.collaboration.v1`; deterministic classifier results remain separate from reviewer overrides and blocked classifications remain deployment-blocking.
 
 ## Safety
 
