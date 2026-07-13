@@ -8,6 +8,7 @@ from eu_ai_act_classifier.legora_workspace import (
     apply_workspace_action,
     build_collaboration_workspace,
     build_legora_workspace,
+    build_self_assessment_portal,
     load_workspace,
     lock_cell,
     save_workspace,
@@ -93,3 +94,34 @@ def test_self_assessment_missing_answers_remain_blocking(tmp_path) -> None:
     packet = snapshot["selfAssessmentPortal"]["draftPacket"]
     assert sorted(packet["missingAnswers"]) == ["eu_nexus", "evidence", "role"]
     assert snapshot["selfAssessmentPortal"]["exportAllowed"] is False
+
+
+def test_lock_normalizes_naive_and_aware_timestamps() -> None:
+    workspace = build_collaboration_workspace(build_example_inventory())
+    target = workspace.cells[0].target_id
+    locked = lock_cell(
+        workspace,
+        target_id=target,
+        actor="Reviewer A",
+        expected_revision=1,
+        now=datetime(2026, 7, 13),
+    )
+    with pytest.raises(ValueError, match="locked by Reviewer A"):
+        lock_cell(
+            locked,
+            target_id=target,
+            actor="Reviewer B",
+            expected_revision=2,
+            now=datetime(2026, 7, 13, tzinfo=UTC),
+        )
+
+
+def test_empty_inventory_and_null_payloads_fail_closed(tmp_path) -> None:
+    inventory = build_example_inventory().model_copy(update={"systems": []})
+    with pytest.raises(ValueError, match="empty system inventory"):
+        build_self_assessment_portal(inventory)
+    with pytest.raises(ValueError, match="missing workspace payload"):
+        apply_workspace_action(
+            {"action": "import", "workspace": None},
+            tmp_path / "workspace.json",
+        )

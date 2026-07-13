@@ -135,13 +135,14 @@ def lock_cell(
         raise ValueError(
             f"409 Conflict: expected revision {expected_revision}, received {cell.revision}"
         )
-    if (
-        cell.locked_by
-        and cell.locked_by != actor
-        and cell.lock_expires_at
-        and datetime.fromisoformat(cell.lock_expires_at) > now
-    ):
-        raise ValueError(f"409 Conflict: review cell is locked by {cell.locked_by}")
+    if cell.locked_by and cell.locked_by != actor and cell.lock_expires_at:
+        lock_expiry = datetime.fromisoformat(cell.lock_expires_at)
+        now_utc = now if now.tzinfo is not None else now.replace(tzinfo=UTC)
+        lock_expiry_utc = (
+            lock_expiry if lock_expiry.tzinfo is not None else lock_expiry.replace(tzinfo=UTC)
+        )
+        if lock_expiry_utc > now_utc:
+            raise ValueError(f"409 Conflict: review cell is locked by {cell.locked_by}")
     cell.revision += 1
     cell.locked_by = actor
     cell.lock_expires_at = (now + timedelta(minutes=15)).isoformat()
@@ -336,6 +337,8 @@ def build_policy_workflows(
 def build_self_assessment_portal(
     inventory: AISystemInventory, answers: dict[str, object] | None = None
 ) -> SelfAssessmentPortal:
+    if not inventory.systems:
+        raise ValueError("cannot build self-assessment portal with an empty system inventory")
     first = inventory.systems[0]
     blockers = [
         system.system_id for system in inventory.systems if system.review_status == "blocked"
@@ -344,7 +347,7 @@ def build_self_assessment_portal(
     missing_answers = sorted(
         question_id
         for question_id in {"purpose", "role", "eu_nexus", "evidence"}
-        if not str(submitted.get(question_id, "")).strip()
+        if not str(submitted.get(question_id) or "").strip()
     )
     return SelfAssessmentPortal(
         questions=[
@@ -428,7 +431,7 @@ def apply_workspace_action(
         current = add_comment(
             current,
             target_id=target_id,
-            body=str(payload.get("body", "")),
+            body=str(payload.get("body") or ""),
             actor=actor,
             expected_revision=expected_revision,
             now=occurred_at,
@@ -455,6 +458,8 @@ def apply_workspace_action(
         )
     elif action == "import":
         raw = payload.get("workspace")
+        if raw is None:
+            raise ValueError("missing workspace payload for import action")
         current = import_workspace(
             json.dumps(raw) if not isinstance(raw, str) else raw,
             inventory,

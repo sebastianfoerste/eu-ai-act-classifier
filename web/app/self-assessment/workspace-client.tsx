@@ -29,9 +29,17 @@ async function mutate(payload: Record<string, unknown>): Promise<Workspace> {
     headers: { "content-type": "application/json" },
     body: JSON.stringify(payload),
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "Workspace update failed");
-  return result;
+  if (!response.ok) {
+    let message = "Workspace update failed";
+    try {
+      const result = (await response.json()) as { error?: string };
+      message = result.error || message;
+    } catch {
+      // Preserve the stable fallback when an upstream error is not JSON.
+    }
+    throw new Error(message);
+  }
+  return response.json() as Promise<Workspace>;
 }
 
 export function WorkspaceClient({ initial }: { initial: Workspace }) {
@@ -39,7 +47,7 @@ export function WorkspaceClient({ initial }: { initial: Workspace }) {
   const [message, setMessage] = useState("");
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const importInput = useRef<HTMLInputElement>(null);
-  const cell = workspace.collaboration.cells[0];
+  const cell = workspace.collaboration?.cells?.[0];
 
   async function run(payload: Record<string, unknown>) {
     try {
@@ -85,13 +93,21 @@ export function WorkspaceClient({ initial }: { initial: Workspace }) {
       </section>
       <section className="rounded-lg border border-zinc-200 bg-white p-5">
         <h2 className="font-semibold">Persisted factor review</h2>
-        <p className="mt-2 text-sm text-zinc-600">{cell.target_id}, revision {cell.revision}</p>
+        {cell ? (
+          <p className="mt-2 text-sm text-zinc-600">{cell.target_id}, revision {cell.revision}</p>
+        ) : (
+          <p className="mt-2 text-sm text-zinc-500">No active review cells found.</p>
+        )}
         <div className="mt-4 flex flex-wrap gap-2">
-          <button className="rounded bg-zinc-900 px-3 py-2 text-sm text-white" onClick={() => run({ action: "lock", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer" })}>Lock cell</button>
-          <button className="rounded border px-3 py-2 text-sm" onClick={() => run({ action: "comment", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", body: "Confirm the factor evidence against approved sources." })}>Add review comment</button>
-          <button className="rounded border px-3 py-2 text-sm" onClick={() => run({ action: "review", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", reviewerOverride: "human_review_required" })}>Record reviewer override</button>
-          {cell.comments.find((comment) => comment.status === "open") ? (
-            <button className="rounded border px-3 py-2 text-sm" onClick={() => run({ action: "resolve_comment", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", commentId: cell.comments.find((comment) => comment.status === "open")?.id })}>Resolve first comment</button>
+          {cell ? (
+            <>
+              <button className="rounded bg-zinc-900 px-3 py-2 text-sm text-white" onClick={() => run({ action: "lock", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer" })}>Lock cell</button>
+              <button className="rounded border px-3 py-2 text-sm" onClick={() => run({ action: "comment", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", body: "Confirm the factor evidence against approved sources." })}>Add review comment</button>
+              <button className="rounded border px-3 py-2 text-sm" onClick={() => run({ action: "review", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", reviewerOverride: "human_review_required" })}>Record reviewer override</button>
+              {cell.comments.find((comment) => comment.status === "open") ? (
+                <button className="rounded border px-3 py-2 text-sm" onClick={() => run({ action: "resolve_comment", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", commentId: cell.comments.find((comment) => comment.status === "open")?.id })}>Resolve first comment</button>
+              ) : null}
+            </>
           ) : null}
           <button className="rounded border px-3 py-2 text-sm" onClick={exportWorkspace}>Export local workspace</button>
           <button className="rounded border px-3 py-2 text-sm" onClick={() => importInput.current?.click()}>Import local workspace</button>
