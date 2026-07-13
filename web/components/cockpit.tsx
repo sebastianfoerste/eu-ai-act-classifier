@@ -20,6 +20,7 @@ import type {
   InventoryItem,
   NullableBoolean,
   RegulatorySource,
+  ReviewDossier,
   SchemaPayload,
   SystemProfile,
 } from "../lib/types";
@@ -50,6 +51,7 @@ export function Cockpit() {
   const [includeAdvisory, setIncludeAdvisory] = useState(true);
   const [report, setReport] = useState<ClassificationReport | null>(null);
   const [artifacts, setArtifacts] = useState<ArtifactResponse | null>(null);
+  const [dossier, setDossier] = useState<ReviewDossier | null>(null);
   const [activeArtifact, setActiveArtifact] = useState("fria");
   const [status, setStatus] = useState("Ready");
   const [error, setError] = useState("");
@@ -93,12 +95,11 @@ export function Cockpit() {
     setError("");
     const payload = { profile: cleanProfile(nextProfile), include_advisory: advisory };
     try {
-      const [reportResult, artifactResult] = await Promise.all([
-        postJson<ClassificationReport>("/api/classify", payload),
-        postJson<ArtifactResponse>("/api/artifacts", { ...payload, artifact: "all" }),
-      ]);
-      setReport(reportResult);
+      const dossierResult = await postJson<ReviewDossier>("/api/dossier", { ...payload, artifact: "all" });
+      const artifactResult = artifactResponseFromDossier(dossierResult);
+      setReport(dossierResult.classification_report);
       setArtifacts(artifactResult);
+      setDossier(dossierResult);
       if (!artifactResult.artifacts.some((artifact) => artifact.name === activeArtifact)) {
         setActiveArtifact(artifactResult.artifacts[0]?.name ?? "fria");
       }
@@ -156,6 +157,7 @@ export function Cockpit() {
     setProfile(blank);
     setReport(null);
     setArtifacts(null);
+    setDossier(null);
     setReviewNotes([]);
   }
 
@@ -168,6 +170,25 @@ export function Cockpit() {
     const anchor = document.createElement("a");
     anchor.href = href;
     anchor.download = artifact.filename;
+    anchor.click();
+    URL.revokeObjectURL(href);
+  }
+
+  function downloadDossier() {
+    if (!dossier) {
+      return;
+    }
+    const payload = {
+      ...dossier,
+      cockpit_reviewer_notes: reviewNotes,
+      cockpit_export_notice:
+        "Draft-only review dossier. Local reviewer notes are included for handoff and do not constitute legal approval.",
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+    const href = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.download = `${safeFilename(dossier.system)}-eu-ai-act-review-dossier.json`;
     anchor.click();
     URL.revokeObjectURL(href);
   }
@@ -551,16 +572,28 @@ export function Cockpit() {
               <h2 id="export-heading">Export Pack</h2>
               <p>{artifacts?.review_status ?? "draft_only_human_review_required"}</p>
             </div>
-            <button
-              className="iconButton"
-              type="button"
-              title="Download draft artifact"
-              aria-label="Download selected draft artifact"
-              disabled={!activeArtifactPreview}
-              onClick={() => downloadArtifact(activeArtifactPreview)}
-            >
-              <Download size={18} aria-hidden />
-            </button>
+            <div className="toolbar">
+              <button
+                className="iconButton"
+                type="button"
+                title="Download full review dossier"
+                aria-label="Download full review dossier"
+                disabled={!dossier}
+                onClick={downloadDossier}
+              >
+                <FileText size={18} aria-hidden />
+              </button>
+              <button
+                className="iconButton"
+                type="button"
+                title="Download draft artifact"
+                aria-label="Download selected draft artifact"
+                disabled={!activeArtifactPreview}
+                onClick={() => downloadArtifact(activeArtifactPreview)}
+              >
+                <Download size={18} aria-hidden />
+              </button>
+            </div>
           </div>
           {isClassifying ? (
             <p className="emptyState" aria-live="polite">
@@ -584,6 +617,15 @@ export function Cockpit() {
               <p className="reviewNotice">
                 Draft-only output. A qualified reviewer must verify facts, source status and legal route before reliance.
               </p>
+              {dossier ? (
+                <div className="dossierSummary">
+                  <strong>Review dossier ready</strong>
+                  <span>
+                    {dossier.source_manifest.length} sources, {dossier.obligation_graph.length} obligations, {dossier.open_questions.length} open questions
+                  </span>
+                  <small>{dossier.next_actions[0] ?? "Legal reviewer to approve the dossier before reliance."}</small>
+                </div>
+              ) : null}
               <pre>{activeArtifactPreview?.content ?? "No artifact preview available."}</pre>
             </>
           ) : (
@@ -1117,6 +1159,23 @@ function formatLabel(value: string) {
     .replaceAll("-", " ")
     .replaceAll(".", " ")
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function safeFilename(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "") || "ai-system";
+}
+
+function artifactResponseFromDossier(dossier: ReviewDossier): ArtifactResponse {
+  return {
+    system: dossier.system,
+    review_status: dossier.review_status,
+    artifacts: dossier.artifacts,
+    source_manifest: dossier.source_manifest,
+  };
 }
 
 function riskLabel(value: string) {
