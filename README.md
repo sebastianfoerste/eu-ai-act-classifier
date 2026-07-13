@@ -126,6 +126,10 @@ The web app uses in-memory state for v1. It does not persist client, matter, can
 
 Python 3.13+, Pydantic v2, pytest, ruff and uv for the classifier. Next.js App Router and React for the optional local cockpit.
 
+## Collaborative assessment workspace
+
+The local `legora` bridge command and `/self-assessment` route add stable inventory review cells, optimistic locks, versioned classification and policy workflows, and a synthetic self-assessment portal. Mutable state exports as `review.collaboration.v1`; deterministic classifier results remain separate from reviewer overrides and blocked classifications remain deployment-blocking.
+
 ## Safety
 
 This is a screening tool for supervised legal review. It does not produce legal advice, a conformity assessment or a binding regulatory conclusion. Generated work products require human legal review before use.
