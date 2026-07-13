@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "test": "vitest run",
     "build": "next build",
     "start": "next start"
   },
@@ -17,7 +18,8 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "vitest": "^4.1.7"
   },
   "overrides": {
     "postcss": "8.5.10"

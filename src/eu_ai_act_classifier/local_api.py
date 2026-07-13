@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from pathlib import Path
 from typing import Any
 
 from pydantic import ValidationError
@@ -18,7 +19,7 @@ from .citations import source_manifest
 from .dossier import REVIEW_DOSSIER_SCHEMA, build_review_dossier
 from .engine import classify
 from .inventory import build_example_inventory
-from .legora_workspace import build_legora_workspace
+from .legora_workspace import apply_workspace_action
 from .models import (
     AnnexIII,
     ExcludedUse,
@@ -130,7 +131,10 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "workspace":
             result = workspace_payload()
         elif args.command == "legora":
-            result = build_legora_workspace()
+            result = apply_workspace_action(
+                payload,
+                Path("runtime-data/legora-workspace.json"),
+            )
         elif args.command == "artifacts":
             result = artifacts_payload(payload)
         else:
