@@ -137,3 +137,13 @@ This is a screening tool for supervised legal review. It does not produce legal 
 ## Human-authored legal judgment
 
 AI tools assisted the implementation, but the parts that carry the value are human-authored: the Annex/Article mappings, the obligation set, and the prohibited-practice and review-status logic. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable.
+
+## Related
+
+Part of a portfolio of deterministic, review-gated EU-regulation tools:
+
+- [micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter) — MiCAR whitepaper linter with pinpoint citations and a CI action.
+- [dora-third-party-register-and-resilience-workbench](https://github.com/sebastianfoerste/dora-third-party-register-and-resilience-workbench) — DORA ICT third-party register and resilience workbench.
+- [eu-financial-reg-horizon-scanner](https://github.com/sebastianfoerste/eu-financial-reg-horizon-scanner) — Review-gated EU financial-regulation horizon scanner.
+
+Curated index of EU financial-regulation primary sources and tools: [awesome-eu-fintech-regulation](https://github.com/sebastianfoerste/awesome-eu-fintech-regulation).
