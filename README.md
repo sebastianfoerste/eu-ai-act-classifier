@@ -64,7 +64,7 @@ Then inspect `/tmp/eu-ai-act-draft-pack`. The generated files are draft review a
 
 ## Source Statuses
 
-Reports and draft artifacts use a versioned source manifest. Binding Level 1 text, provisional materials and nonbinding guidance are labelled separately. Guidance overlays are advisory notes and do not override the binding classification logic.
+Reports and draft artifacts use a versioned source manifest. The current binding layer includes Regulation (EU) 2024/1689 as consolidated on 27 July 2026 and Regulation (EU) 2026/1744. Any future provisional material and nonbinding guidance remain separately labelled. Guidance overlays are advisory notes and do not override the binding classification logic.
 
 ## MCP And Local API
 
@@ -142,8 +142,8 @@ AI tools assisted the implementation, but the parts that carry the value are hum
 
 Part of a portfolio of deterministic, review-gated EU-regulation tools:
 
-- [micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter) — MiCAR whitepaper linter with pinpoint citations and a CI action.
-- [dora-third-party-register-and-resilience-workbench](https://github.com/sebastianfoerste/dora-third-party-register-and-resilience-workbench) — DORA ICT third-party register and resilience workbench.
-- [eu-financial-reg-horizon-scanner](https://github.com/sebastianfoerste/eu-financial-reg-horizon-scanner) — Review-gated EU financial-regulation horizon scanner.
+- [micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter): MiCAR whitepaper linter with pinpoint citations and a CI action.
+- [dora-third-party-register-and-resilience-workbench](https://github.com/sebastianfoerste/dora-third-party-register-and-resilience-workbench): DORA ICT third-party register and resilience workbench.
+- [eu-financial-reg-horizon-scanner](https://github.com/sebastianfoerste/eu-financial-reg-horizon-scanner): Review-gated EU financial-regulation horizon scanner.
 
 Curated index of EU financial-regulation primary sources and tools: [awesome-eu-fintech-regulation](https://github.com/sebastianfoerste/awesome-eu-fintech-regulation).

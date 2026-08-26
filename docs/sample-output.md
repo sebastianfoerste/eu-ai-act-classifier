@@ -36,16 +36,13 @@ Obligation graph:
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
   2025-08-02: Chapter V (general-purpose AI models)
-  2026-08-02: General application, incl. Annex III high-risk systems
-  2027-08-02: Art. 6(1) / Annex I high-risk (product-safety route)
-
-Provisional political-agreement timeline:
-  2027-12-02: AI Omnibus: Annex III high-risk systems
-  2028-08-02: AI Omnibus: product-embedded high-risk systems
+  2026-08-02: General application for provisions without a later specific date
+  2027-12-02: Regulation (EU) 2026/1744: Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: product-embedded high-risk systems
 
 Source manifest:
-  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-06-08
-  - Council and Parliament provisional agreement, 7 May 2026: provisional_political_agreement, retrieved 2026-06-08
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
+  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-08-26
 ```
 
 ## Artifact Draft

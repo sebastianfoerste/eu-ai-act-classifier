@@ -23,12 +23,10 @@
     "Art. 73 AIA"
   ],
   "timeline_source_statuses": [
-    "binding_level_1",
-    "provisional_political_agreement"
+    "binding_level_1"
   ],
   "source_manifest_statuses": [
     "binding_level_1",
-    "nonbinding_guidance",
-    "provisional_political_agreement"
+    "nonbinding_guidance"
   ]
 }

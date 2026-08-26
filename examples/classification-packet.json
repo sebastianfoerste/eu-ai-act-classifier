@@ -175,8 +175,8 @@
       "requirement": "Ensure the high-risk system complies with Chapter III requirements.",
       "evidence_artifact": "Provider compliance responsibility matrix.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "determined"
     },
     {
@@ -187,8 +187,8 @@
       "requirement": "Maintain a quality management system.",
       "evidence_artifact": "Quality management system file.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "determined"
     },
     {
@@ -199,8 +199,8 @@
       "requirement": "Keep technical documentation, logs and conformity documentation.",
       "evidence_artifact": "Document retention register.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "determined"
     },
     {
@@ -211,8 +211,8 @@
       "requirement": "Keep automatically generated logs where under provider control.",
       "evidence_artifact": "Logging retention policy.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "determined"
     },
     {
@@ -223,8 +223,8 @@
       "requirement": "Take corrective action and inform relevant parties where required.",
       "evidence_artifact": "Corrective-action and notification log.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "review_required"
     },
     {
@@ -235,8 +235,8 @@
       "requirement": "Cooperate with competent authorities and provide requested information.",
       "evidence_artifact": "Authority cooperation protocol.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "review_required"
     },
     {
@@ -247,8 +247,8 @@
       "requirement": "Track applicable harmonised standards and standardisation deliverables.",
       "evidence_artifact": "Standards applicability matrix.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "review_required"
     },
     {
@@ -259,8 +259,8 @@
       "requirement": "Assess common specifications where harmonised standards are unavailable or insufficient.",
       "evidence_artifact": "Common specifications assessment.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "review_required"
     },
     {
@@ -271,8 +271,8 @@
       "requirement": "Map implemented controls to standards, specifications or alternative evidence.",
       "evidence_artifact": "Presumption of conformity mapping.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "review_required"
     },
     {
@@ -283,8 +283,8 @@
       "requirement": "Complete the applicable conformity assessment.",
       "evidence_artifact": "Conformity assessment file.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "review_required"
     },
     {
@@ -295,8 +295,8 @@
       "requirement": "Track certificate validity, changes and renewal obligations.",
       "evidence_artifact": "Certificate register.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "review_required"
     },
     {
@@ -307,8 +307,8 @@
       "requirement": "Draw up and keep the EU declaration of conformity.",
       "evidence_artifact": "EU declaration of conformity.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "determined"
     },
     {
@@ -319,8 +319,8 @@
       "requirement": "Affix CE marking where required.",
       "evidence_artifact": "CE marking record.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "determined"
     },
     {
@@ -331,8 +331,8 @@
       "requirement": "Register the provider and system in the EU database where required.",
       "evidence_artifact": "EU database registration record.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "review_required"
     },
     {
@@ -343,8 +343,8 @@
       "requirement": "Operate a post-market monitoring system and plan.",
       "evidence_artifact": "Post-market monitoring plan.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "determined"
     },
     {
@@ -355,8 +355,8 @@
       "requirement": "Report serious incidents to the market surveillance authority.",
       "evidence_artifact": "Serious incident register.",
       "source_status": "binding_level_1",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "application_date": "2026-08-02",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
       "review_status": "review_required"
     }
   ],
@@ -367,7 +367,7 @@
       "note": "Prohibitions apply from 2 February 2025 (Art. 113(a) AIA).",
       "source_status": "binding_level_1",
       "source_id": "ai-act-2024-1689",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng"
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
     },
     {
       "provision": "Chapter V (general-purpose AI models)",
@@ -375,39 +375,31 @@
       "note": "GPAI obligations apply from 2 August 2025 (Art. 113(b) AIA).",
       "source_status": "binding_level_1",
       "source_id": "ai-act-2024-1689",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng"
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
     },
     {
-      "provision": "General application, incl. Annex III high-risk systems",
+      "provision": "General application for provisions without a later specific date",
       "applies_from": "2026-08-02",
-      "note": "Most obligations apply from 2 August 2026 (Art. 113 AIA).",
+      "note": "The general application date remains 2 August 2026, subject to the later dates introduced by Regulation (EU) 2026/1744.",
       "source_status": "binding_level_1",
       "source_id": "ai-act-2024-1689",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng"
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
     },
     {
-      "provision": "Art. 6(1) / Annex I high-risk (product-safety route)",
-      "applies_from": "2027-08-02",
-      "note": "Annex I high-risk obligations apply from 2 August 2027 (Art. 113(c) AIA).",
-      "source_status": "binding_level_1",
-      "source_id": "ai-act-2024-1689",
-      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng"
-    },
-    {
-      "provision": "AI Omnibus: Annex III high-risk systems",
+      "provision": "Regulation (EU) 2026/1744: Annex III high-risk systems",
       "applies_from": "2027-12-02",
-      "note": "Provisional political agreement points to 2 December 2027 for stand-alone Annex III high-risk systems. This is not binding until formal adoption and Official Journal publication.",
-      "source_status": "provisional_political_agreement",
-      "source_id": "ai-omnibus-political-agreement-2026",
-      "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/pdf/"
+      "note": "Regulation (EU) 2026/1744 sets 2 December 2027 for the relevant Annex III high-risk system provisions.",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-amendment-2026-1744",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
     },
     {
-      "provision": "AI Omnibus: product-embedded high-risk systems",
+      "provision": "Regulation (EU) 2026/1744: product-embedded high-risk systems",
       "applies_from": "2028-08-02",
-      "note": "Provisional political agreement points to 2 August 2028 for high-risk AI systems embedded in products.",
-      "source_status": "provisional_political_agreement",
-      "source_id": "ai-omnibus-political-agreement-2026",
-      "source_url": "https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/pdf/"
+      "note": "Regulation (EU) 2026/1744 sets 2 August 2028 for the relevant product-embedded high-risk system provisions.",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-amendment-2026-1744",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
     }
   ],
   "source_manifest": [
@@ -415,19 +407,19 @@
       "source_id": "ai-act-2024-1689",
       "title": "Regulation (EU) 2024/1689, Artificial Intelligence Act",
       "legal_status": "binding_level_1",
-      "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-      "retrieved_on": "2026-06-18",
+      "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "retrieved_on": "2026-08-26",
       "citation_label": "Regulation (EU) 2024/1689",
       "implementation_note": "Binding Level 1 source for classifications and obligations."
     },
     {
-      "source_id": "ai-omnibus-political-agreement-2026",
-      "title": "AI Omnibus provisional political agreement",
-      "legal_status": "provisional_political_agreement",
-      "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/pdf/",
-      "retrieved_on": "2026-06-18",
-      "citation_label": "Council and Parliament provisional agreement, 7 May 2026",
-      "implementation_note": "Provisional context only until formal adoption and Official Journal publication."
+      "source_id": "ai-act-amendment-2026-1744",
+      "title": "Regulation (EU) 2026/1744 amending the Artificial Intelligence Act",
+      "legal_status": "binding_level_1",
+      "url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng",
+      "retrieved_on": "2026-08-26",
+      "citation_label": "Regulation (EU) 2026/1744",
+      "implementation_note": "Binding amendment adopted on 8 July 2026 and published in the Official Journal on 24 July 2026."
     },
     {
       "source_id": "ai-act-service-desk",

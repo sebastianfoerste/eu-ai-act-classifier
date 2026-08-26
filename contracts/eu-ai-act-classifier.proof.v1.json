@@ -1,0 +1,27 @@
+{
+  "schema": "eu-ai-act-classifier.proof.v1",
+  "productId": "eu-ai-act-classifier",
+  "sourceCurrencyDate": "2026-08-26",
+  "bindingSources": [
+    {
+      "sourceId": "ai-act-2024-1689",
+      "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "status": "binding_level_1"
+    },
+    {
+      "sourceId": "ai-act-amendment-2026-1744",
+      "url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng",
+      "status": "binding_level_1"
+    }
+  ],
+  "outputContract": "ClassificationReport",
+  "reviewBoundary": {
+    "humanReviewRequired": true,
+    "externalActionAllowed": false,
+    "legalAdviceStatus": "draft_for_human_review"
+  },
+  "verification": {
+    "command": ".venv/bin/python -m pytest -q",
+    "sourceTest": "tests/test_obligations_and_artifacts.py"
+  }
+}

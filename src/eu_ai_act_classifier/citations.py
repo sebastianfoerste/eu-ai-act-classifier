@@ -28,15 +28,8 @@ REGULATION = (
     "of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024"
 )
 SHORT = "AIA"
-AI_ACT_URL = "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng"
-AI_OMNIBUS_COMMISSION_URL = (
-    "https://digital-strategy.ec.europa.eu/en/news/"
-    "eu-agrees-simplify-ai-rules-boost-innovation-and-ban-nudification-apps-protect-citizens"
-)
-AI_OMNIBUS_COUNCIL_URL = (
-    "https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/"
-    "artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/pdf/"
-)
+AI_ACT_URL = "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
+AI_ACT_AMENDMENT_URL = "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
 AI_ACT_SERVICE_DESK_URL = "https://ai-act-service-desk.ec.europa.eu/en/ai-act-explorer"
 HIGH_RISK_GUIDELINES_URL = (
     "https://digital-strategy.ec.europa.eu/en/library/"
@@ -57,7 +50,8 @@ TRANSPARENCY_GUIDANCE_URL = (
 )
 
 
-SOURCE_RETRIEVED_ON = "2026-06-18"
+BINDING_SOURCE_RETRIEVED_ON = "2026-08-26"
+ADVISORY_SOURCE_RETRIEVED_ON = "2026-06-18"
 
 
 def source_manifest() -> list[RegulatorySource]:
@@ -69,19 +63,20 @@ def source_manifest() -> list[RegulatorySource]:
             title="Regulation (EU) 2024/1689, Artificial Intelligence Act",
             legal_status=SourceStatus.BINDING_LEVEL_1,
             url=AI_ACT_URL,
-            retrieved_on=SOURCE_RETRIEVED_ON,
+            retrieved_on=BINDING_SOURCE_RETRIEVED_ON,
             citation_label="Regulation (EU) 2024/1689",
             implementation_note="Binding Level 1 source for classifications and obligations.",
         ),
         RegulatorySource(
-            source_id="ai-omnibus-political-agreement-2026",
-            title="AI Omnibus provisional political agreement",
-            legal_status=SourceStatus.PROVISIONAL_POLITICAL_AGREEMENT,
-            url=AI_OMNIBUS_COUNCIL_URL,
-            retrieved_on=SOURCE_RETRIEVED_ON,
-            citation_label="Council and Parliament provisional agreement, 7 May 2026",
+            source_id="ai-act-amendment-2026-1744",
+            title="Regulation (EU) 2026/1744 amending the Artificial Intelligence Act",
+            legal_status=SourceStatus.BINDING_LEVEL_1,
+            url=AI_ACT_AMENDMENT_URL,
+            retrieved_on=BINDING_SOURCE_RETRIEVED_ON,
+            citation_label="Regulation (EU) 2026/1744",
             implementation_note=(
-                "Provisional context only until formal adoption and Official Journal publication."
+                "Binding amendment adopted on 8 July 2026 and published in the Official "
+                "Journal on 24 July 2026."
             ),
         ),
         RegulatorySource(
@@ -89,7 +84,7 @@ def source_manifest() -> list[RegulatorySource]:
             title="AI Act Service Desk",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=AI_ACT_SERVICE_DESK_URL,
-            retrieved_on=SOURCE_RETRIEVED_ON,
+            retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
             citation_label="AI Act Service Desk",
             implementation_note="Official explanatory and navigation layer, not legal advice.",
         ),
@@ -98,7 +93,7 @@ def source_manifest() -> list[RegulatorySource]:
             title="Commission guidelines on prohibited AI practices",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=PROHIBITED_GUIDELINES_URL,
-            retrieved_on=SOURCE_RETRIEVED_ON,
+            retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
             citation_label="Commission prohibited-practices guidelines",
             implementation_note="Nonbinding Commission interpretation and practical examples.",
         ),
@@ -107,7 +102,7 @@ def source_manifest() -> list[RegulatorySource]:
             title="Commission guidelines on the AI system definition",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=AI_SYSTEM_DEFINITION_GUIDELINES_URL,
-            retrieved_on=SOURCE_RETRIEVED_ON,
+            retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
             citation_label="Commission AI-system-definition guidelines",
             implementation_note="Nonbinding support for scope assessment.",
         ),
@@ -116,7 +111,7 @@ def source_manifest() -> list[RegulatorySource]:
             title="Draft Commission guidelines on high-risk AI classification",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=HIGH_RISK_GUIDELINES_URL,
-            retrieved_on=SOURCE_RETRIEVED_ON,
+            retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
             citation_label="Draft high-risk classification guidelines",
             implementation_note="Draft guidance used as advisory overlay and eval context.",
         ),
@@ -125,7 +120,7 @@ def source_manifest() -> list[RegulatorySource]:
             title="General-Purpose AI Code of Practice",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=GPAI_CODE_URL,
-            retrieved_on=SOURCE_RETRIEVED_ON,
+            retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
             citation_label="GPAI Code of Practice",
             implementation_note="Voluntary tool for GPAI obligations, separate from Level 1 logic.",
         ),
@@ -134,7 +129,7 @@ def source_manifest() -> list[RegulatorySource]:
             title="Guidelines for providers of general-purpose AI models",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=GPAI_PROVIDER_GUIDELINES_URL,
-            retrieved_on=SOURCE_RETRIEVED_ON,
+            retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
             citation_label="GPAI provider guidelines",
             implementation_note="Nonbinding scope and compliance support for GPAI model providers.",
         ),
@@ -143,7 +138,7 @@ def source_manifest() -> list[RegulatorySource]:
             title="Transparency guidance status tracker",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=TRANSPARENCY_GUIDANCE_URL,
-            retrieved_on=SOURCE_RETRIEVED_ON,
+            retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
             citation_label="Transparency guidance tracker",
             implementation_note=(
                 "Placeholder advisory source until final Art. 50 guidance is published."
@@ -197,40 +192,37 @@ APPLICATION_DATES: tuple[ApplicationDate, ...] = (
         "GPAI obligations apply from 2 August 2025 (Art. 113(b) AIA).",
     ),
     ApplicationDate(
-        "General application, incl. Annex III high-risk systems",
+        "General application for provisions without a later specific date",
         "2026-08-02",
-        "Most obligations apply from 2 August 2026 (Art. 113 AIA).",
-    ),
-    ApplicationDate(
-        "Art. 6(1) / Annex I high-risk (product-safety route)",
-        "2027-08-02",
-        "Annex I high-risk obligations apply from 2 August 2027 (Art. 113(c) AIA).",
+        (
+            "The general application date remains 2 August 2026, subject to the later "
+            "dates introduced by Regulation (EU) 2026/1744."
+        ),
     ),
 )
 
 
-PROVISIONAL_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
+AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ApplicationDate(
-        "AI Omnibus: Annex III high-risk systems",
+        "Regulation (EU) 2026/1744: Annex III high-risk systems",
         "2027-12-02",
         (
-            "Provisional political agreement points to 2 December 2027 for stand-alone "
-            "Annex III high-risk systems. This is not binding until formal adoption and "
-            "Official Journal publication."
+            "Regulation (EU) 2026/1744 sets 2 December 2027 for the relevant Annex III "
+            "high-risk system provisions."
         ),
-        SourceStatus.PROVISIONAL_POLITICAL_AGREEMENT,
-        "ai-omnibus-political-agreement-2026",
-        AI_OMNIBUS_COUNCIL_URL,
+        SourceStatus.BINDING_LEVEL_1,
+        "ai-act-amendment-2026-1744",
+        AI_ACT_AMENDMENT_URL,
     ),
     ApplicationDate(
-        "AI Omnibus: product-embedded high-risk systems",
+        "Regulation (EU) 2026/1744: product-embedded high-risk systems",
         "2028-08-02",
         (
-            "Provisional political agreement points to 2 August 2028 for high-risk AI "
-            "systems embedded in products."
+            "Regulation (EU) 2026/1744 sets 2 August 2028 for the relevant product-embedded "
+            "high-risk system provisions."
         ),
-        SourceStatus.PROVISIONAL_POLITICAL_AGREEMENT,
-        "ai-omnibus-political-agreement-2026",
-        AI_OMNIBUS_COUNCIL_URL,
+        SourceStatus.BINDING_LEVEL_1,
+        "ai-act-amendment-2026-1744",
+        AI_ACT_AMENDMENT_URL,
     ),
 )

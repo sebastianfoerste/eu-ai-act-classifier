@@ -12,7 +12,7 @@ Implementation:
 
 ## Source Status Model
 
-Separates binding Level 1 text, provisional political-agreement context and nonbinding guidance. Guidance overlays are advisory and do not change the deterministic classification path.
+Separates binding Level 1 text, any future provisional political-agreement context and nonbinding guidance. Regulation (EU) 2026/1744 is recorded as an adopted and published Level 1 amendment. Guidance overlays are advisory and do not change the deterministic classification path.
 
 Implementation:
 

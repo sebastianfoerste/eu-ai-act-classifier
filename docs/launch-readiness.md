@@ -50,7 +50,7 @@ example set.
 ## Source Review
 
 Inspect `src/eu_ai_act_classifier/citations.py` first. It separates binding
-Level 1 text, provisional political agreement and nonbinding guidance.
+Level 1 text, any future provisional material and nonbinding guidance. Regulation (EU) 2026/1744 is classified as binding Level 1 law.
 
 Inspect `docs/methodology.md` next. It explains the scope gate, FRIA logic,
 obligation graph and artifact posture.

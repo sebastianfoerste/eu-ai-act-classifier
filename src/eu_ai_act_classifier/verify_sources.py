@@ -9,9 +9,9 @@ from pathlib import Path
 
 try:
     from .citations import (
+        AI_ACT_AMENDMENT_URL,
         AI_ACT_SERVICE_DESK_URL,
         AI_ACT_URL,
-        AI_OMNIBUS_COUNCIL_URL,
         AI_SYSTEM_DEFINITION_GUIDELINES_URL,
         GPAI_CODE_URL,
         GPAI_PROVIDER_GUIDELINES_URL,
@@ -22,9 +22,9 @@ try:
 except (ImportError, ValueError):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
     from eu_ai_act_classifier.citations import (
+        AI_ACT_AMENDMENT_URL,
         AI_ACT_SERVICE_DESK_URL,
         AI_ACT_URL,
-        AI_OMNIBUS_COUNCIL_URL,
         AI_SYSTEM_DEFINITION_GUIDELINES_URL,
         GPAI_CODE_URL,
         GPAI_PROVIDER_GUIDELINES_URL,
@@ -35,7 +35,7 @@ except (ImportError, ValueError):
 
 URLS = {
     "AI_ACT_URL": AI_ACT_URL,
-    "AI_OMNIBUS_COUNCIL_URL": AI_OMNIBUS_COUNCIL_URL,
+    "AI_ACT_AMENDMENT_URL": AI_ACT_AMENDMENT_URL,
     "AI_ACT_SERVICE_DESK_URL": AI_ACT_SERVICE_DESK_URL,
     "HIGH_RISK_GUIDELINES_URL": HIGH_RISK_GUIDELINES_URL,
     "PROHIBITED_GUIDELINES_URL": PROHIBITED_GUIDELINES_URL,
@@ -107,17 +107,20 @@ def verify_sources(update: bool = False):
             json.dump(meta_data, f, indent=2)
         print(f"Wrote verification metadata to {meta_file}")
 
-        # Update citations.py SOURCE_RETRIEVED_ON
+        # Update both source retrieval dates after every configured URL passed.
         citations_file = Path(__file__).resolve().parent / "citations.py"
         if citations_file.exists():
             content = citations_file.read_text(encoding="utf-8")
             new_content = re.sub(
-                r'SOURCE_RETRIEVED_ON\s*=\s*"[^"]+"',
-                f'SOURCE_RETRIEVED_ON = "{retrieved_on}"',
+                r'(?:BINDING|ADVISORY)_SOURCE_RETRIEVED_ON\s*=\s*"[^"]+"',
+                lambda match: (
+                    f'{match.group(0).split("_SOURCE_")[0]}_SOURCE_RETRIEVED_ON = '
+                    f'"{retrieved_on}"'
+                ),
                 content,
             )
             citations_file.write_text(new_content, encoding="utf-8")
-            print(f"Updated SOURCE_RETRIEVED_ON to '{retrieved_on}' in {citations_file}")
+            print(f"Updated source retrieval dates to '{retrieved_on}' in {citations_file}")
     return success
 
 
