@@ -26,8 +26,8 @@ advisory notes and draft artifact support.
 
 `models.py` defines typed inputs, outputs and enums.
 
-`citations.py` defines the source registry, binding application dates and
-provisional political-agreement dates.
+`citations.py` defines the source registry and binding application dates,
+including the dates introduced by Regulation (EU) 2026/1744.
 
 `catalog.py` maps legal duties and Annex III references to structured
 obligations.
@@ -68,7 +68,7 @@ The Python classifier remains the source of legal truth.
 
 Guidance overlays are advisory only. They remain separate from Level 1 logic.
 
-AI Omnibus dates are displayed separately from binding Art. 113 dates.
+Amended application dates are tied to Regulation (EU) 2026/1744 and displayed as binding source data.
 
 Draft work products always include a review notice and source manifest.
 

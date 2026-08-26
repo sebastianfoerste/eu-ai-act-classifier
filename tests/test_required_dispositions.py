@@ -33,13 +33,14 @@ def test_required_representative_dispositions(
     assert report.disposition is disposition
 
 
-def test_every_report_separates_binding_provisional_and_nonbinding_sources() -> None:
+def test_every_report_separates_binding_and_nonbinding_sources() -> None:
     report = _report("credit_scoring.json")
     timeline_statuses = {item.source_status for item in report.timeline}
     manifest_statuses = {source.legal_status for source in report.source_manifest}
     advisory_statuses = {note.source_status for note in report.advisory_notes}
 
     assert SourceStatus.BINDING_LEVEL_1 in timeline_statuses
-    assert SourceStatus.PROVISIONAL_POLITICAL_AGREEMENT in timeline_statuses
+    assert SourceStatus.PROVISIONAL_POLITICAL_AGREEMENT not in timeline_statuses
     assert SourceStatus.NONBINDING_GUIDANCE in manifest_statuses
+    assert SourceStatus.PROVISIONAL_POLITICAL_AGREEMENT not in manifest_statuses
     assert advisory_statuses == {SourceStatus.NONBINDING_GUIDANCE}

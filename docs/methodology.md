@@ -27,12 +27,14 @@ facts. The engine applies the rules and makes uncertainty visible.
 
 ## Source Statuses
 
-Binding Level 1 text drives classification and obligations. The primary source
-is Regulation (EU) 2024/1689.
+Binding Level 1 text drives classification and obligations. The current source
+layer is Regulation (EU) 2024/1689 as consolidated on 27 July 2026 together
+with Regulation (EU) 2026/1744. The latter was adopted on 8 July 2026 and
+published in the Official Journal on 24 July 2026. Its amended application
+dates are therefore binding source data rather than provisional context.
 
-Provisional political agreement is recorded separately. The AI Omnibus dates
-are included as provisional implementation context and remain outside binding
-logic until formal adoption and Official Journal publication.
+The source-status model retains a provisional category for future political
+agreements. No provisional AI Omnibus source remains in the current manifest.
 
 Nonbinding guidance appears only as advisory overlay or eval context. The
 overlay can point reviewers to Commission materials, the AI Act Service Desk,

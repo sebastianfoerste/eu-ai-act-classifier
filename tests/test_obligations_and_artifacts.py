@@ -39,12 +39,32 @@ def test_obligation_graph_contains_product_fields() -> None:
     assert item.review_status.value
 
 
-def test_timeline_separates_binding_and_provisional_sources() -> None:
+def test_timeline_uses_published_binding_sources() -> None:
     report = classify(SystemProfile(name="x"))
     statuses = {item.source_status.value for item in report.timeline}
 
-    assert "binding_level_1" in statuses
-    assert "provisional_political_agreement" in statuses
+    assert statuses == {"binding_level_1"}
+    assert any(item.source_id == "ai-act-amendment-2026-1744" for item in report.timeline)
+
+
+def test_high_risk_obligation_dates_follow_regulation_2026_1744() -> None:
+    annex_iii_report = classify(
+        SystemProfile(name="credit scoring", annex_iii_area=AnnexIII.CREDITWORTHINESS)
+    )
+    product_report = classify(
+        SystemProfile(
+            name="safety component",
+            annex_i_safety_component=True,
+            annex_i_third_party_assessment=True,
+        )
+    )
+
+    assert {item.application_date for item in annex_iii_report.obligation_graph} == {
+        "2027-12-02"
+    }
+    assert {item.application_date for item in product_report.obligation_graph} == {
+        "2028-08-02"
+    }
 
 
 def test_artifact_rendering_contains_review_notice_and_sources() -> None:
@@ -80,3 +100,4 @@ def test_cli_sources_outputs_source_manifest(capsys) -> None:
     data = json.loads(captured.out)
 
     assert any(source["source_id"] == "ai-act-2024-1689" for source in data)
+    assert any(source["source_id"] == "ai-act-amendment-2026-1744" for source in data)
