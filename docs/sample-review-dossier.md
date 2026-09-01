@@ -16,7 +16,7 @@ The table below summarizes the classification status, risk tier, number of direc
 | **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 4 | 2025-08-02 (Chapter V general-purpose AI models) |
 | **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 8 | 2025-08-02 (Chapter V general-purpose AI models) |
 | **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 8 | 2025-08-02 (Chapter V general-purpose AI models) |
-| **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 14 | 2026-08-02 (General high-risk application) |
+| **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 14 | 2027-12-02 (Annex III high-risk application) |
 
 ---
 
