@@ -59,12 +59,8 @@ def test_high_risk_obligation_dates_follow_regulation_2026_1744() -> None:
         )
     )
 
-    assert {item.application_date for item in annex_iii_report.obligation_graph} == {
-        "2027-12-02"
-    }
-    assert {item.application_date for item in product_report.obligation_graph} == {
-        "2028-08-02"
-    }
+    assert {item.application_date for item in annex_iii_report.obligation_graph} == {"2027-12-02"}
+    assert {item.application_date for item in product_report.obligation_graph} == {"2028-08-02"}
 
 
 def test_artifact_rendering_contains_review_notice_and_sources() -> None:

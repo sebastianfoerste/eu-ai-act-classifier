@@ -114,8 +114,7 @@ def verify_sources(update: bool = False):
             new_content = re.sub(
                 r'(?:BINDING|ADVISORY)_SOURCE_RETRIEVED_ON\s*=\s*"[^"]+"',
                 lambda match: (
-                    f'{match.group(0).split("_SOURCE_")[0]}_SOURCE_RETRIEVED_ON = '
-                    f'"{retrieved_on}"'
+                    f'{match.group(0).split("_SOURCE_")[0]}_SOURCE_RETRIEVED_ON = "{retrieved_on}"'
                 ),
                 content,
             )
