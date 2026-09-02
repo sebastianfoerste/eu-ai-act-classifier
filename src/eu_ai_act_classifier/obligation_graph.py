@@ -437,7 +437,7 @@ def _item(
 
 def _high_risk_application_date(profile: SystemProfile) -> str:
     if profile.annex_i_safety_component and profile.annex_i_third_party_assessment:
-        return "2027-08-02"
+        return "2028-08-02"
     if profile.annex_iii_area is AnnexIII.UNSURE or profile.annex_iii_area is not None:
-        return "2026-08-02"
-    return "2026-08-02"
+        return "2027-12-02"
+    return "2027-12-02"

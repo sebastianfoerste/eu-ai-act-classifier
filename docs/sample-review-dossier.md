@@ -16,7 +16,7 @@ The table below summarizes the classification status, risk tier, number of direc
 | **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 4 | 2025-08-02 (Chapter V general-purpose AI models) |
 | **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 8 | 2025-08-02 (Chapter V general-purpose AI models) |
 | **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 8 | 2025-08-02 (Chapter V general-purpose AI models) |
-| **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 14 | 2026-08-02 (General high-risk application) |
+| **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 14 | 2027-12-02 (Annex III high-risk application) |
 
 ---
 
@@ -55,18 +55,13 @@ Obligation graph:
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
   2025-08-02: Chapter V (general-purpose AI models)
-  2026-08-02: General application, incl. Annex III high-risk systems
-  2027-08-02: Art. 6(1) / Annex I high-risk (product-safety route)
-
-Provisional political-agreement timeline:
-  2027-12-02: AI Omnibus: Annex III high-risk systems
-      Provisional political agreement points to 2 December 2027 for stand-alone Annex III high-risk systems. This is not binding until formal adoption and Official Journal publication.
-  2028-08-02: AI Omnibus: product-embedded high-risk systems
-      Provisional political agreement points to 2 August 2028 for high-risk AI systems embedded in products.
+  2026-08-02: General application for provisions without a later specific date
+  2027-12-02: Regulation (EU) 2026/1744: Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: product-embedded high-risk systems
 
 Source manifest:
-  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-06-17
-  - Council and Parliament provisional agreement, 7 May 2026: provisional_political_agreement, retrieved 2026-06-17
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
+  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-08-26
   - AI Act Service Desk: nonbinding_guidance, retrieved 2026-06-17
   - Commission prohibited-practices guidelines: nonbinding_guidance, retrieved 2026-06-17
   - Commission AI-system-definition guidelines: nonbinding_guidance, retrieved 2026-06-17
@@ -124,18 +119,13 @@ Obligation graph:
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
   2025-08-02: Chapter V (general-purpose AI models)
-  2026-08-02: General application, incl. Annex III high-risk systems
-  2027-08-02: Art. 6(1) / Annex I high-risk (product-safety route)
-
-Provisional political-agreement timeline:
-  2027-12-02: AI Omnibus: Annex III high-risk systems
-      Provisional political agreement points to 2 December 2027 for stand-alone Annex III high-risk systems. This is not binding until formal adoption and Official Journal publication.
-  2028-08-02: AI Omnibus: product-embedded high-risk systems
-      Provisional political agreement points to 2 August 2028 for high-risk AI systems embedded in products.
+  2026-08-02: General application for provisions without a later specific date
+  2027-12-02: Regulation (EU) 2026/1744: Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: product-embedded high-risk systems
 
 Source manifest:
-  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-06-17
-  - Council and Parliament provisional agreement, 7 May 2026: provisional_political_agreement, retrieved 2026-06-17
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
+  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-08-26
   - AI Act Service Desk: nonbinding_guidance, retrieved 2026-06-17
   - Commission prohibited-practices guidelines: nonbinding_guidance, retrieved 2026-06-17
   - Commission AI-system-definition guidelines: nonbinding_guidance, retrieved 2026-06-17
@@ -193,18 +183,13 @@ Obligation graph:
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
   2025-08-02: Chapter V (general-purpose AI models)
-  2026-08-02: General application, incl. Annex III high-risk systems
-  2027-08-02: Art. 6(1) / Annex I high-risk (product-safety route)
-
-Provisional political-agreement timeline:
-  2027-12-02: AI Omnibus: Annex III high-risk systems
-      Provisional political agreement points to 2 December 2027 for stand-alone Annex III high-risk systems. This is not binding until formal adoption and Official Journal publication.
-  2028-08-02: AI Omnibus: product-embedded high-risk systems
-      Provisional political agreement points to 2 August 2028 for high-risk AI systems embedded in products.
+  2026-08-02: General application for provisions without a later specific date
+  2027-12-02: Regulation (EU) 2026/1744: Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: product-embedded high-risk systems
 
 Source manifest:
-  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-06-17
-  - Council and Parliament provisional agreement, 7 May 2026: provisional_political_agreement, retrieved 2026-06-17
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
+  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-08-26
   - AI Act Service Desk: nonbinding_guidance, retrieved 2026-06-17
   - Commission prohibited-practices guidelines: nonbinding_guidance, retrieved 2026-06-17
   - Commission AI-system-definition guidelines: nonbinding_guidance, retrieved 2026-06-17
@@ -281,18 +266,13 @@ Obligation graph:
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
   2025-08-02: Chapter V (general-purpose AI models)
-  2026-08-02: General application, incl. Annex III high-risk systems
-  2027-08-02: Art. 6(1) / Annex I high-risk (product-safety route)
-
-Provisional political-agreement timeline:
-  2027-12-02: AI Omnibus: Annex III high-risk systems
-      Provisional political agreement points to 2 December 2027 for stand-alone Annex III high-risk systems. This is not binding until formal adoption and Official Journal publication.
-  2028-08-02: AI Omnibus: product-embedded high-risk systems
-      Provisional political agreement points to 2 August 2028 for high-risk AI systems embedded in products.
+  2026-08-02: General application for provisions without a later specific date
+  2027-12-02: Regulation (EU) 2026/1744: Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: product-embedded high-risk systems
 
 Source manifest:
-  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-06-17
-  - Council and Parliament provisional agreement, 7 May 2026: provisional_political_agreement, retrieved 2026-06-17
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
+  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-08-26
   - AI Act Service Desk: nonbinding_guidance, retrieved 2026-06-17
   - Commission prohibited-practices guidelines: nonbinding_guidance, retrieved 2026-06-17
   - Commission AI-system-definition guidelines: nonbinding_guidance, retrieved 2026-06-17

@@ -13,7 +13,7 @@ from .catalog import (
     high_risk_provider_obligations,
     high_risk_value_chain_obligations,
 )
-from .citations import APPLICATION_DATES, PROVISIONAL_APPLICATION_DATES, REGULATION, source_manifest
+from .citations import AMENDING_APPLICATION_DATES, APPLICATION_DATES, REGULATION, source_manifest
 from .models import (
     TIER_ORDER,
     AnnexIII,
@@ -116,7 +116,7 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
             source_id=a.source_id,
             source_url=a.source_url,
         )
-        for a in APPLICATION_DATES + PROVISIONAL_APPLICATION_DATES
+        for a in APPLICATION_DATES + AMENDING_APPLICATION_DATES
     ]
 
     obligation_graph = build_obligation_graph(
