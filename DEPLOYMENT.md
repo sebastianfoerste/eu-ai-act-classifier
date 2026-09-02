@@ -5,7 +5,7 @@ The classifier has two surfaces:
 - the Python CLI and local API bridge, which are the source of truth for legal-rule evaluation;
 - the optional `web/` cockpit, which is a Next.js fixture demo.
 
-Confirmed public demo: https://web-opal-chi-38.vercel.app
+Hosted deployment: none working as of 2026-09-02. The earlier Vercel build at https://web-opal-chi-38.vercel.app cannot execute the Python classifier its API routes spawn and never returns a result; the repository homepage field has been cleared. Run the cockpit locally.
 
 ## Local Web Run
 

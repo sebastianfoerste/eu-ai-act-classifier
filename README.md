@@ -99,7 +99,7 @@ public-facing use remains review-gated.
 
 The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
 
-Confirmed public demo: [web-opal-chi-38.vercel.app](https://web-opal-chi-38.vercel.app). The CLI remains the authoritative legal-rule surface; the hosted cockpit is a fixture demo.
+The cockpit runs locally: `cd web && npm install && npm run dev`. Its API routes spawn the Python classifier from the repository root, so there is no working hosted deployment; the earlier Vercel demo sits at "Classifying" and never returns a result. The CLI remains the authoritative legal-rule surface.
 
 Run it locally:
 
