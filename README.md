@@ -1,15 +1,16 @@
 # eu-ai-act-classifier
 
-See [CASE_STUDY.md](CASE_STUDY.md) for the problem, controls, and limitations.
+[![CI](https://github.com/sebastianfoerste/eu-ai-act-classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/sebastianfoerste/eu-ai-act-classifier/actions/workflows/ci.yml)
 
-Launch readiness is tracked in [docs/launch-readiness.md](docs/launch-readiness.md).
-Deployment notes for the optional cockpit are in [DEPLOYMENT.md](DEPLOYMENT.md).
+Deterministic EU AI Act first-pass classifier: works out which risk tier an AI system falls into and lists the obligations that follow, each with its article, application date and review status. Runs as a CLI, as MCP-style tools or in the browser; a lawyer confirms the result. Not legal advice; data is synthetic.
 
-Deterministic EU AI Act first-pass classifier: cited risk tiers, obligations, timelines, review status, CLI and MCP-style tools. Not legal advice; data is synthetic.
+**[Try it in your browser](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)**: no install, and nothing you paste leaves the page. The playground runs the same engine as the CLI.
 
-> **If you don't code:** scroll to [What the demo produces](#what-the-demo-produces). This repo ships a sample output you can read in the browser. The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](docs/playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
-![demo](docs/demo.png)
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) and pick one of the 17 synthetic examples, or scroll to [What the demo produces](#what-the-demo-produces). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+
+See [CASE_STUDY.md](CASE_STUDY.md) for the problem, controls, and limitations. Launch readiness is tracked in [docs/launch-readiness.md](docs/launch-readiness.md).
 
 ## Run it
 
@@ -21,6 +22,16 @@ uv run python -m src.eu_ai_act_classifier.cli examples/credit_scoring.json
 ```
 
 Runs end to end, offline and deterministically.
+
+## Browser playground
+
+The [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) runs the classifier client-side with Pyodide. Pick a synthetic example or paste a `SystemProfile`, classify it, then export the JSON or text report. A field guide lists every input field and its allowed values.
+
+The page installs a wheel of this package, so it applies the same rules as the CLI. `tests/test_playground.py` fails if the wheel, the bundled examples or the field guide drift from the source. Rebuild after a rule change:
+
+```bash
+uv run python scripts/build_playground.py
+```
 
 ## What the demo produces
 
@@ -40,6 +51,8 @@ Obligations:
 ```
 
 In the sample run, every tier and obligation is cited to an Article and carries an explicit review status.
+
+![CLI sample output: CreditSightScore classified high-risk with Articles 9, 10 and 11 obligations](docs/demo.png)
 
 ## What it checks / does
 
@@ -99,7 +112,7 @@ public-facing use remains review-gated.
 
 The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
 
-The cockpit runs locally: `cd web && npm install && npm run dev`. Its API routes spawn the Python classifier from the repository root, so there is no working hosted deployment; the earlier Vercel demo sits at "Classifying" and never returns a result. The CLI remains the authoritative legal-rule surface.
+The cockpit runs locally: `cd web && npm install && npm run dev`. Its API routes spawn the Python classifier from the repository root, so it is not hosted. The [browser playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) is the hosted surface, and the CLI remains the authoritative legal-rule surface.
 
 Run it locally:
 
@@ -110,6 +123,8 @@ npm run dev
 ```
 
 The web app uses in-memory state for v1. It does not persist client, matter, candidate, account or privileged data.
+
+Deployment notes for the playground and the cockpit are in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Eval Set
 
@@ -124,7 +139,7 @@ The web app uses in-memory state for v1. It does not persist client, matter, can
 
 ## Stack
 
-Python 3.13+, Pydantic v2, pytest, ruff and uv for the classifier. Next.js App Router and React for the optional local cockpit.
+Python 3.13+, Pydantic v2, pytest, ruff and uv for the classifier. Pyodide and plain JavaScript for the browser playground. Next.js App Router and React for the optional local cockpit.
 
 ## Collaborative assessment workspace
 
@@ -142,8 +157,7 @@ AI tools assisted the implementation, but the parts that carry the value are hum
 
 Part of a portfolio of deterministic, review-gated EU-regulation tools:
 
-- [micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter): MiCAR whitepaper linter with pinpoint citations and a CI action.
-- [dora-third-party-register-and-resilience-workbench](https://github.com/sebastianfoerste/dora-third-party-register-and-resilience-workbench): DORA ICT third-party register and resilience workbench.
-- [eu-financial-reg-horizon-scanner](https://github.com/sebastianfoerste/eu-financial-reg-horizon-scanner): Review-gated EU financial-regulation horizon scanner.
+- [micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter): MiCAR whitepaper linter with pinpoint citations, a browser playground and a CI action.
+- [dpa-and-data-transfer-review](https://github.com/sebastianfoerste/dpa-and-data-transfer-review): GDPR Art. 28 and Chapter V transfer checks with a visible review state.
 
 Curated index of EU financial-regulation primary sources and tools: [awesome-eu-fintech-regulation](https://github.com/sebastianfoerste/awesome-eu-fintech-regulation).
