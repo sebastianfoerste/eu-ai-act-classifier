@@ -16,3 +16,8 @@ web/.next/
 web/node_modules/
 web/out/
 web/.vercel/
+
+# Environment files. Real values stay local; only example files are tracked.
+.env
+.env.*
+!.env.example
