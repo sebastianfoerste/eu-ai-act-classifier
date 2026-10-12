@@ -70,3 +70,13 @@ def test_generated_public_text_avoids_em_and_en_dashes() -> None:
     for text in (rendered, artifact):
         assert EM_DASH not in text
         assert EN_DASH not in text
+
+
+def test_mcp_guide_lists_the_tools_the_server_exposes() -> None:
+    server = Path("src/eu_ai_act_classifier/mcp_server.py").read_text(encoding="utf-8")
+    exposed = set(re.findall(r"@server\.tool\(\)\s+def (\w+)\(", server))
+    guide = Path("docs/mcp-configuration-guide.md").read_text(encoding="utf-8")
+    verification = guide[guide.index("## Verification") :]
+    listed = set(re.findall(r"^\d+\. `(\w+)`", verification, re.M))
+    assert exposed and listed == exposed
+    assert "/Users/" not in guide
