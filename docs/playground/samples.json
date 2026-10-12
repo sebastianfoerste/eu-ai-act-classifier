@@ -1,0 +1,286 @@
+{
+  "default": "credit_scoring",
+  "groups": [
+    {
+      "label": "Prohibited",
+      "samples": [
+        {
+          "key": "social_scoring",
+          "label": "Social scoring"
+        },
+        {
+          "key": "emotion_hiring",
+          "label": "Emotion recognition in hiring"
+        }
+      ]
+    },
+    {
+      "label": "High-risk",
+      "samples": [
+        {
+          "key": "credit_scoring",
+          "label": "Credit scoring, provider"
+        },
+        {
+          "key": "credit_scoring_deployer",
+          "label": "Credit scoring, deployer"
+        },
+        {
+          "key": "cv_screening",
+          "label": "CV screening"
+        },
+        {
+          "key": "proctoring_education",
+          "label": "Exam proctoring"
+        },
+        {
+          "key": "law_enforcement",
+          "label": "Reoffending risk"
+        }
+      ]
+    },
+    {
+      "label": "Requires review",
+      "samples": [
+        {
+          "key": "ambiguous_use_case",
+          "label": "Annex III point unsettled"
+        },
+        {
+          "key": "employment_derogation",
+          "label": "Art. 6(3) derogation asserted"
+        },
+        {
+          "key": "foundation_model_unknown_compute",
+          "label": "GPAI model, compute undisclosed"
+        }
+      ]
+    },
+    {
+      "label": "Limited risk",
+      "samples": [
+        {
+          "key": "support_chatbot",
+          "label": "Support chatbot"
+        },
+        {
+          "key": "deepfake_generator",
+          "label": "Deepfake generator"
+        }
+      ]
+    },
+    {
+      "label": "Minimal risk and GPAI models",
+      "samples": [
+        {
+          "key": "spam_filter",
+          "label": "Spam filter"
+        },
+        {
+          "key": "gpai_non_systemic",
+          "label": "GPAI model, no systemic risk"
+        },
+        {
+          "key": "gpai_systemic_by_flops",
+          "label": "GPAI model, systemic by compute"
+        },
+        {
+          "key": "gpai_systemic_designated",
+          "label": "GPAI model, designated systemic"
+        },
+        {
+          "key": "foundation_model_systemic",
+          "label": "Foundation model, systemic"
+        }
+      ]
+    }
+  ],
+  "profiles": {
+    "social_scoring": {
+      "name": "CitizenScore",
+      "description": "Scores individuals on social behaviour to gate access to services.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Social scoring",
+      "sector": "GovTech",
+      "prohibited_practices": [
+        "5.1.c"
+      ]
+    },
+    "emotion_hiring": {
+      "name": "MoodHire",
+      "description": "Infers candidate emotions from video interviews to score culture fit.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Emotion recognition in hiring",
+      "sector": "HR technology",
+      "prohibited_practices": [
+        "5.1.f"
+      ]
+    },
+    "credit_scoring": {
+      "name": "CreditSightScore",
+      "description": "Generates consumer creditworthiness scores for lenders.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Credit scoring",
+      "sector": "Fintech",
+      "annex_iii_area": "III.5.b"
+    },
+    "credit_scoring_deployer": {
+      "name": "BankCo loan underwriting",
+      "description": "A bank deploying a third-party credit scoring model for consumer loan decisions.",
+      "roles": [
+        "deployer"
+      ],
+      "purpose": "Loan underwriting",
+      "sector": "Banking",
+      "annex_iii_area": "III.5.b"
+    },
+    "cv_screening": {
+      "name": "TalentRank CV Screener",
+      "description": "Ranks and filters job applicants from CV text for human reviewers.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Employment selection and candidate screening",
+      "sector": "HR technology",
+      "annex_iii_area": "III.4.a"
+    },
+    "proctoring_education": {
+      "name": "ExamWatch",
+      "description": "Monitors students via webcam to detect prohibited behaviour during online exams.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Exam proctoring",
+      "sector": "EdTech",
+      "annex_iii_area": "III.3.d"
+    },
+    "law_enforcement": {
+      "name": "CrimePredict",
+      "description": "Assesses the risk of reoffending to support law-enforcement decisions.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Reoffending-risk assessment",
+      "sector": "Public safety",
+      "annex_iii_area": "III.6.d"
+    },
+    "ambiguous_use_case": {
+      "name": "InsightEngine",
+      "description": "A general analytics tool that may fall within an Annex III area; the specific point is unsettled.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Analytics",
+      "sector": "Cross-industry",
+      "annex_iii_area": "III.unsure"
+    },
+    "employment_derogation": {
+      "name": "ShiftSorter",
+      "description": "Routes incoming applications into role folders. No scoring, ranking or profiling.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Application routing",
+      "sector": "HR technology",
+      "annex_iii_area": "III.4.a",
+      "derogation": {
+        "narrow_procedural_task": true,
+        "performs_profiling": false
+      }
+    },
+    "foundation_model_unknown_compute": {
+      "name": "Nimbus-Base",
+      "description": "General-purpose model; training compute not disclosed by the provider.",
+      "roles": [
+        "gpai_provider"
+      ],
+      "purpose": "General-purpose generation",
+      "sector": "AI",
+      "is_gpai_model": true
+    },
+    "support_chatbot": {
+      "name": "HelpDesk Assistant",
+      "description": "Customer support chatbot answering product questions in-app.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Customer support",
+      "sector": "SaaS",
+      "interacts_with_natural_persons": true
+    },
+    "deepfake_generator": {
+      "name": "FaceSwap Studio",
+      "description": "Lets users generate deepfake videos depicting real people.",
+      "roles": [
+        "deployer"
+      ],
+      "purpose": "Synthetic media generation",
+      "sector": "Media",
+      "generates_deepfakes": true
+    },
+    "spam_filter": {
+      "name": "InboxGuard",
+      "description": "Classifies inbound email as spam or not spam.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Email filtering",
+      "sector": "SaaS"
+    },
+    "gpai_non_systemic": {
+      "name": "NexusLite-13B",
+      "description": "General-purpose foundation model for lightweight NLP classification tasks.",
+      "roles": [
+        "gpai_provider",
+        "provider"
+      ],
+      "purpose": "Text classification and sentiment analysis",
+      "sector": "AI-Analytics",
+      "is_gpai_model": true,
+      "training_flops": 1e+24
+    },
+    "gpai_systemic_by_flops": {
+      "name": "NexusUltra-Large",
+      "description": "General-purpose foundation model trained on massive corpus with high reasoning capacity.",
+      "roles": [
+        "gpai_provider",
+        "provider"
+      ],
+      "purpose": "Multimodal text and reasoning generation",
+      "sector": "AI-Research",
+      "is_gpai_model": true,
+      "training_flops": 2e+25
+    },
+    "gpai_systemic_designated": {
+      "name": "NexusCustom-Reason",
+      "description": "General-purpose model fine-tuned for chemical synthesis planning, designated as systemic due to high potential for misuse.",
+      "roles": [
+        "gpai_provider",
+        "provider"
+      ],
+      "purpose": "Chemical formulation support",
+      "sector": "Scientific-Inference",
+      "is_gpai_model": true,
+      "training_flops": 1e+24,
+      "gpai_systemic_risk_designated": true
+    },
+    "foundation_model_systemic": {
+      "name": "Atlas-70B",
+      "description": "General-purpose foundation model offered via API to downstream developers.",
+      "roles": [
+        "gpai_provider",
+        "provider"
+      ],
+      "purpose": "General-purpose text generation",
+      "sector": "AI",
+      "is_gpai_model": true,
+      "training_flops": 5e+25
+    }
+  }
+}

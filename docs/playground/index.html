@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Classify an AI system under the EU AI Act in your browser: risk tier, obligations with their articles, application dates and open review points. Deterministic rules, nothing you paste leaves the page. Not legal advice.">
+<link rel="canonical" href="https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="eu-ai-act-classifier">
+<meta property="og:url" content="https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/">
+<meta property="og:title" content="EU AI Act Classifier: run it in your browser">
+<meta property="og:description" content="Risk tier, obligations with their articles, application dates and open review points. Deterministic rules, nothing you paste leaves the page. Not legal advice.">
+<meta property="og:image" content="https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="EU AI Act Classifier: a high-risk classification with cited obligations under Articles 9 to 15.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="EU AI Act Classifier: run it in your browser">
+<meta name="twitter:description" content="Risk tier, obligations with their articles, application dates and open review points. Deterministic rules, nothing you paste leaves the page. Not legal advice.">
+<meta name="twitter:image" content="https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/og.png">
+<title>EU AI Act Classifier: Playground</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#workspace">Skip to profile</a>
+<header class="site-header">
+  <a class="brand" href="./" aria-label="EU AI Act Classifier home"><span class="brand-mark" aria-hidden="true">A<span>✓</span></span><span>EU AI Act <strong>Classifier</strong></span></a>
+  <nav aria-label="Resources"><span class="local-badge"><span aria-hidden="true">●</span> Runs in your browser</span><a href="https://github.com/sebastianfoerste/eu-ai-act-classifier">View source <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main>
+  <section class="intro" aria-labelledby="page-title">
+    <div><p class="eyebrow">EU AI ACT · FIRST-PASS TRIAGE</p><h1 id="page-title">A cited first pass.<br><span>A lawyer confirms.</span></h1><p class="intro-copy">Get the risk tier under Regulation (EU) 2024/1689, the obligations that follow, application dates and open review points.<br class="desktop-break"> Every result carries its article and a review status.</p></div>
+    <aside class="scope-note"><span class="note-label">BUILT FOR REVIEW</span><p>Deterministic rules.<br>Human judgment.</p><span>The engine applies rules to characterised facts. It does not decide disputed intended purpose, operator role or deployment scope.</span></aside>
+  </section>
+  <ol class="steps" aria-label="Review workflow"><li><span>01</span> Describe the system</li><li><span>02</span> Classify</li><li><span>03</span> Review &amp; export</li></ol>
+
+  <div class="workspace" id="workspace">
+    <section class="panel draft-panel" aria-labelledby="draft-heading">
+      <div class="panel-heading"><div><span class="eyebrow">INPUT</span><h2 id="draft-heading">System profile</h2></div><span class="file-badge">JSON</span></div>
+      <div class="draft-controls">
+        <label for="example">Start with a synthetic example</label>
+        <div class="example-row"><select id="example"></select><button id="load-example" disabled>Load</button></div>
+        <div class="import-row"><button id="import" class="text-button">↑ Import JSON</button><span>Local file · up to 1 MB</span><input type="file" id="file" accept=".json,application/json" hidden></div>
+        <p id="sample-error" class="error" role="alert" hidden></p>
+      </div>
+      <div class="editor-heading"><label for="input">Profile JSON</label><button class="text-button" id="format">Format JSON</button></div>
+      <textarea id="input" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="draft-help input-error" placeholder='{"name": "My system", "roles": ["provider"], "annex_iii_area": "III.4.a"}'></textarea>
+      <div class="editor-meta"><span id="summary">Describe the system</span><span id="size">0 KB</span></div>
+      <p id="input-error" class="error" role="alert" hidden></p>
+      <label class="advisory-toggle"><input type="checkbox" id="advisory"> Include nonbinding Commission guidance notes</label>
+      <div class="run-area"><button class="primary" id="classify" disabled>Classify <span aria-hidden="true">↗</span></button><span class="shortcut">⌘ / Ctrl + Enter</span></div>
+      <div class="runtime"><span class="status-dot" id="status-dot" aria-hidden="true"></span><span id="status" role="status">Preparing the rule engine…</span><button id="retry" class="text-button" hidden>Retry</button></div>
+      <p class="draft-help" id="draft-help">Your profile stays in this tab and is cleared when you close it. The runtime downloads on first use. Use synthetic or public facts in this demo.</p>
+      <button id="download-draft" class="text-button save-draft">↓ Save profile JSON</button>
+      <details class="field-guide" id="field-guide-panel">
+        <summary>Field guide <span>Every field the classifier reads</span></summary>
+        <p class="field-guide-intro">Omitted fields take the defaults shown. Unknown fields are rejected, so a typo cannot pass silently.</p>
+        <div id="field-guide"><p class="field-guide-intro">Loading fields…</p></div>
+      </details>
+    </section>
+
+    <section class="panel results-panel" aria-labelledby="results-heading" aria-busy="false">
+      <div class="panel-heading"><div><span class="eyebrow">OUTPUT</span><h2 id="results-heading">Classification</h2></div><span class="file-badge" id="result-state">Awaiting classification</span></div>
+      <div id="empty" class="empty-state"><div class="document-icon" aria-hidden="true"><span></span><span></span><span></span><b>✓</b></div><h3>Your classification starts here</h3><p>Load an example or paste a profile,<br>then classify it to see the tier, obligations and review points.</p><div class="legend"><span class="badge tone-red">Prohibited</span><span class="badge tone-amber">High-risk</span><span class="badge tone-blue">Limited risk</span><span class="badge tone-green">Minimal risk</span></div><p class="empty-footnote">Cited rules. No language model in the classification path.</p></div>
+      <div id="results" hidden>
+        <div class="report-heading"><h3 id="report-title"></h3><p id="report-meta"></p></div>
+        <p id="stale" class="notice" role="status" hidden>Profile changed. Classify again to refresh this result and enable export.</p>
+        <div class="tier-card" id="tier-card"><div><span class="eyebrow">RISK TIER</span><p class="tier-label" id="tier-label"></p><p class="tier-basis" id="tier-basis"></p></div><span class="badge" id="disposition"></span></div>
+        <p class="review-boundary" id="review-boundary"></p>
+        <div class="metrics" aria-label="Report summary"><div><span id="count-findings">0</span><label>Findings</label></div><div><span id="count-obligations">0</span><label>Obligations</label></div><div><span id="count-questions">0</span><label>Open questions</label></div><div><span id="count-unverified">0</span><label>Citations to verify</label></div></div>
+        <div class="finding-toolbar"><label for="search" class="sr-only">Search articles, obligations or findings</label><input id="search" type="search" placeholder="Search articles, obligations or findings…"></div>
+        <p id="visible-count" class="visible-count" role="status"></p>
+        <div id="sections" class="findings"></div>
+        <div class="export-bar"><span>Take the review with you</span><div><button id="export-json" disabled>↓ JSON report</button><button id="export-text" disabled>↓ Text report</button></div></div>
+      </div>
+      <p id="run-error" class="error" role="alert" hidden></p>
+    </section>
+  </div>
+  <section class="explainer" aria-label="How to read the result"><div><span class="badge tone-green">Determined</span><p>The engine reached a tier from the facts as characterised. A lawyer still confirms the characterisation and the result before anyone relies on it.</p></div><div><span class="badge tone-amber">Requires review</span><p>The outcome turns on facts the engine cannot settle. Each open question names the article and the fact to confirm.</p></div><div><span class="badge tone-red">noch zu verifizieren</span><p>A citation still pending verification against the official text. It is listed separately; check it before relying on it.</p></div></section>
+</main>
+<footer><span>EU AI Act Classifier <span class="footer-dot">·</span> Open source, MIT license</span><span>First-pass screening · Not legal advice <a href="https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng">Read the AI Act ↗</a></span></footer>
+<noscript><p class="error">JavaScript is required for the browser classifier. You can also use the Python CLI linked under View source.</p></noscript>
+<script type="module" src="app.mjs" data-wheel="eu_ai_act_classifier-0.2.0-py3-none-any.whl"></script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+{
+  "version": "0.2.0",
+  "groups": [
+    {
+      "label": "System",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string",
+          "default": null,
+          "hint": "Required. Shown as the system name in the report."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "default": "",
+          "hint": ""
+        },
+        {
+          "name": "roles",
+          "type": "list",
+          "default": [
+            "provider"
+          ],
+          "hint": "Operator roles under the AIA. A single company often holds several.",
+          "options": [
+            {
+              "value": "provider",
+              "label": "Provider"
+            },
+            {
+              "value": "deployer",
+              "label": "Deployer"
+            },
+            {
+              "value": "importer",
+              "label": "Importer"
+            },
+            {
+              "value": "distributor",
+              "label": "Distributor"
+            },
+            {
+              "value": "authorized_representative",
+              "label": "Authorized representative"
+            },
+            {
+              "value": "gpai_provider",
+              "label": "Gpai provider"
+            }
+          ]
+        },
+        {
+          "name": "purpose",
+          "type": "string",
+          "default": "",
+          "hint": ""
+        },
+        {
+          "name": "sector",
+          "type": "string",
+          "default": "",
+          "hint": ""
+        }
+      ]
+    },
+    {
+      "label": "Scope and intake",
+      "fields": [
+        {
+          "name": "is_ai_system",
+          "type": "boolean or null",
+          "default": true,
+          "hint": "Treated as an in-scope AI system unless set otherwise."
+        },
+        {
+          "name": "intended_purpose_source",
+          "type": "string",
+          "default": "",
+          "hint": ""
+        },
+        {
+          "name": "eu_nexus",
+          "type": "boolean or null",
+          "default": true,
+          "hint": ""
+        },
+        {
+          "name": "excluded_use_flags",
+          "type": "list",
+          "default": [],
+          "hint": "Scope exclusions or carve-outs that need visible review.",
+          "options": [
+            {
+              "value": "military_defence_national_security",
+              "label": "Military defence national security"
+            },
+            {
+              "value": "research_development_testing",
+              "label": "Research development testing"
+            },
+            {
+              "value": "personal_non_professional",
+              "label": "Personal non professional"
+            },
+            {
+              "value": "free_open_source",
+              "label": "Free open source"
+            }
+          ]
+        },
+        {
+          "name": "placing_on_market_date",
+          "type": "string or null",
+          "default": null,
+          "hint": "ISO date, for transitional status."
+        },
+        {
+          "name": "putting_into_service_date",
+          "type": "string or null",
+          "default": null,
+          "hint": "ISO date, for transitional status."
+        },
+        {
+          "name": "significant_change_after_application_date",
+          "type": "boolean or null",
+          "default": null,
+          "hint": ""
+        },
+        {
+          "name": "public_authority_use",
+          "type": "boolean",
+          "default": false,
+          "hint": ""
+        },
+        {
+          "name": "deployer_public_law_body",
+          "type": "boolean or null",
+          "default": null,
+          "hint": "Art. 27 AIA: fundamental rights impact assessment."
+        },
+        {
+          "name": "deployer_private_public_service",
+          "type": "boolean or null",
+          "default": null,
+          "hint": "Art. 27 AIA: fundamental rights impact assessment."
+        },
+        {
+          "name": "provider_established_outside_eu",
+          "type": "boolean",
+          "default": false,
+          "hint": "Art. 22 AIA: authorised representative."
+        },
+        {
+          "name": "has_authorised_representative",
+          "type": "boolean or null",
+          "default": null,
+          "hint": "Art. 22 AIA."
+        },
+        {
+          "name": "substantially_modifies_system",
+          "type": "boolean",
+          "default": false,
+          "hint": "Value-chain obligations."
+        },
+        {
+          "name": "puts_name_or_trademark_on_system",
+          "type": "boolean",
+          "default": false,
+          "hint": "Value-chain obligations."
+        }
+      ]
+    },
+    {
+      "label": "General-purpose AI model (Chapter V AIA)",
+      "fields": [
+        {
+          "name": "is_gpai_model",
+          "type": "boolean",
+          "default": false,
+          "hint": ""
+        },
+        {
+          "name": "training_flops",
+          "type": "number or null",
+          "default": null,
+          "hint": "Cumulative training compute in FLOP; drives Art. 51(2) AIA."
+        },
+        {
+          "name": "gpai_systemic_risk_designated",
+          "type": "boolean",
+          "default": false,
+          "hint": "Commission designation under Art. 51(1)(b) AIA."
+        }
+      ]
+    },
+    {
+      "label": "Prohibited-practice screens (Art. 5(1) AIA)",
+      "fields": [
+        {
+          "name": "prohibited_practices",
+          "type": "list",
+          "default": [],
+          "hint": "Keyed to the letters of Art. 5(1) AIA.",
+          "options": [
+            {
+              "value": "5.1.a",
+              "label": "Subliminal manipulation"
+            },
+            {
+              "value": "5.1.b",
+              "label": "Exploits vulnerabilities"
+            },
+            {
+              "value": "5.1.c",
+              "label": "Social scoring"
+            },
+            {
+              "value": "5.1.d",
+              "label": "Predictive policing individual"
+            },
+            {
+              "value": "5.1.e",
+              "label": "Facial scraping"
+            },
+            {
+              "value": "5.1.f",
+              "label": "Emotion recognition work education"
+            },
+            {
+              "value": "5.1.g",
+              "label": "Biometric categorisation sensitive"
+            },
+            {
+              "value": "5.1.h",
+              "label": "Realtime remote biometric id"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "High-risk screens (Art. 6 AIA)",
+      "fields": [
+        {
+          "name": "annex_i_safety_component",
+          "type": "boolean",
+          "default": false,
+          "hint": "Art. 6(1)(a): product or safety component."
+        },
+        {
+          "name": "annex_i_third_party_assessment",
+          "type": "boolean",
+          "default": false,
+          "hint": "Art. 6(1)(b): third-party conformity assessment."
+        },
+        {
+          "name": "annex_iii_area",
+          "type": "choice",
+          "default": null,
+          "hint": "Art. 6(2) and Annex III. III.unsure: an area is implicated but the point is unsettled; treated as high-risk and routed to review.",
+          "options": [
+            {
+              "value": "III.1.a",
+              "label": "Biometrics remote id"
+            },
+            {
+              "value": "III.1.b",
+              "label": "Biometrics categorisation"
+            },
+            {
+              "value": "III.1.c",
+              "label": "Biometrics emotion"
+            },
+            {
+              "value": "III.2",
+              "label": "Critical infrastructure"
+            },
+            {
+              "value": "III.3.a",
+              "label": "Education access"
+            },
+            {
+              "value": "III.3.b",
+              "label": "Education evaluation"
+            },
+            {
+              "value": "III.3.c",
+              "label": "Education assessment level"
+            },
+            {
+              "value": "III.3.d",
+              "label": "Education proctoring"
+            },
+            {
+              "value": "III.4.a",
+              "label": "Employment selection"
+            },
+            {
+              "value": "III.4.b",
+              "label": "Employment management"
+            },
+            {
+              "value": "III.5.a",
+              "label": "Essential public benefits"
+            },
+            {
+              "value": "III.5.b",
+              "label": "Creditworthiness"
+            },
+            {
+              "value": "III.5.c",
+              "label": "Insurance life health"
+            },
+            {
+              "value": "III.5.d",
+              "label": "Emergency dispatch"
+            },
+            {
+              "value": "III.6.a",
+              "label": "Law enforcement victim risk"
+            },
+            {
+              "value": "III.6.b",
+              "label": "Law enforcement polygraph"
+            },
+            {
+              "value": "III.6.c",
+              "label": "Law enforcement evidence reliability"
+            },
+            {
+              "value": "III.6.d",
+              "label": "Law enforcement reoffending risk"
+            },
+            {
+              "value": "III.6.e",
+              "label": "Law enforcement profiling"
+            },
+            {
+              "value": "III.7.a",
+              "label": "Migration polygraph"
+            },
+            {
+              "value": "III.7.b",
+              "label": "Migration risk assessment"
+            },
+            {
+              "value": "III.7.c",
+              "label": "Migration application examination"
+            },
+            {
+              "value": "III.7.d",
+              "label": "Migration identification"
+            },
+            {
+              "value": "III.8.a",
+              "label": "Justice"
+            },
+            {
+              "value": "III.8.b",
+              "label": "Democratic processes"
+            },
+            {
+              "value": "III.unsure",
+              "label": "Unsure"
+            }
+          ]
+        },
+        {
+          "name": "derogation",
+          "type": "object",
+          "default": {
+            "narrow_procedural_task": false,
+            "improves_prior_human_activity": false,
+            "detects_patterns_without_replacing_human": false,
+            "preparatory_task": false,
+            "performs_profiling": false
+          },
+          "hint": "Art. 6(3) AIA derogation facts. Profiling always keeps the system high-risk.",
+          "keys": [
+            "narrow_procedural_task",
+            "improves_prior_human_activity",
+            "detects_patterns_without_replacing_human",
+            "preparatory_task",
+            "performs_profiling"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Transparency screens (Art. 50 AIA)",
+      "fields": [
+        {
+          "name": "interacts_with_natural_persons",
+          "type": "boolean",
+          "default": false,
+          "hint": "Art. 50(1) AIA."
+        },
+        {
+          "name": "generates_synthetic_content",
+          "type": "boolean",
+          "default": false,
+          "hint": "Art. 50(2) AIA."
+        },
+        {
+          "name": "deploys_emotion_or_biometric_categorisation",
+          "type": "boolean",
+          "default": false,
+          "hint": "Art. 50(3) AIA."
+        },
+        {
+          "name": "generates_deepfakes",
+          "type": "boolean",
+          "default": false,
+          "hint": "Art. 50(4) AIA."
+        }
+      ]
+    }
+  ]
+}
