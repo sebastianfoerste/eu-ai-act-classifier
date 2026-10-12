@@ -12,6 +12,10 @@ open legal questions.
 The proof is legal engineering discipline: characterised facts in, source-backed
 outputs out, and review gates where the engine cannot settle the fact pattern.
 
+## Browser Path
+
+The fastest route needs no install: open the [browser playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/), load an example such as CV screening or the ambiguous use case, and classify it. The page runs the same package as the CLI.
+
 ## Local Launch Path
 
 ```bash
@@ -37,6 +41,7 @@ npm run dev
 uv run ruff check .
 uv run ruff format --check .
 uv run pytest
+node --test tests/playground/*.test.mjs
 cd web && npm run build
 cd web && npm audit --json
 ```
@@ -59,7 +64,7 @@ obligation graph and artifact posture.
 
 Review these surfaces:
 
-1. `README.md`
+1. `README.md` and the browser playground
 2. `docs/methodology.md`
 3. `src/eu_ai_act_classifier/engine.py`
 4. `src/eu_ai_act_classifier/obligation_graph.py`
