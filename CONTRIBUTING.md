@@ -12,9 +12,10 @@ This is a personal, public-safe prototype. Issues and corrections are welcome.
 ## Working on it
 
 ```bash
-make install
-make test     # must pass before any PR
-make demo     # regenerate examples/ if output changed, and commit it
+uv sync --extra dev
+uv run ruff check . && uv run ruff format --check .
+uv run pytest                                  # must pass before any PR
+uv run python scripts/build_playground.py      # after any rule change, then commit the result
 ```
 
 ## Reporting an issue
