@@ -25,21 +25,18 @@ Add the following configuration to the `mcpServers` object:
 {
   "mcpServers": {
     "eu-ai-act-classifier": {
-      "command": "python",
+      "command": "/path/to/eu-ai-act-classifier/.venv/bin/python",
       "args": [
         "-m",
         "eu_ai_act_classifier.mcp_server"
-      ],
-      "env": {
-        "PYTHONPATH": "/Users/sebastian/Developer/eu-ai-act-classifier/src"
-      }
+      ]
     }
   }
 }
 ```
 
 > [!NOTE]
-> Adjust the `PYTHONPATH` or use the absolute path to your python executable inside the virtual environment (e.g. `/Users/sebastian/Developer/eu-ai-act-classifier/.venv/bin/python`) if needed.
+> Replace `/path/to/eu-ai-act-classifier` with the absolute path of your clone. The virtual environment's Python already has the package and the `mcp` extra installed, so no `PYTHONPATH` is needed.
 
 ## Configuration for Cursor / VS Code
 
@@ -50,11 +47,13 @@ In Cursor, you can configure the MCP server by navigating to:
 2. Fill in the fields:
    - **Name**: `eu-ai-act-classifier`
    - **Type**: `command`
-   - **Command**: `/Users/sebastian/Developer/eu-ai-act-classifier/.venv/bin/python -m eu_ai_act_classifier.mcp_server`
+   - **Command**: `/path/to/eu-ai-act-classifier/.venv/bin/python -m eu_ai_act_classifier.mcp_server`
 
 ## Verification
 
 Once configured, the following tools will be made available to your assistant:
 
-1. `eu_ai_act_classify_profile`: Takes a structured system profile (JSON) and returns a complete risk-tier classification and obligation report.
-2. `eu_ai_act_get_timeline`: Exposes the Article 113 implementation timeline.
+1. `classify_ai_system`: takes a `SystemProfile` object and returns the `ClassificationReport` as JSON: risk tier, disposition, obligations with article citations, documentation, the application timeline, open questions for review and citations pending verification.
+2. `classify_ai_system_text`: the same classification as the human-readable report the CLI prints.
+
+Both accept `include_advisory` to add the nonbinding Commission guidance notes.
