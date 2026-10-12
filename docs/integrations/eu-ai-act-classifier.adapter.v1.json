@@ -1,0 +1,19 @@
+{
+  "schema": "specialist-adapter.v1",
+  "adapterId": "eu-ai-act-classifier",
+  "direction": "specialist-to-toolkit",
+  "sourceRepo": "../eu-ai-act-classifier",
+  "sourceCommit": "65d2b1218dbc1aa2d4e8e287fad56adfb618d355",
+  "proofContract": "contracts/eu-ai-act-classifier.proof.v1.json",
+  "requiredProofSchema": "eu-ai-act-classifier.proof.v1",
+  "interfaces": [
+    "classify_ai_system",
+    "classify_ai_system_text"
+  ],
+  "outputContract": "ClassificationReport",
+  "sourceCurrencyDate": "2026-08-26",
+  "reviewBoundary": {
+    "humanReviewRequired": true,
+    "externalActionAllowed": false
+  }
+}
