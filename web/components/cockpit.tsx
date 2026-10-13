@@ -801,7 +801,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
           <strong>{inventory.reviewTable.reviewTableScale.columnCount}</strong>
         </div>
         <div>
-          <span>Vault docs</span>
+          <span>Document cap</span>
           <strong>{inventory.reviewTable.reviewTableScale.maxVaultDocuments}</strong>
         </div>
         <div>

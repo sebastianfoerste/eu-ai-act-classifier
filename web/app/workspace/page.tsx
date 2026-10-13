@@ -31,7 +31,7 @@ export default async function PortfolioWorkspacePage() {
     <main className="mx-auto max-w-6xl space-y-6 p-6">
       <header>
         <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">AI system portfolio</p>
-        <h1 className="mt-1 text-2xl font-semibold">System vault and fleet command center</h1>
+        <h1 className="mt-1 text-2xl font-semibold">System register and fleet command center</h1>
         <p className="mt-2 max-w-3xl text-sm text-zinc-600">Deterministic inventory analytics, guided assessment workflows and draft-only evidence packs for qualified review.</p>
       </header>
 
@@ -58,7 +58,7 @@ export default async function PortfolioWorkspacePage() {
 
       <section className="grid gap-4 md:grid-cols-2">
         <article className="rounded-lg border border-zinc-200 bg-white p-4">
-          <h2 className="font-semibold">AI system vault</h2>
+          <h2 className="font-semibold">AI system register</h2>
           <p className="mt-1 text-sm text-zinc-600">{workspace.vault.records.length} systems, {workspace.vault.verified_source_count} complete source manifests, {workspace.vault.open_source_count} open.</p>
           <ul className="mt-4 space-y-2 text-sm">{workspace.vault.records.map((record) => <li key={record.system_id} className="rounded bg-zinc-50 p-3"><strong>{record.name}</strong><div className="text-xs text-zinc-500">{record.role} · {record.artifact_refs.length} draft artifacts</div></li>)}</ul>
         </article>

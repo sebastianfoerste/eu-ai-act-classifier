@@ -101,7 +101,7 @@ echo '{"profile":{"name":"x"}}' | eu-ai-act-local-api dossier
 
 The bridge exposes schema, inventory, classify, sources, workspace, artifacts and dossier commands. It keeps the Python classifier as the legal source of truth.
 
-`eu-ai-act-local-api workspace` and `/workspace` expose the same deterministic portfolio workspace: an AI-system vault, guided assessment workflows and a fleet command center. All deployment and external-use decisions remain review-gated.
+`eu-ai-act-local-api workspace` and `/workspace` expose the same deterministic portfolio workspace: an AI-system register, guided assessment workflows and a fleet command center. All deployment and external-use decisions remain review-gated.
 
 The inventory payload includes a system review table with classifier-backed rows,
 source status, open facts, obligations, draft artifacts and review state.
