@@ -50,7 +50,7 @@ Obligations:
   - Art. 11 AIA: Technical documentation.
 ```
 
-In the sample run, every tier and obligation is cited to an Article and carries an explicit review status.
+In the sample run, the risk tier and every obligation are cited to an Article, the report states a disposition, and each obligation-graph item carries its own review status (`review: determined` or `review: review_required`).
 
 ![Actual CLI output for examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with the 14 provider obligations from Art. 9 to Art. 73 AIA](docs/demo.png)
 
@@ -79,7 +79,7 @@ Then inspect `/tmp/eu-ai-act-draft-pack`. The generated files are draft review a
 
 ## Source Statuses
 
-Reports and draft artifacts use a versioned source manifest. The current binding layer includes Regulation (EU) 2024/1689 as consolidated on 27 July 2026 and Regulation (EU) 2026/1744. Any future provisional material and nonbinding guidance remain separately labelled. Guidance overlays are advisory notes and do not override the binding classification logic.
+Reports and draft artifacts use a versioned source manifest. The current binding layer includes Regulation (EU) 2024/1689 as consolidated on 27 July 2026 and Regulation (EU) 2026/1744. The rules encode the amending regulation only in part; the [claim ledger](docs/REGULATORY_CLAIM_LEDGER.md) lists what is and is not encoded. Any future provisional material and nonbinding guidance remain separately labelled. Guidance overlays are advisory notes and do not override the binding classification logic.
 
 ## MCP And Local API
 
