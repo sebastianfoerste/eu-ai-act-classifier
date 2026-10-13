@@ -52,7 +52,9 @@ Obligations:
 
 In the sample run, every tier and obligation is cited to an Article and carries an explicit review status.
 
-![CLI sample output: CreditSightScore classified high-risk with Articles 9, 10 and 11 obligations](docs/demo.png)
+![Actual CLI output for examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with the 14 provider obligations from Art. 9 to Art. 73 AIA](docs/demo.png)
+
+*Actual output of `uv run python -m src.eu_ai_act_classifier.cli examples/credit_scoring.json`, rendered as an image. It shows the first 30 of 76 lines; the full output is in [`examples/classification-packet.md`](examples/classification-packet.md).*
 
 ## What it checks / does
 
@@ -108,7 +110,9 @@ public-facing use remains review-gated.
 
 ## Optional Web Cockpit
 
-![Web cockpit: a guided intake for CreditSightScore classified high-risk, with the system inventory, risk map, reviewer notes, source provenance, the Article 9-15 obligation tracker and a draft export pack](docs/cockpit.png)
+![Screenshot of the local web cockpit with the CreditSightScore sample: system inventory, guided intake, review panel showing determined with 0 open questions, reviewer notes, an obligation tracker with 16 graph items from Art. 16 AIA, source provenance and a draft export pack](docs/cockpit.png)
+
+*Screenshot of the local web cockpit (`web/`) with the CreditSightScore sample loaded.*
 
 The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
 
