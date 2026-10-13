@@ -77,7 +77,7 @@ Then inspect `/tmp/eu-ai-act-draft-pack`. The generated files are draft review a
 
 ## Source Statuses
 
-Reports and draft artifacts use a versioned source manifest. The current binding layer includes Regulation (EU) 2024/1689 as consolidated on 27 July 2026 and Regulation (EU) 2026/1744. Any future provisional material and nonbinding guidance remain separately labelled. Guidance overlays are advisory notes and do not override the binding classification logic.
+Reports and draft artifacts use a versioned source manifest. The current binding layer is Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744. The consolidated version of 27 July 2026 serves as the navigation text; it has no legal effect of its own. Any future provisional material and nonbinding guidance remain separately labelled. Guidance overlays are advisory notes and do not override the binding classification logic.
 
 ## MCP And Local API
 

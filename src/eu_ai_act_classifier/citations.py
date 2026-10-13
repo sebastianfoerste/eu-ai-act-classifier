@@ -182,9 +182,13 @@ class ApplicationDate:
 
 APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ApplicationDate(
-        "Chapters I-II, incl. Art. 5 (prohibited practices)",
+        "Chapters I-II, incl. Art. 5 (prohibited practices), with 2026/1744 exceptions",
         "2025-02-02",
-        "Prohibitions apply from 2 February 2025 (Art. 113(a) AIA).",
+        (
+            "Chapters I and II apply from 2 February 2025, except Art. 5(1), first "
+            "subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b) (Art. 113, third "
+            "paragraph, point (a) AIA, as amended by Regulation (EU) 2026/1744)."
+        ),
     ),
     ApplicationDate(
         "Chapter V (general-purpose AI models)",
@@ -204,22 +208,60 @@ APPLICATION_DATES: tuple[ApplicationDate, ...] = (
 
 AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ApplicationDate(
-        "Regulation (EU) 2026/1744: Annex III high-risk systems",
-        "2027-12-02",
+        "Arts. 102 to 110 (amendments to other Union acts)",
+        "2026-07-27",
         (
-            "Regulation (EU) 2026/1744 sets 2 December 2027 for the relevant Annex III "
-            "high-risk system provisions."
+            "Articles 102 to 110 apply from 27 July 2026 (Art. 113, third paragraph, "
+            "point (d) AIA, as added by Regulation (EU) 2026/1744)."
         ),
         SourceStatus.BINDING_LEVEL_1,
         "ai-act-amendment-2026-1744",
         AI_ACT_AMENDMENT_URL,
     ),
     ApplicationDate(
-        "Regulation (EU) 2026/1744: product-embedded high-risk systems",
+        "Art. 5(1)(ba), (bb), (1a), (1b) (prohibitions added by Reg. (EU) 2026/1744)",
+        "2026-12-02",
+        (
+            "Art. 5(1), first subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b) "
+            "apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA, as "
+            "amended by Regulation (EU) 2026/1744). The classifier does not yet encode "
+            "these prohibitions."
+        ),
+        SourceStatus.BINDING_LEVEL_1,
+        "ai-act-amendment-2026-1744",
+        AI_ACT_AMENDMENT_URL,
+    ),
+    ApplicationDate(
+        "Art. 50(2) for generative AI systems placed on the market before 2026-08-02",
+        "2026-12-02",
+        (
+            "Providers of AI systems generating synthetic audio, image, video or text "
+            "content placed on the market before 2 August 2026 must comply with Art. 50(2) "
+            "by 2 December 2026 (Art. 111(4) AIA, as added by Regulation (EU) 2026/1744)."
+        ),
+        SourceStatus.BINDING_LEVEL_1,
+        "ai-act-amendment-2026-1744",
+        AI_ACT_AMENDMENT_URL,
+    ),
+    ApplicationDate(
+        "Chapter III, Sections 1 to 3: Art. 6(2) and Annex III high-risk systems",
+        "2027-12-02",
+        (
+            "Chapter III, Sections 1 to 3, except Art. 6(5), apply from 2 December 2027 to "
+            "AI systems classified as high-risk under Art. 6(2) and Annex III (Art. 113, "
+            "third paragraph, point (c)(i) AIA, as amended by Regulation (EU) 2026/1744)."
+        ),
+        SourceStatus.BINDING_LEVEL_1,
+        "ai-act-amendment-2026-1744",
+        AI_ACT_AMENDMENT_URL,
+    ),
+    ApplicationDate(
+        "Chapter III, Sections 1 to 3: Art. 6(1) and Annex I high-risk systems",
         "2028-08-02",
         (
-            "Regulation (EU) 2026/1744 sets 2 August 2028 for the relevant product-embedded "
-            "high-risk system provisions."
+            "Chapter III, Sections 1 to 3, except Art. 6(5), apply from 2 August 2028 to "
+            "AI systems classified as high-risk under Art. 6(1) and Annex I (Art. 113, "
+            "third paragraph, point (c)(ii) AIA, as amended by Regulation (EU) 2026/1744)."
         ),
         SourceStatus.BINDING_LEVEL_1,
         "ai-act-amendment-2026-1744",

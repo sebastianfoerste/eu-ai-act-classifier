@@ -34,11 +34,14 @@ Obligation graph:
   - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan, review: draft
 
 Binding application timeline:
-  2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
+  2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices), with 2026/1744 exceptions
   2025-08-02: Chapter V (general-purpose AI models)
+  2026-07-27: Arts. 102 to 110 (amendments to other Union acts)
   2026-08-02: General application for provisions without a later specific date
-  2027-12-02: Regulation (EU) 2026/1744: Annex III high-risk systems
-  2028-08-02: Regulation (EU) 2026/1744: product-embedded high-risk systems
+  2026-12-02: Art. 5(1)(ba), (bb), (1a), (1b) (prohibitions added by Reg. (EU) 2026/1744)
+  2026-12-02: Art. 50(2) for generative AI systems placed on the market before 2026-08-02
+  2027-12-02: Chapter III, Sections 1 to 3: Art. 6(2) and Annex III high-risk systems
+  2028-08-02: Chapter III, Sections 1 to 3: Art. 6(1) and Annex I high-risk systems
 
 Source manifest:
   - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
