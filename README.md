@@ -160,7 +160,7 @@ This is a screening tool for supervised legal review. It does not produce legal 
 
 ## Human-authored legal judgment
 
-AI tools assisted the implementation, but the parts that carry the value are human-authored: the Annex/Article mappings, the obligation set, and the prohibited-practice and review-status logic. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable.
+AI tools assisted the implementation and have drafted some changes to the mappings. The parts that carry the value are human legal judgment: the Annex/Article mappings, the obligation set, and the prohibited-practice and review-status logic are written by the author or, where AI-drafted, reviewed and adopted by the author before they merge. The worked examples carry their own AI-assistance disclosure. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable.
 
 ## Related
 
