@@ -23,7 +23,8 @@ dependencies = ["pydantic>=2.6"]
 
 [project.optional-dependencies]
 # The agent-callable surface. Kept optional so the core engine has no MCP dependency.
-mcp = ["mcp>=1.2"]
+# Capped below 2: mcp_server.py is built on mcp.server.fastmcp, which mcp 2.0 removed.
+mcp = ["mcp>=1.2,<2"]
 dev = ["pytest>=8.0", "ruff>=0.6"]
 
 [project.scripts]

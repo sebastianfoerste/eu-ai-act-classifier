@@ -81,11 +81,18 @@ Reports and draft artifacts use a versioned source manifest. The current binding
 
 ## MCP And Local API
 
-The MCP server remains available:
+For Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp). It serves this classifier as an MCP tool next to its MiCAR tools, and `uvx` runs it without a clone:
 
 ```bash
-uv pip install -e ".[mcp]"
-python -m eu_ai_act_classifier.mcp_server
+uvx --from 'eu-reg-mcp[classify,lint] @ git+https://github.com/sebastianfoerste/eu-reg-mcp' eu-reg-mcp
+```
+
+To register it with Claude Code, put `claude mcp add eu-reg --` in front of that command. The Claude Desktop configuration is in the [MCP configuration guide](docs/mcp-configuration-guide.md).
+
+This repository's own two-tool MCP server remains available as a secondary, local option. Its `[mcp]` extra pins `mcp>=1.2,<2`, because the server is built on `mcp.server.fastmcp`, which mcp 2.0 removed. Without a compatible `mcp`, the server exits with a message that names the pin and the eu-reg-mcp command.
+
+```bash
+uv run --extra mcp python -m eu_ai_act_classifier.mcp_server
 ```
 
 The local JSON bridge is used by the optional web cockpit:
