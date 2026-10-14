@@ -34,11 +34,15 @@ def build_server() -> Any:
     ) -> dict[str, Any]:
         """Classify an AI system under the EU AI Act (Reg (EU) 2024/1689).
 
-        `profile` is a SystemProfile object (name, roles, annex_iii_area,
-        prohibited_practices, is_gpai_model, training_flops, transparency
-        screens, …). Returns a ClassificationReport: risk tier, disposition,
-        obligations with article citations, required documentation, open
-        questions for review, and any citations pending verification.
+        `profile` is a SystemProfile object (name, roles, assessment_date,
+        placing_on_market_date, annex_i_legislation, annex_iii_area,
+        prohibited_practices, the intimate_imagery and
+        child_sexual_abuse_material screens for Art. 5(1)(ba) and (bb),
+        is_gpai_model, training_flops, transparency screens, …). Unknown facts
+        are null and route the result to review. Returns a
+        ClassificationReport: risk tier, disposition, obligations with article
+        citations, required documentation, open questions for review, and any
+        citations pending verification.
         """
         report = classify(SystemProfile.model_validate(profile), include_advisory=include_advisory)
         return report.model_dump(mode="json")
