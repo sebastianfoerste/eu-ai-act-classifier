@@ -23,6 +23,7 @@ Roles: provider
 Scope and intake:
   AI system: True
   EU nexus: True
+  Assessment date: not given
   Transitional status: No transitional limitation identified from the submitted facts.
 
 Findings:
@@ -36,16 +37,19 @@ Obligation graph:
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices), with 2026/1744 exceptions
   2025-08-02: Chapter V (general-purpose AI models)
+  2026-07-27: Art. 2(2) and Annex I as amended: machinery moved to Annex I, Section B
   2026-07-27: Arts. 102 to 110 (amendments to other Union acts)
   2026-08-02: General application for provisions without a later specific date
   2026-12-02: Art. 5(1)(ba), (bb), (1a), (1b) (prohibitions added by Reg. (EU) 2026/1744)
   2026-12-02: Art. 50(2) for generative AI systems placed on the market before 2026-08-02
+  2027-08-02: Art. 111(3): GPAI models placed on the market before 2025-08-02
   2027-12-02: Chapter III, Sections 1 to 3: Art. 6(2) and Annex III high-risk systems
   2028-08-02: Chapter III, Sections 1 to 3: Art. 6(1) and Annex I high-risk systems
 
 Source manifest:
   - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
   - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-08-26
+  - Directive 2011/93/EU: binding_level_1, retrieved 2026-10-14
 ```
 
 ## Artifact Draft
@@ -86,8 +90,15 @@ Selected fields:
       "obligation_id": "gpai.provider.53.a",
       "article": "Art. 53(1)(a) AIA",
       "actor": "gpai_provider",
-      "evidence_artifact": "GPAI model documentation checklist."
+      "evidence_artifact": "GPAI model documentation checklist.",
+      "application_date": "2027-08-02",
+      "applies_on_assessment_date": null
     }
   ]
 }
 ```
+
+The model was placed on the market on 2025-06-16, before 2 August 2025, so its
+Chapter V obligations apply from 2 August 2027 (Art. 111(3) AIA). Without a
+`placing_on_market_date` the application date is `null` and the report asks for
+it; without an `assessment_date`, `applies_on_assessment_date` stays `null`.

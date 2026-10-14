@@ -9,6 +9,7 @@
     "intended_purpose_source": "",
     "eu_nexus": true,
     "excluded_use_flags": [],
+    "assessment_date": null,
     "transitional_status": "No transitional limitation identified from the submitted facts.",
     "notes": []
   },
@@ -177,7 +178,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.17",
@@ -189,7 +191,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.18",
@@ -201,7 +204,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.19",
@@ -213,7 +217,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.20",
@@ -225,7 +230,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.21",
@@ -237,7 +243,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.40",
@@ -249,7 +256,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.41",
@@ -261,7 +269,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.42",
@@ -273,7 +282,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.43",
@@ -285,7 +295,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.44",
@@ -297,7 +308,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.47",
@@ -309,7 +321,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.48",
@@ -321,7 +334,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.49",
@@ -333,7 +347,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.72",
@@ -345,7 +360,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.73",
@@ -357,7 +373,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "applies_on_assessment_date": null
     }
   ],
   "timeline": [
@@ -378,6 +395,14 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
     },
     {
+      "provision": "Art. 2(2) and Annex I as amended: machinery moved to Annex I, Section B",
+      "applies_from": "2026-07-27",
+      "note": "Regulation (EU) 2026/1744 entered into force on 27 July 2026 (its Art. 4) and sets no later date for these amendments. Annex I, Section A, point 1 is deleted and Section B, point 21 (Regulation (EU) 2023/1230, machinery) is added (Art. 1(41)). For AI systems classified as high-risk under Art. 6(1) related to Section B products, only Art. 6(1), Art. 60a and Arts. 102 to 112 apply (Art. 2(2) AIA, as replaced by Art. 1(2)(a)).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-amendment-2026-1744",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
+    },
+    {
       "provision": "Arts. 102 to 110 (amendments to other Union acts)",
       "applies_from": "2026-07-27",
       "note": "Articles 102 to 110 apply from 27 July 2026 (Art. 113, third paragraph, point (d) AIA, as added by Regulation (EU) 2026/1744).",
@@ -396,7 +421,7 @@
     {
       "provision": "Art. 5(1)(ba), (bb), (1a), (1b) (prohibitions added by Reg. (EU) 2026/1744)",
       "applies_from": "2026-12-02",
-      "note": "Art. 5(1), first subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b) apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA, as amended by Regulation (EU) 2026/1744). The classifier does not yet encode these prohibitions.",
+      "note": "Art. 5(1), first subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b) apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA, as amended by Regulation (EU) 2026/1744). The prohibited-practices gate tests them against the profile's assessment_date.",
       "source_status": "binding_level_1",
       "source_id": "ai-act-amendment-2026-1744",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
@@ -408,6 +433,14 @@
       "source_status": "binding_level_1",
       "source_id": "ai-act-amendment-2026-1744",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
+    },
+    {
+      "provision": "Art. 111(3): GPAI models placed on the market before 2025-08-02",
+      "applies_from": "2027-08-02",
+      "note": "Providers of general-purpose AI models placed on the market before 2 August 2025 must comply by 2 August 2027 (Art. 111(3) AIA; not amended by Regulation (EU) 2026/1744).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-2024-1689",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
     },
     {
       "provision": "Chapter III, Sections 1 to 3: Art. 6(2) and Annex III high-risk systems",
@@ -444,6 +477,15 @@
       "retrieved_on": "2026-08-26",
       "citation_label": "Regulation (EU) 2026/1744",
       "implementation_note": "Binding amendment adopted on 8 July 2026 and published in the Official Journal on 24 July 2026."
+    },
+    {
+      "source_id": "csa-directive-2011-93",
+      "title": "Directive 2011/93/EU on combating the sexual abuse and sexual exploitation of children and child pornography",
+      "legal_status": "binding_level_1",
+      "url": "https://publications.europa.eu/resource/celex/32011L0093",
+      "retrieved_on": "2026-10-14",
+      "citation_label": "Directive 2011/93/EU",
+      "implementation_note": "Art. 2, points (c) and (e), define the material and performance referred to in Art. 5(1), first subparagraph, point (bb) AIA."
     },
     {
       "source_id": "ai-act-service-desk",
