@@ -74,6 +74,23 @@ def test_fixture_files_cite_snapshotted_sources() -> None:
                 assert case["interpretation"] in interpretation_ids, case["id"]
 
 
+LABELLED = [
+    c for c in CASES if "interpretation" in c[2] and "validation_error_loc" not in c[2]["expect"]
+]
+
+
+@pytest.mark.parametrize(("case_id", "data", "case"), LABELLED, ids=[c[0] for c in LABELLED])
+def test_interpretation_is_labelled_in_the_output(
+    case_id: str, data: dict[str, Any], case: dict[str, Any]
+) -> None:
+    """docs/methodology.md promises that every interpretation choice a result turns
+    on is labelled "interpretation" in a finding or open question; the fixtures name
+    the choice each case rests on."""
+    report = classify(SystemProfile.model_validate(_merge(data["base_profile"], case["profile"])))
+    texts = [f.detail for f in report.findings] + report.open_questions
+    assert any("interpretation" in text.lower() for text in texts), (case["interpretation"], texts)
+
+
 @pytest.mark.parametrize(("case_id", "data", "case"), CASES, ids=[c[0] for c in CASES])
 def test_fixture(case_id: str, data: dict[str, Any], case: dict[str, Any]) -> None:
     profile_data = _merge(data.get("base_profile", {}), case["profile"])

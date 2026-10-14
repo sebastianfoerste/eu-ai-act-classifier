@@ -57,7 +57,8 @@ def _legacy_generative_deadline(placed_on: str | None, out: GateOutput) -> None:
                 detail=(
                     "The system's placing-on-the-market date is not given. Systems placed before "
                     "2 August 2026 comply with Art. 50(2) by 2 December 2026 (Art. 111(4) AIA); "
-                    "later systems from 2 August 2026."
+                    "later systems from 2 August 2026. Interpretation: Art. 111(4) is triggered "
+                    "by placing on the market only, not by putting into service."
                 ),
                 severity=Severity.MEDIUM,
             )
@@ -79,7 +80,7 @@ def _legacy_generative_deadline(placed_on: str | None, out: GateOutput) -> None:
                     "synthetic audio, image, video or text content placed on the market before "
                     "2 August 2026 must comply with Art. 50(2) by "
                     f"{ART_50_2_LEGACY_DEADLINE} (Art. 111(4) AIA, added by Regulation (EU) "
-                    "2026/1744)."
+                    "2026/1744). Interpretation: 'comply by' is read as applying from that date."
                 ),
                 severity=Severity.INFO,
             )

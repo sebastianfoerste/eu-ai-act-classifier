@@ -170,6 +170,7 @@ def _screen_new_prohibitions(profile: SystemProfile, out: GateOutput) -> None:
         result = _decide(facts, placing, use, roles)
         citation, label = NEW_PROHIBITIONS[point]
         rule_id = f"PROHIBITED.5.1.{point}"
+        first_new = len(out.findings)
         if result is False:
             out.findings.append(
                 Finding(
@@ -183,11 +184,39 @@ def _screen_new_prohibitions(profile: SystemProfile, out: GateOutput) -> None:
                     severity=Severity.INFO,
                 )
             )
-            continue
-        if result is None:
+        elif result is None:
             _unknown(point, field, facts, placing, use, roles, rule_id, citation.ref, label, out)
-            continue
-        _met(point, profile.assessment_date, in_force, rule_id, citation.ref, label, out)
+        else:
+            _met(point, profile.assessment_date, in_force, rule_id, citation.ref, label, out)
+        notes = _interpretation_notes(point, facts, roles)
+        for finding in out.findings[first_new:]:
+            finding.detail = " ".join([finding.detail, *notes])
+
+
+def _interpretation_notes(point: str, facts: Facts, roles: set[Role]) -> list[str]:
+    """Label the reading choices that decide this result (docs/methodology.md).
+
+    A choice is named only where the result turns on it: a fact that settles the
+    point under every reading needs no label.
+    """
+    notes = []
+    if point == "ba" and roles & _PLACING_ROLES and facts["consent_ensured"] is not False:
+        notes.append(
+            "Interpretation: for placing on the market or putting into service, consent is "
+            "read at system level; the point is not met where the system generates or "
+            "manipulates the material only with the depicted person's consent."
+        )
+    if roles & _USE_ROLES and facts["deployer_uses_for_that_purpose"] is not False:
+        notes.append(
+            "Interpretation: for use, Art. 5(1a)(b) keeps the content element and the "
+            "conditions of Art. 5(1a)(a) do not apply."
+        )
+    if point == "bb" and facts["generates_or_manipulates"] is not False:
+        notes.append(
+            "Interpretation: whether a 'without right' defence applies under national law "
+            "is a fact the reviewer establishes; the engine does not evaluate national law."
+        )
+    return notes
 
 
 def _not_screened(missing: list[str], out: GateOutput) -> None:

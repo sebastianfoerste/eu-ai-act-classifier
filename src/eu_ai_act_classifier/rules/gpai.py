@@ -64,6 +64,11 @@ def evaluate(profile) -> GateOutput:
     return out
 
 
+_PLACEMENT_FIELD = (
+    "Interpretation: placing_on_market_date is read as the model's placing on the market."
+)
+
+
 def _legacy_model_deadline(placed_on: str | None, out: GateOutput) -> None:
     """Art. 111(3) AIA (original text): models placed before 2 August 2025 comply by
     2 August 2027. The obligation graph dates the Chapter V duties accordingly."""
@@ -76,7 +81,8 @@ def _legacy_model_deadline(placed_on: str | None, out: GateOutput) -> None:
                 detail=(
                     "The model's placing-on-the-market date is not given. Models placed before "
                     "2 August 2025 comply by 2 August 2027 (Art. 111(3) AIA); later models are "
-                    "bound from placement (Art. 113, third paragraph, point (b) AIA)."
+                    "bound from placement (Art. 113, third paragraph, point (b) AIA). "
+                    f"{_PLACEMENT_FIELD}"
                 ),
                 severity=Severity.MEDIUM,
             )
@@ -96,7 +102,8 @@ def _legacy_model_deadline(placed_on: str | None, out: GateOutput) -> None:
                 detail=(
                     f"Placed on the market on {placed_on}. Providers of general-purpose AI "
                     "models placed on the market before 2 August 2025 must comply by "
-                    f"{GPAI_LEGACY_DEADLINE} (Art. 111(3) AIA)."
+                    f"{GPAI_LEGACY_DEADLINE} (Art. 111(3) AIA). {_PLACEMENT_FIELD} "
+                    "Interpretation: 'comply by' is read as applying from that date."
                 ),
                 severity=Severity.INFO,
             )

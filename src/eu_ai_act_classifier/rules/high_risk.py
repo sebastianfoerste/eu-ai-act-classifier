@@ -180,8 +180,9 @@ def _annex_i_route(legislation: AnnexILegislation | None, out: GateOutput) -> No
                 "under Art. 6(1) related to a Section B product, only Art. 6(1), Art. 60a and "
                 "Arts. 102 to 112 AIA apply; Arts. 57 to 59 apply only in so far as the "
                 "high-risk requirements have been integrated in that legislation (Art. 2(2) "
-                "AIA, as replaced by Regulation (EU) 2026/1744). The Chapter III obligations "
-                f"are therefore not attached.{moved}"
+                "AIA, as replaced by Regulation (EU) 2026/1744). Interpretation: Art. 2(2) is "
+                "read literally, so neither Chapter III nor Art. 50 obligations are attached."
+                f"{moved}"
             ),
             severity=Severity.HIGH,
             tier=RiskTier.HIGH,
