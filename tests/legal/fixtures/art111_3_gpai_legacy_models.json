@@ -1,0 +1,133 @@
+{
+  "rule": "Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2 August 2025 comply by 2 August 2027; Chapter V applies from 2 August 2025 under Art. 113, third paragraph, point (b) AIA",
+  "sources": [
+    {"source_id": "oj-reg-2024-1689", "pinpoint": "Art. 111(3); Art. 113, third paragraph, point (b)"},
+    {"source_id": "consolidated-ai-act-2026-07-27", "pinpoint": "Art. 111(3) marked as original text (not amended by Regulation (EU) 2026/1744)"}
+  ],
+  "interpretations": [
+    {"id": "INT-111-by-date-inclusive", "text": "'Comply by 2 August 2027' is read as: the obligations apply to the legacy model from 2 August 2027 inclusive."},
+    {"id": "INT-111-placement-field", "text": "The model's placing on the market is read from placing_on_market_date; an unknown date leaves the application date UNKNOWN and goes to review."}
+  ],
+  "base_profile": {
+    "name": "Synthetic base model",
+    "roles": ["gpai_provider"],
+    "is_gpai_model": true,
+    "training_flops": 1e24
+  },
+  "cases": [
+    {
+      "id": "gpai-placed-day-before-2025-08-02",
+      "matrix": "boundary_before",
+      "facts": "The model was placed on the market on 1 August 2025, before 2 August 2025.",
+      "profile": {"placing_on_market_date": "2025-08-01"},
+      "expect": {
+        "risk_tier": "minimal_risk",
+        "disposition": "determined",
+        "findings": {"GPAI.111.3.legacy": "info"},
+        "graph": [
+          {"article": "Art. 53(1)(a) AIA", "application_date": "2027-08-02"},
+          {"article": "Art. 53(1)(d) AIA", "application_date": "2027-08-02"}
+        ],
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "gpai-placed-on-2025-08-02",
+      "matrix": "boundary_on",
+      "facts": "The model was placed on the market on 2 August 2025; it is not a legacy model under Art. 111(3).",
+      "profile": {"placing_on_market_date": "2025-08-02"},
+      "expect": {
+        "disposition": "determined",
+        "findings_absent": ["GPAI.111.3.legacy"],
+        "graph": [{"article": "Art. 53(1)(a) AIA", "application_date": "2025-08-02"}]
+      }
+    },
+    {
+      "id": "gpai-placed-day-after-2025-08-02",
+      "matrix": "boundary_after",
+      "facts": "The model was placed on the market on 3 August 2025.",
+      "profile": {"placing_on_market_date": "2025-08-03"},
+      "expect": {
+        "disposition": "determined",
+        "findings_absent": ["GPAI.111.3.legacy"],
+        "graph": [{"article": "Art. 53(1)(a) AIA", "application_date": "2025-08-02"}]
+      }
+    },
+    {
+      "id": "gpai-placement-unknown",
+      "matrix": "unknown_input",
+      "facts": "The model's placing-on-the-market date is not given.",
+      "interpretation": "INT-111-placement-field",
+      "profile": {"placing_on_market_date": null},
+      "expect": {
+        "disposition": "requires_review",
+        "findings": {"GPAI.111.3.placement_unknown": "medium"},
+        "open_question_contains": ["placing_on_market_date"],
+        "graph": [{"article": "Art. 53(1)(a) AIA", "application_date": null, "applies_on_assessment_date": null}]
+      }
+    },
+    {
+      "id": "gpai-legacy-day-before-2027-08-02",
+      "matrix": "boundary_before",
+      "facts": "A model placed on 1 July 2025, assessed on 1 August 2027: the Art. 111(3) deadline has not yet arrived.",
+      "interpretation": "INT-111-by-date-inclusive",
+      "profile": {"placing_on_market_date": "2025-07-01", "assessment_date": "2027-08-01"},
+      "expect": {
+        "disposition": "determined",
+        "graph": [{"article": "Art. 53(1)(a) AIA", "application_date": "2027-08-02", "applies_on_assessment_date": false}]
+      }
+    },
+    {
+      "id": "gpai-legacy-on-2027-08-02",
+      "matrix": "boundary_on",
+      "facts": "The same model assessed on 2 August 2027.",
+      "interpretation": "INT-111-by-date-inclusive",
+      "profile": {"placing_on_market_date": "2025-07-01", "assessment_date": "2027-08-02"},
+      "expect": {
+        "disposition": "determined",
+        "graph": [{"article": "Art. 53(1)(a) AIA", "application_date": "2027-08-02", "applies_on_assessment_date": true}]
+      }
+    },
+    {
+      "id": "gpai-legacy-day-after-2027-08-02",
+      "matrix": "boundary_after",
+      "facts": "The same model assessed on 3 August 2027.",
+      "profile": {"placing_on_market_date": "2025-07-01", "assessment_date": "2027-08-03"},
+      "expect": {
+        "disposition": "determined",
+        "graph": [{"article": "Art. 53(1)(a) AIA", "application_date": "2027-08-02", "applies_on_assessment_date": true}]
+      }
+    },
+    {
+      "id": "gpai-legacy-assessment-date-unknown",
+      "matrix": "unknown_input",
+      "facts": "A legacy model with no assessment date: the deadline is known, whether it has passed is not.",
+      "profile": {"placing_on_market_date": "2025-07-01", "assessment_date": null},
+      "expect": {
+        "disposition": "determined",
+        "graph": [{"article": "Art. 53(1)(a) AIA", "application_date": "2027-08-02", "applies_on_assessment_date": null}]
+      }
+    },
+    {
+      "id": "gpai-systemic-legacy-model",
+      "matrix": "applies",
+      "facts": "A model designated as having systemic risk, placed on the market on 1 July 2025: its Art. 55 obligations share the Art. 111(3) deadline.",
+      "profile": {"placing_on_market_date": "2025-07-01", "gpai_systemic_risk_designated": true},
+      "expect": {
+        "disposition": "determined",
+        "graph": [
+          {"article": "Art. 55(1)(a) AIA", "application_date": "2027-08-02"},
+          {"article": "Art. 53(1)(b) AIA", "application_date": "2027-08-02"}
+        ],
+        "timeline_includes": [{"applies_from": "2027-08-02", "provision_contains": "Art. 111(3)"}]
+      }
+    },
+    {
+      "id": "gpai-invalid-placement-date",
+      "matrix": "invalid_input",
+      "facts": "The placing date is not an ISO date.",
+      "profile": {"placing_on_market_date": "August 2025"},
+      "expect": {"validation_error_loc": "placing_on_market_date"}
+    }
+  ]
+}

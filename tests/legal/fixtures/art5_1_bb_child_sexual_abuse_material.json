@@ -1,0 +1,183 @@
+{
+  "rule": "Art. 5(1), first subparagraph, point (bb), with Art. 5(1a) AIA; applicable from 2 December 2026 under Art. 113, third paragraph, point (a) AIA",
+  "sources": [
+    {"source_id": "oj-reg-2026-1744", "pinpoint": "Art. 1(7)(a): new Art. 5(1), first subparagraph, point (bb)"},
+    {"source_id": "oj-reg-2026-1744", "pinpoint": "Art. 1(7)(b): new Art. 5(1a)(a)(i), (a)(ii) and (b)"},
+    {"source_id": "oj-reg-2026-1744", "pinpoint": "Art. 1(40)(a): Art. 113, third paragraph, point (a)"},
+    {"source_id": "oj-reg-2026-1744", "pinpoint": "Recitals 12 and 13"},
+    {"source_id": "oj-dir-2011-93", "pinpoint": "Art. 2, points (c) and (e); Art. 5(1) ('without right')"},
+    {"source_id": "consolidated-ai-act-2026-07-27", "pinpoint": "Art. 5(1)(bb), (1a); Art. 113 (cross-check)"}
+  ],
+  "interpretations": [
+    {"id": "INT-5-deployer-route", "text": "For use, Art. 5(1a)(b) is read as replacing the system-level conditions: the use is prohibited where the deployer uses the system for the purpose of generating or manipulating the material or performance and no 'without right' defence applies."},
+    {"id": "INT-5-without-right-defence", "text": "Whether a 'without right' defence applies under national law is a fact the reviewer establishes; the engine does not evaluate national law."},
+    {"id": "INT-5-before-date-review", "text": "Where all elements are met and the assessment date falls before 2 December 2026, the point does not yet apply, but the result goes to review."},
+    {"id": "INT-5-date-unknown-conservative", "text": "Where all elements are met but the assessment date is unknown, the engine votes the prohibited tier and routes the result to review."}
+  ],
+  "base_profile": {
+    "name": "Synthetic media generator",
+    "roles": ["provider"],
+    "generates_synthetic_content": true,
+    "placing_on_market_date": "2026-09-01",
+    "assessment_date": "2026-12-03",
+    "intimate_imagery": {"generates_material": false, "manipulates_material_increasing_exposure": false}
+  },
+  "cases": [
+    {
+      "id": "bb-provider-intended-purpose-applies",
+      "matrix": "applies",
+      "facts": "A provider places on the market a system whose intended purpose is to generate material within Art. 2, points (c) and (e), of Directive 2011/93/EU; no 'without right' defence applies.",
+      "profile": {"child_sexual_abuse_material": {"generates_or_manipulates": true, "without_right_defence_applies": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.bb": "blocker"},
+        "finding_citations": {"PROHIBITED.5.1.bb": "Art. 5(1)(bb)"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "bb-provider-foreseeable-without-safeguards-applies",
+      "matrix": "applies",
+      "facts": "A general image generator is not intended for such material, but the outcome is reasonably foreseeable and reproducible without significant technical modification, and the system lacks reasonable and adequate safeguards.",
+      "profile": {"child_sexual_abuse_material": {"generates_or_manipulates": true, "without_right_defence_applies": false, "intended_purpose": false, "foreseeable_and_reproducible": true, "adequate_safeguards": false}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.bb": "blocker"}
+      }
+    },
+    {
+      "id": "bb-provider-adequate-safeguards-not-met",
+      "matrix": "element_fails",
+      "facts": "As the previous case, but reasonable and adequate safeguards reliably prevent the outcome and correct observed or reported misuse.",
+      "profile": {"child_sexual_abuse_material": {"generates_or_manipulates": true, "without_right_defence_applies": false, "intended_purpose": false, "foreseeable_and_reproducible": true, "adequate_safeguards": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.bb.not_met": "info"},
+        "findings_absent": ["PROHIBITED.5.1.bb"],
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "bb-without-right-defence-not-met",
+      "matrix": "element_fails",
+      "facts": "An authority's evaluation system generates such material for red-teaming of the prohibition, and a 'without right' defence applies under national law (Recital 13).",
+      "interpretation": "INT-5-without-right-defence",
+      "profile": {"child_sexual_abuse_material": {"generates_or_manipulates": true, "without_right_defence_applies": true, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.bb.not_met": "info"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "bb-defence-unknown",
+      "matrix": "unknown_input",
+      "facts": "A system intended to generate such material; whether a 'without right' defence applies under national law is not established.",
+      "profile": {"child_sexual_abuse_material": {"generates_or_manipulates": true, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.bb.unknown": "medium"},
+        "open_question_contains": ["child_sexual_abuse_material.without_right_defence_applies"]
+      }
+    },
+    {
+      "id": "bb-safeguards-unknown",
+      "matrix": "unknown_input",
+      "facts": "A general image generator makes such material a foreseeable and reproducible outcome; the adequacy of its safeguards is not established.",
+      "profile": {"child_sexual_abuse_material": {"generates_or_manipulates": true, "without_right_defence_applies": false, "intended_purpose": false, "foreseeable_and_reproducible": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.bb.unknown": "medium"},
+        "open_question_contains": ["child_sexual_abuse_material.adequate_safeguards"]
+      }
+    },
+    {
+      "id": "bb-deployer-uses-for-purpose-applies",
+      "matrix": "applies",
+      "facts": "A deployer uses an image system for the purpose of generating such material; no 'without right' defence applies.",
+      "interpretation": "INT-5-deployer-route",
+      "profile": {"roles": ["deployer"], "child_sexual_abuse_material": {"deployer_uses_for_that_purpose": true, "without_right_defence_applies": false}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.bb": "blocker"}
+      }
+    },
+    {
+      "id": "bb-day-before-application",
+      "matrix": "boundary_before",
+      "facts": "All elements are met. Assessed on 1 December 2026.",
+      "interpretation": "INT-5-before-date-review",
+      "profile": {"assessment_date": "2026-12-01", "child_sexual_abuse_material": {"generates_or_manipulates": true, "without_right_defence_applies": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.bb.not_yet_applicable": "high"},
+        "findings_absent": ["PROHIBITED.5.1.bb"],
+        "open_question_contains": ["2 December 2026"]
+      }
+    },
+    {
+      "id": "bb-on-application-date",
+      "matrix": "boundary_on",
+      "facts": "All elements are met. Assessed on 2 December 2026.",
+      "profile": {"assessment_date": "2026-12-02", "child_sexual_abuse_material": {"generates_or_manipulates": true, "without_right_defence_applies": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.bb": "blocker"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "bb-day-after-application",
+      "matrix": "boundary_after",
+      "facts": "All elements are met. Assessed on 3 December 2026.",
+      "profile": {"assessment_date": "2026-12-03", "child_sexual_abuse_material": {"generates_or_manipulates": true, "without_right_defence_applies": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.bb": "blocker"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "bb-assessment-date-unknown",
+      "matrix": "unknown_input",
+      "facts": "All elements are met; the assessment date is not given.",
+      "interpretation": "INT-5-date-unknown-conservative",
+      "profile": {"assessment_date": null, "child_sexual_abuse_material": {"generates_or_manipulates": true, "without_right_defence_applies": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.bb.date_unknown": "blocker"},
+        "open_question_contains": ["assessment_date"]
+      }
+    },
+    {
+      "id": "bb-generative-system-not-screened",
+      "matrix": "unknown_input",
+      "facts": "A system generating synthetic content has no Art. 5(1)(bb) screen.",
+      "profile": {"child_sexual_abuse_material": null},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.ba_bb.not_screened": "medium"},
+        "open_question_contains": ["child_sexual_abuse_material"]
+      }
+    },
+    {
+      "id": "bb-invalid-fact-type",
+      "matrix": "invalid_input",
+      "facts": "A screen fact is given as a list instead of true, false or null.",
+      "profile": {"child_sexual_abuse_material": {"intended_purpose": [true]}},
+      "expect": {"validation_error_loc": "child_sexual_abuse_material.intended_purpose"}
+    }
+  ]
+}

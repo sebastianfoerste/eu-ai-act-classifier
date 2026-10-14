@@ -1,0 +1,128 @@
+{
+  "rule": "Art. 111(4) AIA: providers of AI systems generating synthetic audio, image, video or text content placed on the market before 2 August 2026 comply with Art. 50(2) by 2 December 2026; Art. 50 otherwise applies from 2 August 2026 (Art. 113, second paragraph AIA)",
+  "sources": [
+    {"source_id": "oj-reg-2026-1744", "pinpoint": "Art. 1(39)(b): Art. 111(4) added; Recital 38"},
+    {"source_id": "oj-reg-2024-1689", "pinpoint": "Art. 50(2); Art. 113, second paragraph"},
+    {"source_id": "consolidated-ai-act-2026-07-27", "pinpoint": "Art. 50(2); Art. 111(4) (cross-check)"}
+  ],
+  "interpretations": [
+    {"id": "INT-111-by-date-inclusive", "text": "'Comply with Art. 50(2) by 2 December 2026' is read as: Art. 50(2) applies to the legacy system from 2 December 2026 inclusive."},
+    {"id": "INT-111-4-placement-only", "text": "Art. 111(4) names only systems placed on the market before 2 August 2026; a putting-into-service date does not trigger it. An unknown placing date leaves the Art. 50(2) date UNKNOWN and goes to review."}
+  ],
+  "base_profile": {
+    "name": "Synthetic text generator",
+    "roles": ["provider"],
+    "generates_synthetic_content": true,
+    "intimate_imagery": {"generates_material": false, "manipulates_material_increasing_exposure": false},
+    "child_sexual_abuse_material": {"generates_or_manipulates": false}
+  },
+  "cases": [
+    {
+      "id": "art50-2-placed-day-before-2026-08-02",
+      "matrix": "boundary_before",
+      "facts": "The generative system was placed on the market on 1 August 2026.",
+      "profile": {"placing_on_market_date": "2026-08-01"},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings": {"TRANSPARENCY.50.2.legacy": "info"},
+        "graph": [{"article": "Art. 50(2) AIA", "application_date": "2026-12-02"}],
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "art50-2-placed-on-2026-08-02",
+      "matrix": "boundary_on",
+      "facts": "The generative system was placed on the market on 2 August 2026, the general application date.",
+      "profile": {"placing_on_market_date": "2026-08-02"},
+      "expect": {
+        "disposition": "determined",
+        "findings_absent": ["TRANSPARENCY.50.2.legacy"],
+        "graph": [{"article": "Art. 50(2) AIA", "application_date": "2026-08-02"}]
+      }
+    },
+    {
+      "id": "art50-2-placed-day-after-2026-08-02",
+      "matrix": "boundary_after",
+      "facts": "The generative system was placed on the market on 3 August 2026.",
+      "profile": {"placing_on_market_date": "2026-08-03"},
+      "expect": {
+        "disposition": "determined",
+        "findings_absent": ["TRANSPARENCY.50.2.legacy"],
+        "graph": [{"article": "Art. 50(2) AIA", "application_date": "2026-08-02"}]
+      }
+    },
+    {
+      "id": "art50-2-placement-unknown",
+      "matrix": "unknown_input",
+      "facts": "The generative system's placing-on-the-market date is not given.",
+      "interpretation": "INT-111-4-placement-only",
+      "profile": {"placing_on_market_date": null},
+      "expect": {
+        "disposition": "requires_review",
+        "findings": {"TRANSPARENCY.50.2.placement_unknown": "medium"},
+        "open_question_contains": ["placing_on_market_date"],
+        "graph": [{"article": "Art. 50(2) AIA", "application_date": null, "applies_on_assessment_date": null}]
+      }
+    },
+    {
+      "id": "art50-2-legacy-day-before-2026-12-02",
+      "matrix": "boundary_before",
+      "facts": "A system placed on 1 July 2026, assessed on 1 December 2026: the Art. 111(4) deadline has not yet arrived.",
+      "interpretation": "INT-111-by-date-inclusive",
+      "profile": {"placing_on_market_date": "2026-07-01", "assessment_date": "2026-12-01"},
+      "expect": {
+        "disposition": "determined",
+        "graph": [{"article": "Art. 50(2) AIA", "application_date": "2026-12-02", "applies_on_assessment_date": false}]
+      }
+    },
+    {
+      "id": "art50-2-legacy-on-2026-12-02",
+      "matrix": "boundary_on",
+      "facts": "The same system assessed on 2 December 2026.",
+      "interpretation": "INT-111-by-date-inclusive",
+      "profile": {"placing_on_market_date": "2026-07-01", "assessment_date": "2026-12-02"},
+      "expect": {
+        "disposition": "determined",
+        "graph": [{"article": "Art. 50(2) AIA", "application_date": "2026-12-02", "applies_on_assessment_date": true}]
+      }
+    },
+    {
+      "id": "art50-2-legacy-day-after-2026-12-02",
+      "matrix": "boundary_after",
+      "facts": "The same system assessed on 3 December 2026.",
+      "profile": {"placing_on_market_date": "2026-07-01", "assessment_date": "2026-12-03"},
+      "expect": {
+        "disposition": "determined",
+        "graph": [{"article": "Art. 50(2) AIA", "application_date": "2026-12-02", "applies_on_assessment_date": true}]
+      }
+    },
+    {
+      "id": "art50-1-not-affected-by-111-4",
+      "matrix": "irrelevant_input",
+      "facts": "A legacy generative chatbot placed on 1 July 2026: Art. 111(4) moves only Art. 50(2); Art. 50(1) keeps 2 August 2026.",
+      "profile": {"placing_on_market_date": "2026-07-01", "interacts_with_natural_persons": true},
+      "expect": {
+        "disposition": "determined",
+        "graph": [
+          {"article": "Art. 50(1) AIA", "application_date": "2026-08-02"},
+          {"article": "Art. 50(2) AIA", "application_date": "2026-12-02"}
+        ],
+        "timeline_includes": [{"applies_from": "2026-12-02", "provision_contains": "Art. 50(2)"}]
+      }
+    },
+    {
+      "id": "art50-2-not-triggered",
+      "matrix": "irrelevant_input",
+      "facts": "A chatbot that generates no synthetic content and has no placing date: Art. 111(4) is not material.",
+      "profile": {"generates_synthetic_content": false, "interacts_with_natural_persons": true, "placing_on_market_date": null},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings_absent": ["TRANSPARENCY.50.2.placement_unknown"],
+        "graph": [{"article": "Art. 50(1) AIA", "application_date": "2026-08-02"}],
+        "no_open_questions": true
+      }
+    }
+  ]
+}

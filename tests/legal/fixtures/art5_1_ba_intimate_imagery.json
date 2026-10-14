@@ -1,0 +1,288 @@
+{
+  "rule": "Art. 5(1), first subparagraph, point (ba), with Art. 5(1a) and (1b) AIA; applicable from 2 December 2026 under Art. 113, third paragraph, point (a) AIA",
+  "sources": [
+    {"source_id": "oj-reg-2026-1744", "pinpoint": "Art. 1(7)(a): new Art. 5(1), first subparagraph, point (ba)"},
+    {"source_id": "oj-reg-2026-1744", "pinpoint": "Art. 1(7)(b): new Art. 5(1a)(a)(i), (a)(ii), (b) and Art. 5(1b)"},
+    {"source_id": "oj-reg-2026-1744", "pinpoint": "Art. 1(40)(a): Art. 113, third paragraph, point (a)"},
+    {"source_id": "oj-reg-2026-1744", "pinpoint": "Recital 12"},
+    {"source_id": "consolidated-ai-act-2026-07-27", "pinpoint": "Art. 5(1)(ba), (1a), (1b); Art. 113 (cross-check)"}
+  ],
+  "interpretations": [
+    {"id": "INT-5-consent-system-level", "text": "For placing on the market or putting into service, the consent element is read at system level: the point is not met where the system generates or manipulates the material only with the depicted person's consent (Recital 12: means to collect and demonstrate consent)."},
+    {"id": "INT-5-deployer-route", "text": "For use, Art. 5(1a)(b) is read as replacing the system-level conditions: the use is prohibited where the deployer uses the system for the purpose of generating or manipulating the material without the depicted person's consent, including misuse of a system not intended for it (Recital 12)."},
+    {"id": "INT-5-routes-by-role", "text": "Providers and importers are tested under Art. 5(1a)(a) (placing on the market, putting into service); deployers under Art. 5(1a)(b) (use). Where no role performs one of those acts, the result is UNKNOWN and goes to review."},
+    {"id": "INT-5-date-unknown-conservative", "text": "Where all elements are met but the assessment date is unknown, the engine votes the prohibited tier and routes the result to review, because the prohibition applies at the latest from 2 December 2026."},
+    {"id": "INT-5-before-date-review", "text": "Where all elements are met and the assessment date falls before 2 December 2026, the point does not yet apply, but the result goes to review so that withdrawal or redesign before that date is planned."},
+    {"id": "INT-5-not-screened", "text": "A system that generates synthetic content or deep fakes and has no Art. 5(1)(ba) screen is not presumed outside the point; the missing screen goes to review."}
+  ],
+  "base_profile": {
+    "name": "Synthetic image studio",
+    "roles": ["provider"],
+    "generates_synthetic_content": true,
+    "placing_on_market_date": "2026-09-01",
+    "assessment_date": "2026-12-03",
+    "child_sexual_abuse_material": {"generates_or_manipulates": false}
+  },
+  "cases": [
+    {
+      "id": "ba-provider-intended-purpose-applies",
+      "matrix": "applies",
+      "facts": "A provider places on the market a system whose intended purpose is to generate realistic nude images of identifiable persons; it does not collect the depicted person's consent. Assessed on 3 December 2026.",
+      "profile": {"intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba": "blocker"},
+        "finding_citations": {"PROHIBITED.5.1.ba": "Art. 5(1)(ba)"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-provider-foreseeable-without-safeguards-applies",
+      "matrix": "applies",
+      "facts": "A general image generator is not intended for intimate imagery, but its capabilities make realistic intimate images of identifiable persons a reasonably foreseeable and reproducible outcome without significant technical modification, and it has no reasonable and adequate safeguards. No consent mechanism.",
+      "profile": {"intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": false, "foreseeable_and_reproducible": true, "adequate_safeguards": false}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba": "blocker"}
+      }
+    },
+    {
+      "id": "ba-provider-adequate-safeguards-not-met",
+      "matrix": "element_fails",
+      "facts": "As the previous case, but the system has reasonable and adequate technical safety measures and other safeguards that reliably prevent the outcome and correct observed or reported misuse.",
+      "profile": {"intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": false, "foreseeable_and_reproducible": true, "adequate_safeguards": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba.not_met": "info"},
+        "findings_absent": ["PROHIBITED.5.1.ba"],
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-provider-not-foreseeable-not-met",
+      "matrix": "element_fails",
+      "facts": "The system is not intended for intimate imagery and the outcome is not reasonably foreseeable and reproducible without significant technical modification. Safeguards were not assessed.",
+      "profile": {"intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": false, "foreseeable_and_reproducible": false}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba.not_met": "info"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-consent-ensured-not-met",
+      "matrix": "element_fails",
+      "facts": "A system intended to generate intimate imagery generates it only with the depicted person's freely given, specific, informed, unambiguous and explicit consent, collected and demonstrable.",
+      "interpretation": "INT-5-consent-system-level",
+      "profile": {"intimate_imagery": {"generates_material": true, "consent_ensured": true, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba.not_met": "info"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-manipulation-without-increased-exposure-not-met",
+      "matrix": "element_fails",
+      "facts": "An editing tool changes the background and brightness of existing intimate images without increasing the exposure of depicted intimate parts or altering the nature of depicted sexually explicit activities; it does not generate such material (Art. 5(1b)).",
+      "profile": {"intimate_imagery": {"generates_material": false, "manipulates_material_increasing_exposure": false, "consent_ensured": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba.not_met": "info"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-manipulation-increasing-exposure-applies",
+      "matrix": "applies",
+      "facts": "A tool intended to remove clothing from existing photos of identifiable persons, which increases the exposure of intimate parts; no consent mechanism.",
+      "profile": {"intimate_imagery": {"generates_material": false, "manipulates_material_increasing_exposure": true, "consent_ensured": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba": "blocker"}
+      }
+    },
+    {
+      "id": "ba-safeguards-unknown",
+      "matrix": "unknown_input",
+      "facts": "A general image generator makes intimate imagery a foreseeable and reproducible outcome; whether its safeguards are reasonable and adequate is not established.",
+      "profile": {"intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": false, "foreseeable_and_reproducible": true, "adequate_safeguards": null}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.ba.unknown": "medium"},
+        "findings_absent": ["PROHIBITED.5.1.ba", "PROHIBITED.5.1.ba.not_met"],
+        "open_question_contains": ["intimate_imagery.adequate_safeguards"]
+      }
+    },
+    {
+      "id": "ba-consent-unknown",
+      "matrix": "unknown_input",
+      "facts": "A system intended to generate intimate imagery; whether it ensures the depicted person's consent is not established.",
+      "profile": {"intimate_imagery": {"generates_material": true, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.ba.unknown": "medium"},
+        "open_question_contains": ["intimate_imagery.consent_ensured"]
+      }
+    },
+    {
+      "id": "ba-content-false-other-facts-irrelevant",
+      "matrix": "irrelevant_input",
+      "facts": "The system neither generates intimate material nor manipulates it in a way that increases exposure. The other facts are not established and do not matter.",
+      "profile": {"intimate_imagery": {"generates_material": false, "manipulates_material_increasing_exposure": false}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba.not_met": "info"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-deployer-uses-for-purpose-applies",
+      "matrix": "applies",
+      "facts": "A deployer uses a general image system for the purpose of generating realistic intimate images of an identifiable person who has not consented.",
+      "interpretation": "INT-5-deployer-route",
+      "profile": {"roles": ["deployer"], "intimate_imagery": {"deployer_uses_for_that_purpose": true, "consent_ensured": false}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba": "blocker"}
+      }
+    },
+    {
+      "id": "ba-deployer-lawful-purpose-not-met",
+      "matrix": "element_fails",
+      "facts": "A deployer uses the same system only for lawful purposes; accidental generation is not use for that purpose (Recital 12).",
+      "profile": {"roles": ["deployer"], "intimate_imagery": {"deployer_uses_for_that_purpose": false}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba.not_met": "info"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-provider-safe-deployer-misuses",
+      "matrix": "conflict",
+      "facts": "The operator is both provider and deployer. As provider its system has adequate safeguards, so placing on the market is not prohibited; as deployer it uses the system for the prohibited purpose. The use is prohibited.",
+      "profile": {"roles": ["provider", "deployer"], "intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": false, "foreseeable_and_reproducible": true, "adequate_safeguards": true, "deployer_uses_for_that_purpose": true}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba": "blocker"}
+      }
+    },
+    {
+      "id": "ba-no-qualifying-role",
+      "matrix": "unknown_input",
+      "facts": "A distributor makes the intended-purpose system available. A distributor's act is not placing on the market, putting into service or use; whether the operator also performs one of those acts is not established.",
+      "interpretation": "INT-5-routes-by-role",
+      "profile": {"roles": ["distributor"], "intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.ba.unknown": "medium"},
+        "open_question_contains": ["roles"]
+      }
+    },
+    {
+      "id": "ba-day-before-application",
+      "matrix": "boundary_before",
+      "facts": "All elements are met (intended purpose, no consent). Assessed on 1 December 2026, the day before Art. 5(1)(ba) applies.",
+      "interpretation": "INT-5-before-date-review",
+      "profile": {"assessment_date": "2026-12-01", "intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.ba.not_yet_applicable": "high"},
+        "findings_absent": ["PROHIBITED.5.1.ba"],
+        "open_question_contains": ["2 December 2026"]
+      }
+    },
+    {
+      "id": "ba-on-application-date",
+      "matrix": "boundary_on",
+      "facts": "All elements are met. Assessed on 2 December 2026, the day Art. 5(1)(ba) applies.",
+      "profile": {"assessment_date": "2026-12-02", "intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba": "blocker"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-day-after-application",
+      "matrix": "boundary_after",
+      "facts": "All elements are met. Assessed on 3 December 2026.",
+      "profile": {"assessment_date": "2026-12-03", "intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "determined",
+        "findings": {"PROHIBITED.5.1.ba": "blocker"},
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-assessment-date-unknown",
+      "matrix": "unknown_input",
+      "facts": "All elements are met; the date of the placing on the market, putting into service or use under assessment is not given.",
+      "interpretation": "INT-5-date-unknown-conservative",
+      "profile": {"assessment_date": null, "intimate_imagery": {"generates_material": true, "consent_ensured": false, "intended_purpose": true}},
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.ba.date_unknown": "blocker"},
+        "open_question_contains": ["assessment_date"]
+      }
+    },
+    {
+      "id": "ba-generative-system-not-screened",
+      "matrix": "unknown_input",
+      "facts": "A system generating synthetic content has no Art. 5(1)(ba) screen.",
+      "interpretation": "INT-5-not-screened",
+      "profile": {"intimate_imagery": null},
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {"PROHIBITED.5.1.ba_bb.not_screened": "medium"},
+        "open_question_contains": ["intimate_imagery"]
+      }
+    },
+    {
+      "id": "ba-non-generative-system-not-screened",
+      "matrix": "irrelevant_input",
+      "facts": "A system that generates no synthetic content and no deep fakes, with no Art. 5(1)(ba) or (bb) screen.",
+      "profile": {"generates_synthetic_content": false, "intimate_imagery": null, "child_sexual_abuse_material": null},
+      "expect": {
+        "risk_tier": "minimal_risk",
+        "disposition": "determined",
+        "findings_absent": ["PROHIBITED.5.1.ba_bb.not_screened", "PROHIBITED.5.1.ba.not_met"],
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-invalid-assessment-date",
+      "matrix": "invalid_input",
+      "facts": "The assessment date is given in German notation instead of ISO 8601.",
+      "profile": {"assessment_date": "02.12.2026"},
+      "expect": {"validation_error_loc": "assessment_date"}
+    },
+    {
+      "id": "ba-invalid-screen-key",
+      "matrix": "invalid_input",
+      "facts": "The screen carries an unknown key.",
+      "profile": {"intimate_imagery": {"nudity_score": 0.9}},
+      "expect": {"validation_error_loc": "intimate_imagery.nudity_score"}
+    }
+  ]
+}
