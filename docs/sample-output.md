@@ -29,9 +29,10 @@ Findings:
   [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons
 
 Obligation graph:
-  - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix, review: draft
-  - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file, review: review_required
-  - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan, review: draft
+  - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
+  - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
+  - high-risk.provider.43.2: Art. 43(2) AIA (provider), evidence: Annex VI internal-control assessment record., review: review_required
+  - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan., review: determined
 
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)

@@ -33,6 +33,8 @@ WORKED_EXAMPLES = {
     ),
 }
 OMITTED = re.compile(r"^\[\.\.\. (\d+) lines omitted\]$")
+SAMPLE_DOSSIER = Path("docs/sample-review-dossier.md")
+DOSSIER_BLOCK = re.compile(r"\*\*Source File:\*\* `(examples/\w+\.json)`\n```\n(.*?)\n```", re.S)
 EM_DASH = "\u2014"
 EN_DASH = "\u2013"
 
@@ -120,3 +122,14 @@ def test_worked_example_quotes_the_real_profile_and_cli_output(doc: Path, exampl
         )
         position += 1
     assert position == len(actual), f"{doc} does not quote the CLI output to its end"
+
+
+def test_sample_review_dossier_quotes_the_current_cli_output() -> None:
+    blocks = DOSSIER_BLOCK.findall(SAMPLE_DOSSIER.read_text(encoding="utf-8"))
+    assert len(blocks) == 4
+    for example, quoted in blocks:
+        profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
+        assert quoted == render_report(classify(profile)), (
+            f"{SAMPLE_DOSSIER} no longer matches the CLI output for {example}: "
+            f"rerun uv run eu-ai-act-classify {example}"
+        )
