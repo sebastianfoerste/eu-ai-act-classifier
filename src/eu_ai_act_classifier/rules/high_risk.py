@@ -3,7 +3,7 @@
 Two routes to high-risk: the Annex I product-safety route (Art. 6(1)) and the
 Annex III use-case route (Art. 6(2)). The Annex III route is subject to the
 Art. 6(3) derogation, but profiling of natural persons forecloses the
-derogation entirely (Art. 6(3) subpara. 2). An asserted-but-unconfirmed
+derogation entirely (Art. 6(3), third subparagraph). An asserted-but-unconfirmed
 derogation is not silently applied: the system stays high-risk and the call is
 handed to review, because Art. 6(3)/(4) require a documented assessment before
 a system leaves the high-risk tier.
@@ -73,7 +73,7 @@ def evaluate(profile) -> GateOutput:
                 title=f"High-risk: {label}",
                 detail=(
                     "Annex III high-risk area. Profiling of natural persons keeps the system "
-                    "high-risk despite any derogation (Art. 6(3) subpara. 2 AIA)."
+                    "high-risk despite any derogation (Art. 6(3), third subparagraph, AIA)."
                 ),
                 severity=Severity.HIGH,
                 tier=RiskTier.HIGH,

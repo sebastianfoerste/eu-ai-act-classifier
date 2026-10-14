@@ -34,6 +34,19 @@ def test_profiling_forecloses_derogation() -> None:
     assert report.disposition is Disposition.DETERMINED
 
 
+def test_profiling_rule_cites_the_third_subparagraph_of_article_6_3() -> None:
+    # Art. 6(3): first subparagraph is the derogation, second lists conditions (a) to (d),
+    # third keeps a profiling Annex III system high-risk.
+    profile = SystemProfile(
+        name="x",
+        annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
+        derogation=Derogation(performs_profiling=True),
+    )
+    details = [finding.detail for finding in classify(profile).findings]
+    assert any("Art. 6(3), third subparagraph, AIA" in detail for detail in details)
+    assert not any("subpara. 2" in detail for detail in details)
+
+
 def test_derogation_triggers_review() -> None:
     profile = SystemProfile(
         name="x",
