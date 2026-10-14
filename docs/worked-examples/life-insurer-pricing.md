@@ -84,7 +84,7 @@ This is a screening tool, not legal advice. It does not produce a conformity ass
 - **Tier:** high-risk under Art. 6(2) AIA and Annex III(5)(c), risk assessment and pricing for natural persons in life and health insurance. Because the profile asserts profiling, the finding notes that the Art. 6(3) derogation is unavailable (Art. 6(3), third subparagraph).
 - **Disposition:** `DETERMINED`, so `--strict` exits 0.
 - **Duties:** as provider, 14 obligations (Art. 9 to 15, 17, 43, 47, 48, 49, 72 and 73) and five documentation items; as deployer, Art. 26 and the Art. 27 FRIA, which Art. 27(1) requires of point 5(c) deployers before first use.
-- **Conformity route:** item `high-risk.provider.43.2`, internal control under Art. 43(2) and Annex VI, without a notified body, as for every Annex III point from 2 to 8.
+- **Conformity route:** item `high-risk.provider.43.2`, internal control under Art. 43(2) and Annex VI, without a notified body, as for every Annex III point from 2 to 8 unless the system is also an Annex I product (Art. 43(3), last subparagraph).
 - **Date and review:** in the JSON report (`--json`) all 18 graph items carry `"application_date": "2027-12-02"`, and 10 of them are `review_required`. Art. 113, third paragraph, point (c)(i), as amended by Regulation (EU) 2026/1744, sets that date for Chapter III, Sections 1 to 3. The classifier also gives it to items outside those sections (Arts. 40 to 43 and 47 to 49 in Section 5, Arts. 72 and 73 in Chapter IX); that is a modelling choice to review.
 
 ## What a lawyer still has to decide

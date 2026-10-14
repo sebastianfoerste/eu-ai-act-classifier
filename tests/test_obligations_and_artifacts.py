@@ -141,6 +141,10 @@ def test_notified_body_item_stays_where_a_notified_body_can_be_involved() -> Non
             "annex_i_safety_component": True,
             "annex_i_third_party_assessment": True,
         },
+        # Art. 43(3), last subparagraph, does not depend on a third-party assessment.
+        {"annex_iii_area": AnnexIII.CRITICAL_INFRASTRUCTURE, "annex_i_safety_component": True},
+        {"annex_iii_area": AnnexIII.CREDITWORTHINESS, "annex_i_safety_component": True},
+        {"annex_iii_area": AnnexIII.INSURANCE_LIFE_HEALTH, "annex_i_safety_component": True},
     ):
         articles = _provider_graph_articles(**facts)
         assert "Art. 44 AIA" in articles

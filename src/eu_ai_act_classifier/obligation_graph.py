@@ -474,13 +474,14 @@ def _internal_control_route(profile: SystemProfile) -> bool:
 
     Art. 43(2) covers Annex III points 2 to 8. Point 1 (biometrics) can involve a
     notified body under Art. 43(1), an unsettled Annex III point could be point 1,
-    and a system that is also an Annex I product follows the Annex I procedure
-    (Art. 43(3), last subparagraph). Those cases keep the Art. 44 certificate item.
+    and an Annex III system that is also an Annex I product follows the Annex I
+    procedure (Art. 43(3), last subparagraph), whether or not that procedure
+    involves a third party. Those cases keep the review_required Art. 44 item.
     """
     area = profile.annex_iii_area
     if area is None or area is AnnexIII.UNSURE or area in _ANNEX_III_POINT_1:
         return False
-    return not (profile.annex_i_safety_component and profile.annex_i_third_party_assessment)
+    return not profile.annex_i_safety_component
 
 
 def _high_risk_application_date(profile: SystemProfile) -> str:
