@@ -137,6 +137,8 @@ Deployment notes for the playground and the cockpit are in [DEPLOYMENT.md](DEPLO
 
 `examples/` holds synthetic systems spanning prohibited, high-risk, limited risk, minimal risk, GPAI and review-required cases. The expected results are asserted in `tests/test_examples.py`.
 
+Two worked examples show a run end to end, with what the classifier decided and what a lawyer still has to decide: [a bank's credit-scoring model](docs/worked-examples/bank-credit-scoring.md) and [a life insurer's pricing model](docs/worked-examples/life-insurer-pricing.md).
+
 ## Known Legal Limits
 
 - Guidance changes.
