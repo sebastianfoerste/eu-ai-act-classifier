@@ -1,31 +1,49 @@
 # eu-ai-act-classifier
 
 [![CI](https://github.com/sebastianfoerste/eu-ai-act-classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/sebastianfoerste/eu-ai-act-classifier/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue.svg)](pyproject.toml)
+
+**Answer "Is our AI system high-risk under the EU AI Act?" with a cited, reviewable first pass instead of a one-word label.**
 
 Deterministic EU AI Act first-pass classifier: works out which risk tier an AI system falls into and lists the obligations that follow, each with its article, application date and review status. Runs as a CLI, as MCP-style tools or in the browser; a lawyer confirms the result. Not legal advice; data is synthetic.
 
-**[Try it in your browser](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)**: no install, and nothing you paste leaves the page. The playground runs the same engine as the CLI.
+## Who it's for
 
-[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](docs/playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
-
-> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) and pick one of the 17 synthetic examples, or scroll to [What the demo produces](#what-the-demo-produces). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+- **General counsel, AI governance leads and product counsel** doing a first-pass classification of an AI system before deeper legal review.
+- **Lawyers who confirm the result** and need to check the reasoning: each obligation cites its Article, open questions name the Article and the fact to confirm, and generated work products are marked draft only.
+- **Legal engineers** who need the same rules as a `--strict` gate in CI or an intake pipeline, as MCP tools or behind a local JSON API.
 
 See [CASE_STUDY.md](CASE_STUDY.md) for the problem, controls, and limitations. Launch readiness is tracked in [docs/launch-readiness.md](docs/launch-readiness.md).
 
-## Run it
+## Try it now
+
+**[Open the live playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/)**: no install, and nothing you paste leaves the page. The playground runs the same engine as the CLI.
+
+<!-- Screenshot/GIF placeholder: to be added. Put a short GIF or screenshot of the live playground here (describe the system, classify, review and export) and save it in docs/ next to the existing images. -->
+
+*Screenshot/GIF placeholder: to be added*
+
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 17 synthetic examples, or scroll to [What the demo produces](#what-the-demo-produces). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+
+## Quick start
+
+Requires Python 3.13+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 git clone https://github.com/sebastianfoerste/eu-ai-act-classifier
 cd eu-ai-act-classifier
-uv sync
-uv run python -m src.eu_ai_act_classifier.cli examples/credit_scoring.json
+uv sync --extra dev
+uv run eu-ai-act-classify examples/credit_scoring.json
 ```
 
-Runs end to end, offline and deterministically.
+Runs end to end, offline and deterministically. [What the demo produces](#what-the-demo-produces) shows the output, and [Local Verification](#local-verification) has more commands, starting with the test suite.
 
 ## Browser playground
 
 The [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) runs the classifier client-side with Pyodide. Pick a synthetic example or paste a `SystemProfile`, classify it, then export the JSON or text report. A field guide lists every input field and its allowed values.
+
+[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](docs/playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
 The page installs a wheel of this package, so it applies the same rules as the CLI. `tests/test_playground.py` fails if the wheel, the bundled examples or the field guide drift from the source. Rebuild after a rule change:
 
