@@ -58,9 +58,12 @@ In the sample run, every tier and obligation is cited to an Article and carries 
 
 | Gates / Steps | Focus | Verification Method |
 |---|---|---|
-| Scope and Intake | Alignment | Checks AI-system status, EU nexus, and transitional dates |
-| Prohibited Practices | Art. 5 verification | Flags prohibited use cases |
-| High-Risk & GPAI | Art. 6 / Annex III / GPAI | Classifies obligations based on deployment areas and compute scale |
+| Scope and Intake | Alignment | Checks AI-system status, EU nexus, the assessment date and transitional dates |
+| Prohibited Practices | Art. 5 verification | Flags Art. 5(1)(a) to (h) practices; tests Art. 5(1)(ba) and (bb) with Art. 5(1a) and (1b), which apply from 2 December 2026 |
+| High-Risk & GPAI | Art. 6 / Annex I Sections A and B / Annex III / GPAI | Classifies obligations by deployment area, Annex I Section and compute scale; dates older GPAI models under Art. 111(3) |
+| Transparency | Art. 50 | Attaches Art. 50 duties; dates Art. 50(2) under Art. 111(4) for systems placed on the market before 2 August 2026 |
+
+Coverage of Regulation (EU) 2026/1744: the gates encode the new prohibitions in Art. 5(1)(ba) and (bb), the move of machinery to Annex I, Section B with the Art. 2(2) consequence, Art. 111(3) and the new Art. 111(4). The rules were built from the Official Journal texts snapshotted in [sources/README.md](sources/README.md) and are tested by the fixtures in `tests/legal/fixtures/`. The amended safety-component rules (Art. 3(14), Art. 6(1a) to (1c)) are left to the reviewer's characterisation, and amendments that set no classification rule, such as Art. 4 and Art. 4a, are not encoded. The interpretation choices are listed in `docs/methodology.md` and await legal review.
 
 ## Local Verification
 
@@ -135,6 +138,7 @@ Deployment notes for the playground and the cockpit are in [DEPLOYMENT.md](DEPLO
 - Guidance changes.
 - National implementation and supervisory practice may vary by Member State.
 - The engine applies rules to characterised facts and does not decide disputed intended purpose, operator role or factual deployment scope.
+- Date-dependent results need `assessment_date` and `placing_on_market_date`; without them those results stay open for review.
 - `requires_review`, draft artifacts and advisory overlays must be reviewed before reliance.
 
 ## Stack
