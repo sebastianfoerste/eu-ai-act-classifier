@@ -8,7 +8,7 @@ Deterministic EU AI Act first-pass classifier: works out which risk tier an AI s
 
 [![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](docs/playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
-> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) and pick one of the 17 synthetic examples, or scroll to [What the demo produces](#what-the-demo-produces). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) and pick one of the 18 synthetic examples, or scroll to [What the demo produces](#what-the-demo-produces). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
 See [CASE_STUDY.md](CASE_STUDY.md) for the problem, controls, and limitations. Launch readiness is tracked in [docs/launch-readiness.md](docs/launch-readiness.md).
 

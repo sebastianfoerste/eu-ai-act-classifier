@@ -26,6 +26,10 @@
           "label": "Credit scoring, deployer"
         },
         {
+          "key": "life_insurer_pricing",
+          "label": "Life insurance pricing, provider and deployer"
+        },
+        {
           "key": "cv_screening",
           "label": "CV screening"
         },
@@ -139,6 +143,20 @@
       "purpose": "Loan underwriting",
       "sector": "Banking",
       "annex_iii_area": "III.5.b"
+    },
+    "life_insurer_pricing": {
+      "name": "Musterversicherung term-life pricing model",
+      "description": "A synthetic German life insurer's in-house gradient-boosted model that sets term-life premiums from applicant health questionnaires. The insurer builds the model and uses it in its own underwriting.",
+      "roles": [
+        "provider",
+        "deployer"
+      ],
+      "purpose": "Risk assessment and pricing of term-life insurance for natural persons",
+      "sector": "Life insurance",
+      "annex_iii_area": "III.5.c",
+      "derogation": {
+        "performs_profiling": true
+      }
     },
     "cv_screening": {
       "name": "TalentRank CV Screener",
