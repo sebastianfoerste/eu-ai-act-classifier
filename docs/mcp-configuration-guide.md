@@ -12,13 +12,13 @@ Both routes need [uv](https://docs.astral.sh/uv/): the first runs through `uvx`,
 eu-reg-mcp serves this classifier as its `classify_eu_ai_act_system` tool, next to its MiCAR white paper linter and MiCAR register tools. The `classify` and `lint` extras install the classifier and the linter in the same environment as the server:
 
 ```bash
-uvx --from 'eu-reg-mcp[classify,lint] @ git+https://github.com/sebastianfoerste/eu-reg-mcp' eu-reg-mcp
+uvx --from 'eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp' eu-reg-mcp
 ```
 
 ### Claude Code
 
 ```bash
-claude mcp add eu-reg -- uvx --from 'eu-reg-mcp[classify,lint] @ git+https://github.com/sebastianfoerste/eu-reg-mcp' eu-reg-mcp
+claude mcp add eu-reg -- uvx --from 'eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp' eu-reg-mcp
 ```
 
 ### Claude Desktop
@@ -32,7 +32,7 @@ Add the server to the `mcpServers` object in `claude_desktop_config.json`. On ma
       "command": "uvx",
       "args": [
         "--from",
-        "eu-reg-mcp[classify,lint] @ git+https://github.com/sebastianfoerste/eu-reg-mcp",
+        "eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp",
         "eu-reg-mcp"
       ]
     }

@@ -31,7 +31,7 @@ _MCP_RANGE = ((1, 2), (2,))
 # The README's command for this server; it installs the [mcp] extra from uv.lock first.
 LOCAL_SERVER_COMMAND = "uv run --extra mcp python -m eu_ai_act_classifier.mcp_server"
 EU_REG_MCP_COMMAND = (
-    "uvx --from 'eu-reg-mcp[classify,lint] @ git+https://github.com/sebastianfoerste/eu-reg-mcp'"
+    "uvx --from 'eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp'"
     " eu-reg-mcp"
 )
 

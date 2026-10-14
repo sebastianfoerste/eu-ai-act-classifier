@@ -10,7 +10,7 @@ from eu_ai_act_classifier import mcp_server
 
 PIN = "mcp>=1.2,<2"
 EU_REG_MCP_COMMAND = (
-    "uvx --from 'eu-reg-mcp[classify,lint] @ git+https://github.com/sebastianfoerste/eu-reg-mcp'"
+    "uvx --from 'eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp'"
     " eu-reg-mcp"
 )
 LOCAL_SERVER_COMMAND = "uv run --extra mcp python -m eu_ai_act_classifier.mcp_server"
