@@ -9,7 +9,7 @@
     {"source_id": "consolidated-ai-act-2026-07-27", "pinpoint": "Art. 5(1)(bb), (1a); Art. 113 (cross-check)"}
   ],
   "interpretations": [
-    {"id": "INT-5-deployer-route", "text": "For use, Art. 5(1a)(b) is read as replacing the system-level conditions: the use is prohibited where the deployer uses the system for the purpose of generating or manipulating the material or performance and no 'without right' defence applies."},
+    {"id": "INT-5-deployer-route", "text": "For use, Art. 5(1a)(b) keeps the content element ('the use of an AI system that generates or manipulates the material or performance') and adds the deployer's purpose; the conditions of Art. 5(1a)(a) do not apply to use. The use is prohibited where the system generates or manipulates the material or performance, the deployer uses it for that purpose and no 'without right' defence applies."},
     {"id": "INT-5-without-right-defence", "text": "Whether a 'without right' defence applies under national law is a fact the reviewer establishes; the engine does not evaluate national law."},
     {"id": "INT-5-before-date-review", "text": "Where all elements are met and the assessment date falls before 2 December 2026, the point does not yet apply, but the result goes to review."},
     {"id": "INT-5-date-unknown-conservative", "text": "Where all elements are met but the assessment date is unknown, the engine votes the prohibited tier and routes the result to review."}
@@ -100,9 +100,9 @@
     {
       "id": "bb-deployer-uses-for-purpose-applies",
       "matrix": "applies",
-      "facts": "A deployer uses an image system for the purpose of generating such material; no 'without right' defence applies.",
+      "facts": "A deployer uses an image system for the purpose of generating such material, and the system generates it; no 'without right' defence applies.",
       "interpretation": "INT-5-deployer-route",
-      "profile": {"roles": ["deployer"], "child_sexual_abuse_material": {"deployer_uses_for_that_purpose": true, "without_right_defence_applies": false}},
+      "profile": {"roles": ["deployer"], "child_sexual_abuse_material": {"generates_or_manipulates": true, "deployer_uses_for_that_purpose": true, "without_right_defence_applies": false}},
       "expect": {
         "risk_tier": "prohibited",
         "disposition": "determined",

@@ -9,7 +9,7 @@
   ],
   "interpretations": [
     {"id": "INT-5-consent-system-level", "text": "For placing on the market or putting into service, the consent element is read at system level: the point is not met where the system generates or manipulates the material only with the depicted person's consent (Recital 12: means to collect and demonstrate consent)."},
-    {"id": "INT-5-deployer-route", "text": "For use, Art. 5(1a)(b) is read as replacing the system-level conditions: the use is prohibited where the deployer uses the system for the purpose of generating or manipulating the material without the depicted person's consent, including misuse of a system not intended for it (Recital 12)."},
+    {"id": "INT-5-deployer-route", "text": "For use, Art. 5(1a)(b) keeps the content element ('the use of an AI system that generates or manipulates the material') and adds the deployer's purpose; the conditions of Art. 5(1a)(a) (intended purpose, foreseeable outcome without safeguards) do not apply to use. The use is prohibited where the system generates or manipulates the material, the deployer uses it for that purpose and the depicted person has not consented, including misuse of a system not intended for it (Recital 12)."},
     {"id": "INT-5-routes-by-role", "text": "Providers and importers are tested under Art. 5(1a)(a) (placing on the market, putting into service); deployers under Art. 5(1a)(b) (use). Where no role performs one of those acts, the result is UNKNOWN and goes to review."},
     {"id": "INT-5-date-unknown-conservative", "text": "Where all elements are met but the assessment date is unknown, the engine votes the prohibited tier and routes the result to review, because the prohibition applies at the latest from 2 December 2026."},
     {"id": "INT-5-before-date-review", "text": "Where all elements are met and the assessment date falls before 2 December 2026, the point does not yet apply, but the result goes to review so that withdrawal or redesign before that date is planned."},
@@ -149,9 +149,9 @@
     {
       "id": "ba-deployer-uses-for-purpose-applies",
       "matrix": "applies",
-      "facts": "A deployer uses a general image system for the purpose of generating realistic intimate images of an identifiable person who has not consented.",
+      "facts": "A deployer uses a general image system for the purpose of generating realistic intimate images of an identifiable person who has not consented, and the system generates them.",
       "interpretation": "INT-5-deployer-route",
-      "profile": {"roles": ["deployer"], "intimate_imagery": {"deployer_uses_for_that_purpose": true, "consent_ensured": false}},
+      "profile": {"roles": ["deployer"], "intimate_imagery": {"generates_material": true, "deployer_uses_for_that_purpose": true, "consent_ensured": false}},
       "expect": {
         "risk_tier": "prohibited",
         "disposition": "determined",
