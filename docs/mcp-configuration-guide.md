@@ -2,8 +2,10 @@
 
 There are two ways to give an AI client this classifier as an MCP tool:
 
-1. **Recommended for Claude:** [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp), the supported Claude integration. It runs without a clone.
+1. **Recommended for Claude:** [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp). It runs without a clone.
 2. **Secondary:** this repository's own two-tool server, run from a local clone. It serves your working copy, which helps when you test rule changes locally.
+
+Both routes need [uv](https://docs.astral.sh/uv/): the first runs through `uvx`, the second installs its extra with `uv sync`.
 
 ## Recommended for Claude: eu-reg-mcp
 
@@ -46,7 +48,7 @@ The rest of this guide covers the server in `src/eu_ai_act_classifier/mcp_server
 
 ### Prerequisites
 
-1. Python 3.13+ installed.
+1. Python 3.13+ and [uv](https://docs.astral.sh/uv/) installed.
 2. A clone of `eu-ai-act-classifier` with the `[mcp]` extra installed in its virtual environment:
    ```bash
    uv sync --extra mcp

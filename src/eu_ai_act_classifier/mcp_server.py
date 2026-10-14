@@ -7,7 +7,7 @@ lazily, so the core engine never depends on it.
 
 The server is built on ``mcp.server.fastmcp``, which mcp 2.0 removed, so the
 ``[mcp]`` extra pins ``mcp>=1.2,<2``. For Claude Code and Claude Desktop, the
-supported integration is eu-reg-mcp, which serves this classifier as a tool.
+recommended integration is eu-reg-mcp, which serves this classifier as a tool.
 
 Run::
 
@@ -26,6 +26,10 @@ from .report import render_report
 
 # Keep in step with the `mcp` extra in pyproject.toml; tests/test_mcp_server.py checks both.
 MCP_REQUIREMENT = "mcp>=1.2,<2"
+# The same range as release tuples: from 1.2 up to, not including, 2.
+_MCP_RANGE = ((1, 2), (2,))
+# The README's command for this server; it installs the [mcp] extra from uv.lock first.
+LOCAL_SERVER_COMMAND = "uv run --extra mcp python -m eu_ai_act_classifier.mcp_server"
 EU_REG_MCP_COMMAND = (
     "uvx --from 'eu-reg-mcp[classify,lint] @ git+https://github.com/sebastianfoerste/eu-reg-mcp'"
     " eu-reg-mcp"
@@ -39,29 +43,50 @@ def _installed_mcp_version() -> str | None:
         return None
 
 
+def _release(version: str) -> tuple[int, ...] | None:
+    """The numeric release of a final version such as ``1.30.0``, or None for anything else."""
+    if re.fullmatch(r"\d+(?:\.\d+)*", version) is None:
+        return None
+    return tuple(int(part) for part in version.split("."))
+
+
 def mcp_unavailable_message(installed_version: str | None, error: ImportError) -> str:
     """Say why ``mcp.server.fastmcp`` could not be imported and what to run instead."""
+    install_hints = [
+        f"This server needs {MCP_REQUIREMENT}, which the [mcp] extra pins. In a clone of this",
+        "repository, start it with",
+        f"  {LOCAL_SERVER_COMMAND}",
+        "or install the extra into .venv with `uv sync --extra mcp`. Outside a uv project,",
+        "install the pin with",
+        f"  pip install '{MCP_REQUIREMENT}'",
+    ]
     if installed_version is None:
-        problem = "The optional mcp package is not installed."
+        lines = ["The optional mcp package is not installed.", *install_hints]
     else:
         major = re.match(r"\d+", installed_version)
+        release = _release(installed_version)
         if major and int(major.group()) >= 2:
-            problem = (
+            lines = [
                 f"mcp {installed_version} is installed, but mcp 2.0 removed "
-                "mcp.server.fastmcp, which this server is built on."
-            )
+                "mcp.server.fastmcp, which this server is built on.",
+                *install_hints,
+            ]
+        elif release is not None and _MCP_RANGE[0] <= release < _MCP_RANGE[1]:
+            # The installed version already meets the pin, so reinstalling it would not help.
+            lines = [
+                f"mcp {installed_version} is installed and meets {MCP_REQUIREMENT}, but "
+                f"mcp.server.fastmcp could not be imported from it: {error}",
+            ]
         else:
-            problem = (
+            lines = [
                 f"mcp {installed_version} is installed, but mcp.server.fastmcp "
-                f"could not be imported from it: {error}"
-            )
+                f"could not be imported from it: {error}",
+                *install_hints,
+            ]
     return "\n".join(
         [
-            problem,
-            f"This server needs {MCP_REQUIREMENT}, which the [mcp] extra pins. Install it with",
-            "  uv pip install -e '.[mcp]'   (from a clone of this repository), or",
-            f"  uv pip install '{MCP_REQUIREMENT}'",
-            "For Claude Code or Claude Desktop, use eu-reg-mcp instead. It is the supported",
+            *lines,
+            "For Claude Code or Claude Desktop, use eu-reg-mcp instead. It is the recommended",
             "Claude integration and serves this classifier as an MCP tool:",
             f"  {EU_REG_MCP_COMMAND}",
         ]

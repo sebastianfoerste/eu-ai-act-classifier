@@ -13,6 +13,7 @@ EU_REG_MCP_COMMAND = (
     "uvx --from 'eu-reg-mcp[classify,lint] @ git+https://github.com/sebastianfoerste/eu-reg-mcp'"
     " eu-reg-mcp"
 )
+LOCAL_SERVER_COMMAND = "uv run --extra mcp python -m eu_ai_act_classifier.mcp_server"
 
 
 def _exit_message(monkeypatch: pytest.MonkeyPatch, installed_version: str | None) -> str:
@@ -34,8 +35,10 @@ def test_exit_message_names_the_pin_and_eu_reg_mcp(
     message = _exit_message(monkeypatch, installed_version)
 
     assert PIN in message
-    assert "uv pip install -e '.[mcp]'" in message
-    assert "eu-reg-mcp" in message
+    assert LOCAL_SERVER_COMMAND in message
+    assert "uv sync --extra mcp" in message
+    assert f"pip install '{PIN}'" in message
+    assert "uv pip install" not in message
     assert EU_REG_MCP_COMMAND in message
 
 
@@ -64,12 +67,35 @@ def test_older_mcp_reports_the_import_error(monkeypatch: pytest.MonkeyPatch) -> 
     assert "mcp.server.fastmcp" in message
 
 
-def test_pin_and_command_match_pyproject_and_docs() -> None:
+@pytest.mark.parametrize("installed_version", ["1.2.0", "1.30.0"])
+def test_mcp_that_meets_the_pin_reports_the_import_error_without_reinstall_advice(
+    monkeypatch: pytest.MonkeyPatch, installed_version: str
+) -> None:
+    message = _exit_message(monkeypatch, installed_version)
+
+    assert message.startswith(f"mcp {installed_version} is installed and meets {PIN}")
+    assert "could not be imported" in message
+    assert LOCAL_SERVER_COMMAND not in message
+    assert "pip install" not in message
+    assert EU_REG_MCP_COMMAND in message
+
+
+@pytest.mark.parametrize(
+    ("version", "release"),
+    [("1.30.0", (1, 30, 0)), ("1.2", (1, 2)), ("1.2.0rc1", None), ("1.30.0+local", None)],
+)
+def test_release_reads_only_final_versions(version: str, release: tuple[int, ...] | None) -> None:
+    assert mcp_server._release(version) == release
+
+
+def test_pin_and_commands_match_pyproject_and_docs() -> None:
     assert mcp_server.MCP_REQUIREMENT == PIN
     assert mcp_server.EU_REG_MCP_COMMAND == EU_REG_MCP_COMMAND
+    assert mcp_server.LOCAL_SERVER_COMMAND == LOCAL_SERVER_COMMAND
     assert f'mcp = ["{PIN}"]' in Path("pyproject.toml").read_text(encoding="utf-8")
     for doc in (Path("README.md"), Path("docs/mcp-configuration-guide.md")):
         assert EU_REG_MCP_COMMAND in doc.read_text(encoding="utf-8"), doc
+    assert LOCAL_SERVER_COMMAND in Path("README.md").read_text(encoding="utf-8")
 
 
 def test_server_lists_both_tools_when_a_compatible_mcp_is_installed() -> None:
