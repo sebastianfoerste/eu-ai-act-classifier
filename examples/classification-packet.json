@@ -288,12 +288,12 @@
       "review_status": "review_required"
     },
     {
-      "obligation_id": "high-risk.provider.44",
-      "article": "Art. 44 AIA",
+      "obligation_id": "high-risk.provider.43.2",
+      "article": "Art. 43(2) AIA",
       "actor": "provider",
-      "trigger": "Certificate issued by notified body where applicable.",
-      "requirement": "Track certificate validity, changes and renewal obligations.",
-      "evidence_artifact": "Certificate register.",
+      "trigger": "High-risk AI system referred to in points 2 to 8 of Annex III.",
+      "requirement": "Follow the conformity assessment procedure based on internal control (Annex VI), which does not involve a notified body.",
+      "evidence_artifact": "Annex VI internal-control assessment record.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",

@@ -47,7 +47,7 @@ Obligation graph:
   - high-risk.provider.41: Art. 41 AIA (provider), evidence: Common specifications assessment., review: review_required
   - high-risk.provider.42: Art. 42 AIA (provider), evidence: Presumption of conformity mapping., review: review_required
   - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
-  - high-risk.provider.44: Art. 44 AIA (provider), evidence: Certificate register., review: review_required
+  - high-risk.provider.43.2: Art. 43(2) AIA (provider), evidence: Annex VI internal-control assessment record., review: review_required
   - high-risk.provider.47: Art. 47 AIA (provider), evidence: EU declaration of conformity., review: determined
   - high-risk.provider.48: Art. 48 AIA (provider), evidence: CE marking record., review: determined
   - high-risk.provider.49: Art. 49 AIA (provider), evidence: EU database registration record., review: review_required
