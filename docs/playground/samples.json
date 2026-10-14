@@ -222,7 +222,13 @@
       ],
       "purpose": "Synthetic media generation",
       "sector": "Media",
-      "generates_deepfakes": true
+      "generates_deepfakes": true,
+      "intimate_imagery": {
+        "deployer_uses_for_that_purpose": false
+      },
+      "child_sexual_abuse_material": {
+        "deployer_uses_for_that_purpose": false
+      }
     },
     "spam_filter": {
       "name": "InboxGuard",
@@ -242,6 +248,7 @@
       ],
       "purpose": "Text classification and sentiment analysis",
       "sector": "AI-Analytics",
+      "placing_on_market_date": "2025-11-03",
       "is_gpai_model": true,
       "training_flops": 1e+24
     },
@@ -254,6 +261,7 @@
       ],
       "purpose": "Multimodal text and reasoning generation",
       "sector": "AI-Research",
+      "placing_on_market_date": "2026-02-09",
       "is_gpai_model": true,
       "training_flops": 2e+25
     },
@@ -266,6 +274,7 @@
       ],
       "purpose": "Chemical formulation support",
       "sector": "Scientific-Inference",
+      "placing_on_market_date": "2026-04-20",
       "is_gpai_model": true,
       "training_flops": 1e+24,
       "gpai_systemic_risk_designated": true
@@ -279,6 +288,7 @@
       ],
       "purpose": "General-purpose text generation",
       "sector": "AI",
+      "placing_on_market_date": "2025-06-16",
       "is_gpai_model": true,
       "training_flops": 5e+25
     }

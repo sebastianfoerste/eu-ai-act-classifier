@@ -1,8 +1,20 @@
-"""Structured obligation graph for product and review workflows."""
+"""Structured obligation graph for product and review workflows.
+
+An application date of ``None`` means the date turns on a fact the profile
+does not give; the item is then marked ``review_required`` and the gate that
+needs the fact raises an open question.
+"""
 
 from __future__ import annotations
 
-from .citations import AI_ACT_URL
+from .catalog import TRANSPARENCY
+from .citations import (
+    AI_ACT_URL,
+    ART_50_2_LEGACY_DEADLINE,
+    CHAPTER_V_APPLIES_FROM,
+    GENERAL_APPLICATION_DATE,
+    GPAI_LEGACY_DEADLINE,
+)
 from .models import (
     AnnexIII,
     Obligation,
@@ -23,10 +35,11 @@ def build_obligation_graph(
     gpai_systemic: bool,
     fria_required: bool,
     transparency_obligations: list[Obligation],
+    chapter_iii_applies: bool = True,
 ) -> list[ObligationGraphItem]:
     items: list[ObligationGraphItem] = []
 
-    if final_tier is RiskTier.HIGH:
+    if final_tier is RiskTier.HIGH and chapter_iii_applies:
         application_date = _high_risk_application_date(profile)
         if profile.is_provider:
             items.extend(_high_risk_provider_graph(application_date))
@@ -130,9 +143,10 @@ def build_obligation_graph(
             )
 
     if is_gpai and final_tier is not RiskTier.PROHIBITED:
-        items.extend(_gpai_graph(gpai_systemic))
+        items.extend(_gpai_graph(gpai_systemic, _gpai_application_date(profile)))
 
     for index, obligation in enumerate(transparency_obligations, start=1):
+        application_date = _transparency_application_date(profile, obligation)
         items.append(
             _item(
                 f"transparency.{index}",
@@ -141,11 +155,33 @@ def build_obligation_graph(
                 "Art. 50 transparency trigger in the submitted profile.",
                 obligation.requirement,
                 "Transparency notice, label or disclosure record.",
-                "2026-08-02",
+                application_date,
             )
         )
 
     return items
+
+
+def _gpai_application_date(profile: SystemProfile) -> str | None:
+    """Chapter V from 2 August 2025; models placed before then by 2 August 2027
+    (Art. 111(3) AIA). UNKNOWN without a placing date."""
+    placed_on = profile.placing_on_market_date
+    if placed_on is None:
+        return None
+    return GPAI_LEGACY_DEADLINE if placed_on < CHAPTER_V_APPLIES_FROM else CHAPTER_V_APPLIES_FROM
+
+
+def _transparency_application_date(profile: SystemProfile, obligation: Obligation) -> str | None:
+    """Art. 50 from 2 August 2026; Art. 50(2) for systems placed before then by
+    2 December 2026 (Art. 111(4) AIA). UNKNOWN for Art. 50(2) without a placing date."""
+    if obligation is not TRANSPARENCY["synthetic"]:
+        return GENERAL_APPLICATION_DATE
+    placed_on = profile.placing_on_market_date
+    if placed_on is None:
+        return None
+    if placed_on < GENERAL_APPLICATION_DATE:
+        return ART_50_2_LEGACY_DEADLINE
+    return GENERAL_APPLICATION_DATE
 
 
 def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem]:
@@ -312,7 +348,7 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
     ]
 
 
-def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
+def _gpai_graph(systemic: bool, application_date: str | None) -> list[ObligationGraphItem]:
     items = [
         _item(
             "gpai.provider.53.a",
@@ -321,7 +357,7 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Keep model technical documentation per Annex XI.",
             "GPAI model documentation checklist.",
-            "2025-08-02",
+            application_date,
         ),
         _item(
             "gpai.provider.53.b",
@@ -330,7 +366,7 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Provide downstream providers with information per Annex XII.",
             "Downstream provider information pack.",
-            "2025-08-02",
+            application_date,
         ),
         _item(
             "gpai.provider.53.c",
@@ -339,7 +375,7 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Maintain a policy to comply with Union copyright law.",
             "Copyright compliance policy.",
-            "2025-08-02",
+            application_date,
             ReviewStatus.REVIEW_REQUIRED,
         ),
         _item(
@@ -349,7 +385,7 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Publish a sufficiently detailed summary of training content.",
             "Training-content summary.",
-            "2025-08-02",
+            application_date,
             ReviewStatus.REVIEW_REQUIRED,
         ),
         _item(
@@ -359,7 +395,7 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
             "Provider choosing a Code of Practice route or alternative compliance evidence.",
             "Track Code of Practice adherence or alternative means of compliance.",
             "GPAI Code of Practice adherence record.",
-            "2025-08-02",
+            application_date,
             ReviewStatus.REVIEW_REQUIRED,
         ),
     ]
@@ -373,7 +409,7 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Perform model evaluation, including adversarial testing.",
                     "Systemic model evaluation file.",
-                    "2025-08-02",
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
                 ),
                 _item(
@@ -383,7 +419,7 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Assess and mitigate systemic risks at Union level.",
                     "Systemic risk assessment and mitigation plan.",
-                    "2025-08-02",
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
                 ),
                 _item(
@@ -393,7 +429,7 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Track, document and report serious incidents.",
                     "GPAI serious incident register.",
-                    "2025-08-02",
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
                 ),
                 _item(
@@ -403,7 +439,7 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Ensure an adequate level of cybersecurity protection.",
                     "Cybersecurity control file.",
-                    "2025-08-02",
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
                 ),
             ]
@@ -418,9 +454,11 @@ def _item(
     trigger: str,
     requirement: str,
     evidence_artifact: str,
-    application_date: str,
+    application_date: str | None,
     review_status: ReviewStatus = ReviewStatus.DETERMINED,
 ) -> ObligationGraphItem:
+    if application_date is None:
+        review_status = ReviewStatus.REVIEW_REQUIRED
     return ObligationGraphItem(
         obligation_id=obligation_id,
         article=article,
@@ -436,7 +474,12 @@ def _item(
 
 
 def _high_risk_application_date(profile: SystemProfile) -> str:
-    if profile.annex_i_safety_component and profile.annex_i_third_party_assessment:
+    annex_i_route = profile.annex_i_safety_component and profile.annex_i_third_party_assessment
+    section_b = (
+        profile.annex_i_legislation is not None and profile.annex_i_legislation.section == "B"
+    )
+    if annex_i_route and not section_b:
+        # Section A, or Section unknown and kept as A (see HIGHRISK.6.1.section_unknown).
         return "2028-08-02"
     if profile.annex_iii_area is AnnexIII.UNSURE or profile.annex_iii_area is not None:
         return "2027-12-02"

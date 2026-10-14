@@ -1,4 +1,4 @@
-import { DISPOSITIONS, MAX_BYTES, ROLE_LABELS, TIERS, annexCitation, describeDefault, formatProfile, groupByRole, matchesQuery, parseProfile, practiceCitation, reportIsCurrent } from "./model.mjs";
+import { DISPOSITIONS, MAX_BYTES, ROLE_LABELS, TIERS, annexCitation, describeDefault, formatProfile, groupByRole, matchesQuery, parseProfile, applicationLabel, practiceCitation, reportIsCurrent } from "./model.mjs";
 
 const $ = id => document.getElementById(id);
 const input = $("input");
@@ -361,7 +361,7 @@ function sectionDefinitions() {
         search: [g.obligation_id, g.article, g.actor, g.trigger, g.requirement, g.evidence_artifact, g.review_status],
         render: () => itemCard(badge(REVIEW_TONE[g.review_status] ?? "tone-grey", REVIEW_LABEL[g.review_status] ?? g.review_status), g.requirement, g.article,
           [`Trigger: ${g.trigger}`, `Evidence: ${g.evidence_artifact}`],
-          `${ROLE_LABELS[g.actor] ?? g.actor} · applies from ${g.application_date} · ${SOURCE_LABEL[g.source_status] ?? g.source_status} · ${g.obligation_id}`),
+          `${ROLE_LABELS[g.actor] ?? g.actor} · ${applicationLabel(g)} · ${SOURCE_LABEL[g.source_status] ?? g.source_status} · ${g.obligation_id}`),
       })),
     },
     {

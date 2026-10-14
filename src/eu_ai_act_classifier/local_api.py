@@ -22,7 +22,10 @@ from .engine import classify
 from .inventory import build_example_inventory
 from .models import (
     AnnexIII,
+    AnnexILegislation,
+    ChildSexualAbuseMaterialScreen,
     ExcludedUse,
+    IntimateImageryScreen,
     ProhibitedPractice,
     Role,
     SystemProfile,
@@ -33,8 +36,15 @@ from .portfolio_workspace import build_example_portfolio_workspace
 def schema_payload() -> dict[str, Any]:
     return {
         "roles": [role.value for role in Role],
+        "annex_i_legislation": [legislation.value for legislation in AnnexILegislation],
         "annex_iii_areas": [area.value for area in AnnexIII],
         "prohibited_practices": [practice.value for practice in ProhibitedPractice],
+        # Art. 5(1)(ba) and (bb) screens: each key takes true, false or null.
+        "fact_screens": {
+            "intimate_imagery": list(IntimateImageryScreen.model_fields),
+            "child_sexual_abuse_material": list(ChildSexualAbuseMaterialScreen.model_fields),
+        },
+        "date_fields": ["assessment_date", "placing_on_market_date", "putting_into_service_date"],
         "excluded_use_flags": [flag.value for flag in ExcludedUse],
         "artifacts": sorted(ARTIFACT_NAMES),
         "dossier_schema": REVIEW_DOSSIER_SCHEMA,

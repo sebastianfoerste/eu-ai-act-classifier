@@ -19,14 +19,17 @@ from .models import (
     AnnexIII,
     ClassificationReport,
     Disposition,
+    Finding,
     Obligation,
     RiskTier,
     ScopeStatus,
+    Severity,
     SystemProfile,
     TimelineItem,
 )
 from .obligation_graph import build_obligation_graph
 from .rules import gpai, high_risk, prohibited, scope, transparency
+from .rules.base import GateOutput, on_or_after
 
 _FRIA_AREAS = {AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH}
 _FRIA_EXCLUDED_AREAS = {AnnexIII.CRITICAL_INFRASTRUCTURE}
@@ -36,13 +39,15 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
     scope_assessment, scope_findings, scope_open_questions = scope.evaluate(profile)
 
     outputs = []
+    section_b_only = False
     if scope_assessment.status is not ScopeStatus.OUTSIDE_SCOPE:
-        outputs = [
-            prohibited.evaluate(profile),
-            high_risk.evaluate(profile),
-            gpai.evaluate(profile),
-            transparency.evaluate(profile),
-        ]
+        prohibited_out = prohibited.evaluate(profile)
+        high_risk_out = high_risk.evaluate(profile)
+        transparency_out = transparency.evaluate(profile)
+        section_b_only = _apply_article_2_2(
+            profile, prohibited_out, high_risk_out, transparency_out
+        )
+        outputs = [prohibited_out, high_risk_out, gpai.evaluate(profile), transparency_out]
 
     findings = scope_findings + [f for o in outputs for f in o.findings]
     open_questions = scope_open_questions + [q for o in outputs for q in o.open_questions]
@@ -63,7 +68,7 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
     documentation: list[Obligation] = []
     fria_required = False
 
-    if final_tier is RiskTier.HIGH:
+    if final_tier is RiskTier.HIGH and not section_b_only:
         if profile.is_provider:
             obligations += high_risk_provider_obligations()
             documentation += high_risk_documentation()
@@ -126,7 +131,14 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         gpai_systemic=gpai_systemic,
         fria_required=fria_required,
         transparency_obligations=transparency_obligations,
+        chapter_iii_applies=not section_b_only,
     )
+    for item in obligation_graph:
+        item.applies_on_assessment_date = (
+            None
+            if item.application_date is None
+            else on_or_after(profile.assessment_date, item.application_date)
+        )
 
     return ClassificationReport(
         system=profile.name,
@@ -148,6 +160,57 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         open_questions=open_questions,
         unverified_citations=unverified,
     )
+
+
+def _apply_article_2_2(
+    profile: SystemProfile,
+    prohibited_out: GateOutput,
+    high_risk_out: GateOutput,
+    transparency_out: GateOutput,
+) -> bool:
+    """Apply Art. 2(2) AIA to an Art. 6(1) system related to an Annex I Section B product.
+
+    Only Art. 6(1), Art. 60a and Arts. 102 to 112 apply to such a system (Art. 2(2)
+    as replaced by Art. 1(2)(a) of Regulation (EU) 2026/1744). Interpretation: the
+    literal reading removes the Chapter III and Art. 50 obligations; an Art. 5
+    finding or an Annex III listing is not set aside on that reading but goes to
+    review. Returns whether the Chapter III obligations are to be left out.
+    """
+    if high_risk_out.annex_i_section != "B":
+        return False
+    if prohibited_out.tier_vote is RiskTier.PROHIBITED:
+        prohibited_out.open_questions.append(
+            "Art. 2(2) AIA: for an Art. 6(1) system related to an Annex I, Section B product "
+            "only Art. 6(1), Art. 60a and Arts. 102 to 112 apply. Confirm whether the Art. 5 "
+            "finding stands; interpretation: the engine keeps it."
+        )
+        return False
+    if profile.annex_iii_area is not None:
+        high_risk_out.open_questions.append(
+            "Art. 2(2) AIA: the system is an Art. 6(1) system related to an Annex I, Section B "
+            "product and is also listed in Annex III. Confirm whether Art. 2(2) limits the AIA "
+            "for this system; interpretation: the Annex III obligations are kept."
+        )
+        return False
+    if transparency_out.transparency:
+        articles = ", ".join(ob.article for ob in transparency_out.transparency)
+        transparency_out.transparency = []
+        transparency_out.tier_vote = None
+        transparency_out.open_questions = []
+        transparency_out.findings = [
+            Finding(
+                rule_id="TRANSPARENCY.50.art_2_2",
+                citation="Art. 2(2) AIA",
+                title="Art. 50 obligations not attached: Annex I, Section B product",
+                detail=(
+                    f"The profile triggers {articles}, but Art. 2(2) AIA applies only Art. 6(1), "
+                    "Art. 60a and Arts. 102 to 112 to this system. Interpretation: literal "
+                    "reading of Art. 2(2)."
+                ),
+                severity=Severity.INFO,
+            )
+        ]
+    return True
 
 
 def _fria_required(profile: SystemProfile) -> bool:

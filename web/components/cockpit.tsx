@@ -533,7 +533,7 @@ export function Cockpit() {
                       <td>{item.article}</td>
                       <td>{item.actor}</td>
                       <td>{item.evidence_artifact}</td>
-                      <td>{item.application_date}</td>
+                      <td>{item.application_date ?? "unknown"}</td>
                       <td>{formatLabel(item.review_status)}</td>
                     </tr>
                   ))

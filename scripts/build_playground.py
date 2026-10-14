@@ -22,10 +22,15 @@ ROOT = Path(__file__).resolve().parents[1]
 PLAYGROUND = ROOT / "docs" / "playground"
 sys.path.insert(0, str(ROOT / "src"))
 
+from pydantic import BaseModel  # noqa: E402
+
 from eu_ai_act_classifier import Derogation, SystemProfile, __version__  # noqa: E402
 from eu_ai_act_classifier.models import (  # noqa: E402
     AnnexIII,
+    AnnexILegislation,
+    ChildSexualAbuseMaterialScreen,
     ExcludedUse,
+    IntimateImageryScreen,
     ProhibitedPractice,
     Role,
 )
@@ -96,7 +101,17 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             ("intended_purpose_source", ""),
             ("eu_nexus", ""),
             ("excluded_use_flags", "Scope exclusions or carve-outs that need visible review."),
-            ("placing_on_market_date", "ISO date, for transitional status."),
+            (
+                "assessment_date",
+                "ISO date of the placing on the market, putting into service or use under "
+                "assessment. Selects the rules in force (Art. 5(1)(ba) and (bb) from "
+                "2026-12-02); null leaves date-dependent results UNKNOWN.",
+            ),
+            (
+                "placing_on_market_date",
+                "ISO date. Dates GPAI obligations (Art. 111(3) AIA) and Art. 50(2) "
+                "(Art. 111(4) AIA); null leaves those dates UNKNOWN.",
+            ),
             ("putting_into_service_date", "ISO date, for transitional status."),
             ("significant_change_after_application_date", ""),
             ("public_authority_use", ""),
@@ -121,13 +136,32 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         "Prohibited-practice screens (Art. 5(1) AIA)",
-        [("prohibited_practices", "Keyed to the letters of Art. 5(1) AIA.")],
+        [
+            ("prohibited_practices", "Keyed to the letters (a) to (h) of Art. 5(1) AIA."),
+            (
+                "intimate_imagery",
+                "Art. 5(1)(ba), (1a) and (1b) AIA, from 2026-12-02: facts on generating or "
+                "manipulating intimate imagery of identifiable persons without consent. Each "
+                "fact is true, false or null (not established).",
+            ),
+            (
+                "child_sexual_abuse_material",
+                "Art. 5(1)(bb) and (1a) AIA, from 2026-12-02: facts on material within "
+                "Art. 2(c) and (e) of Directive 2011/93/EU. Each fact is true, false or null.",
+            ),
+        ],
     ),
     (
         "High-risk screens (Art. 6 AIA)",
         [
             ("annex_i_safety_component", "Art. 6(1)(a): product or safety component."),
             ("annex_i_third_party_assessment", "Art. 6(1)(b): third-party conformity assessment."),
+            (
+                "annex_i_legislation",
+                "Annex I point covering the product; decides Section A or B. Section B "
+                "(including machinery, I.B.21): only Art. 6(1), 60a and 102 to 112 apply "
+                "(Art. 2(2) AIA).",
+            ),
             (
                 "annex_iii_area",
                 "Art. 6(2) and Annex III. III.unsure: an area is implicated but the point is "
@@ -154,7 +188,14 @@ _ENUMS: dict[str, type[StrEnum]] = {
     "roles": Role,
     "excluded_use_flags": ExcludedUse,
     "prohibited_practices": ProhibitedPractice,
+    "annex_i_legislation": AnnexILegislation,
     "annex_iii_area": AnnexIII,
+}
+# Nested fact objects and the model that lists their keys.
+_OBJECTS: dict[str, type[BaseModel]] = {
+    "derogation": Derogation,
+    "intimate_imagery": IntimateImageryScreen,
+    "child_sexual_abuse_material": ChildSexualAbuseMaterialScreen,
 }
 
 
@@ -165,6 +206,8 @@ def _option_label(member: StrEnum) -> str:
 def _field_type(name: str, schema: dict) -> str:
     if name == "derogation":
         return "object"
+    if name in _OBJECTS:
+        return "object or null"
     if name in _ENUMS:
         return "list" if schema.get("type") == "array" else "choice"
     types = [schema["type"]] if "type" in schema else [t["type"] for t in schema["anyOf"]]
@@ -200,8 +243,8 @@ def build_fields() -> dict:
                 field["options"] = [
                     {"value": m.value, "label": _option_label(m)} for m in _ENUMS[name]
                 ]
-            if name == "derogation":
-                field["keys"] = list(Derogation.model_fields)
+            if name in _OBJECTS:
+                field["keys"] = list(_OBJECTS[name].model_fields)
             fields.append(field)
         groups.append({"label": group, "fields": fields})
     return {"version": __version__, "groups": groups}

@@ -4,6 +4,7 @@
   "roles": ["gpai_provider", "provider"],
   "purpose": "Chemical formulation support",
   "sector": "Scientific-Inference",
+  "placing_on_market_date": "2026-04-20",
   "is_gpai_model": true,
   "training_flops": 1e24,
   "gpai_systemic_risk_designated": true

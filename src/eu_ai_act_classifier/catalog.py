@@ -9,7 +9,71 @@ provision a reviewer can open.
 from __future__ import annotations
 
 from .citations import Citation, cite
-from .models import AnnexIII, Obligation, ProhibitedPractice, Role
+from .models import AnnexIII, AnnexILegislation, Obligation, ProhibitedPractice, Role
+
+# --- Annex I harmonisation legislation (Art. 6(1) AIA) ---------------------
+# Points and acts as listed in Annex I of the Official Journal text of
+# Regulation (EU) 2024/1689, with Art. 1(41) of Regulation (EU) 2026/1744
+# applied: Section A, point 1 (Directive 2006/42/EC) deleted; Section B,
+# point 21 (Regulation (EU) 2023/1230) added. Snapshots: sources/oj/.
+_L = AnnexILegislation
+ANNEX_I: dict[AnnexILegislation, str] = {
+    _L.TOYS: "Directive 2009/48/EC (safety of toys)",
+    _L.RECREATIONAL_CRAFT: "Directive 2013/53/EU (recreational craft and personal watercraft)",
+    _L.LIFTS: "Directive 2014/33/EU (lifts and safety components for lifts)",
+    _L.EXPLOSIVE_ATMOSPHERES_EQUIPMENT: (
+        "Directive 2014/34/EU (equipment and protective systems for potentially explosive "
+        "atmospheres)"
+    ),
+    _L.RADIO_EQUIPMENT: "Directive 2014/53/EU (radio equipment)",
+    _L.PRESSURE_EQUIPMENT: "Directive 2014/68/EU (pressure equipment)",
+    _L.CABLEWAY_INSTALLATIONS: "Regulation (EU) 2016/424 (cableway installations)",
+    _L.PERSONAL_PROTECTIVE_EQUIPMENT: "Regulation (EU) 2016/425 (personal protective equipment)",
+    _L.GAS_APPLIANCES: "Regulation (EU) 2016/426 (appliances burning gaseous fuels)",
+    _L.MEDICAL_DEVICES: "Regulation (EU) 2017/745 (medical devices)",
+    _L.IN_VITRO_DIAGNOSTIC_DEVICES: (
+        "Regulation (EU) 2017/746 (in vitro diagnostic medical devices)"
+    ),
+    _L.CIVIL_AVIATION_SECURITY: "Regulation (EC) No 300/2008 (civil aviation security)",
+    _L.TWO_OR_THREE_WHEEL_VEHICLES: (
+        "Regulation (EU) No 168/2013 (two- or three-wheel vehicles and quadricycles)"
+    ),
+    _L.AGRICULTURAL_AND_FORESTRY_VEHICLES: (
+        "Regulation (EU) No 167/2013 (agricultural and forestry vehicles)"
+    ),
+    _L.MARINE_EQUIPMENT: "Directive 2014/90/EU (marine equipment)",
+    _L.RAIL_SYSTEM_INTEROPERABILITY: (
+        "Directive (EU) 2016/797 (interoperability of the rail system)"
+    ),
+    _L.MOTOR_VEHICLES_TYPE_APPROVAL: (
+        "Regulation (EU) 2018/858 (approval and market surveillance of motor vehicles)"
+    ),
+    _L.MOTOR_VEHICLES_GENERAL_SAFETY: (
+        "Regulation (EU) 2019/2144 (type-approval requirements for motor vehicles, general safety)"
+    ),
+    _L.UNMANNED_AIRCRAFT: (
+        "Regulation (EU) 2018/1139 (civil aviation), in so far as it concerns unmanned aircraft "
+        "and their engines, propellers, parts and equipment to control them remotely"
+    ),
+    _L.MACHINERY: "Regulation (EU) 2023/1230 (machinery)",
+}
+
+
+def annex_i_citation(legislation: AnnexILegislation) -> str:
+    return f"Annex I, Section {legislation.section}, point {legislation.point} AIA"
+
+
+# --- Prohibitions added by Regulation (EU) 2026/1744 (Art. 5(1)(ba), (bb)) --
+NEW_PROHIBITIONS: dict[str, tuple[Citation, str]] = {
+    "ba": (
+        cite("Art. 5(1)(ba), (1a) and (1b) AIA"),
+        "Realistic intimate imagery of identifiable persons without their consent",
+    ),
+    "bb": (
+        cite("Art. 5(1)(bb) and (1a) AIA"),
+        "Child sexual abuse material within Art. 2(c) and (e) of Directive 2011/93/EU",
+    ),
+}
 
 # --- Annex III high-risk areas (Art. 6(2) AIA) -----------------------------
 # Sub-point lettering for areas 6 (law enforcement) and 7 (migration) is

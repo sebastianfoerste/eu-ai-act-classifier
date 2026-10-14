@@ -12,10 +12,13 @@ from __future__ import annotations
 from .engine import classify
 from .models import (
     AnnexIII,
+    AnnexILegislation,
+    ChildSexualAbuseMaterialScreen,
     ClassificationReport,
     Derogation,
     Disposition,
     ExcludedUse,
+    IntimateImageryScreen,
     ProhibitedPractice,
     ReviewStatus,
     RiskTier,
@@ -29,10 +32,13 @@ from .report import render_report
 __version__ = "0.2.0"
 __all__ = [
     "AnnexIII",
+    "AnnexILegislation",
+    "ChildSexualAbuseMaterialScreen",
     "ClassificationReport",
     "Derogation",
     "Disposition",
     "ExcludedUse",
+    "IntimateImageryScreen",
     "ProhibitedPractice",
     "ReviewStatus",
     "RiskTier",

@@ -108,6 +108,15 @@ export function formatProfile(text) {
   return out;
 }
 
+// An obligation-graph item's date line. A null date turns on a fact the profile
+// does not give; applies_on_assessment_date is null without an assessment date.
+export function applicationLabel(item) {
+  if (!item.application_date) return "application date unknown (see open questions)";
+  const on = item.applies_on_assessment_date;
+  const status = on === true ? ", applies on the assessment date" : on === false ? ", not yet on the assessment date" : "";
+  return `applies from ${item.application_date}${status}`;
+}
+
 export function describeDefault(field) {
   return field.default === null || field.default === undefined ? "null" : JSON.stringify(field.default);
 }

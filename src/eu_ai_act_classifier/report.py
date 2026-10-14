@@ -50,6 +50,7 @@ def render_report(report: ClassificationReport) -> str:
     if report.scope.excluded_use_flags:
         flags = ", ".join(flag.value for flag in report.scope.excluded_use_flags)
         lines.append(f"  Excluded-use flags: {flags}")
+    lines.append(f"  Assessment date: {report.scope.assessment_date or 'not given'}")
     lines.append(f"  Transitional status: {report.scope.transitional_status}")
     lines.append("")
 

@@ -4,5 +4,7 @@
   "roles": ["deployer"],
   "purpose": "Synthetic media generation",
   "sector": "Media",
-  "generates_deepfakes": true
+  "generates_deepfakes": true,
+  "intimate_imagery": {"deployer_uses_for_that_purpose": false},
+  "child_sexual_abuse_material": {"deployer_uses_for_that_purpose": false}
 }

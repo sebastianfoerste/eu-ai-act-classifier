@@ -17,7 +17,8 @@
       "purpose": "Safety stop for machinery",
       "sector": "Industrial machinery",
       "annex_i_safety_component": true,
-      "annex_i_third_party_assessment": true
+      "annex_i_third_party_assessment": true,
+      "annex_i_legislation": "I.B.21"
     }
   },
   {

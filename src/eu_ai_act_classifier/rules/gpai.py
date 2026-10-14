@@ -9,6 +9,7 @@ no designation, systemic-risk status is left open rather than assumed away.
 
 from __future__ import annotations
 
+from ..citations import CHAPTER_V_APPLIES_FROM, GPAI_LEGACY_DEADLINE
 from ..models import Finding, Severity
 from .base import GateOutput
 
@@ -58,4 +59,45 @@ def evaluate(profile) -> GateOutput:
             "systemic-risk status under Art. 51 AIA cannot be determined. Provide training_flops "
             "or confirm designation."
         )
+
+    _legacy_model_deadline(profile.placing_on_market_date, out)
     return out
+
+
+def _legacy_model_deadline(placed_on: str | None, out: GateOutput) -> None:
+    """Art. 111(3) AIA (original text): models placed before 2 August 2025 comply by
+    2 August 2027. The obligation graph dates the Chapter V duties accordingly."""
+    if placed_on is None:
+        out.findings.append(
+            Finding(
+                rule_id="GPAI.111.3.placement_unknown",
+                citation="Art. 111(3) AIA",
+                title="GPAI obligations: application date unknown",
+                detail=(
+                    "The model's placing-on-the-market date is not given. Models placed before "
+                    "2 August 2025 comply by 2 August 2027 (Art. 111(3) AIA); later models are "
+                    "bound from placement (Art. 113, third paragraph, point (b) AIA)."
+                ),
+                severity=Severity.MEDIUM,
+            )
+        )
+        out.open_questions.append(
+            "Art. 111(3) AIA: give the GPAI model's placing_on_market_date. Models placed "
+            "before 2 August 2025 comply by 2 August 2027; the application date of the "
+            "Chapter V obligations is UNKNOWN until then."
+        )
+        return
+    if placed_on < CHAPTER_V_APPLIES_FROM:
+        out.findings.append(
+            Finding(
+                rule_id="GPAI.111.3.legacy",
+                citation="Art. 111(3) AIA",
+                title="GPAI model placed before 2 August 2025: comply by 2 August 2027",
+                detail=(
+                    f"Placed on the market on {placed_on}. Providers of general-purpose AI "
+                    "models placed on the market before 2 August 2025 must comply by "
+                    f"{GPAI_LEGACY_DEADLINE} (Art. 111(3) AIA)."
+                ),
+                severity=Severity.INFO,
+            )
+        )

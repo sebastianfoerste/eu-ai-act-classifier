@@ -36,16 +36,18 @@ asserted and documentation needed.
 50(1) AIA.
 
 `deepfake_generator.json`: Limited risk, determined. Deepfake disclosure under
-Art. 50(4) AIA.
+Art. 50(4) AIA. The Art. 5(1)(ba) and (bb) screens state that the deployer
+does not use the system for those purposes.
 
 `spam_filter.json`: Minimal risk, determined. No regulated use case.
 
 `foundation_model_systemic.json`: Minimal system-level risk, determined. GPAI
-with systemic risk under Arts. 51, 53 and 55 AIA.
+with systemic risk under Arts. 51, 53 and 55 AIA. Placed on the market before
+2 August 2025, so its obligations apply from 2 August 2027 (Art. 111(3) AIA).
 
 `foundation_model_unknown_compute.json`: Minimal system-level risk,
 requires_review. GPAI compute undisclosed, systemic status open under Art. 51
-AIA.
+AIA. No placing date, so the Chapter V application date is open as well.
 
 `gpai_non_systemic.json`: Minimal system-level risk, determined. GPAI model without systemic risk under Art. 53 AIA.
 

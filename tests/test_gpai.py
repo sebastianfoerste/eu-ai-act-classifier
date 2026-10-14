@@ -5,7 +5,11 @@ from eu_ai_act_classifier import Disposition, Role, SystemProfile, classify
 
 def test_gpai_below_threshold_not_systemic() -> None:
     profile = SystemProfile(
-        name="x", is_gpai_model=True, training_flops=1e24, roles=[Role.GPAI_PROVIDER]
+        name="x",
+        is_gpai_model=True,
+        training_flops=1e24,
+        roles=[Role.GPAI_PROVIDER],
+        placing_on_market_date="2025-09-01",
     )
     report = classify(profile)
     assert report.is_gpai and not report.gpai_systemic
@@ -35,6 +39,7 @@ def test_gpai_commission_designation_is_systemic() -> None:
         is_gpai_model=True,
         gpai_systemic_risk_designated=True,
         roles=[Role.GPAI_PROVIDER],
+        placing_on_market_date="2025-09-01",
     )
     report = classify(profile)
     assert report.gpai_systemic

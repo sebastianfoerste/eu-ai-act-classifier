@@ -30,6 +30,7 @@ REGULATION = (
 SHORT = "AIA"
 AI_ACT_URL = "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
 AI_ACT_AMENDMENT_URL = "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
+CSA_DIRECTIVE_URL = "https://publications.europa.eu/resource/celex/32011L0093"
 AI_ACT_SERVICE_DESK_URL = "https://ai-act-service-desk.ec.europa.eu/en/ai-act-explorer"
 HIGH_RISK_GUIDELINES_URL = (
     "https://digital-strategy.ec.europa.eu/en/library/"
@@ -52,6 +53,26 @@ TRANSPARENCY_GUIDANCE_URL = (
 
 BINDING_SOURCE_RETRIEVED_ON = "2026-08-26"
 ADVISORY_SOURCE_RETRIEVED_ON = "2026-06-18"
+# Read from the Official Journal snapshot in sources/oj/32011L0093.en.xhtml.
+CSA_DIRECTIVE_RETRIEVED_ON = "2026-10-14"
+
+# --- Dates the rules turn on -----------------------------------------------
+# Each comes from the snapshotted Official Journal text named beside it.
+# Art. 113, third paragraph, point (a) AIA, as replaced by Art. 1(40)(a) of
+# Regulation (EU) 2026/1744: Art. 5(1)(ba), (bb), (1a) and (1b) apply from here.
+NEW_PROHIBITIONS_APPLY_FROM = "2026-12-02"
+# Art. 113, third paragraph, point (b) AIA: Chapter V applies from this date.
+CHAPTER_V_APPLIES_FROM = "2025-08-02"
+# Art. 111(3) AIA (original text, not amended): GPAI models placed on the market
+# before CHAPTER_V_APPLIES_FROM comply by this date.
+GPAI_LEGACY_DEADLINE = "2027-08-02"
+# Art. 113, second paragraph AIA: the general date of application, which Art. 50
+# follows.
+GENERAL_APPLICATION_DATE = "2026-08-02"
+# Art. 111(4) AIA, added by Art. 1(39)(b) of Regulation (EU) 2026/1744: generative
+# systems placed on the market before GENERAL_APPLICATION_DATE comply with
+# Art. 50(2) by this date.
+ART_50_2_LEGACY_DEADLINE = "2026-12-02"
 
 
 def source_manifest() -> list[RegulatorySource]:
@@ -77,6 +98,21 @@ def source_manifest() -> list[RegulatorySource]:
             implementation_note=(
                 "Binding amendment adopted on 8 July 2026 and published in the Official "
                 "Journal on 24 July 2026."
+            ),
+        ),
+        RegulatorySource(
+            source_id="csa-directive-2011-93",
+            title=(
+                "Directive 2011/93/EU on combating the sexual abuse and sexual exploitation "
+                "of children and child pornography"
+            ),
+            legal_status=SourceStatus.BINDING_LEVEL_1,
+            url=CSA_DIRECTIVE_URL,
+            retrieved_on=CSA_DIRECTIVE_RETRIEVED_ON,
+            citation_label="Directive 2011/93/EU",
+            implementation_note=(
+                "Art. 2, points (c) and (e), define the material and performance referred to "
+                "in Art. 5(1), first subparagraph, point (bb) AIA."
             ),
         ),
         RegulatorySource(
@@ -196,6 +232,15 @@ APPLICATION_DATES: tuple[ApplicationDate, ...] = (
         "GPAI obligations apply from 2 August 2025 (Art. 113(b) AIA).",
     ),
     ApplicationDate(
+        "Art. 111(3): GPAI models placed on the market before 2025-08-02",
+        GPAI_LEGACY_DEADLINE,
+        (
+            "Providers of general-purpose AI models placed on the market before 2 August 2025 "
+            "must comply by 2 August 2027 (Art. 111(3) AIA; not amended by Regulation (EU) "
+            "2026/1744)."
+        ),
+    ),
+    ApplicationDate(
         "General application for provisions without a later specific date",
         "2026-08-02",
         (
@@ -207,6 +252,21 @@ APPLICATION_DATES: tuple[ApplicationDate, ...] = (
 
 
 AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
+    ApplicationDate(
+        "Art. 2(2) and Annex I as amended: machinery moved to Annex I, Section B",
+        "2026-07-27",
+        (
+            "Regulation (EU) 2026/1744 entered into force on 27 July 2026 (its Art. 4) and "
+            "sets no later date for these amendments. Annex I, Section A, point 1 is deleted "
+            "and Section B, point 21 (Regulation (EU) 2023/1230, machinery) is added "
+            "(Art. 1(41)). For AI systems classified as high-risk under Art. 6(1) related to "
+            "Section B products, only Art. 6(1), Art. 60a and Arts. 102 to 112 apply "
+            "(Art. 2(2) AIA, as replaced by Art. 1(2)(a))."
+        ),
+        SourceStatus.BINDING_LEVEL_1,
+        "ai-act-amendment-2026-1744",
+        AI_ACT_AMENDMENT_URL,
+    ),
     ApplicationDate(
         "Arts. 102 to 110 (amendments to other Union acts)",
         "2026-07-27",
@@ -224,8 +284,8 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
         (
             "Art. 5(1), first subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b) "
             "apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA, as "
-            "amended by Regulation (EU) 2026/1744). The classifier does not yet encode "
-            "these prohibitions."
+            "amended by Regulation (EU) 2026/1744). The prohibited-practices gate tests "
+            "them against the profile's assessment_date."
         ),
         SourceStatus.BINDING_LEVEL_1,
         "ai-act-amendment-2026-1744",

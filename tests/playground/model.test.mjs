@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
-  MAX_BYTES, TIERS, annexCitation, formatProfile, groupByRole, matchesQuery,
+  MAX_BYTES, TIERS, annexCitation, applicationLabel, formatProfile, groupByRole, matchesQuery,
   parseProfile, practiceCitation, reportIsCurrent,
 } from "../../docs/playground/model.mjs";
 
@@ -68,6 +68,17 @@ test("cites screen values the way the engine cites them", () => {
   assert.equal(annexCitation("III.2"), "Annex III(2)");
   assert.equal(annexCitation("III.unsure"), "Annex III, point unsettled");
   assert.equal(annexCitation("bogus"), "bogus");
+});
+
+test("labels an unknown application date instead of printing null", () => {
+  assert.equal(applicationLabel({ application_date: null, applies_on_assessment_date: null }),
+    "application date unknown (see open questions)");
+  assert.equal(applicationLabel({ application_date: "2027-08-02", applies_on_assessment_date: null }),
+    "applies from 2027-08-02");
+  assert.equal(applicationLabel({ application_date: "2027-08-02", applies_on_assessment_date: false }),
+    "applies from 2027-08-02, not yet on the assessment date");
+  assert.equal(applicationLabel({ application_date: "2026-12-02", applies_on_assessment_date: true }),
+    "applies from 2026-12-02, applies on the assessment date");
 });
 
 test("labels every risk tier the engine can return", () => {

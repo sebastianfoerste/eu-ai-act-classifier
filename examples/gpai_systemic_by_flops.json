@@ -4,6 +4,7 @@
   "roles": ["gpai_provider", "provider"],
   "purpose": "Multimodal text and reasoning generation",
   "sector": "AI-Research",
+  "placing_on_market_date": "2026-02-09",
   "is_gpai_model": true,
   "training_flops": 2e25
 }

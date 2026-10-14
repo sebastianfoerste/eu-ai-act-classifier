@@ -110,10 +110,16 @@
           ]
         },
         {
+          "name": "assessment_date",
+          "type": "string or null",
+          "default": null,
+          "hint": "ISO date of the placing on the market, putting into service or use under assessment. Selects the rules in force (Art. 5(1)(ba) and (bb) from 2026-12-02); null leaves date-dependent results UNKNOWN."
+        },
+        {
           "name": "placing_on_market_date",
           "type": "string or null",
           "default": null,
-          "hint": "ISO date, for transitional status."
+          "hint": "ISO date. Dates GPAI obligations (Art. 111(3) AIA) and Art. 50(2) (Art. 111(4) AIA); null leaves those dates UNKNOWN."
         },
         {
           "name": "putting_into_service_date",
@@ -201,7 +207,7 @@
           "name": "prohibited_practices",
           "type": "list",
           "default": [],
-          "hint": "Keyed to the letters of Art. 5(1) AIA.",
+          "hint": "Keyed to the letters (a) to (h) of Art. 5(1) AIA.",
           "options": [
             {
               "value": "5.1.a",
@@ -236,6 +242,35 @@
               "label": "Realtime remote biometric id"
             }
           ]
+        },
+        {
+          "name": "intimate_imagery",
+          "type": "object or null",
+          "default": null,
+          "hint": "Art. 5(1)(ba), (1a) and (1b) AIA, from 2026-12-02: facts on generating or manipulating intimate imagery of identifiable persons without consent. Each fact is true, false or null (not established).",
+          "keys": [
+            "intended_purpose",
+            "foreseeable_and_reproducible",
+            "adequate_safeguards",
+            "deployer_uses_for_that_purpose",
+            "generates_material",
+            "manipulates_material_increasing_exposure",
+            "consent_ensured"
+          ]
+        },
+        {
+          "name": "child_sexual_abuse_material",
+          "type": "object or null",
+          "default": null,
+          "hint": "Art. 5(1)(bb) and (1a) AIA, from 2026-12-02: facts on material within Art. 2(c) and (e) of Directive 2011/93/EU. Each fact is true, false or null.",
+          "keys": [
+            "intended_purpose",
+            "foreseeable_and_reproducible",
+            "adequate_safeguards",
+            "deployer_uses_for_that_purpose",
+            "generates_or_manipulates",
+            "without_right_defence_applies"
+          ]
         }
       ]
     },
@@ -253,6 +288,94 @@
           "type": "boolean",
           "default": false,
           "hint": "Art. 6(1)(b): third-party conformity assessment."
+        },
+        {
+          "name": "annex_i_legislation",
+          "type": "choice",
+          "default": null,
+          "hint": "Annex I point covering the product; decides Section A or B. Section B (including machinery, I.B.21): only Art. 6(1), 60a and 102 to 112 apply (Art. 2(2) AIA).",
+          "options": [
+            {
+              "value": "I.A.2",
+              "label": "Toys"
+            },
+            {
+              "value": "I.A.3",
+              "label": "Recreational craft"
+            },
+            {
+              "value": "I.A.4",
+              "label": "Lifts"
+            },
+            {
+              "value": "I.A.5",
+              "label": "Explosive atmospheres equipment"
+            },
+            {
+              "value": "I.A.6",
+              "label": "Radio equipment"
+            },
+            {
+              "value": "I.A.7",
+              "label": "Pressure equipment"
+            },
+            {
+              "value": "I.A.8",
+              "label": "Cableway installations"
+            },
+            {
+              "value": "I.A.9",
+              "label": "Personal protective equipment"
+            },
+            {
+              "value": "I.A.10",
+              "label": "Gas appliances"
+            },
+            {
+              "value": "I.A.11",
+              "label": "Medical devices"
+            },
+            {
+              "value": "I.A.12",
+              "label": "In vitro diagnostic devices"
+            },
+            {
+              "value": "I.B.13",
+              "label": "Civil aviation security"
+            },
+            {
+              "value": "I.B.14",
+              "label": "Two or three wheel vehicles"
+            },
+            {
+              "value": "I.B.15",
+              "label": "Agricultural and forestry vehicles"
+            },
+            {
+              "value": "I.B.16",
+              "label": "Marine equipment"
+            },
+            {
+              "value": "I.B.17",
+              "label": "Rail system interoperability"
+            },
+            {
+              "value": "I.B.18",
+              "label": "Motor vehicles type approval"
+            },
+            {
+              "value": "I.B.19",
+              "label": "Motor vehicles general safety"
+            },
+            {
+              "value": "I.B.20",
+              "label": "Unmanned aircraft"
+            },
+            {
+              "value": "I.B.21",
+              "label": "Machinery"
+            }
+          ]
         },
         {
           "name": "annex_iii_area",

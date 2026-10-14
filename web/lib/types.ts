@@ -1,5 +1,8 @@
 export type NullableBoolean = boolean | null;
 
+// Art. 5(1)(ba) and (bb) fact screens: every key is true, false or null.
+export type FactScreen = Record<string, NullableBoolean>;
+
 export type Derogation = {
   narrow_procedural_task: boolean;
   improves_prior_human_activity: boolean;
@@ -18,6 +21,7 @@ export type SystemProfile = {
   intended_purpose_source: string;
   eu_nexus: NullableBoolean;
   excluded_use_flags: string[];
+  assessment_date?: string | null;
   placing_on_market_date: string | null;
   putting_into_service_date: string | null;
   significant_change_after_application_date: NullableBoolean;
@@ -32,8 +36,11 @@ export type SystemProfile = {
   training_flops: number | null;
   gpai_systemic_risk_designated: boolean;
   prohibited_practices: string[];
+  intimate_imagery?: FactScreen | null;
+  child_sexual_abuse_material?: FactScreen | null;
   annex_i_safety_component: boolean;
   annex_i_third_party_assessment: boolean;
+  annex_i_legislation?: string | null;
   annex_iii_area: string | null;
   derogation: Derogation;
   interacts_with_natural_persons: boolean;
@@ -75,6 +82,7 @@ export type ScopeAssessment = {
   intended_purpose_source: string;
   eu_nexus: NullableBoolean;
   excluded_use_flags: string[];
+  assessment_date?: string | null;
   transitional_status: string;
   notes: string[];
 };
@@ -88,7 +96,8 @@ export type ObligationGraphItem = {
   evidence_artifact: string;
   source_status: string;
   source_url: string;
-  application_date: string;
+  application_date: string | null;
+  applies_on_assessment_date: NullableBoolean;
   review_status: string;
 };
 

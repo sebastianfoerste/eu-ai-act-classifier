@@ -4,6 +4,7 @@
   "roles": ["gpai_provider", "provider"],
   "purpose": "General-purpose text generation",
   "sector": "AI",
+  "placing_on_market_date": "2025-06-16",
   "is_gpai_model": true,
   "training_flops": 5e25
 }

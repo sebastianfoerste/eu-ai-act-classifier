@@ -107,6 +107,7 @@ def evaluate(profile: SystemProfile) -> tuple[ScopeAssessment, list[Finding], li
             intended_purpose_source=profile.intended_purpose_source,
             eu_nexus=profile.eu_nexus,
             excluded_use_flags=profile.excluded_use_flags,
+            assessment_date=profile.assessment_date,
             transitional_status=transitional_status
             or "No transitional limitation identified from the submitted facts.",
             notes=notes,
