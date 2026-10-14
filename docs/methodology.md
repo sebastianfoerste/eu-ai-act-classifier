@@ -142,9 +142,11 @@ unknown. "Comply by" a date is read as applying on that date.
 
 ## Interpretation Choices
 
-The source texts leave these points open. The engine labels each one
-"interpretation" in its finding or open-question text, and the fixtures name
-them. They are for the reviewer to confirm.
+The source texts leave these points open. Wherever a result turns on one of
+them, the engine labels it "interpretation" in the finding or open-question
+text, and the fixtures name the choice each case rests on
+(`tests/legal/test_fixtures.py` checks the label). They are for the reviewer to
+confirm.
 
 1. Consent under Art. 5(1)(ba) is read at system level for providers: the
    point is not met where the system generates the material only with the
@@ -152,7 +154,9 @@ them. They are for the reviewer to confirm.
 2. The use limb, Art. 5(1a)(b), keeps the content element and drops the
    Art. 5(1a)(a) conditions.
 3. Providers and importers are tested under Art. 5(1a)(a); deployers under
-   Art. 5(1a)(b). A distributor alone leaves the result open.
+   Art. 5(1a)(b). Where no declared role places the system on the market, puts
+   it into service or uses it (a distributor alone, for example), the result
+   stays open unless the facts exclude both limbs.
 4. A met point with no assessment date keeps the prohibited tier; a met point
    before 2 December 2026 goes to review.
 5. A generative system without the Art. 5(1)(ba) and (bb) screens goes to
@@ -164,6 +168,11 @@ them. They are for the reviewer to confirm.
 8. "Comply by" in Art. 111(3) and (4) includes the named date.
 9. Art. 111(4) is triggered by placing on the market only, not by putting into
    service.
+10. Whether a "without right" defence under national law applies to
+    Art. 5(1)(bb) is a fact the reviewer establishes; the engine does not
+    evaluate national law.
+11. A profile carries one `placing_on_market_date`; for Art. 111(3) it is read
+    as the placing on the market of the general-purpose AI model.
 
 ## FRIA Logic
 

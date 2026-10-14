@@ -24,4 +24,4 @@ says of itself that it has no legal effect.
 - Fixtures in `tests/legal/fixtures/` cite the `source_id` and pinpoint they were
   written from. Write the fixture from the snapshot before changing rule code.
 - Interpretation choices are labelled `interpretation` in the fixture and in the
-  engine's finding text. They are not statute.
+  engine's finding or open-question text. They are not statute.
