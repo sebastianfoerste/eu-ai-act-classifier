@@ -16,6 +16,12 @@ specific point is unsettled on the facts — carries the ``noch zu verifizieren`
 flag. The engine propagates this flag into its output so a reviewing lawyer
 sees precisely which pinpoints are not yet locked, instead of trusting a
 citation that was guessed.
+
+The changes of 2026-10-14 (Art. 6(3), third subparagraph; the Annex III point
+5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and (3))
+were checked only against the legalize-dev/legalize-eu GitHub mirror of the
+consolidated text (commit 3709ccf), not against EUR-Lex itself, and await an
+EUR-Lex check.
 """
 
 from __future__ import annotations
