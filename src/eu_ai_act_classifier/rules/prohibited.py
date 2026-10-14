@@ -188,30 +188,58 @@ def _screen_new_prohibitions(profile: SystemProfile, out: GateOutput) -> None:
             _unknown(point, field, facts, placing, use, roles, rule_id, citation.ref, label, out)
         else:
             _met(point, profile.assessment_date, in_force, rule_id, citation.ref, label, out)
-        notes = _interpretation_notes(point, facts, roles)
+        notes = _interpretation_notes(point, facts, placing, use, roles)
         for finding in out.findings[first_new:]:
             finding.detail = " ".join([finding.detail, *notes])
 
 
-def _interpretation_notes(point: str, facts: Facts, roles: set[Role]) -> list[str]:
+def _decisive(
+    name: str,
+    facts: Facts,
+    placing: Callable[[Facts], Tri],
+    use: Callable[[Facts], Tri],
+    roles: set[Role],
+) -> bool:
+    """Whether another value of ``name`` (true, false or null) changes the result."""
+    result = _decide(facts, placing, use, roles)
+    return any(
+        _decide({**facts, name: value}, placing, use, roles) != result
+        for value in (True, False, None)
+        if value is not facts[name]
+    )
+
+
+def _interpretation_notes(
+    point: str,
+    facts: Facts,
+    placing: Callable[[Facts], Tri],
+    use: Callable[[Facts], Tri],
+    roles: set[Role],
+) -> list[str]:
     """Label the reading choices that decide this result (docs/methodology.md).
 
     A choice is named only where the result turns on it: a fact that settles the
     point under every reading needs no label.
     """
     notes = []
-    if point == "ba" and roles & _PLACING_ROLES and facts["consent_ensured"] is not False:
+    if (
+        point == "ba"
+        and roles & _PLACING_ROLES
+        and _decisive("consent_ensured", facts, placing, use, roles)
+    ):
         notes.append(
             "Interpretation: for placing on the market or putting into service, consent is "
             "read at system level; the point is not met where the system generates or "
             "manipulates the material only with the depicted person's consent."
         )
-    if roles & _USE_ROLES and facts["deployer_uses_for_that_purpose"] is not False:
+    use_limb = use(facts)
+    placing_decides = bool(roles & _PLACING_ROLES) and placing(facts) is True
+    if roles & _USE_ROLES and use_limb is not False and not placing_decides:
         notes.append(
             "Interpretation: for use, Art. 5(1a)(b) keeps the content element and the "
             "conditions of Art. 5(1a)(a) do not apply."
         )
-    if point == "bb" and facts["generates_or_manipulates"] is not False:
+    if point == "bb" and _decisive("without_right_defence_applies", facts, placing, use, roles):
         notes.append(
             "Interpretation: whether a 'without right' defence applies under national law "
             "is a fact the reviewer establishes; the engine does not evaluate national law."

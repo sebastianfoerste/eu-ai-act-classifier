@@ -73,3 +73,41 @@ def test_no_covered_role_is_not_met_when_both_limbs_fail() -> None:
     )
     rule_ids = {finding.rule_id for finding in classify(profile).findings}
     assert "PROHIBITED.5.1.ba.not_met" in rule_ids
+
+
+def test_interpretation_is_not_named_where_it_cannot_change_the_result() -> None:
+    # Regression: the deepfake example's (bb) finding named the 'without right'
+    # reading although the deployer's lawful purpose already settles the point.
+    profile = SystemProfile.model_validate(
+        {
+            "name": "x",
+            "roles": ["deployer"],
+            "generates_deepfakes": True,
+            "intimate_imagery": {"deployer_uses_for_that_purpose": False},
+            "child_sexual_abuse_material": {"deployer_uses_for_that_purpose": False},
+        }
+    )
+    details = {f.rule_id: f.detail for f in classify(profile).findings}
+    assert "interpretation" not in details["PROHIBITED.5.1.ba.not_met"].lower()
+    assert "interpretation" not in details["PROHIBITED.5.1.bb.not_met"].lower()
+
+
+def test_interpretation_is_named_where_the_defence_decides() -> None:
+    profile = SystemProfile.model_validate(
+        {
+            "name": "x",
+            "assessment_date": "2026-12-03",
+            "intimate_imagery": {
+                "generates_material": False,
+                "manipulates_material_increasing_exposure": False,
+            },
+            "child_sexual_abuse_material": {
+                "generates_or_manipulates": True,
+                "intended_purpose": True,
+                "without_right_defence_applies": True,
+            },
+        }
+    )
+    details = {f.rule_id: f.detail for f in classify(profile).findings}
+    assert "'without right' defence" in details["PROHIBITED.5.1.bb.not_met"]
+    assert "Interpretation" not in details["PROHIBITED.5.1.ba.not_met"]
