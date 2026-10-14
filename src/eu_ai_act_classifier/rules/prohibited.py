@@ -117,8 +117,10 @@ def _decide(
         results.append(use(facts))
     if not results:
         # interpretation (INT-5-routes-by-role): no declared role places the
-        # system on the market, puts it into service or uses it.
-        return t_and(placing(facts), None)
+        # system on the market, puts it into service or uses it, so the result
+        # stays UNKNOWN unless the facts exclude both limbs. Testing only the
+        # placing limb here turned a met use limb into a silent "not met".
+        return t_and(t_or(placing(facts), use(facts)), None)
     return t_or(*results)
 
 
