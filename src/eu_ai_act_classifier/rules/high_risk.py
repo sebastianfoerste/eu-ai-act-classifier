@@ -62,6 +62,11 @@ def evaluate(profile) -> GateOutput:
         )
         return out
 
+    if area is AnnexIII.CREDITWORTHINESS:
+        question = _fraud_exception_question(profile.used_for_financial_fraud_detection)
+        if question:
+            out.open_questions.append(question)
+
     derog = profile.derogation
     if derog.performs_profiling:
         out.tier_vote = RiskTier.HIGH
@@ -117,3 +122,25 @@ def evaluate(profile) -> GateOutput:
         )
     )
     return out
+
+
+def _fraud_exception_question(used_for_fraud_detection: bool | None) -> str | None:
+    """Review question for the financial-fraud exception in Annex III(5)(b) AIA.
+
+    The exception is not applied silently: an asserted or unknown fraud-detection
+    purpose keeps the system high-risk and hands the characterisation to review.
+    """
+    if used_for_fraud_detection is False:
+        return None
+    if used_for_fraud_detection is None:
+        return (
+            "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting "
+            "financial fraud. Confirm whether that exception applies to this system; it is "
+            "treated as high-risk until that is settled."
+        )
+    return (
+        "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting financial "
+        "fraud, and the profile states that this system is used for that purpose. Confirm "
+        "whether it also evaluates the creditworthiness of natural persons or establishes "
+        "their credit score; it is treated as high-risk until that is settled."
+    )

@@ -10,7 +10,7 @@ Scope and intake:
   Transitional status: No transitional limitation identified from the submitted facts.
 
 Findings:
-  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring
+  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons
       Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.
 
 Obligations:

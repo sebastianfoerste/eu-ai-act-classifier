@@ -26,7 +26,7 @@ Scope and intake:
   Transitional status: No transitional limitation identified from the submitted facts.
 
 Findings:
-  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring
+  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons
 
 Obligation graph:
   - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix, review: draft

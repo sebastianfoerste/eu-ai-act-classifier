@@ -134,6 +134,11 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
                 "unsettled; treated as high-risk and routed to review.",
             ),
             (
+                "used_for_financial_fraud_detection",
+                "Annex III(5)(b) AIA excepts financial-fraud detection. True or null on a "
+                "III.5.b profile raises a review question.",
+            ),
+            (
                 "derogation",
                 "Art. 6(3) AIA derogation facts. Profiling always keeps the system high-risk.",
             ),

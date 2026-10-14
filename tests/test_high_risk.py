@@ -118,3 +118,55 @@ def test_private_public_service_deployer_requires_fria() -> None:
     report = classify(profile)
 
     assert "Art. 27 AIA" in {ob.article for ob in report.obligations}
+
+
+def test_credit_and_insurance_labels_are_limited_to_natural_persons() -> None:
+    # Annex III(5)(b) and (c) AIA cover natural persons only.
+    for area in (AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH):
+        report = classify(SystemProfile(name="x", annex_iii_area=area))
+        assert any("natural persons" in finding.title for finding in report.findings)
+
+
+def test_credit_scoring_without_fraud_purpose_raises_no_fraud_question() -> None:
+    report = classify(SystemProfile(name="x", annex_iii_area=AnnexIII.CREDITWORTHINESS))
+    assert report.disposition is Disposition.DETERMINED
+    assert not any("financial fraud" in question for question in report.open_questions)
+
+
+def test_asserted_fraud_purpose_on_credit_scoring_stays_high_risk_and_asks() -> None:
+    profile = SystemProfile(
+        name="x",
+        annex_iii_area=AnnexIII.CREDITWORTHINESS,
+        used_for_financial_fraud_detection=True,
+    )
+    report = classify(profile)
+    assert report.risk_tier is RiskTier.HIGH
+    assert report.disposition is Disposition.REQUIRES_REVIEW
+    assert any(
+        "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting financial fraud"
+        in question
+        for question in report.open_questions
+    )
+
+
+def test_unknown_fraud_purpose_on_credit_scoring_asks_even_with_profiling() -> None:
+    profile = SystemProfile(
+        name="x",
+        annex_iii_area=AnnexIII.CREDITWORTHINESS,
+        used_for_financial_fraud_detection=None,
+        derogation=Derogation(performs_profiling=True),
+    )
+    report = classify(profile)
+    assert report.risk_tier is RiskTier.HIGH
+    assert report.disposition is Disposition.REQUIRES_REVIEW
+    assert any("financial fraud" in question for question in report.open_questions)
+
+
+def test_fraud_question_is_limited_to_annex_iii_5_b() -> None:
+    profile = SystemProfile(
+        name="x",
+        annex_iii_area=AnnexIII.INSURANCE_LIFE_HEALTH,
+        used_for_financial_fraud_detection=True,
+    )
+    report = classify(profile)
+    assert not any("financial fraud" in question for question in report.open_questions)
