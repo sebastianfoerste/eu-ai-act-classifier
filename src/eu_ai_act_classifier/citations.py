@@ -1,9 +1,10 @@
 """Single source of truth for EU AI Act citations.
 
 All references are to Regulation (EU) 2024/1689 (Artificial Intelligence Act),
-OJ L, 2024/1689, 12.7.2024 ("AIA"). Pinpoint citations follow the German
-convention: ``Art. <article> Abs. <paragraph> lit. <letter> AIA``, rendered
-here in the shorter ``Art. 5(1)(f) AIA`` form for readability.
+OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744 ("AIA").
+Pinpoint citations follow the German convention:
+``Art. <article> Abs. <paragraph> lit. <letter> AIA``, rendered here in the
+shorter ``Art. 5(1)(f) AIA`` form for readability.
 
 A citation carries a ``verified`` flag. ``verified=False`` means the exact
 sub-point lettering is pending confirmation against the consolidated EUR-Lex
@@ -25,7 +26,8 @@ from .models import RegulatorySource, SourceStatus
 
 REGULATION = (
     "Regulation (EU) 2024/1689 of the European Parliament and of the Council "
-    "of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024"
+    "of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, "
+    "as amended by Regulation (EU) 2026/1744"
 )
 SHORT = "AIA"
 AI_ACT_URL = "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"

@@ -73,5 +73,5 @@ Source manifest:
   - Art. 50 marking and labelling Code of Practice [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
   - Commission Art. 50 transparency guidelines [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.

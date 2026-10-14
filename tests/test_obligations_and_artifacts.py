@@ -145,3 +145,9 @@ def test_notified_body_item_stays_where_a_notified_body_can_be_involved() -> Non
         articles = _provider_graph_articles(**facts)
         assert "Art. 44 AIA" in articles
         assert "Art. 43(2) AIA" not in articles
+
+
+def test_report_cites_the_ai_act_as_amended_by_regulation_2026_1744() -> None:
+    report = classify(SystemProfile(name="x"))
+    assert report.regulation.startswith("Regulation (EU) 2024/1689 ")
+    assert report.regulation.endswith(", as amended by Regulation (EU) 2026/1744")
