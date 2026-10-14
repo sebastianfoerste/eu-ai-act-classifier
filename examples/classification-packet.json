@@ -476,13 +476,22 @@
       "implementation_note": "Nonbinding scope and compliance support for GPAI model providers."
     },
     {
-      "source_id": "transparency-guidance",
-      "title": "Transparency guidance status tracker",
+      "source_id": "art-50-code-of-practice",
+      "title": "Code of Practice on marking and labelling of AI-generated content",
       "legal_status": "nonbinding_guidance",
-      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
-      "retrieved_on": "2026-06-18",
-      "citation_label": "Transparency guidance tracker",
-      "implementation_note": "Placeholder advisory source until final Art. 50 guidance is published."
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content",
+      "retrieved_on": "2026-10-14 (search results only)",
+      "citation_label": "Art. 50 marking and labelling Code of Practice [noch zu verifizieren]",
+      "implementation_note": "Voluntary code of practice under Art. 50(7) AIA for the marking and labelling duties in Art. 50(2) and (4) AIA, reported as final on 10 June 2026. The Commission policy page is indexed as 'Code of Practice on Transparency of AI-generated Content'. Not primary-verified: the title, date and URL come from search results and secondary reports, because the Commission page was unreachable from the checking environment on 14 October 2026. Recheck on the official page before reliance."
+    },
+    {
+      "source_id": "art-50-guidelines",
+      "title": "Commission guidelines on transparency obligations for providers and deployers of certain AI systems (Art. 50 AIA)",
+      "legal_status": "nonbinding_guidance",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/guidelines-ai-transparency-obligations",
+      "retrieved_on": "2026-10-14 (search results only)",
+      "citation_label": "Commission Art. 50 transparency guidelines [noch zu verifizieren]",
+      "implementation_note": "Nonbinding Commission guidelines under Art. 96(1)(d) AIA on the practical implementation of Art. 50, reported as published on 20 July 2026. A separate instrument from the code of practice. Not primary-verified: the title, date and URL come from search results and secondary reports, because the Commission page was unreachable from the checking environment on 14 October 2026. Recheck on the official page before reliance."
     }
   ],
   "advisory_notes": [],

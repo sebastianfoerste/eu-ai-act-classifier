@@ -45,13 +45,27 @@ AI_SYSTEM_DEFINITION_GUIDELINES_URL = (
 )
 GPAI_CODE_URL = "https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai"
 GPAI_PROVIDER_GUIDELINES_URL = "https://digital-strategy.ec.europa.eu/en/node/13982/printable/pdf"
-TRANSPARENCY_GUIDANCE_URL = (
-    "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+# The two Art. 50 instruments are separate: a voluntary code of practice under
+# Art. 50(7) AIA and Commission guidelines under Art. 96(1)(d) AIA. Their URLs,
+# titles and dates come from search results and secondary reports; the Commission
+# pages were unreachable from the checking environment, so both sources carry
+# ``[noch zu verifizieren]`` until someone opens the official pages.
+ART_50_CODE_OF_PRACTICE_URL = (
+    "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content"
+)
+ART_50_GUIDELINES_URL = (
+    "https://digital-strategy.ec.europa.eu/en/policies/guidelines-ai-transparency-obligations"
 )
 
 
 BINDING_SOURCE_RETRIEVED_ON = "2026-08-26"
 ADVISORY_SOURCE_RETRIEVED_ON = "2026-06-18"
+ART_50_SOURCES_RETRIEVED_ON = "2026-10-14 (search results only)"
+_NOT_PRIMARY_VERIFIED = (
+    "Not primary-verified: the title, date and URL come from search results and "
+    "secondary reports, because the Commission page was unreachable from the checking "
+    "environment on 14 October 2026. Recheck on the official page before reliance."
+)
 
 
 def source_manifest() -> list[RegulatorySource]:
@@ -134,14 +148,33 @@ def source_manifest() -> list[RegulatorySource]:
             implementation_note="Nonbinding scope and compliance support for GPAI model providers.",
         ),
         RegulatorySource(
-            source_id="transparency-guidance",
-            title="Transparency guidance status tracker",
+            source_id="art-50-code-of-practice",
+            title="Code of Practice on marking and labelling of AI-generated content",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
-            url=TRANSPARENCY_GUIDANCE_URL,
-            retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
-            citation_label="Transparency guidance tracker",
+            url=ART_50_CODE_OF_PRACTICE_URL,
+            retrieved_on=ART_50_SOURCES_RETRIEVED_ON,
+            citation_label="Art. 50 marking and labelling Code of Practice [noch zu verifizieren]",
             implementation_note=(
-                "Placeholder advisory source until final Art. 50 guidance is published."
+                "Voluntary code of practice under Art. 50(7) AIA for the marking and "
+                "labelling duties in Art. 50(2) and (4) AIA, reported as final on 10 June "
+                "2026. The Commission policy page is indexed as 'Code of Practice on "
+                "Transparency of AI-generated Content'. " + _NOT_PRIMARY_VERIFIED
+            ),
+        ),
+        RegulatorySource(
+            source_id="art-50-guidelines",
+            title=(
+                "Commission guidelines on transparency obligations for providers and "
+                "deployers of certain AI systems (Art. 50 AIA)"
+            ),
+            legal_status=SourceStatus.NONBINDING_GUIDANCE,
+            url=ART_50_GUIDELINES_URL,
+            retrieved_on=ART_50_SOURCES_RETRIEVED_ON,
+            citation_label="Commission Art. 50 transparency guidelines [noch zu verifizieren]",
+            implementation_note=(
+                "Nonbinding Commission guidelines under Art. 96(1)(d) AIA on the practical "
+                "implementation of Art. 50, reported as published on 20 July 2026. A separate "
+                "instrument from the code of practice. " + _NOT_PRIMARY_VERIFIED
             ),
         ),
     ]
