@@ -18,9 +18,12 @@ The fastest route needs no install: open the [browser playground](https://sebast
 
 ## Local Launch Path
 
+The package is on PyPI (`pip install eu-ai-act-classifier`). The commands below use the synthetic profiles in `examples/`, so run them from a clone:
+
 ```bash
 uv venv
 uv pip install -e ".[dev]"
+source .venv/bin/activate
 eu-ai-act-classify examples/cv_screening.json
 eu-ai-act-classify examples/foundation_model_systemic.json --json
 eu-ai-act-classify examples/employment_derogation.json --strict
