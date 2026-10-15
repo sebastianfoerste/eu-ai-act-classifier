@@ -8,13 +8,19 @@ version = "0.2.0"
 description = "Deterministic EU AI Act (Reg (EU) 2024/1689) risk-tier and obligation classifier with pinpoint citations and a lawyer review gate."
 readme = "README.md"
 requires-python = ">=3.13"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "Sebastian Förste" }]
+maintainers = [{ name = "Sebastian Förste" }]
 keywords = ["eu-ai-act", "ai-governance", "legal-engineering", "compliance", "regtech", "mcp"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Legal Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries",
     "Topic :: Office/Business",
 ]
 
@@ -27,11 +33,15 @@ mcp = ["mcp>=1.2"]
 dev = ["pytest>=8.0", "ruff>=0.6"]
 
 [project.scripts]
+eu-ai-act-classifier = "eu_ai_act_classifier.cli:main"
+eu-ai-act-classifier-mcp = "eu_ai_act_classifier.mcp_server:main"
 eu-ai-act-classify = "eu_ai_act_classifier.cli:main"
 eu-ai-act-local-api = "eu_ai_act_classifier.local_api:main"
 
 [project.urls]
+Homepage = "https://github.com/sebastianfoerste/eu-ai-act-classifier"
 Source = "https://github.com/sebastianfoerste/eu-ai-act-classifier"
+Issues = "https://github.com/sebastianfoerste/eu-ai-act-classifier/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/eu_ai_act_classifier"]
