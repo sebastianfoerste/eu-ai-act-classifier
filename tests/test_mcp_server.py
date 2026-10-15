@@ -113,9 +113,8 @@ def test_pin_and_commands_match_pyproject_and_docs() -> None:
         Path("docs/surfaces.md"),
     ):
         assert UVX_SERVER_COMMAND in doc.read_text(encoding="utf-8"), doc
-    assert PIP_EXTRA_COMMAND.removeprefix("pip install ") in Path(
-        "docs/mcp-configuration-guide.md"
-    ).read_text(encoding="utf-8")
+    for doc in (Path("docs/mcp-configuration-guide.md"), Path("docs/surfaces.md")):
+        assert PIP_EXTRA_COMMAND in doc.read_text(encoding="utf-8"), doc
 
 
 def test_server_lists_both_tools_when_a_compatible_mcp_is_installed() -> None:

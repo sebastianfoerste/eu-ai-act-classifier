@@ -9,9 +9,13 @@ The server is built on ``mcp.server.fastmcp``, which mcp 2.0 removed, so the
 ``[mcp]`` extra pins ``mcp>=1.2,<2``. For Claude Code and Claude Desktop, the
 recommended integration is eu-reg-mcp, which serves this classifier as a tool.
 
-Run::
+Run from a clone::
 
     uv run --extra mcp python -m eu_ai_act_classifier.mcp_server
+
+or from PyPI::
+
+    uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
 """
 
 from __future__ import annotations

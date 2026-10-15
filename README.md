@@ -122,7 +122,7 @@ MCP quick start: for Claude Code or Claude Desktop, use [eu-reg-mcp](https://git
 uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
 ```
 
-To register it with Claude Code, put `claude mcp add eu-reg --` in front of that command.
+To register it with Claude Code, put `claude mcp add eu-reg --` in front of that command. The Claude Desktop configuration is in the [MCP configuration guide](docs/mcp-configuration-guide.md#recommended-for-claude-eu-reg-mcp).
 
 This package's own MCP server (tools: `classify_ai_system`, `classify_ai_system_text`) is the secondary option. An MCP client starts it with:
 
