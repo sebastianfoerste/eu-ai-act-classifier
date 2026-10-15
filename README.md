@@ -130,7 +130,7 @@ Which example lands in which tier is asserted in `tests/test_examples.py`. See [
 MCP quick start (tools: `classify_ai_system`, `classify_ai_system_text`). An MCP client starts the server with:
 
 ```bash
-uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
+uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
 ```
 
 Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1; the 0.2.0 extra does not. Client configuration is in [docs/mcp-configuration-guide.md](docs/mcp-configuration-guide.md).

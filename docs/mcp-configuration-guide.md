@@ -9,7 +9,7 @@ This allows agentic workflows to perform compliance evaluations on system archit
 1. Python 3.13+ installed.
 2. The [`eu-ai-act-classifier`](https://pypi.org/project/eu-ai-act-classifier/) package from PyPI with the `[mcp]` extra. Either let [uv](https://docs.astral.sh/uv/) fetch it when the client starts the server, which is what the Claude Desktop example below does:
    ```bash
-   uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
+   uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
    ```
    or install it into a virtual environment with pip:
    ```bash
@@ -32,6 +32,8 @@ Add the following configuration to the `mcpServers` object:
     "eu-ai-act-classifier": {
       "command": "uvx",
       "args": [
+        "--python",
+        "3.13",
         "--from",
         "eu-ai-act-classifier[mcp]",
         "--with",
