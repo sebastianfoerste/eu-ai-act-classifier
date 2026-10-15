@@ -92,6 +92,8 @@ A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK 
 
 When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](examples/classification-packet.md) and [`examples/classification-packet.json`](examples/classification-packet.json).
 
+This output, the worked examples and the playground reflect this repository. Release 0.2.0 on PyPI, which `pip`, `uvx` and eu-reg-mcp's `classify` extra install, predates the changes of 14 October 2026 listed under [Honest limits](#honest-limits), so its findings differ in places: for example, it prints `High-risk: Creditworthiness evaluation and credit scoring` without `of natural persons`, lists the Art. 44 certificate item for an Annex III point 5(b) provider, and cites the profiling rule as `Art. 6(3) subpara. 2 AIA`. Until the next release, the git form under [Try it in one command](#try-it-in-one-command) runs this version.
+
 
 ## What it checks
 
@@ -143,7 +145,7 @@ AI tools assisted the implementation and drafted some changes to the mappings. T
 - Guidance changes, and national implementation and supervisory practice may vary by Member State.
 - The engine applies rules to characterised facts and does not decide disputed intended purpose, operator role or factual deployment scope.
 - `requires_review`, draft artifacts and advisory overlays must be reviewed before reliance.
-- The changes of 14 October 2026 (Art. 6(3), third subparagraph; the Annex III point 5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and (3)) were checked against a GitHub mirror of the consolidated text, not against EUR-Lex itself. The two Art. 50 sources in the manifest carry `[noch zu verifizieren]` because their Commission pages were not checked. Recheck both on the official pages before reliance.
+- The changes of 14 October 2026 (Art. 6(3), third subparagraph; the Annex III point 5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and (3)) are in this repository but not in release 0.2.0 on PyPI. They were checked against a GitHub mirror of the consolidated text, not against EUR-Lex itself. The two Art. 50 sources in the manifest carry `[noch zu verifizieren]` because their Commission pages were not checked. Recheck both on the official pages before reliance.
 
 ## Docs and links
 
