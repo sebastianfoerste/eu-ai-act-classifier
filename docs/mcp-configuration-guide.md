@@ -33,7 +33,7 @@ The rest of this guide covers this package's own two-tool server.
    ```bash
    pip install "eu-ai-act-classifier[mcp]" "mcp<2"
    ```
-   Keep the `mcp<2` constraint. The server is built on the 1.x `mcp` SDK, and mcp 2.x renamed the API the server imports. The `[mcp]` extra of release 0.2.0 does not rule out mcp 2.x; the extra in this repository now pins `mcp>=1.2,<2`. From a clone, `uv run --extra mcp python -m eu_ai_act_classifier.mcp_server` runs your working copy with the pinned extra.
+   Keep the `mcp<2` constraint. The server is built on the 1.x `mcp` SDK, and mcp 2.x renamed the API the server imports. The `[mcp]` extra of release 0.2.0 does not rule out mcp 2.x; the extra in this repository now pins `mcp>=1.2,<2`. With release 0.2.0, starting the server without the constraint fails with `The MCP extra is not installed`, although the extra is installed: mcp 2.x was resolved instead. From a clone, `uv run --extra mcp python -m eu_ai_act_classifier.mcp_server` runs your working copy with the pinned extra.
 
 ## Configuration for Claude Desktop
 
