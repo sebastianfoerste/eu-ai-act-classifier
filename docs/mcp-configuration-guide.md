@@ -1,73 +1,60 @@
 # Model Context Protocol (MCP) Configuration Guide
 
-There are two ways to give an AI client this classifier as an MCP tool:
+The EU AI Act Classifier includes a Model Context Protocol (MCP) server that exposes the classification and obligation reasoning engine directly to AI clients such as Claude Desktop, Cursor, or other compatible workspaces.
 
-1. **Recommended for Claude:** [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp). It runs without a clone.
-2. **Secondary:** this repository's own two-tool server, run from a local clone. It serves your working copy, which helps when you test rule changes locally.
-
-Both routes need [uv](https://docs.astral.sh/uv/): the first runs through `uvx`, the second installs its extra with `uv sync`.
+This allows agentic workflows to perform compliance evaluations on system architectures in real-time.
 
 ## Recommended for Claude: eu-reg-mcp
 
-eu-reg-mcp serves this classifier as its `classify_eu_ai_act_system` tool, next to its MiCAR white paper linter and MiCAR register tools. The `classify` and `lint` extras install the classifier and the linter in the same environment as the server:
+[eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp) serves this classifier as its `classify_eu_ai_act_system` tool, next to its MiCAR white paper linter and MiCAR register tools. It is on PyPI and pins a compatible `mcp` itself. The `lint` and `classify` extras install the linter and this classifier in the same environment:
 
 ```bash
-uvx --from 'eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp' eu-reg-mcp
+uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
 ```
 
-### Claude Code
+For Claude Code:
 
 ```bash
-claude mcp add eu-reg -- uvx --from 'eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp' eu-reg-mcp
+claude mcp add eu-reg -- uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
 ```
 
-### Claude Desktop
+For Claude Desktop, add `"eu-reg": {"command": "uvx", "args": ["--from", "eu-reg-mcp[lint,classify]", "eu-reg-mcp"]}` to the `mcpServers` object. The eu-reg-mcp README documents its tools and their review notices.
 
-Add the server to the `mcpServers` object in `claude_desktop_config.json`. On macOS, the file is at `~/Library/Application Support/Claude/claude_desktop_config.json`.
+The rest of this guide covers this package's own two-tool server.
 
-```json
-{
-  "mcpServers": {
-    "eu-reg": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp",
-        "eu-reg-mcp"
-      ]
-    }
-  }
-}
-```
+## Prerequisites
 
-The JSON form passes the package specification as one argument, so it needs no shell quotes. The eu-reg-mcp README documents its tools and their review notices.
-
-## Secondary: the classifier's own MCP server
-
-The rest of this guide covers the server in `src/eu_ai_act_classifier/mcp_server.py`. It exposes the classification and obligation reasoning engine directly to AI clients such as Claude Desktop, Cursor or other compatible workspaces.
-
-### Prerequisites
-
-1. Python 3.13+ and [uv](https://docs.astral.sh/uv/) installed.
-2. A clone of `eu-ai-act-classifier` with the `[mcp]` extra installed in its virtual environment:
+1. Python 3.13+ installed.
+2. The [`eu-ai-act-classifier`](https://pypi.org/project/eu-ai-act-classifier/) package from PyPI with the `[mcp]` extra. Either let [uv](https://docs.astral.sh/uv/) fetch it when the client starts the server, which is what the Claude Desktop example below does:
    ```bash
-   uv sync --extra mcp
+   uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
    ```
+   or install it into a virtual environment with pip:
+   ```bash
+   pip install "eu-ai-act-classifier[mcp]" "mcp<2"
+   ```
+   Keep the `mcp<2` constraint. The server is built on the 1.x `mcp` SDK, and mcp 2.x renamed the API the server imports. The `[mcp]` extra of release 0.2.0 does not rule out mcp 2.x; the extra in this repository now pins `mcp>=1.2,<2`. From a clone, `uv run --extra mcp python -m eu_ai_act_classifier.mcp_server` runs your working copy with the pinned extra.
 
-The `[mcp]` extra pins `mcp>=1.2,<2`. The server is built on `mcp.server.fastmcp`, which mcp 2.0 removed. If `mcp` is missing, or a 2.x release is installed, the server exits with a message that names the pin and the eu-reg-mcp command instead of starting.
+## Configuration for Claude Desktop
 
-### Configuration for Claude Desktop
+To add the classifier to Claude Desktop, edit your `claude_desktop_config.json` file.
 
-Add the following configuration to the `mcpServers` object in `claude_desktop_config.json`:
+On macOS, this is located at:
+`~/Library/Application Support/Claude/claude_desktop_config.json`
+
+Add the following configuration to the `mcpServers` object:
 
 ```json
 {
   "mcpServers": {
     "eu-ai-act-classifier": {
-      "command": "/path/to/eu-ai-act-classifier/.venv/bin/python",
+      "command": "uvx",
       "args": [
-        "-m",
-        "eu_ai_act_classifier.mcp_server"
+        "--from",
+        "eu-ai-act-classifier[mcp]",
+        "--with",
+        "mcp<2",
+        "eu-ai-act-classifier-mcp"
       ]
     }
   }
@@ -75,9 +62,9 @@ Add the following configuration to the `mcpServers` object in `claude_desktop_co
 ```
 
 > [!NOTE]
-> Replace `/path/to/eu-ai-act-classifier` with the absolute path of your clone. The virtual environment's Python already has the package and the `mcp` extra installed, so no `PYTHONPATH` is needed.
+> If Claude Desktop cannot find `uvx`, set `command` to its absolute path (the output of `which uvx`). If you installed the package with pip instead, set `command` to the absolute path of the `eu-ai-act-classifier-mcp` executable in that virtual environment, for example `/path/to/venv/bin/eu-ai-act-classifier-mcp`, and remove `args`.
 
-### Configuration for Cursor / VS Code
+## Configuration for Cursor / VS Code
 
 In Cursor, you can configure the MCP server by navigating to:
 **Settings -> Features -> MCP**
@@ -86,11 +73,11 @@ In Cursor, you can configure the MCP server by navigating to:
 2. Fill in the fields:
    - **Name**: `eu-ai-act-classifier`
    - **Type**: `command`
-   - **Command**: `/path/to/eu-ai-act-classifier/.venv/bin/python -m eu_ai_act_classifier.mcp_server`
+   - **Command**: `/path/to/venv/bin/eu-ai-act-classifier-mcp`, the server installed with pip as described under Prerequisites
 
 ## Verification
 
-Once the classifier's own server is configured, the following tools will be made available to your assistant:
+Once configured, the following tools will be made available to your assistant:
 
 1. `classify_ai_system`: takes a `SystemProfile` object and returns the `ClassificationReport` as JSON: risk tier, disposition, obligations with article citations, documentation, the application timeline, open questions for review and citations pending verification.
 2. `classify_ai_system_text`: the same classification as the human-readable report the CLI prints.

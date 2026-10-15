@@ -34,18 +34,19 @@ uv run python scripts/build_playground.py
 For Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp), which serves this classifier as an MCP tool next to its MiCAR tools:
 
 ```bash
-uvx --from 'eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp' eu-reg-mcp
+uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
 ```
 
-This repository's own MCP server remains available as a local option. Its `[mcp]` extra pins `mcp>=1.2,<2`, because the server is built on `mcp.server.fastmcp`, which mcp 2.0 removed:
+This package's own MCP server ships in the [PyPI package](https://pypi.org/project/eu-ai-act-classifier/) behind the `[mcp]` extra. Install it and start the server:
 
 ```bash
-uv run --extra mcp python -m eu_ai_act_classifier.mcp_server
+pip install "eu-ai-act-classifier[mcp]" "mcp<2"
+eu-ai-act-classifier-mcp
 ```
 
-Client configuration (Claude Code, Claude Desktop, Cursor) is in [mcp-configuration-guide.md](mcp-configuration-guide.md).
+Or let uv fetch and run it: `uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp`. Client configuration (Claude Code, Claude Desktop, Cursor) and the reason for the `mcp<2` constraint are in [mcp-configuration-guide.md](mcp-configuration-guide.md). From a clone, `uv run --extra mcp python -m eu_ai_act_classifier.mcp_server` runs your working copy with the pinned extra.
 
-The local JSON bridge is used by the optional web cockpit:
+The local JSON bridge is used by the optional web cockpit. Run it from the repository root, because `inventory` and `workspace` read the synthetic profiles in `examples/`:
 
 ```bash
 eu-ai-act-local-api schema
