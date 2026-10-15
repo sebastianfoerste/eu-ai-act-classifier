@@ -28,8 +28,14 @@ from .report import render_report
 MCP_REQUIREMENT = "mcp>=1.2,<2"
 # The same range as release tuples: from 1.2 up to, not including, 2.
 _MCP_RANGE = ((1, 2), (2,))
-# The README's command for this server; it installs the [mcp] extra from uv.lock first.
+# The README's command for this server in a clone; it syncs the [mcp] extra into .venv first.
 LOCAL_SERVER_COMMAND = "uv run --extra mcp python -m eu_ai_act_classifier.mcp_server"
+# For an installed copy: pip adds the extra in place; uvx needs the extra in --from.
+PIP_EXTRA_COMMAND = "pip install 'eu-ai-act-classifier[mcp]'"
+UVX_SERVER_COMMAND = (
+    "uvx --from 'eu-ai-act-classifier[mcp] @ git+https://github.com/sebastianfoerste/eu-ai-act-classifier'"
+    " eu-ai-act-classifier-mcp"
+)
 EU_REG_MCP_COMMAND = (
     "uvx --from 'eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp'"
     " eu-reg-mcp"
@@ -53,12 +59,15 @@ def _release(version: str) -> tuple[int, ...] | None:
 def mcp_unavailable_message(installed_version: str | None, error: ImportError) -> str:
     """Say why ``mcp.server.fastmcp`` could not be imported and what to run instead."""
     install_hints = [
-        f"This server needs {MCP_REQUIREMENT}, which the [mcp] extra pins. In a clone of this",
-        "repository, start it with",
+        f"This server needs {MCP_REQUIREMENT}, which the package's [mcp] extra pins.",
+        "In a clone of this repository, start it with",
         f"  {LOCAL_SERVER_COMMAND}",
-        "or install the extra into .venv with `uv sync --extra mcp`. Outside a uv project,",
-        "install the pin with",
-        f"  pip install '{MCP_REQUIREMENT}'",
+        "or install the extra into .venv with `uv sync --extra mcp`.",
+        "If you installed the package with pip, add the extra in that environment and",
+        "rerun eu-ai-act-classifier-mcp:",
+        f"  {PIP_EXTRA_COMMAND}",
+        "With uvx, request the extra in --from:",
+        f"  {UVX_SERVER_COMMAND}",
     ]
     if installed_version is None:
         lines = ["The optional mcp package is not installed.", *install_hints]

@@ -21,6 +21,7 @@ PUBLIC_MARKDOWN = [
     Path("docs/methodology.md"),
     Path("docs/reviewer-notes.md"),
     Path("docs/sample-output.md"),
+    Path("docs/surfaces.md"),
     Path("docs/worked-examples/bank-credit-scoring.md"),
     Path("docs/worked-examples/life-insurer-pricing.md"),
 ]
