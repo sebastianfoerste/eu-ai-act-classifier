@@ -6,7 +6,7 @@
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 ![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue)
 
-Encodes Regulation (EU) 2024/1689 as consolidated on 27 July 2026, plus Regulation (EU) 2026/1744 (Annex III high-risk dates shown as 2027-12-02, product-embedded high-risk as 2028-08-02). Not legal advice; the bundled example data is synthetic.
+Encodes Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744, in the consolidated version of 27 July 2026 (Annex III high-risk dates shown as 2027-12-02, product-embedded high-risk as 2028-08-02). Not legal advice; the bundled example data is synthetic.
 
 **[Try it in your browser](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)**: no install, and nothing you paste leaves the page. The playground runs the same engine as the CLI.
 
@@ -52,6 +52,11 @@ Disposition: DETERMINED
 Scope status: in_scope
 Roles: provider
 
+Scope and intake:
+  AI system: True
+  EU nexus: True
+  Transitional status: No transitional limitation identified from the submitted facts.
+
 Findings:
   [blocker] Art. 5(1)(c) AIA: Social scoring leading to detrimental or unfavourable treatment
       Prohibited practice under Art. 5 AIA. The system may not be placed on the market, put into service, or used.
@@ -79,7 +84,6 @@ A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK 
 
 When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](examples/classification-packet.md) and [`examples/classification-packet.json`](examples/classification-packet.json).
 
-![CLI sample output: CreditSightScore classified high-risk with Articles 9, 10 and 11 obligations](docs/demo.png)
 
 ## What it checks
 
@@ -118,9 +122,9 @@ This repository's own MCP server (tools: `classify_ai_system`, `classify_ai_syst
 uv run --extra mcp python -m eu_ai_act_classifier.mcp_server
 ```
 
-## Human-authored legal judgment
+## Human legal judgment
 
-AI tools assisted the implementation and have drafted some changes to the mappings. The parts that carry the value are human legal judgment: the Annex/Article mappings, the obligation set, and the prohibited-practice and review-status logic are written by the author or, where AI-drafted, reviewed and adopted by the author before they merge. The worked examples carry their own AI-assistance disclosure. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable. The rules are plain Python under `src/eu_ai_act_classifier/`, and the eval set is tested for drift.
+AI tools assisted the implementation and drafted some changes to the mappings. The legal judgment that carries the value stays with the author: the Annex and Article mappings, the obligation set, and the prohibited-practice and review-status logic are written by the author or, where AI drafted them, reviewed and adopted by the author before the change is merged. The worked examples carry their own AI-assistance disclosure. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable. The rules are plain Python under `src/eu_ai_act_classifier/`, and the eval set is tested for drift.
 
 ## Honest limits
 
@@ -129,6 +133,7 @@ AI tools assisted the implementation and have drafted some changes to the mappin
 - Guidance changes, and national implementation and supervisory practice may vary by Member State.
 - The engine applies rules to characterised facts and does not decide disputed intended purpose, operator role or factual deployment scope.
 - `requires_review`, draft artifacts and advisory overlays must be reviewed before reliance.
+- The changes of 14 October 2026 (Art. 6(3), third subparagraph; the Annex III point 5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and (3)) were checked against a GitHub mirror of the consolidated text, not against EUR-Lex itself. The two Art. 50 sources in the manifest carry `[noch zu verifizieren]` because their Commission pages were not checked. Recheck both on the official pages before reliance.
 
 ## Docs and links
 

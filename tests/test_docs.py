@@ -20,6 +20,7 @@ PUBLIC_MARKDOWN = [
     Path("docs/launch-readiness.md"),
     Path("docs/methodology.md"),
     Path("docs/reviewer-notes.md"),
+    Path("docs/mcp-configuration-guide.md"),
     Path("docs/sample-output.md"),
     Path("docs/surfaces.md"),
     Path("docs/worked-examples/bank-credit-scoring.md"),
@@ -123,6 +124,50 @@ def test_worked_example_quotes_the_real_profile_and_cli_output(doc: Path, exampl
         )
         position += 1
     assert position == len(actual), f"{doc} does not quote the CLI output to its end"
+
+
+README_EXCERPT = re.compile(
+    r"Real output of `uv run eu-ai-act-classify (examples/\w+\.json)`[^\n]*\n\n```text\n(.*?)\n```",
+    re.S,
+)
+README_HIGH_RISK = re.compile(
+    r"A high-risk case \(`(examples/\w+\.json)`\) returns `([^`]+)`, the finding `([^`]+)`, "
+    r"and (\d+) cited obligations, for example:\n\n```text\n(.*?)\n```",
+    re.S,
+)
+
+
+def _cli_lines(example: str) -> list[str]:
+    profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
+    return render_report(classify(profile)).split("\n")
+
+
+def test_readme_output_excerpt_is_the_start_of_the_real_cli_output() -> None:
+    readme = README.read_text(encoding="utf-8")
+    excerpts = README_EXCERPT.findall(readme)
+    assert excerpts, "README no longer has a 'Real output of' excerpt"
+    for example, quoted in excerpts:
+        lines = quoted.split("\n")
+        assert lines[-1] == "  ...", "the excerpt must end with '  ...' where it is cut"
+        lines = lines[:-1]
+        assert _cli_lines(example)[: len(lines)] == lines, (
+            f"README's excerpt for {example} no longer matches the CLI: rerun "
+            f"uv run eu-ai-act-classify {example}"
+        )
+
+
+def test_readme_high_risk_summary_matches_the_cli() -> None:
+    match = README_HIGH_RISK.search(README.read_text(encoding="utf-8"))
+    assert match, "README no longer summarises the high-risk case"
+    example, tier, finding, count, quoted = match.groups()
+    profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
+    report = classify(profile)
+    actual = _cli_lines(example)
+    assert tier in actual
+    assert any(line.strip().endswith(finding) for line in actual), finding
+    assert int(count) == len(report.obligations)
+    for line in quoted.split("\n"):
+        assert line in actual, line
 
 
 def test_sample_review_dossier_quotes_the_current_cli_output() -> None:
