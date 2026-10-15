@@ -28,18 +28,15 @@ from .report import render_report
 MCP_REQUIREMENT = "mcp>=1.2,<2"
 # The same range as release tuples: from 1.2 up to, not including, 2.
 _MCP_RANGE = ((1, 2), (2,))
-# The README's command for this server in a clone; it syncs the [mcp] extra into .venv first.
+# The command for this server in a clone; it syncs the [mcp] extra into .venv first.
 LOCAL_SERVER_COMMAND = "uv run --extra mcp python -m eu_ai_act_classifier.mcp_server"
-# For an installed copy: pip adds the extra in place; uvx needs the extra in --from.
-PIP_EXTRA_COMMAND = "pip install 'eu-ai-act-classifier[mcp]'"
+# For a PyPI install. Release 0.2.0's [mcp] extra has no upper bound, so both commands
+# name the pin as well; the docs give the same commands.
+PIP_EXTRA_COMMAND = 'pip install "eu-ai-act-classifier[mcp]" "mcp<2"'
 UVX_SERVER_COMMAND = (
-    "uvx --from 'eu-ai-act-classifier[mcp] @ git+https://github.com/sebastianfoerste/eu-ai-act-classifier'"
-    " eu-ai-act-classifier-mcp"
+    'uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp'
 )
-EU_REG_MCP_COMMAND = (
-    "uvx --from 'eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp'"
-    " eu-reg-mcp"
-)
+EU_REG_MCP_COMMAND = "uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp"
 
 
 def _installed_mcp_version() -> str | None:
@@ -66,7 +63,7 @@ def mcp_unavailable_message(installed_version: str | None, error: ImportError) -
         "If you installed the package with pip, add the extra in that environment and",
         "rerun eu-ai-act-classifier-mcp:",
         f"  {PIP_EXTRA_COMMAND}",
-        "With uvx, request the extra in --from:",
+        "With uvx, request the extra and the pin:",
         f"  {UVX_SERVER_COMMAND}",
     ]
     if installed_version is None:

@@ -9,15 +9,11 @@ import pytest
 from eu_ai_act_classifier import mcp_server
 
 PIN = "mcp>=1.2,<2"
-EU_REG_MCP_COMMAND = (
-    "uvx --from 'eu-reg-mcp[lint,classify] @ git+https://github.com/sebastianfoerste/eu-reg-mcp'"
-    " eu-reg-mcp"
-)
+EU_REG_MCP_COMMAND = "uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp"
 LOCAL_SERVER_COMMAND = "uv run --extra mcp python -m eu_ai_act_classifier.mcp_server"
-PIP_EXTRA_COMMAND = "pip install 'eu-ai-act-classifier[mcp]'"
+PIP_EXTRA_COMMAND = 'pip install "eu-ai-act-classifier[mcp]" "mcp<2"'
 UVX_SERVER_COMMAND = (
-    "uvx --from 'eu-ai-act-classifier[mcp] @ git+https://github.com/sebastianfoerste/eu-ai-act-classifier'"
-    " eu-ai-act-classifier-mcp"
+    'uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp'
 )
 
 
@@ -109,8 +105,17 @@ def test_pin_and_commands_match_pyproject_and_docs() -> None:
         Path("docs/surfaces.md"),
     ):
         assert EU_REG_MCP_COMMAND in doc.read_text(encoding="utf-8"), doc
-    for doc in (Path("README.md"), Path("docs/surfaces.md")):
+    for doc in (Path("docs/mcp-configuration-guide.md"), Path("docs/surfaces.md")):
         assert LOCAL_SERVER_COMMAND in doc.read_text(encoding="utf-8"), doc
+    for doc in (
+        Path("README.md"),
+        Path("docs/mcp-configuration-guide.md"),
+        Path("docs/surfaces.md"),
+    ):
+        assert UVX_SERVER_COMMAND in doc.read_text(encoding="utf-8"), doc
+    assert PIP_EXTRA_COMMAND.removeprefix("pip install ") in Path(
+        "docs/mcp-configuration-guide.md"
+    ).read_text(encoding="utf-8")
 
 
 def test_server_lists_both_tools_when_a_compatible_mcp_is_installed() -> None:
