@@ -1,21 +1,34 @@
 # eu-ai-act-classifier
 
-**Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm.**
-
 [![CI](https://github.com/sebastianfoerste/eu-ai-act-classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/sebastianfoerste/eu-ai-act-classifier/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/eu-ai-act-classifier)](https://pypi.org/project/eu-ai-act-classifier/)
-![License: MIT](https://img.shields.io/badge/license-MIT-blue)
-![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue.svg)](pyproject.toml)
+
+**Answer "Is our AI system high-risk under the EU AI Act?" with a cited, reviewable first pass instead of a one-word label.**
+
+Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm.
 
 Encodes Regulation (EU) 2024/1689 as consolidated on 27 July 2026, plus Regulation (EU) 2026/1744 (Annex III high-risk dates shown as 2027-12-02, product-embedded high-risk as 2028-08-02). Not legal advice; the bundled example data is synthetic.
 
-**[Try it in your browser](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)**: no install, and nothing you paste leaves the page. The playground runs the same engine as the CLI.
+## Who it's for
 
-[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](docs/playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
+- **General counsel, AI governance and compliance leads, and product counsel** doing a first-pass classification of an AI system before deeper legal review.
+- **Lawyers who confirm the result** and need to check the reasoning: each obligation cites its Article, open questions name the Article and the fact to confirm, and generated work products are marked draft only.
+- **Legal engineers** who need the same rules as a `--strict` gate in CI or an intake pipeline, as MCP tools or behind a local JSON API.
+- **Developers** asking "am I high-risk?" before engaging counsel.
 
-**Who it is for:** in-house counsel and compliance leads who want a structured first pass, legal engineers who want rules they can read, and developers asking "am I high-risk?" before engaging counsel. If you don't code, use the playground and pick one of the 17 synthetic examples.
+## Try it now
 
-## Try it in one command
+**[Open the live playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/)**: no install, and nothing you paste leaves the page. The playground runs the same engine as the CLI.
+
+<!-- Screenshot/GIF placeholder: to be added. Put a short GIF or screenshot of the live playground here (describe the system, classify, review and export) and save it in docs/ next to the existing images. -->
+
+*Screenshot/GIF placeholder: to be added*
+
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 17 synthetic examples, or scroll to [Example output](#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+
+## Quick start
 
 The package is on PyPI as [`eu-ai-act-classifier`](https://pypi.org/project/eu-ai-act-classifier/) (Python 3.13+). With [uv](https://docs.astral.sh/uv/), `uvx` fetches it from PyPI and runs it without installing it. Save a profile and classify it:
 
@@ -45,9 +58,11 @@ To try changes on `main` that are not on PyPI yet, point uvx at the repository i
 ```bash
 git clone https://github.com/sebastianfoerste/eu-ai-act-classifier
 cd eu-ai-act-classifier
-uv sync
+uv sync --extra dev
 uv run eu-ai-act-classify examples/credit_scoring.json
 ```
+
+Runs end to end, offline and deterministically. [Example output](#example-output) shows the output, and [Local verification](docs/surfaces.md#local-verification) has more commands, starting with the test suite.
 
 ## Example output
 
@@ -109,6 +124,8 @@ Which example lands in which tier is asserted in `tests/test_examples.py`. See [
 | CLI (`eu-ai-act-classify`) | Authoritative surface; `--json`, `--strict`, `--sources`, draft artifacts | [docs/surfaces.md](docs/surfaces.md) |
 | MCP server | Let an agent call the classifier | [docs/mcp-configuration-guide.md](docs/mcp-configuration-guide.md) |
 | Local API and web cockpit | Local inventory, review and export workflow | [docs/surfaces.md](docs/surfaces.md) |
+
+[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](docs/playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
 MCP quick start (tools: `classify_ai_system`, `classify_ai_system_text`). An MCP client starts the server with:
 
