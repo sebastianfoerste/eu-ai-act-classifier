@@ -18,6 +18,7 @@ PUBLIC_MARKDOWN = [
     Path("docs/methodology.md"),
     Path("docs/reviewer-notes.md"),
     Path("docs/sample-output.md"),
+    Path("docs/surfaces.md"),
 ]
 EM_DASH = "\u2014"
 EN_DASH = "\u2013"

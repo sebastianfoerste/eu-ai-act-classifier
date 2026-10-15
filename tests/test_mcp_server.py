@@ -14,6 +14,11 @@ EU_REG_MCP_COMMAND = (
     " eu-reg-mcp"
 )
 LOCAL_SERVER_COMMAND = "uv run --extra mcp python -m eu_ai_act_classifier.mcp_server"
+PIP_EXTRA_COMMAND = "pip install 'eu-ai-act-classifier[mcp]'"
+UVX_SERVER_COMMAND = (
+    "uvx --from 'eu-ai-act-classifier[mcp] @ git+https://github.com/sebastianfoerste/eu-ai-act-classifier'"
+    " eu-ai-act-classifier-mcp"
+)
 
 
 def _exit_message(monkeypatch: pytest.MonkeyPatch, installed_version: str | None) -> str:
@@ -37,7 +42,8 @@ def test_exit_message_names_the_pin_and_eu_reg_mcp(
     assert PIN in message
     assert LOCAL_SERVER_COMMAND in message
     assert "uv sync --extra mcp" in message
-    assert f"pip install '{PIN}'" in message
+    assert PIP_EXTRA_COMMAND in message
+    assert UVX_SERVER_COMMAND in message
     assert "uv pip install" not in message
     assert EU_REG_MCP_COMMAND in message
 
@@ -92,10 +98,19 @@ def test_pin_and_commands_match_pyproject_and_docs() -> None:
     assert mcp_server.MCP_REQUIREMENT == PIN
     assert mcp_server.EU_REG_MCP_COMMAND == EU_REG_MCP_COMMAND
     assert mcp_server.LOCAL_SERVER_COMMAND == LOCAL_SERVER_COMMAND
+    assert mcp_server.PIP_EXTRA_COMMAND == PIP_EXTRA_COMMAND
+    assert mcp_server.UVX_SERVER_COMMAND == UVX_SERVER_COMMAND
+    scripts = Path("pyproject.toml").read_text(encoding="utf-8")
+    assert 'eu-ai-act-classifier-mcp = "eu_ai_act_classifier.mcp_server:main"' in scripts
     assert f'mcp = ["{PIN}"]' in Path("pyproject.toml").read_text(encoding="utf-8")
-    for doc in (Path("README.md"), Path("docs/mcp-configuration-guide.md")):
+    for doc in (
+        Path("README.md"),
+        Path("docs/mcp-configuration-guide.md"),
+        Path("docs/surfaces.md"),
+    ):
         assert EU_REG_MCP_COMMAND in doc.read_text(encoding="utf-8"), doc
-    assert LOCAL_SERVER_COMMAND in Path("README.md").read_text(encoding="utf-8")
+    for doc in (Path("README.md"), Path("docs/surfaces.md")):
+        assert LOCAL_SERVER_COMMAND in doc.read_text(encoding="utf-8"), doc
 
 
 def test_server_lists_both_tools_when_a_compatible_mcp_is_installed() -> None:
