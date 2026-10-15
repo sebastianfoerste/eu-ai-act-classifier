@@ -15,7 +15,7 @@ This allows agentic workflows to perform compliance evaluations on system archit
    ```bash
    pip install "eu-ai-act-classifier[mcp]" "mcp<2"
    ```
-   Keep the `mcp<2` constraint. The server is built on the 1.x `mcp` SDK, and the 0.2.0 `[mcp]` extra does not rule out `mcp` 2.x, which renamed the API the server imports.
+   Keep the `mcp<2` constraint. The server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1. The 0.2.0 extra does not rule out `mcp` 2.x, and the 0.2.0 server then exits with `The MCP extra is not installed` although the extra is installed.
 
 ## Configuration for Claude Desktop
 
