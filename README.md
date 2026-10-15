@@ -3,6 +3,7 @@
 **Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm.**
 
 [![CI](https://github.com/sebastianfoerste/eu-ai-act-classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/sebastianfoerste/eu-ai-act-classifier/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/eu-ai-act-classifier)](https://pypi.org/project/eu-ai-act-classifier/)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 ![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue)
 
@@ -16,7 +17,7 @@ Encodes Regulation (EU) 2024/1689 as consolidated on 27 July 2026, plus Regulati
 
 ## Try it in one command
 
-No PyPI package exists yet (PyPI release: coming). Until then, run it straight from git with [uv](https://docs.astral.sh/uv/) (Python 3.13+). Save a profile and classify it:
+The package is on PyPI as [`eu-ai-act-classifier`](https://pypi.org/project/eu-ai-act-classifier/) (Python 3.13+). With [uv](https://docs.astral.sh/uv/), `uvx` fetches it from PyPI and runs it without installing it. Save a profile and classify it:
 
 ```bash
 cat > profile.json <<'JSON'
@@ -29,10 +30,17 @@ cat > profile.json <<'JSON'
   "prohibited_practices": ["5.1.c"]
 }
 JSON
-uvx --from git+https://github.com/sebastianfoerste/eu-ai-act-classifier eu-ai-act-classify profile.json
+uvx --from eu-ai-act-classifier eu-ai-act-classify profile.json
 ```
 
-[UNVERIFIED] The git URL form itself was not run here (no network fetch was made); the same command with `--from <local clone path>` was run and works. From a clone:
+Or install it with pip:
+
+```bash
+pip install eu-ai-act-classifier
+eu-ai-act-classify profile.json
+```
+
+To try changes on `main` that are not on PyPI yet, point uvx at the repository instead: `uvx --from git+https://github.com/sebastianfoerste/eu-ai-act-classifier eu-ai-act-classify profile.json`. To develop, work from a clone:
 
 ```bash
 git clone https://github.com/sebastianfoerste/eu-ai-act-classifier
@@ -102,12 +110,13 @@ Which example lands in which tier is asserted in `tests/test_examples.py`. See [
 | MCP server | Let an agent call the classifier | [docs/mcp-configuration-guide.md](docs/mcp-configuration-guide.md) |
 | Local API and web cockpit | Local inventory, review and export workflow | [docs/surfaces.md](docs/surfaces.md) |
 
-MCP quick start (tools: `classify_ai_system`, `classify_ai_system_text`):
+MCP quick start (tools: `classify_ai_system`, `classify_ai_system_text`). An MCP client starts the server with:
 
 ```bash
-uv pip install -e ".[mcp]"
-python -m eu_ai_act_classifier.mcp_server
+uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
 ```
+
+Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and the 0.2.0 `[mcp]` extra does not rule out `mcp` 2.x, which renamed the API the server imports. Client configuration is in [docs/mcp-configuration-guide.md](docs/mcp-configuration-guide.md).
 
 ## Human-authored legal judgment
 
@@ -136,9 +145,9 @@ Deterministic, review-gated tools for EU regulation, by [sebastianfoerste](https
 - [awesome-eu-fintech-regulation](https://github.com/sebastianfoerste/awesome-eu-fintech-regulation): curated index of EU financial-regulation primary sources and tools
 - [contract-review-eval-harness](https://github.com/sebastianfoerste/contract-review-eval-harness)
 - [legal-function-operating-system](https://github.com/sebastianfoerste/legal-function-operating-system)
-- **eu-ai-act-classifier** (this repo)
-- [micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter): MiCAR whitepaper linter with pinpoint citations
-- [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp)
+- **eu-ai-act-classifier** (this repo, [PyPI](https://pypi.org/project/eu-ai-act-classifier/))
+- [micar-whitepaper-linter](https://github.com/sebastianfoerste/micar-whitepaper-linter): MiCAR whitepaper linter with pinpoint citations ([PyPI](https://pypi.org/project/micar-whitepaper-linter/))
+- [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp) ([PyPI](https://pypi.org/project/eu-reg-mcp/))
 - [micar-register-observatory](https://github.com/sebastianfoerste/micar-register-observatory)
 
 ## License

@@ -7,10 +7,15 @@ This allows agentic workflows to perform compliance evaluations on system archit
 ## Prerequisites
 
 1. Python 3.13+ installed.
-2. The `eu-ai-act-classifier` package installed in a virtual environment or globally with the `[mcp]` extra:
+2. The [`eu-ai-act-classifier`](https://pypi.org/project/eu-ai-act-classifier/) package from PyPI with the `[mcp]` extra. Either let [uv](https://docs.astral.sh/uv/) fetch it when the client starts the server, which is what the Claude Desktop example below does:
    ```bash
-   pip install -e ".[mcp]"
+   uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
    ```
+   or install it into a virtual environment with pip:
+   ```bash
+   pip install "eu-ai-act-classifier[mcp]" "mcp<2"
+   ```
+   Keep the `mcp<2` constraint. The server is built on the 1.x `mcp` SDK, and the 0.2.0 `[mcp]` extra does not rule out `mcp` 2.x, which renamed the API the server imports.
 
 ## Configuration for Claude Desktop
 
@@ -25,10 +30,13 @@ Add the following configuration to the `mcpServers` object:
 {
   "mcpServers": {
     "eu-ai-act-classifier": {
-      "command": "/path/to/eu-ai-act-classifier/.venv/bin/python",
+      "command": "uvx",
       "args": [
-        "-m",
-        "eu_ai_act_classifier.mcp_server"
+        "--from",
+        "eu-ai-act-classifier[mcp]",
+        "--with",
+        "mcp<2",
+        "eu-ai-act-classifier-mcp"
       ]
     }
   }
@@ -36,7 +44,7 @@ Add the following configuration to the `mcpServers` object:
 ```
 
 > [!NOTE]
-> Replace `/path/to/eu-ai-act-classifier` with the absolute path of your clone. The virtual environment's Python already has the package and the `mcp` extra installed, so no `PYTHONPATH` is needed.
+> If Claude Desktop cannot find `uvx`, set `command` to its absolute path (the output of `which uvx`). If you installed the package with pip instead, set `command` to the absolute path of the `eu-ai-act-classifier-mcp` executable in that virtual environment, for example `/path/to/venv/bin/eu-ai-act-classifier-mcp`, and remove `args`.
 
 ## Configuration for Cursor / VS Code
 
@@ -47,7 +55,7 @@ In Cursor, you can configure the MCP server by navigating to:
 2. Fill in the fields:
    - **Name**: `eu-ai-act-classifier`
    - **Type**: `command`
-   - **Command**: `/path/to/eu-ai-act-classifier/.venv/bin/python -m eu_ai_act_classifier.mcp_server`
+   - **Command**: `/path/to/venv/bin/eu-ai-act-classifier-mcp`, the server installed with pip as described under Prerequisites
 
 ## Verification
 

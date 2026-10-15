@@ -8,7 +8,14 @@
 
 ## Python Package
 
-Create the environment and install development dependencies:
+The package is on [PyPI](https://pypi.org/project/eu-ai-act-classifier/). To use the CLI without a clone:
+
+```bash
+pip install eu-ai-act-classifier
+eu-ai-act-classify --help
+```
+
+For development, create the environment in a clone and install development dependencies:
 
 ```bash
 uv venv
