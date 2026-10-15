@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import sys
 import tomllib
 import types
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -14,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PIP_COMMAND = "pip install 'eu-ai-act-classifier[mcp]'"
 UVX_COMMAND = "uvx --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp"
 CLONE_COMMAND = "uv run --extra mcp eu-ai-act-classifier-mcp"
+PROFILE = {"name": "SpamShield"}
 
 
 def _exit_message(
@@ -28,6 +31,13 @@ def _exit_message(
     message = excinfo.value.code
     assert isinstance(message, str)
     return message
+
+
+def _server() -> Any:
+    # The hint tests run without mcp; the server tests skip unless a compatible mcp is
+    # installed. Run them all with `uv run --extra dev --extra mcp pytest`.
+    pytest.importorskip("mcp.server.fastmcp")
+    return mcp_server.build_server()
 
 
 @pytest.mark.parametrize("installed_mcp", [None, "2.3.0"])
@@ -76,10 +86,28 @@ def test_requirement_in_the_hint_matches_the_mcp_extra() -> None:
     assert "eu-ai-act-classifier-mcp" in pyproject["project"]["scripts"]
 
 
-def test_server_lists_both_tools_when_a_compatible_mcp_is_installed() -> None:
-    # Skipped without the extra; run it with `uv run --extra dev --extra mcp pytest`.
-    pytest.importorskip("mcp.server.fastmcp")
-
-    tools = asyncio.run(mcp_server.build_server().list_tools())
+def test_server_exposes_both_classification_tools() -> None:
+    tools = asyncio.run(_server().list_tools())
 
     assert {tool.name for tool in tools} == {"classify_ai_system", "classify_ai_system_text"}
+
+
+def test_classify_ai_system_returns_report_json() -> None:
+    result = asyncio.run(_server().call_tool("classify_ai_system", {"profile": PROFILE}))
+    blocks = result[0] if isinstance(result, tuple) else result
+    report = json.loads(blocks[0].text)
+
+    assert report["system"] == "SpamShield"
+
+
+def test_classify_ai_system_text_returns_report_text() -> None:
+    result = asyncio.run(_server().call_tool("classify_ai_system_text", {"profile": PROFILE}))
+    blocks = result[0] if isinstance(result, tuple) else result
+
+    assert "SpamShield" in blocks[0].text
+
+
+def test_invalid_profile_is_rejected() -> None:
+    server = _server()
+    with pytest.raises(Exception):  # noqa: B017 - FastMCP wraps validation errors
+        asyncio.run(server.call_tool("classify_ai_system", {"profile": {"roles": "bogus"}}))
