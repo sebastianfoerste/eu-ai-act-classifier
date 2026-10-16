@@ -66,6 +66,8 @@ Runs end to end, offline and deterministically. [Example output](#example-output
 
 Which Annex III points the classifier covers, with the citation each emits and the examples and tests behind it: [docs/coverage.md](docs/coverage.md), generated from the code.
 
+JSON Schemas for the input profile and the report are in [schemas/](schemas/) (also `eu-ai-act-classify --schema profile` or `--schema report`). Add `"$schema": "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier/main/schemas/system-profile.v1.schema.json"` to a profile for editor autocomplete; the classifier ignores that key.
+
 ## Example output
 
 Real output of `uv run eu-ai-act-classify examples/social_scoring.json` (excerpt, run on this repo):
