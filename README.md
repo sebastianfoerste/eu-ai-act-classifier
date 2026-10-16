@@ -64,6 +64,8 @@ uv run eu-ai-act-classify examples/credit_scoring.json
 
 Runs end to end, offline and deterministically. [Example output](#example-output) shows the output, and [Local verification](docs/surfaces.md#local-verification) has more commands, starting with the test suite.
 
+Which Annex III points the classifier covers, with the citation each emits and the examples and tests behind it: [docs/coverage.md](docs/coverage.md), generated from the code.
+
 ## Example output
 
 Real output of `uv run eu-ai-act-classify examples/social_scoring.json` (excerpt, run on this repo):
