@@ -10,6 +10,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from . import __version__
 from .inventory import AISystemInventory, build_example_inventory
 
 
@@ -325,7 +326,7 @@ def build_policy_workflows(
                 source_refs=list(inventory.sourceRefs),
                 exportAllowed=False,
                 definition_snapshot=definition.model_dump(mode="json", by_alias=True),
-                classifier_version="0.2.0",
+                classifier_version=__version__,
                 source_versions=list(inventory.sourceRefs),
                 audit_events=[
                     {

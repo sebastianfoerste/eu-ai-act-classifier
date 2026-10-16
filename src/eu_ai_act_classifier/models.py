@@ -16,8 +16,9 @@ the output deterministic and auditable.
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class Role(StrEnum):
@@ -176,6 +177,15 @@ class SystemProfile(BaseModel):
     """Structured description of an AI system with characterised facts."""
 
     model_config = {"extra": "forbid"}
+
+    @model_validator(mode="before")
+    @classmethod
+    def _drop_schema_reference(cls, data: Any) -> Any:
+        # Profiles may point editors at schemas/system-profile.v1.schema.json
+        # via "$schema"; that key is metadata, not a fact about the system.
+        if isinstance(data, dict) and "$schema" in data:
+            data = {key: value for key, value in data.items() if key != "$schema"}
+        return data
 
     name: str
     description: str = ""

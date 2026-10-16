@@ -1,21 +1,34 @@
 # eu-ai-act-classifier
 
-**Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm.**
-
 [![CI](https://github.com/sebastianfoerste/eu-ai-act-classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/sebastianfoerste/eu-ai-act-classifier/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/eu-ai-act-classifier)](https://pypi.org/project/eu-ai-act-classifier/)
-![License: MIT](https://img.shields.io/badge/license-MIT-blue)
-![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue.svg)](pyproject.toml)
+
+**Answer "Is our AI system high-risk under the EU AI Act?" with a cited, reviewable first pass instead of a one-word label.**
+
+Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm.
 
 Encodes Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744, in the consolidated version of 27 July 2026 (Annex III high-risk dates shown as 2027-12-02, product-embedded high-risk as 2028-08-02). Not legal advice; the bundled example data is synthetic.
 
-**[Try it in your browser](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)**: no install, and nothing you paste leaves the page. The playground runs the same engine as the CLI.
+## Who it's for
 
-[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](docs/playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
+- **General counsel, AI governance and compliance leads, and product counsel** doing a first-pass classification of an AI system before deeper legal review.
+- **Lawyers who confirm the result** and need to check the reasoning: each obligation cites its Article, open questions name the Article and the fact to confirm, and generated work products are marked draft only.
+- **Legal engineers** who need the same rules as a `--strict` gate in CI or an intake pipeline, as MCP tools or behind a local JSON API.
+- **Developers** asking "am I high-risk?" before engaging counsel.
 
-**Who it is for:** in-house counsel and compliance leads who want a structured first pass, legal engineers who want rules they can read, and developers asking "am I high-risk?" before engaging counsel. If you don't code, use the playground and pick one of the 18 synthetic examples.
+## Try it now
 
-## Try it in one command
+**[Open the live playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/)**: no install, and nothing you paste leaves the page. The playground runs the same engine as the CLI.
+
+<!-- Screenshot/GIF placeholder: to be added. Put a short GIF or screenshot of the live playground here (describe the system, classify, review and export) and save it in docs/ next to the existing images. -->
+
+*Screenshot/GIF placeholder: to be added*
+
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 18 synthetic examples, or scroll to [Example output](#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+
+## Quick start
 
 The package is on PyPI as [`eu-ai-act-classifier`](https://pypi.org/project/eu-ai-act-classifier/) (Python 3.13+). With [uv](https://docs.astral.sh/uv/), `uvx` fetches it from PyPI and runs it without installing it. Save a profile and classify it:
 
@@ -45,9 +58,15 @@ To try changes on `main` that are not on PyPI yet, point uvx at the repository i
 ```bash
 git clone https://github.com/sebastianfoerste/eu-ai-act-classifier
 cd eu-ai-act-classifier
-uv sync
+uv sync --extra dev
 uv run eu-ai-act-classify examples/credit_scoring.json
 ```
+
+Runs end to end, offline and deterministically. [Example output](#example-output) shows the output, and [Local verification](docs/surfaces.md#local-verification) has more commands, starting with the test suite.
+
+Which Annex III points the classifier covers, with the citation each emits and the examples and tests behind it: [docs/coverage.md](docs/coverage.md), generated from the code.
+
+JSON Schemas for the input profile and the report are in [schemas/](schemas/) (also `eu-ai-act-classify --schema profile` or `--schema report`). Add `"$schema": "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier/main/schemas/system-profile.v1.schema.json"` to a profile for editor autocomplete; the classifier ignores that key.
 
 ## Example output
 
@@ -92,8 +111,7 @@ A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK 
 
 When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](examples/classification-packet.md) and [`examples/classification-packet.json`](examples/classification-packet.json).
 
-This output, the worked examples and the playground reflect this repository. Release 0.2.0 on PyPI, which `pip`, `uvx` and eu-reg-mcp's `classify` extra install, predates the changes of 14 October 2026 listed under [Honest limits](#honest-limits), so its findings differ in places: for example, it prints `High-risk: Creditworthiness evaluation and credit scoring` without `of natural persons`, lists the Art. 44 certificate item for an Annex III point 5(b) provider, and cites the profiling rule as `Art. 6(3) subpara. 2 AIA`. Until the next release, the git form under [Try it in one command](#try-it-in-one-command) runs this version.
-
+This output, the worked examples and the playground reflect this repository. Release 0.2.1, the current release on PyPI, which `pip`, `uvx` and eu-reg-mcp's `classify` extra install, does not include the changes of 14 October 2026 listed under [Honest limits](#honest-limits), so its findings differ in places: for example, it prints `High-risk: Creditworthiness evaluation and credit scoring` without `of natural persons`, lists the Art. 44 certificate item for an Annex III point 5(b) provider, and cites the profiling rule as `Art. 6(3) subpara. 2 AIA`. Until the next release, the git form under [Quick start](#quick-start) runs this version.
 
 ## What it checks
 
@@ -118,6 +136,8 @@ Two worked examples show a run end to end, with what the classifier decided and 
 | MCP server | Let an agent call the classifier | [docs/mcp-configuration-guide.md](docs/mcp-configuration-guide.md) |
 | Local API and web cockpit | Local inventory, review and export workflow | [docs/surfaces.md](docs/surfaces.md) |
 
+[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](docs/playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
+
 MCP quick start: for Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp). It serves this classifier as an MCP tool next to its MiCAR tools:
 
 ```bash
@@ -129,10 +149,10 @@ To register it with Claude Code, put `claude mcp add eu-reg --` in front of that
 This package's own MCP server (tools: `classify_ai_system`, `classify_ai_system_text`) is the secondary option. An MCP client starts it with:
 
 ```bash
-uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
+uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
 ```
 
-Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and mcp 2.x renamed the API the server imports. The `[mcp]` extra of release 0.2.0 does not rule out mcp 2.x; the extra in this repository now pins `mcp>=1.2,<2`. Client configuration is in [docs/mcp-configuration-guide.md](docs/mcp-configuration-guide.md).
+Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1; the 0.2.0 extra does not. Client configuration is in [docs/mcp-configuration-guide.md](docs/mcp-configuration-guide.md).
 
 ## Human legal judgment
 
@@ -145,7 +165,7 @@ AI tools assisted the implementation and drafted some changes to the mappings. T
 - Guidance changes, and national implementation and supervisory practice may vary by Member State.
 - The engine applies rules to characterised facts and does not decide disputed intended purpose, operator role or factual deployment scope.
 - `requires_review`, draft artifacts and advisory overlays must be reviewed before reliance.
-- The changes of 14 October 2026 (Art. 6(3), third subparagraph; the Annex III point 5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and (3)) are in this repository but not in release 0.2.0 on PyPI. They were checked against a GitHub mirror of the consolidated text, not against EUR-Lex itself. The two Art. 50 sources in the manifest carry `[noch zu verifizieren]` because their Commission pages were not checked. Recheck both on the official pages before reliance.
+- The changes of 14 October 2026 (Art. 6(3), third subparagraph; the Annex III point 5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and (3)) are in this repository but not in release 0.2.1, the current release on PyPI. They were checked against a GitHub mirror of the consolidated text, not against EUR-Lex itself. The two Art. 50 sources in the manifest carry `[noch zu verifizieren]` because their Commission pages were not checked. Recheck both on the official pages before reliance.
 
 ## Docs and links
 

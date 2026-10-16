@@ -1,10 +1,10 @@
 # Sample Output
 
-This page shows the shape of the output on `main`, run from a clone. Release 0.2.0
-on PyPI predates the October 2026 mapping changes: it prints the 5(b) label without
-"of natural persons" and the Art. 44 certificate item instead of
-`high-risk.provider.43.2`. The exact obligation list may grow as the source registry
-and obligation graph are extended.
+This page shows the shape of the output on `main`, run from a clone. Release 0.2.1,
+the current release on PyPI, does not include the October 2026 mapping changes: it
+prints the 5(b) label without "of natural persons" and the Art. 44 certificate item
+instead of `high-risk.provider.43.2`. The exact obligation list may grow as the
+source registry and obligation graph are extended.
 
 ## CLI Report
 

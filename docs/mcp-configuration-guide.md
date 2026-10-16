@@ -27,13 +27,13 @@ The rest of this guide covers this package's own two-tool server.
 1. Python 3.13+ installed.
 2. The [`eu-ai-act-classifier`](https://pypi.org/project/eu-ai-act-classifier/) package from PyPI with the `[mcp]` extra. Either let [uv](https://docs.astral.sh/uv/) fetch it when the client starts the server, which is what the Claude Desktop example below does:
    ```bash
-   uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
+   uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
    ```
    or install it into a virtual environment with pip:
    ```bash
    pip install "eu-ai-act-classifier[mcp]" "mcp<2"
    ```
-   Keep the `mcp<2` constraint. The server is built on the 1.x `mcp` SDK, and mcp 2.x renamed the API the server imports. The `[mcp]` extra of release 0.2.0 does not rule out mcp 2.x; the extra in this repository now pins `mcp>=1.2,<2`. With release 0.2.0, starting the server without the constraint fails with `The MCP extra is not installed`, although the extra is installed: mcp 2.x was resolved instead. From a clone, `uv run --extra mcp python -m eu_ai_act_classifier.mcp_server` runs your working copy with the pinned extra.
+   Keep the `mcp<2` constraint. The server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1. The 0.2.0 extra does not rule out `mcp` 2.x, and the 0.2.0 server then exits with `The MCP extra is not installed` although the extra is installed. From a clone, `uv run --extra mcp eu-ai-act-classifier-mcp` runs your working copy with the pinned extra.
 
 ## Configuration for Claude Desktop
 
@@ -50,6 +50,8 @@ Add the following configuration to the `mcpServers` object:
     "eu-ai-act-classifier": {
       "command": "uvx",
       "args": [
+        "--python",
+        "3.13",
         "--from",
         "eu-ai-act-classifier[mcp]",
         "--with",
