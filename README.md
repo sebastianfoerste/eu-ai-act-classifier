@@ -64,6 +64,10 @@ uv run eu-ai-act-classify examples/credit_scoring.json
 
 Runs end to end, offline and deterministically. [Example output](#example-output) shows the output, and [Local verification](docs/surfaces.md#local-verification) has more commands, starting with the test suite.
 
+Which Annex III points the classifier covers, with the citation each emits and the examples and tests behind it: [docs/coverage.md](docs/coverage.md), generated from the code.
+
+JSON Schemas for the input profile and the report are in [schemas/](schemas/) (also `eu-ai-act-classify --schema profile` or `--schema report`). Add `"$schema": "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier/main/schemas/system-profile.v1.schema.json"` to a profile for editor autocomplete; the classifier ignores that key.
+
 ## Example output
 
 Real output of `uv run eu-ai-act-classify examples/social_scoring.json` (excerpt, run on this repo):
@@ -130,7 +134,7 @@ Which example lands in which tier is asserted in `tests/test_examples.py`. See [
 MCP quick start (tools: `classify_ai_system`, `classify_ai_system_text`). An MCP client starts the server with:
 
 ```bash
-uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
+uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
 ```
 
 Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1; the 0.2.0 extra does not. Client configuration is in [docs/mcp-configuration-guide.md](docs/mcp-configuration-guide.md).

@@ -8,3 +8,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # The MCP server is built on the 1.x SDK; mcp 2.x removed the API it imports.
+      - dependency-name: mcp
+        update-types: ["version-update:semver-major"]
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
