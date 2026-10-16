@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 
 import pytest
 
+from eu_ai_act_classifier import __version__
 from eu_ai_act_classifier.collaboration_workspace import (
     add_comment,
     apply_workspace_action,
@@ -47,6 +48,7 @@ def test_workflows_and_portal_remain_review_gated() -> None:
     assert any(run["status"] == "blocked" for run in workspace["workflowRuns"])
     assert all(run["definition_snapshot"] for run in workspace["workflowRuns"])
     assert all(run["source_versions"] for run in workspace["workflowRuns"])
+    assert all(run["classifier_version"] == __version__ for run in workspace["workflowRuns"])
 
 
 def test_comments_and_overrides_persist_without_changing_deterministic_baseline(tmp_path) -> None:

@@ -1,0 +1,527 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier/main/schemas/classification-report.v1.schema.json",
+  "$defs": {
+    "AdvisoryNote": {
+      "properties": {
+        "note_id": {
+          "title": "Note Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_status": {
+          "$ref": "#/$defs/SourceStatus",
+          "default": "nonbinding_guidance"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        },
+        "review_status": {
+          "$ref": "#/$defs/ReviewStatus",
+          "default": "review_required"
+        }
+      },
+      "required": [
+        "note_id",
+        "title",
+        "detail",
+        "source_id",
+        "source_url"
+      ],
+      "title": "AdvisoryNote",
+      "type": "object"
+    },
+    "Disposition": {
+      "description": "Whether the engine reached a conclusion or handed off to a lawyer.",
+      "enum": [
+        "determined",
+        "requires_review"
+      ],
+      "title": "Disposition",
+      "type": "string"
+    },
+    "ExcludedUse": {
+      "description": "Common AI Act scope exclusions or carve-outs that need visible review.",
+      "enum": [
+        "military_defence_national_security",
+        "research_development_testing",
+        "personal_non_professional",
+        "free_open_source"
+      ],
+      "title": "ExcludedUse",
+      "type": "string"
+    },
+    "Finding": {
+      "description": "One classification result with its citation and severity.",
+      "properties": {
+        "rule_id": {
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "citation": {
+          "title": "Citation",
+          "type": "string"
+        },
+        "citation_verified": {
+          "default": true,
+          "title": "Citation Verified",
+          "type": "boolean"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "detail": {
+          "default": "",
+          "title": "Detail",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity",
+          "default": "info"
+        },
+        "tier": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RiskTier"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "rule_id",
+        "citation",
+        "title"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "Obligation": {
+      "description": "A duty that attaches once a tier/role is determined.",
+      "properties": {
+        "article": {
+          "title": "Article",
+          "type": "string"
+        },
+        "citation_verified": {
+          "default": true,
+          "title": "Citation Verified",
+          "type": "boolean"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "applies_to": {
+          "$ref": "#/$defs/Role"
+        },
+        "requirement": {
+          "title": "Requirement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "article",
+        "title",
+        "applies_to",
+        "requirement"
+      ],
+      "title": "Obligation",
+      "type": "object"
+    },
+    "ObligationGraphItem": {
+      "properties": {
+        "obligation_id": {
+          "title": "Obligation Id",
+          "type": "string"
+        },
+        "article": {
+          "title": "Article",
+          "type": "string"
+        },
+        "actor": {
+          "$ref": "#/$defs/Role"
+        },
+        "trigger": {
+          "title": "Trigger",
+          "type": "string"
+        },
+        "requirement": {
+          "title": "Requirement",
+          "type": "string"
+        },
+        "evidence_artifact": {
+          "title": "Evidence Artifact",
+          "type": "string"
+        },
+        "source_status": {
+          "$ref": "#/$defs/SourceStatus"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        },
+        "application_date": {
+          "title": "Application Date",
+          "type": "string"
+        },
+        "review_status": {
+          "$ref": "#/$defs/ReviewStatus"
+        }
+      },
+      "required": [
+        "obligation_id",
+        "article",
+        "actor",
+        "trigger",
+        "requirement",
+        "evidence_artifact",
+        "source_status",
+        "source_url",
+        "application_date",
+        "review_status"
+      ],
+      "title": "ObligationGraphItem",
+      "type": "object"
+    },
+    "RegulatorySource": {
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "legal_status": {
+          "$ref": "#/$defs/SourceStatus"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "retrieved_on": {
+          "title": "Retrieved On",
+          "type": "string"
+        },
+        "citation_label": {
+          "title": "Citation Label",
+          "type": "string"
+        },
+        "implementation_note": {
+          "title": "Implementation Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "title",
+        "legal_status",
+        "url",
+        "retrieved_on",
+        "citation_label",
+        "implementation_note"
+      ],
+      "title": "RegulatorySource",
+      "type": "object"
+    },
+    "ReviewStatus": {
+      "description": "Review posture for obligations and generated work products.",
+      "enum": [
+        "draft",
+        "review_required",
+        "determined"
+      ],
+      "title": "ReviewStatus",
+      "type": "string"
+    },
+    "RiskTier": {
+      "description": "The AIA's risk tiers, ordered by severity (see :data:`TIER_ORDER`).",
+      "enum": [
+        "outside_scope",
+        "prohibited",
+        "high_risk",
+        "limited_risk",
+        "minimal_risk"
+      ],
+      "title": "RiskTier",
+      "type": "string"
+    },
+    "Role": {
+      "description": "Operator roles under the AIA. A single company often holds several.",
+      "enum": [
+        "provider",
+        "deployer",
+        "importer",
+        "distributor",
+        "authorized_representative",
+        "gpai_provider"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "ScopeAssessment": {
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/ScopeStatus",
+          "default": "in_scope"
+        },
+        "is_ai_system": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": true,
+          "title": "Is Ai System"
+        },
+        "intended_purpose_source": {
+          "default": "",
+          "title": "Intended Purpose Source",
+          "type": "string"
+        },
+        "eu_nexus": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": true,
+          "title": "Eu Nexus"
+        },
+        "excluded_use_flags": {
+          "items": {
+            "$ref": "#/$defs/ExcludedUse"
+          },
+          "title": "Excluded Use Flags",
+          "type": "array"
+        },
+        "transitional_status": {
+          "default": "No transitional limitation identified from the submitted facts.",
+          "title": "Transitional Status",
+          "type": "string"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Notes",
+          "type": "array"
+        }
+      },
+      "title": "ScopeAssessment",
+      "type": "object"
+    },
+    "ScopeStatus": {
+      "description": "Whether the submitted profile is within the AI Act triage perimeter.",
+      "enum": [
+        "in_scope",
+        "outside_ai_act_scope",
+        "scope_requires_review"
+      ],
+      "title": "ScopeStatus",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "blocker",
+        "high",
+        "medium",
+        "info"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SourceStatus": {
+      "description": "Legal status of the source supporting a report element.",
+      "enum": [
+        "binding_level_1",
+        "provisional_political_agreement",
+        "nonbinding_guidance"
+      ],
+      "title": "SourceStatus",
+      "type": "string"
+    },
+    "TimelineItem": {
+      "properties": {
+        "provision": {
+          "title": "Provision",
+          "type": "string"
+        },
+        "applies_from": {
+          "title": "Applies From",
+          "type": "string"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        },
+        "source_status": {
+          "$ref": "#/$defs/SourceStatus",
+          "default": "binding_level_1"
+        },
+        "source_id": {
+          "default": "ai-act-2024-1689",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_url": {
+          "default": "",
+          "title": "Source Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provision",
+        "applies_from",
+        "note"
+      ],
+      "title": "TimelineItem",
+      "type": "object"
+    }
+  },
+  "description": "The engine's output: tier, obligations, documentation, and review gate.",
+  "properties": {
+    "system": {
+      "title": "System",
+      "type": "string"
+    },
+    "regulation": {
+      "title": "Regulation",
+      "type": "string"
+    },
+    "risk_tier": {
+      "$ref": "#/$defs/RiskTier"
+    },
+    "disposition": {
+      "$ref": "#/$defs/Disposition"
+    },
+    "scope": {
+      "$ref": "#/$defs/ScopeAssessment"
+    },
+    "roles": {
+      "items": {
+        "$ref": "#/$defs/Role"
+      },
+      "title": "Roles",
+      "type": "array"
+    },
+    "is_gpai": {
+      "default": false,
+      "title": "Is Gpai",
+      "type": "boolean"
+    },
+    "gpai_systemic": {
+      "default": false,
+      "title": "Gpai Systemic",
+      "type": "boolean"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "obligations": {
+      "items": {
+        "$ref": "#/$defs/Obligation"
+      },
+      "title": "Obligations",
+      "type": "array"
+    },
+    "documentation_required": {
+      "items": {
+        "$ref": "#/$defs/Obligation"
+      },
+      "title": "Documentation Required",
+      "type": "array"
+    },
+    "transparency_obligations": {
+      "items": {
+        "$ref": "#/$defs/Obligation"
+      },
+      "title": "Transparency Obligations",
+      "type": "array"
+    },
+    "obligation_graph": {
+      "items": {
+        "$ref": "#/$defs/ObligationGraphItem"
+      },
+      "title": "Obligation Graph",
+      "type": "array"
+    },
+    "timeline": {
+      "items": {
+        "$ref": "#/$defs/TimelineItem"
+      },
+      "title": "Timeline",
+      "type": "array"
+    },
+    "source_manifest": {
+      "items": {
+        "$ref": "#/$defs/RegulatorySource"
+      },
+      "title": "Source Manifest",
+      "type": "array"
+    },
+    "advisory_notes": {
+      "items": {
+        "$ref": "#/$defs/AdvisoryNote"
+      },
+      "title": "Advisory Notes",
+      "type": "array"
+    },
+    "open_questions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Open Questions",
+      "type": "array"
+    },
+    "unverified_citations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unverified Citations",
+      "type": "array"
+    },
+    "disclaimer": {
+      "default": "This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.",
+      "title": "Disclaimer",
+      "type": "string"
+    }
+  },
+  "required": [
+    "system",
+    "regulation",
+    "risk_tier",
+    "disposition",
+    "roles"
+  ],
+  "title": "ClassificationReport",
+  "type": "object"
+}

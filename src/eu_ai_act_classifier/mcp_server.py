@@ -5,17 +5,20 @@ An agent, for example a product-intake agent on an AI platform, can call
 review-gated classification. The ``mcp`` dependency is optional and imported
 lazily, so the core engine never depends on it.
 
-The server is built on ``mcp.server.fastmcp``, which mcp 2.0 removed, so the
-``[mcp]`` extra pins ``mcp>=1.2,<2``. For Claude Code and Claude Desktop, the
-recommended integration is eu-reg-mcp, which serves this classifier as a tool.
+Run::
 
-Run from a clone::
+    pip install 'eu-ai-act-classifier[mcp]'
+    eu-ai-act-classifier-mcp
 
-    uv run --extra mcp python -m eu_ai_act_classifier.mcp_server
+or let uv fetch the package and start the server::
 
-or from PyPI::
+    uvx --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp
 
-    uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
+The server is built on ``mcp.server.fastmcp`` from the 1.x SDK, which mcp 2.0
+renamed, so the ``[mcp]`` extra pins ``mcp>=1.2,<2``.
+
+For Claude Code and Claude Desktop, the recommended integration is eu-reg-mcp,
+which serves this classifier as a tool next to its MiCAR tools.
 """
 
 from __future__ import annotations
@@ -28,18 +31,11 @@ from .engine import classify
 from .models import SystemProfile
 from .report import render_report
 
-# Keep in step with the `mcp` extra in pyproject.toml; tests/test_mcp_server.py checks both.
+# The [mcp] extra in pyproject.toml; tests/test_mcp_server.py keeps the two in step.
 MCP_REQUIREMENT = "mcp>=1.2,<2"
 # The same range as release tuples: from 1.2 up to, not including, 2.
 _MCP_RANGE = ((1, 2), (2,))
-# The command for this server in a clone; it syncs the [mcp] extra into .venv first.
-LOCAL_SERVER_COMMAND = "uv run --extra mcp python -m eu_ai_act_classifier.mcp_server"
-# For a PyPI install. Release 0.2.0's [mcp] extra has no upper bound, so both commands
-# name the pin as well; the docs give the same commands.
-PIP_EXTRA_COMMAND = 'pip install "eu-ai-act-classifier[mcp]" "mcp<2"'
-UVX_SERVER_COMMAND = (
-    'uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp'
-)
+# The recommended Claude integration; README.md and the docs give the same command.
 EU_REG_MCP_COMMAND = "uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp"
 
 
@@ -57,42 +53,31 @@ def _release(version: str) -> tuple[int, ...] | None:
     return tuple(int(part) for part in version.split("."))
 
 
-def mcp_unavailable_message(installed_version: str | None, error: ImportError) -> str:
-    """Say why ``mcp.server.fastmcp`` could not be imported and what to run instead."""
+def _missing_extra_message(installed_mcp: str | None, error: ImportError) -> str:
+    """Say why the MCP SDK did not import and how to install the [mcp] extra."""
     install_hints = [
-        f"This server needs {MCP_REQUIREMENT}, which the package's [mcp] extra pins.",
-        "In a clone of this repository, start it with",
-        f"  {LOCAL_SERVER_COMMAND}",
-        "or install the extra into .venv with `uv sync --extra mcp`.",
-        "If you installed the package with pip, add the extra in that environment and",
-        "rerun eu-ai-act-classifier-mcp:",
-        f"  {PIP_EXTRA_COMMAND}",
-        "With uvx, request the extra and the pin:",
-        f"  {UVX_SERVER_COMMAND}",
+        f"The server needs {MCP_REQUIREMENT}, which the [mcp] extra installs:",
+        "  pip install 'eu-ai-act-classifier[mcp]'",
+        "or let uv fetch the package and start the server:",
+        "  uvx --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp",
+        "In a clone of the repository:",
+        "  uv run --extra mcp eu-ai-act-classifier-mcp",
     ]
-    if installed_version is None:
-        lines = ["The optional mcp package is not installed.", *install_hints]
+    release = None if installed_mcp is None else _release(installed_mcp)
+    if installed_mcp is None:
+        lines = ["The MCP extra is not installed.", *install_hints]
+    elif release is not None and _MCP_RANGE[0] <= release < _MCP_RANGE[1]:
+        # The installed mcp already meets the pin, so installing the extra again would not help.
+        lines = [
+            f"mcp {installed_mcp} is installed and meets {MCP_REQUIREMENT}, but "
+            f"mcp.server.fastmcp could not be imported from it: {error}",
+        ]
     else:
-        major = re.match(r"\d+", installed_version)
-        release = _release(installed_version)
-        if major and int(major.group()) >= 2:
-            lines = [
-                f"mcp {installed_version} is installed, but mcp 2.0 removed "
-                "mcp.server.fastmcp, which this server is built on.",
-                *install_hints,
-            ]
-        elif release is not None and _MCP_RANGE[0] <= release < _MCP_RANGE[1]:
-            # The installed version already meets the pin, so reinstalling it would not help.
-            lines = [
-                f"mcp {installed_version} is installed and meets {MCP_REQUIREMENT}, but "
-                f"mcp.server.fastmcp could not be imported from it: {error}",
-            ]
-        else:
-            lines = [
-                f"mcp {installed_version} is installed, but mcp.server.fastmcp "
-                f"could not be imported from it: {error}",
-                *install_hints,
-            ]
+        lines = [
+            f"mcp {installed_mcp} is installed, but mcp.server.fastmcp could not be imported: "
+            f"{error}",
+            *install_hints,
+        ]
     return "\n".join(
         [
             *lines,
@@ -107,7 +92,7 @@ def build_server() -> Any:
     try:
         from mcp.server.fastmcp import FastMCP
     except ImportError as exc:
-        raise SystemExit(mcp_unavailable_message(_installed_mcp_version(), exc)) from exc
+        raise SystemExit(_missing_extra_message(_installed_mcp_version(), exc)) from exc
 
     server = FastMCP("eu-ai-act-classifier")
 

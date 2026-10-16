@@ -1,27 +1,32 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import sys
+import tomllib
+import types
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from eu_ai_act_classifier import mcp_server
 
-PIN = "mcp>=1.2,<2"
+ROOT = Path(__file__).resolve().parents[1]
+PIP_COMMAND = "pip install 'eu-ai-act-classifier[mcp]'"
+UVX_COMMAND = "uvx --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp"
+CLONE_COMMAND = "uv run --extra mcp eu-ai-act-classifier-mcp"
 EU_REG_MCP_COMMAND = "uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp"
-LOCAL_SERVER_COMMAND = "uv run --extra mcp python -m eu_ai_act_classifier.mcp_server"
-PIP_EXTRA_COMMAND = 'pip install "eu-ai-act-classifier[mcp]" "mcp<2"'
-UVX_SERVER_COMMAND = (
-    'uvx --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp'
-)
+PROFILE = {"name": "SpamShield"}
 
 
-def _exit_message(monkeypatch: pytest.MonkeyPatch, installed_version: str | None) -> str:
-    # A None entry in sys.modules makes the import raise ModuleNotFoundError, which is what
-    # happens without mcp and under mcp 2.x, where mcp.server.fastmcp no longer exists.
-    monkeypatch.setitem(sys.modules, "mcp.server.fastmcp", None)
-    monkeypatch.setattr(mcp_server, "_installed_mcp_version", lambda: installed_version)
+def _exit_message(
+    monkeypatch: pytest.MonkeyPatch, fastmcp: types.ModuleType | None, installed_mcp: str | None
+) -> str:
+    # None in sys.modules makes the import raise ModuleNotFoundError, as it does without mcp
+    # and under mcp 2.x; a module without FastMCP raises a plain ImportError instead.
+    monkeypatch.setitem(sys.modules, "mcp.server.fastmcp", fastmcp)
+    monkeypatch.setattr(mcp_server, "_installed_mcp_version", lambda: installed_mcp)
     with pytest.raises(SystemExit) as excinfo:
         mcp_server.build_server()
     message = excinfo.value.code
@@ -29,57 +34,76 @@ def _exit_message(monkeypatch: pytest.MonkeyPatch, installed_version: str | None
     return message
 
 
-@pytest.mark.parametrize("installed_version", [None, "2.0.0", "2.3.0", "1.1.0"])
-def test_exit_message_names_the_pin_and_eu_reg_mcp(
-    monkeypatch: pytest.MonkeyPatch, installed_version: str | None
+def _server() -> Any:
+    # The hint tests run without mcp; the server tests skip unless a compatible mcp is
+    # installed. Run them all with `uv run --extra dev --extra mcp pytest`.
+    pytest.importorskip("mcp.server.fastmcp")
+    return mcp_server.build_server()
+
+
+@pytest.mark.parametrize("installed_mcp", [None, "2.3.0"])
+def test_hint_gives_the_pypi_and_clone_commands(
+    monkeypatch: pytest.MonkeyPatch, installed_mcp: str | None
 ) -> None:
-    message = _exit_message(monkeypatch, installed_version)
+    message = _exit_message(monkeypatch, None, installed_mcp)
 
-    assert PIN in message
-    assert LOCAL_SERVER_COMMAND in message
-    assert "uv sync --extra mcp" in message
-    assert PIP_EXTRA_COMMAND in message
-    assert UVX_SERVER_COMMAND in message
-    assert "uv pip install" not in message
-    assert EU_REG_MCP_COMMAND in message
+    assert f"needs {mcp_server.MCP_REQUIREMENT}" in message
+    for command in (PIP_COMMAND, UVX_COMMAND, CLONE_COMMAND):
+        assert f"  {command}" in message.splitlines()
+    assert "pip install -e" not in message
 
 
-def test_missing_mcp_is_reported_as_not_installed(monkeypatch: pytest.MonkeyPatch) -> None:
-    message = _exit_message(monkeypatch, None)
-
-    assert message.startswith("The optional mcp package is not installed.")
-
-
-@pytest.mark.parametrize("installed_version", ["2.0.0", "2.3.0"])
-def test_mcp_2_is_reported_as_installed_but_incompatible(
-    monkeypatch: pytest.MonkeyPatch, installed_version: str
+def test_hint_says_the_extra_is_missing_when_mcp_is_not_installed(
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    message = _exit_message(monkeypatch, installed_version)
+    message = _exit_message(monkeypatch, None, None)
 
-    assert message.startswith(f"mcp {installed_version} is installed")
-    assert "mcp 2.0 removed mcp.server.fastmcp" in message
+    assert message.startswith("The MCP extra is not installed.\n")
+
+
+def test_hint_names_an_incompatible_mcp_instead_of_a_missing_extra(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    message = _exit_message(monkeypatch, None, "2.3.0")
+
+    assert message.startswith("mcp 2.3.0 is installed, but mcp.server.fastmcp could not be")
     assert "not installed" not in message
 
 
-def test_older_mcp_reports_the_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    message = _exit_message(monkeypatch, "1.1.0")
+def test_hint_covers_import_errors_other_than_a_missing_module(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    message = _exit_message(monkeypatch, types.ModuleType("mcp.server.fastmcp"), "1.1.0")
 
     assert message.startswith("mcp 1.1.0 is installed")
-    assert "could not be imported" in message
-    assert "mcp.server.fastmcp" in message
+    assert "cannot import name 'FastMCP'" in message
+    assert PIP_COMMAND in message
 
 
-@pytest.mark.parametrize("installed_version", ["1.2.0", "1.30.0"])
-def test_mcp_that_meets_the_pin_reports_the_import_error_without_reinstall_advice(
-    monkeypatch: pytest.MonkeyPatch, installed_version: str
+@pytest.mark.parametrize("installed_mcp", ["1.2.0", "1.30.0"])
+def test_hint_for_an_mcp_that_meets_the_pin_gives_no_reinstall_advice(
+    monkeypatch: pytest.MonkeyPatch, installed_mcp: str
 ) -> None:
-    message = _exit_message(monkeypatch, installed_version)
+    # Installing the extra again would install the same mcp, so the hint only reports the error.
+    message = _exit_message(monkeypatch, types.ModuleType("mcp.server.fastmcp"), installed_mcp)
 
-    assert message.startswith(f"mcp {installed_version} is installed and meets {PIN}")
-    assert "could not be imported" in message
-    assert LOCAL_SERVER_COMMAND not in message
-    assert "pip install" not in message
-    assert EU_REG_MCP_COMMAND in message
+    assert message.startswith(
+        f"mcp {installed_mcp} is installed and meets {mcp_server.MCP_REQUIREMENT}"
+    )
+    assert "cannot import name 'FastMCP'" in message
+    for command in (PIP_COMMAND, UVX_COMMAND, CLONE_COMMAND):
+        assert command not in message
+    assert f"  {EU_REG_MCP_COMMAND}" in message.splitlines()
+
+
+@pytest.mark.parametrize("installed_mcp", [None, "1.1.0", "1.30.0", "2.3.0"])
+def test_hint_recommends_eu_reg_mcp_for_claude(
+    monkeypatch: pytest.MonkeyPatch, installed_mcp: str | None
+) -> None:
+    message = _exit_message(monkeypatch, None, installed_mcp)
+
+    assert "For Claude Code or Claude Desktop, use eu-reg-mcp instead." in message
+    assert f"  {EU_REG_MCP_COMMAND}" in message.splitlines()
 
 
 @pytest.mark.parametrize(
@@ -90,37 +114,43 @@ def test_release_reads_only_final_versions(version: str, release: tuple[int, ...
     assert mcp_server._release(version) == release
 
 
-def test_pin_and_commands_match_pyproject_and_docs() -> None:
-    assert mcp_server.MCP_REQUIREMENT == PIN
+def test_requirement_in_the_hint_matches_the_mcp_extra() -> None:
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+
+    assert pyproject["project"]["optional-dependencies"]["mcp"] == [mcp_server.MCP_REQUIREMENT]
+    assert "eu-ai-act-classifier-mcp" in pyproject["project"]["scripts"]
+
+
+def test_docs_give_the_commands_in_the_hint() -> None:
     assert mcp_server.EU_REG_MCP_COMMAND == EU_REG_MCP_COMMAND
-    assert mcp_server.LOCAL_SERVER_COMMAND == LOCAL_SERVER_COMMAND
-    assert mcp_server.PIP_EXTRA_COMMAND == PIP_EXTRA_COMMAND
-    assert mcp_server.UVX_SERVER_COMMAND == UVX_SERVER_COMMAND
-    scripts = Path("pyproject.toml").read_text(encoding="utf-8")
-    assert 'eu-ai-act-classifier-mcp = "eu_ai_act_classifier.mcp_server:main"' in scripts
-    assert f'mcp = ["{PIN}"]' in Path("pyproject.toml").read_text(encoding="utf-8")
-    for doc in (
-        Path("README.md"),
-        Path("docs/mcp-configuration-guide.md"),
-        Path("docs/surfaces.md"),
-    ):
-        assert EU_REG_MCP_COMMAND in doc.read_text(encoding="utf-8"), doc
-    for doc in (Path("docs/mcp-configuration-guide.md"), Path("docs/surfaces.md")):
-        assert LOCAL_SERVER_COMMAND in doc.read_text(encoding="utf-8"), doc
-    for doc in (
-        Path("README.md"),
-        Path("docs/mcp-configuration-guide.md"),
-        Path("docs/surfaces.md"),
-    ):
-        assert UVX_SERVER_COMMAND in doc.read_text(encoding="utf-8"), doc
-    for doc in (Path("docs/mcp-configuration-guide.md"), Path("docs/surfaces.md")):
-        assert PIP_EXTRA_COMMAND in doc.read_text(encoding="utf-8"), doc
+    for doc in ("README.md", "docs/mcp-configuration-guide.md", "docs/surfaces.md"):
+        assert EU_REG_MCP_COMMAND in (ROOT / doc).read_text(encoding="utf-8"), doc
+    for doc in ("docs/mcp-configuration-guide.md", "docs/surfaces.md"):
+        assert CLONE_COMMAND in (ROOT / doc).read_text(encoding="utf-8"), doc
 
 
-def test_server_lists_both_tools_when_a_compatible_mcp_is_installed() -> None:
-    # Skipped in the default dev environment; runs with `uv run --extra dev --extra mcp pytest`.
-    pytest.importorskip("mcp.server.fastmcp")
-
-    tools = asyncio.run(mcp_server.build_server().list_tools())
+def test_server_exposes_both_classification_tools() -> None:
+    tools = asyncio.run(_server().list_tools())
 
     assert {tool.name for tool in tools} == {"classify_ai_system", "classify_ai_system_text"}
+
+
+def test_classify_ai_system_returns_report_json() -> None:
+    result = asyncio.run(_server().call_tool("classify_ai_system", {"profile": PROFILE}))
+    blocks = result[0] if isinstance(result, tuple) else result
+    report = json.loads(blocks[0].text)
+
+    assert report["system"] == "SpamShield"
+
+
+def test_classify_ai_system_text_returns_report_text() -> None:
+    result = asyncio.run(_server().call_tool("classify_ai_system_text", {"profile": PROFILE}))
+    blocks = result[0] if isinstance(result, tuple) else result
+
+    assert "SpamShield" in blocks[0].text
+
+
+def test_invalid_profile_is_rejected() -> None:
+    server = _server()
+    with pytest.raises(Exception):  # noqa: B017 - FastMCP wraps validation errors
+        asyncio.run(server.call_tool("classify_ai_system", {"profile": {"roles": "bogus"}}))

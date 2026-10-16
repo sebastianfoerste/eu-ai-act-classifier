@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Try the browser playground
+    url: https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/
+    about: Classify a synthetic profile in your browser; nothing you paste leaves the page.

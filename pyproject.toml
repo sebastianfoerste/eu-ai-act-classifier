@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "eu-ai-act-classifier"
-version = "0.2.0"
+version = "0.2.1"
 description = "Deterministic EU AI Act (Reg (EU) 2024/1689) risk-tier and obligation classifier with pinpoint citations and a lawyer review gate."
 readme = "README.md"
 requires-python = ">=3.13"
@@ -29,7 +29,7 @@ dependencies = ["pydantic>=2.6"]
 
 [project.optional-dependencies]
 # The agent-callable surface. Kept optional so the core engine has no MCP dependency.
-# Capped below 2: mcp_server.py is built on mcp.server.fastmcp, which mcp 2.0 removed.
+# Capped below 2: the server imports mcp.server.fastmcp, which mcp 2.0 renamed.
 mcp = ["mcp>=1.2,<2"]
 dev = ["pytest>=8.0", "ruff>=0.6"]
 
