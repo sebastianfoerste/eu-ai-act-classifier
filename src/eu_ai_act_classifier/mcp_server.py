@@ -23,7 +23,6 @@ which serves this classifier as a tool next to its MiCAR tools.
 
 from __future__ import annotations
 
-import re
 from importlib import metadata
 from typing import Any
 
@@ -33,8 +32,6 @@ from .report import render_report
 
 # The [mcp] extra in pyproject.toml; tests/test_mcp_server.py keeps the two in step.
 MCP_REQUIREMENT = "mcp>=1.2,<2"
-# The same range as release tuples: from 1.2 up to, not including, 2.
-_MCP_RANGE = ((1, 2), (2,))
 # The recommended Claude integration; README.md and the docs give the same command.
 EU_REG_MCP_COMMAND = "uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp"
 
@@ -46,41 +43,24 @@ def _installed_mcp_version() -> str | None:
         return None
 
 
-def _release(version: str) -> tuple[int, ...] | None:
-    """The numeric release of a final version such as ``1.30.0``, or None for anything else."""
-    if re.fullmatch(r"\d+(?:\.\d+)*", version) is None:
-        return None
-    return tuple(int(part) for part in version.split("."))
-
-
 def _missing_extra_message(installed_mcp: str | None, error: ImportError) -> str:
     """Say why the MCP SDK did not import and how to install the [mcp] extra."""
-    install_hints = [
-        f"The server needs {MCP_REQUIREMENT}, which the [mcp] extra installs:",
-        "  pip install 'eu-ai-act-classifier[mcp]'",
-        "or let uv fetch the package and start the server:",
-        "  uvx --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp",
-        "In a clone of the repository:",
-        "  uv run --extra mcp eu-ai-act-classifier-mcp",
-    ]
-    release = None if installed_mcp is None else _release(installed_mcp)
     if installed_mcp is None:
-        lines = ["The MCP extra is not installed.", *install_hints]
-    elif release is not None and _MCP_RANGE[0] <= release < _MCP_RANGE[1]:
-        # The installed mcp already meets the pin, so installing the extra again would not help.
-        lines = [
-            f"mcp {installed_mcp} is installed and meets {MCP_REQUIREMENT}, but "
-            f"mcp.server.fastmcp could not be imported from it: {error}",
-        ]
+        reason = "The MCP extra is not installed."
     else:
-        lines = [
+        reason = (
             f"mcp {installed_mcp} is installed, but mcp.server.fastmcp could not be imported: "
-            f"{error}",
-            *install_hints,
-        ]
+            f"{error}"
+        )
     return "\n".join(
         [
-            *lines,
+            reason,
+            f"The server needs {MCP_REQUIREMENT}, which the [mcp] extra installs:",
+            "  pip install 'eu-ai-act-classifier[mcp]'",
+            "or let uv fetch the package and start the server:",
+            "  uvx --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp",
+            "In a clone of the repository:",
+            "  uv run --extra mcp eu-ai-act-classifier-mcp",
             "For Claude Code or Claude Desktop, use eu-reg-mcp instead. It is the recommended",
             "Claude integration and serves this classifier as an MCP tool:",
             f"  {EU_REG_MCP_COMMAND}",

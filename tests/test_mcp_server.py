@@ -73,27 +73,11 @@ def test_hint_names_an_incompatible_mcp_instead_of_a_missing_extra(
 def test_hint_covers_import_errors_other_than_a_missing_module(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    message = _exit_message(monkeypatch, types.ModuleType("mcp.server.fastmcp"), "1.1.0")
+    message = _exit_message(monkeypatch, types.ModuleType("mcp.server.fastmcp"), "1.30.0")
 
-    assert message.startswith("mcp 1.1.0 is installed")
+    assert message.startswith("mcp 1.30.0 is installed")
     assert "cannot import name 'FastMCP'" in message
     assert PIP_COMMAND in message
-
-
-@pytest.mark.parametrize("installed_mcp", ["1.2.0", "1.30.0"])
-def test_hint_for_an_mcp_that_meets_the_pin_gives_no_reinstall_advice(
-    monkeypatch: pytest.MonkeyPatch, installed_mcp: str
-) -> None:
-    # Installing the extra again would install the same mcp, so the hint only reports the error.
-    message = _exit_message(monkeypatch, types.ModuleType("mcp.server.fastmcp"), installed_mcp)
-
-    assert message.startswith(
-        f"mcp {installed_mcp} is installed and meets {mcp_server.MCP_REQUIREMENT}"
-    )
-    assert "cannot import name 'FastMCP'" in message
-    for command in (PIP_COMMAND, UVX_COMMAND, CLONE_COMMAND):
-        assert command not in message
-    assert f"  {EU_REG_MCP_COMMAND}" in message.splitlines()
 
 
 @pytest.mark.parametrize("installed_mcp", [None, "1.1.0", "1.30.0", "2.3.0"])
@@ -106,14 +90,6 @@ def test_hint_recommends_eu_reg_mcp_for_claude(
     assert f"  {EU_REG_MCP_COMMAND}" in message.splitlines()
 
 
-@pytest.mark.parametrize(
-    ("version", "release"),
-    [("1.30.0", (1, 30, 0)), ("1.2", (1, 2)), ("1.2.0rc1", None), ("1.30.0+local", None)],
-)
-def test_release_reads_only_final_versions(version: str, release: tuple[int, ...] | None) -> None:
-    assert mcp_server._release(version) == release
-
-
 def test_requirement_in_the_hint_matches_the_mcp_extra() -> None:
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
 
@@ -121,7 +97,7 @@ def test_requirement_in_the_hint_matches_the_mcp_extra() -> None:
     assert "eu-ai-act-classifier-mcp" in pyproject["project"]["scripts"]
 
 
-def test_docs_give_the_commands_in_the_hint() -> None:
+def test_docs_give_the_eu_reg_mcp_and_clone_commands_in_the_hint() -> None:
     assert mcp_server.EU_REG_MCP_COMMAND == EU_REG_MCP_COMMAND
     for doc in ("README.md", "docs/mcp-configuration-guide.md", "docs/surfaces.md"):
         assert EU_REG_MCP_COMMAND in (ROOT / doc).read_text(encoding="utf-8"), doc
