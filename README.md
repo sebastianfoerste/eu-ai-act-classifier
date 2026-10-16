@@ -131,7 +131,15 @@ Which example lands in which tier is asserted in `tests/test_examples.py`. See [
 
 [![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](docs/playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
-MCP quick start (tools: `classify_ai_system`, `classify_ai_system_text`). An MCP client starts the server with:
+MCP quick start: for Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp). It serves this classifier as an MCP tool next to its MiCAR tools:
+
+```bash
+uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
+```
+
+To register it with Claude Code, put `claude mcp add eu-reg --` in front of that command. The Claude Desktop configuration is in the [MCP configuration guide](docs/mcp-configuration-guide.md#recommended-for-claude-eu-reg-mcp).
+
+This package's own MCP server (tools: `classify_ai_system`, `classify_ai_system_text`) is the secondary option. An MCP client starts it with:
 
 ```bash
 uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
