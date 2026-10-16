@@ -31,16 +31,16 @@ uv run python scripts/build_playground.py
 
 ## MCP and local API
 
-The MCP server:
+The MCP server ships in the [PyPI package](https://pypi.org/project/eu-ai-act-classifier/) behind the `[mcp]` extra. Install it and start the server:
 
 ```bash
-uv pip install -e ".[mcp]"
-python -m eu_ai_act_classifier.mcp_server
+pip install "eu-ai-act-classifier[mcp]" "mcp<2"
+eu-ai-act-classifier-mcp
 ```
 
-Client configuration (Claude Desktop, Cursor) is in [mcp-configuration-guide.md](mcp-configuration-guide.md).
+Or let uv fetch and run it: `uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp`. Client configuration (Claude Desktop, Cursor) and the reason for the `mcp<2` constraint are in [mcp-configuration-guide.md](mcp-configuration-guide.md).
 
-The local JSON bridge is used by the optional web cockpit:
+The local JSON bridge is used by the optional web cockpit. Run it from the repository root, because `inventory` and `workspace` read the synthetic profiles in `examples/`:
 
 ```bash
 eu-ai-act-local-api schema
