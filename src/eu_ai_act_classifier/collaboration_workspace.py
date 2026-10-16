@@ -100,7 +100,11 @@ class SelfAssessmentPortal(BaseModel):
 
 
 def _inventory_digest(inventory: AISystemInventory) -> str:
-    payload = inventory.model_dump_json(by_alias=True)
+    # generatedAt (on the inventory and its review table) is the wall-clock build time, not
+    # inventory content. Hashing it made a saved workspace "stale" once the clock moved on.
+    payload = inventory.model_dump_json(
+        by_alias=True, exclude={"generatedAt": True, "reviewTable": {"generatedAt"}}
+    )
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
