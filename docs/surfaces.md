@@ -17,7 +17,7 @@ Then inspect `/tmp/eu-ai-act-draft-pack`. The generated files are draft review a
 
 ## Source statuses
 
-Reports and draft artifacts use a versioned source manifest. The current binding layer includes Regulation (EU) 2024/1689 as consolidated on 27 July 2026 and Regulation (EU) 2026/1744. Any future provisional material and nonbinding guidance remain separately labelled. Guidance overlays are advisory notes and do not override the binding classification logic.
+Reports and draft artifacts use a versioned source manifest. The current binding layer includes Regulation (EU) 2024/1689 as consolidated on 27 July 2026 and Regulation (EU) 2026/1744. The rules encode the amending regulation only in part; the [claim ledger](REGULATORY_CLAIM_LEDGER.md) lists what is and is not encoded. Any future provisional material and nonbinding guidance remain separately labelled. Guidance overlays are advisory notes and do not override the binding classification logic.
 
 ## Browser playground
 
@@ -51,13 +51,15 @@ echo '{"profile":{"name":"x"}}' | eu-ai-act-local-api dossier
 
 The bridge exposes schema, inventory, classify, sources, workspace, artifacts and dossier commands. It keeps the Python classifier as the legal source of truth.
 
-`eu-ai-act-local-api workspace` and `/workspace` expose the same deterministic portfolio workspace: an AI-system vault, guided assessment workflows and a fleet command center. All deployment and external-use decisions remain review-gated.
+`eu-ai-act-local-api workspace` and `/workspace` expose the same deterministic portfolio workspace: an AI-system register, guided assessment workflows and a fleet command center. All deployment and external-use decisions remain review-gated.
 
 The inventory payload includes a system review table with classifier-backed rows, source status, open facts, obligations, draft artifacts and review state. External action is blocked and all deployment, regulator, customer and public-facing use remains review-gated.
 
 ## Optional web cockpit
 
-![Web cockpit: a guided intake for CreditSightScore classified high-risk, with the system inventory, risk map, reviewer notes, source provenance, the Article 9-15 obligation tracker and a draft export pack](cockpit.png)
+![Screenshot of the local web cockpit with the CreditSightScore sample: system inventory, guided intake, review panel showing determined with 0 open questions, reviewer notes, an obligation tracker with 16 graph items from Art. 16 AIA, source provenance and a draft export pack](cockpit.png)
+
+*Screenshot of the local web cockpit (`web/`) with the CreditSightScore sample loaded.*
 
 The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
 

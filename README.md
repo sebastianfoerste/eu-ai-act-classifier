@@ -106,7 +106,9 @@ A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK 
 
 When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](examples/classification-packet.md) and [`examples/classification-packet.json`](examples/classification-packet.json).
 
-![CLI sample output: CreditSightScore classified high-risk with Articles 9, 10 and 11 obligations](docs/demo.png)
+![Actual CLI output for examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with the 14 provider obligations from Art. 9 to Art. 73 AIA](docs/demo.png)
+
+*Actual output of `uv run python -m src.eu_ai_act_classifier.cli examples/credit_scoring.json`, rendered as an image. It shows the first 30 of 76 lines; the full output is in [`examples/classification-packet.md`](examples/classification-packet.md).*
 
 ## What it checks
 
