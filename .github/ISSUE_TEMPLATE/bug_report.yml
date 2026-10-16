@@ -1,0 +1,18 @@
+name: Bug report
+description: Something in the CLI, MCP server, playground or local API does not work as documented.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: input
+    id: surface
+    attributes:
+      label: Surface and command (CLI, MCP, playground, local API)
+  - type: input
+    id: version
+    attributes:
+      label: eu-ai-act-classifier version, Python version, OS

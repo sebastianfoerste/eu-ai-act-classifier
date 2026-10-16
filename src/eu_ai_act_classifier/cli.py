@@ -68,6 +68,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Directory for a complete draft review dossier bundle.",
     )
     parser.add_argument(
+        "--schema",
+        choices=["profile", "report"],
+        help="Print the JSON Schema of the input profile or the output report.",
+    )
+    parser.add_argument(
         "--verify-sources",
         action="store_true",
         help="Verify official regulatory source URLs.",
@@ -78,6 +83,12 @@ def main(argv: list[str] | None = None) -> int:
         help="Update source retrieval date to today.",
     )
     args = parser.parse_args(argv)
+
+    if args.schema:
+        from .schemas import schema
+
+        print(json.dumps(schema(args.schema), indent=2))
+        return 0
 
     if args.verify_sources:
         from .verify_sources import verify_sources

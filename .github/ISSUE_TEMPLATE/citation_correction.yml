@@ -1,0 +1,32 @@
+name: Citation or classification correction
+description: The classifier cites the wrong provision or reaches a result you think the AI Act does not support.
+labels: [citation]
+body:
+  - type: markdown
+    attributes:
+      value: Please use synthetic profiles only; do not paste confidential client facts.
+  - type: input
+    id: provision
+    attributes:
+      label: Provision concerned (e.g. Art. 6(3) AIA, Annex III(4)(a))
+    validations:
+      required: true
+  - type: textarea
+    id: profile
+    attributes:
+      label: Profile JSON (synthetic) and the command you ran
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What the classifier returned
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and the source (EUR-Lex link, guidance, case law)
+    validations:
+      required: true

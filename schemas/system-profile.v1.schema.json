@@ -1,0 +1,350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier/main/schemas/system-profile.v1.schema.json",
+  "$defs": {
+    "AnnexIII": {
+      "description": "Annex III high-risk areas (Art. 6(2) AIA).\n\nValues double as short locators (``III.4.a`` = Annex III point 4(a)).\n``UNSURE`` is the residual case: an Annex III area is implicated but the\nspecific point is unsettled. The engine treats it conservatively as\nhigh-risk and routes it to review.",
+      "enum": [
+        "III.1.a",
+        "III.1.b",
+        "III.1.c",
+        "III.2",
+        "III.3.a",
+        "III.3.b",
+        "III.3.c",
+        "III.3.d",
+        "III.4.a",
+        "III.4.b",
+        "III.5.a",
+        "III.5.b",
+        "III.5.c",
+        "III.5.d",
+        "III.6.a",
+        "III.6.b",
+        "III.6.c",
+        "III.6.d",
+        "III.6.e",
+        "III.7.a",
+        "III.7.b",
+        "III.7.c",
+        "III.7.d",
+        "III.8.a",
+        "III.8.b",
+        "III.unsure"
+      ],
+      "title": "AnnexIII",
+      "type": "string"
+    },
+    "Derogation": {
+      "description": "Art. 6(3) AIA derogation facts for an Annex III system.\n\nAn Annex III system is *not* high-risk if it does not pose a significant\nrisk of harm, but only where one of the four conditions holds AND the\nsystem does not perform profiling of natural persons. Profiling always\nkeeps the system high-risk (Art. 6(3) subpara. 2 AIA).",
+      "properties": {
+        "narrow_procedural_task": {
+          "default": false,
+          "title": "Narrow Procedural Task",
+          "type": "boolean"
+        },
+        "improves_prior_human_activity": {
+          "default": false,
+          "title": "Improves Prior Human Activity",
+          "type": "boolean"
+        },
+        "detects_patterns_without_replacing_human": {
+          "default": false,
+          "title": "Detects Patterns Without Replacing Human",
+          "type": "boolean"
+        },
+        "preparatory_task": {
+          "default": false,
+          "title": "Preparatory Task",
+          "type": "boolean"
+        },
+        "performs_profiling": {
+          "default": false,
+          "title": "Performs Profiling",
+          "type": "boolean"
+        }
+      },
+      "title": "Derogation",
+      "type": "object"
+    },
+    "ExcludedUse": {
+      "description": "Common AI Act scope exclusions or carve-outs that need visible review.",
+      "enum": [
+        "military_defence_national_security",
+        "research_development_testing",
+        "personal_non_professional",
+        "free_open_source"
+      ],
+      "title": "ExcludedUse",
+      "type": "string"
+    },
+    "ProhibitedPractice": {
+      "description": "Prohibited practices (Art. 5(1) AIA), keyed to their letters.",
+      "enum": [
+        "5.1.a",
+        "5.1.b",
+        "5.1.c",
+        "5.1.d",
+        "5.1.e",
+        "5.1.f",
+        "5.1.g",
+        "5.1.h"
+      ],
+      "title": "ProhibitedPractice",
+      "type": "string"
+    },
+    "Role": {
+      "description": "Operator roles under the AIA. A single company often holds several.",
+      "enum": [
+        "provider",
+        "deployer",
+        "importer",
+        "distributor",
+        "authorized_representative",
+        "gpai_provider"
+      ],
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Structured description of an AI system with characterised facts.",
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "roles": {
+      "items": {
+        "$ref": "#/$defs/Role"
+      },
+      "title": "Roles",
+      "type": "array"
+    },
+    "purpose": {
+      "default": "",
+      "title": "Purpose",
+      "type": "string"
+    },
+    "sector": {
+      "default": "",
+      "title": "Sector",
+      "type": "string"
+    },
+    "is_ai_system": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": true,
+      "title": "Is Ai System"
+    },
+    "intended_purpose_source": {
+      "default": "",
+      "title": "Intended Purpose Source",
+      "type": "string"
+    },
+    "eu_nexus": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": true,
+      "title": "Eu Nexus"
+    },
+    "excluded_use_flags": {
+      "items": {
+        "$ref": "#/$defs/ExcludedUse"
+      },
+      "title": "Excluded Use Flags",
+      "type": "array"
+    },
+    "placing_on_market_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Placing On Market Date"
+    },
+    "putting_into_service_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Putting Into Service Date"
+    },
+    "significant_change_after_application_date": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Significant Change After Application Date"
+    },
+    "public_authority_use": {
+      "default": false,
+      "title": "Public Authority Use",
+      "type": "boolean"
+    },
+    "deployer_public_law_body": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Deployer Public Law Body"
+    },
+    "deployer_private_public_service": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Deployer Private Public Service"
+    },
+    "provider_established_outside_eu": {
+      "default": false,
+      "title": "Provider Established Outside Eu",
+      "type": "boolean"
+    },
+    "has_authorised_representative": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Has Authorised Representative"
+    },
+    "substantially_modifies_system": {
+      "default": false,
+      "title": "Substantially Modifies System",
+      "type": "boolean"
+    },
+    "puts_name_or_trademark_on_system": {
+      "default": false,
+      "title": "Puts Name Or Trademark On System",
+      "type": "boolean"
+    },
+    "is_gpai_model": {
+      "default": false,
+      "title": "Is Gpai Model",
+      "type": "boolean"
+    },
+    "training_flops": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Cumulative training compute in FLOP; drives the Art. 51(2) systemic-risk presumption.",
+      "title": "Training Flops"
+    },
+    "gpai_systemic_risk_designated": {
+      "default": false,
+      "title": "Gpai Systemic Risk Designated",
+      "type": "boolean"
+    },
+    "prohibited_practices": {
+      "items": {
+        "$ref": "#/$defs/ProhibitedPractice"
+      },
+      "title": "Prohibited Practices",
+      "type": "array"
+    },
+    "annex_i_safety_component": {
+      "default": false,
+      "title": "Annex I Safety Component",
+      "type": "boolean"
+    },
+    "annex_i_third_party_assessment": {
+      "default": false,
+      "title": "Annex I Third Party Assessment",
+      "type": "boolean"
+    },
+    "annex_iii_area": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AnnexIII"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "derogation": {
+      "$ref": "#/$defs/Derogation"
+    },
+    "interacts_with_natural_persons": {
+      "default": false,
+      "title": "Interacts With Natural Persons",
+      "type": "boolean"
+    },
+    "generates_synthetic_content": {
+      "default": false,
+      "title": "Generates Synthetic Content",
+      "type": "boolean"
+    },
+    "deploys_emotion_or_biometric_categorisation": {
+      "default": false,
+      "title": "Deploys Emotion Or Biometric Categorisation",
+      "type": "boolean"
+    },
+    "generates_deepfakes": {
+      "default": false,
+      "title": "Generates Deepfakes",
+      "type": "boolean"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "title": "SystemProfile",
+  "type": "object"
+}
