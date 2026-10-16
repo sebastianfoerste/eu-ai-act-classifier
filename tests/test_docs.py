@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
+
+import pytest
 
 from eu_ai_act_classifier import SystemProfile, classify, render_report
 from eu_ai_act_classifier.artifacts import render_artifact
@@ -17,9 +20,23 @@ PUBLIC_MARKDOWN = [
     Path("docs/launch-readiness.md"),
     Path("docs/methodology.md"),
     Path("docs/reviewer-notes.md"),
+    Path("docs/mcp-configuration-guide.md"),
     Path("docs/sample-output.md"),
     Path("docs/surfaces.md"),
+    Path("docs/worked-examples/bank-credit-scoring.md"),
+    Path("docs/worked-examples/life-insurer-pricing.md"),
 ]
+WORKED_EXAMPLES = {
+    Path("docs/worked-examples/bank-credit-scoring.md"): Path(
+        "examples/credit_scoring_deployer.json"
+    ),
+    Path("docs/worked-examples/life-insurer-pricing.md"): Path(
+        "examples/life_insurer_pricing.json"
+    ),
+}
+OMITTED = re.compile(r"^\[\.\.\. (\d+) lines omitted\]$")
+SAMPLE_DOSSIER = Path("docs/sample-review-dossier.md")
+DOSSIER_BLOCK = re.compile(r"\*\*Source File:\*\* `(examples/\w+\.json)`\n```\n(.*?)\n```", re.S)
 EM_DASH = "\u2014"
 EN_DASH = "\u2013"
 
@@ -81,3 +98,84 @@ def test_mcp_guide_lists_the_tools_the_server_exposes() -> None:
     listed = set(re.findall(r"^\d+\. `(\w+)`", verification, re.M))
     assert exposed and listed == exposed
     assert "/Users/" not in guide
+
+
+def _fenced(text: str, language: str) -> list[str]:
+    return re.findall(rf"```{language}\n(.*?)\n```", text, re.S)
+
+
+@pytest.mark.parametrize(("doc", "example"), WORKED_EXAMPLES.items())
+def test_worked_example_quotes_the_real_profile_and_cli_output(doc: Path, example: Path) -> None:
+    text = doc.read_text(encoding="utf-8")
+    profile_text = example.read_text(encoding="utf-8")
+    assert f"uv run eu-ai-act-classify {example.as_posix()}" in text
+    assert json.loads(_fenced(text, "json")[0]) == json.loads(profile_text)
+
+    actual = render_report(classify(SystemProfile.model_validate_json(profile_text))).split("\n")
+    assert f"Output ({len(actual)} lines" in text
+    position = 0
+    for line in _fenced(text, "text")[0].split("\n"):
+        omitted = OMITTED.match(line)
+        if omitted:
+            position += int(omitted.group(1))
+            continue
+        assert position < len(actual) and actual[position] == line, (
+            f"{doc} no longer matches the CLI output at line {position + 1}: rerun the command"
+        )
+        position += 1
+    assert position == len(actual), f"{doc} does not quote the CLI output to its end"
+
+
+README_EXCERPT = re.compile(
+    r"Real output of `uv run eu-ai-act-classify (examples/\w+\.json)`[^\n]*\n\n```text\n(.*?)\n```",
+    re.S,
+)
+README_HIGH_RISK = re.compile(
+    r"A high-risk case \(`(examples/\w+\.json)`\) returns `([^`]+)`, the finding `([^`]+)`, "
+    r"and (\d+) cited obligations, for example:\n\n```text\n(.*?)\n```",
+    re.S,
+)
+
+
+def _cli_lines(example: str) -> list[str]:
+    profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
+    return render_report(classify(profile)).split("\n")
+
+
+def test_readme_output_excerpt_is_the_start_of_the_real_cli_output() -> None:
+    readme = README.read_text(encoding="utf-8")
+    excerpts = README_EXCERPT.findall(readme)
+    assert excerpts, "README no longer has a 'Real output of' excerpt"
+    for example, quoted in excerpts:
+        lines = quoted.split("\n")
+        assert lines[-1] == "  ...", "the excerpt must end with '  ...' where it is cut"
+        lines = lines[:-1]
+        assert _cli_lines(example)[: len(lines)] == lines, (
+            f"README's excerpt for {example} no longer matches the CLI: rerun "
+            f"uv run eu-ai-act-classify {example}"
+        )
+
+
+def test_readme_high_risk_summary_matches_the_cli() -> None:
+    match = README_HIGH_RISK.search(README.read_text(encoding="utf-8"))
+    assert match, "README no longer summarises the high-risk case"
+    example, tier, finding, count, quoted = match.groups()
+    profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
+    report = classify(profile)
+    actual = _cli_lines(example)
+    assert tier in actual
+    assert any(line.strip().endswith(finding) for line in actual), finding
+    assert int(count) == len(report.obligations)
+    for line in quoted.split("\n"):
+        assert line in actual, line
+
+
+def test_sample_review_dossier_quotes_the_current_cli_output() -> None:
+    blocks = DOSSIER_BLOCK.findall(SAMPLE_DOSSIER.read_text(encoding="utf-8"))
+    assert len(blocks) == 4
+    for example, quoted in blocks:
+        profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
+        assert quoted == render_report(classify(profile)), (
+            f"{SAMPLE_DOSSIER} no longer matches the CLI output for {example}: "
+            f"rerun uv run eu-ai-act-classify {example}"
+        )

@@ -154,7 +154,7 @@ class Derogation(BaseModel):
     An Annex III system is *not* high-risk if it does not pose a significant
     risk of harm, but only where one of the four conditions holds AND the
     system does not perform profiling of natural persons. Profiling always
-    keeps the system high-risk (Art. 6(3) subpara. 2 AIA).
+    keeps the system high-risk (Art. 6(3), third subparagraph, AIA).
     """
 
     narrow_procedural_task: bool = False
@@ -227,6 +227,10 @@ class SystemProfile(BaseModel):
     annex_i_safety_component: bool = False  # Art. 6(1)(a): product / safety component
     annex_i_third_party_assessment: bool = False  # Art. 6(1)(b): third-party conformity assessment
     annex_iii_area: AnnexIII | None = None  # Art. 6(2) + Annex III
+    # Annex III(5)(b) excepts AI systems used for the purpose of detecting financial
+    # fraud. True (asserted) or None (unknown) on a III.5.b profile raises a review
+    # question; the system stays high-risk until it is answered.
+    used_for_financial_fraud_detection: bool | None = False
     derogation: Derogation = Field(default_factory=Derogation)
 
     # Transparency screens (Art. 50 AIA)

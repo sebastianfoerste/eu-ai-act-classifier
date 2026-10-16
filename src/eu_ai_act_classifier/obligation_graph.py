@@ -29,7 +29,12 @@ def build_obligation_graph(
     if final_tier is RiskTier.HIGH:
         application_date = _high_risk_application_date(profile)
         if profile.is_provider:
-            items.extend(_high_risk_provider_graph(application_date))
+            items.extend(
+                _high_risk_provider_graph(
+                    application_date,
+                    internal_control_route=_internal_control_route(profile),
+                )
+            )
         if profile.is_deployer:
             items.append(
                 _item(
@@ -148,7 +153,9 @@ def build_obligation_graph(
     return items
 
 
-def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem]:
+def _high_risk_provider_graph(
+    application_date: str, *, internal_control_route: bool
+) -> list[ObligationGraphItem]:
     return [
         _item(
             "high-risk.provider.16",
@@ -249,16 +256,7 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             application_date,
             ReviewStatus.REVIEW_REQUIRED,
         ),
-        _item(
-            "high-risk.provider.44",
-            "Art. 44 AIA",
-            Role.PROVIDER,
-            "Certificate issued by notified body where applicable.",
-            "Track certificate validity, changes and renewal obligations.",
-            "Certificate register.",
-            application_date,
-            ReviewStatus.REVIEW_REQUIRED,
-        ),
+        _conformity_route_item(application_date, internal_control_route=internal_control_route),
         _item(
             "high-risk.provider.47",
             "Art. 47 AIA",
@@ -310,6 +308,35 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             ReviewStatus.REVIEW_REQUIRED,
         ),
     ]
+
+
+def _conformity_route_item(
+    application_date: str, *, internal_control_route: bool
+) -> ObligationGraphItem:
+    if internal_control_route:
+        return _item(
+            "high-risk.provider.43.2",
+            "Art. 43(2) AIA",
+            Role.PROVIDER,
+            "High-risk AI system referred to in points 2 to 8 of Annex III.",
+            (
+                "Follow the conformity assessment procedure based on internal control "
+                "(Annex VI), which does not involve a notified body."
+            ),
+            "Annex VI internal-control assessment record.",
+            application_date,
+            ReviewStatus.REVIEW_REQUIRED,
+        )
+    return _item(
+        "high-risk.provider.44",
+        "Art. 44 AIA",
+        Role.PROVIDER,
+        "Certificate issued by notified body where applicable.",
+        "Track certificate validity, changes and renewal obligations.",
+        "Certificate register.",
+        application_date,
+        ReviewStatus.REVIEW_REQUIRED,
+    )
 
 
 def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
@@ -433,6 +460,28 @@ def _item(
         application_date=application_date,
         review_status=review_status,
     )
+
+
+_ANNEX_III_POINT_1 = {
+    AnnexIII.BIOMETRICS_REMOTE_ID,
+    AnnexIII.BIOMETRICS_CATEGORISATION,
+    AnnexIII.BIOMETRICS_EMOTION,
+}
+
+
+def _internal_control_route(profile: SystemProfile) -> bool:
+    """Whether Art. 43(2) AIA fixes internal control (Annex VI) as the route.
+
+    Art. 43(2) covers Annex III points 2 to 8. Point 1 (biometrics) can involve a
+    notified body under Art. 43(1), an unsettled Annex III point could be point 1,
+    and an Annex III system that is also an Annex I product follows the Annex I
+    procedure (Art. 43(3), last subparagraph), whether or not that procedure
+    involves a third party. Those cases keep the review_required Art. 44 item.
+    """
+    area = profile.annex_iii_area
+    if area is None or area is AnnexIII.UNSURE or area in _ANNEX_III_POINT_1:
+        return False
+    return not profile.annex_i_safety_component
 
 
 def _high_risk_application_date(profile: SystemProfile) -> str:

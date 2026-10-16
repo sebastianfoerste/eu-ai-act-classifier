@@ -3,7 +3,7 @@
 Two routes to high-risk: the Annex I product-safety route (Art. 6(1)) and the
 Annex III use-case route (Art. 6(2)). The Annex III route is subject to the
 Art. 6(3) derogation, but profiling of natural persons forecloses the
-derogation entirely (Art. 6(3) subpara. 2). An asserted-but-unconfirmed
+derogation entirely (Art. 6(3), third subparagraph). An asserted-but-unconfirmed
 derogation is not silently applied: the system stays high-risk and the call is
 handed to review, because Art. 6(3)/(4) require a documented assessment before
 a system leaves the high-risk tier.
@@ -62,6 +62,11 @@ def evaluate(profile) -> GateOutput:
         )
         return out
 
+    if area is AnnexIII.CREDITWORTHINESS:
+        question = _fraud_exception_question(profile.used_for_financial_fraud_detection)
+        if question:
+            out.open_questions.append(question)
+
     derog = profile.derogation
     if derog.performs_profiling:
         out.tier_vote = RiskTier.HIGH
@@ -73,7 +78,7 @@ def evaluate(profile) -> GateOutput:
                 title=f"High-risk: {label}",
                 detail=(
                     "Annex III high-risk area. Profiling of natural persons keeps the system "
-                    "high-risk despite any derogation (Art. 6(3) subpara. 2 AIA)."
+                    "high-risk despite any derogation (Art. 6(3), third subparagraph, AIA)."
                 ),
                 severity=Severity.HIGH,
                 tier=RiskTier.HIGH,
@@ -117,3 +122,25 @@ def evaluate(profile) -> GateOutput:
         )
     )
     return out
+
+
+def _fraud_exception_question(used_for_fraud_detection: bool | None) -> str | None:
+    """Review question for the financial-fraud exception in Annex III(5)(b) AIA.
+
+    The exception is not applied silently: an asserted or unknown fraud-detection
+    purpose keeps the system high-risk and hands the characterisation to review.
+    """
+    if used_for_fraud_detection is False:
+        return None
+    if used_for_fraud_detection is None:
+        return (
+            "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting "
+            "financial fraud. Confirm whether that exception applies to this system; it is "
+            "treated as high-risk until that is settled."
+        )
+    return (
+        "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting financial "
+        "fraud, and the profile states that this system is used for that purpose. Confirm "
+        "whether it also evaluates the creditworthiness of natural persons or establishes "
+        "their credit score; it is treated as high-risk until that is settled."
+    )

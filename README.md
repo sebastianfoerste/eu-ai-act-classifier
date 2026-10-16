@@ -9,7 +9,7 @@
 
 Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm.
 
-Encodes Regulation (EU) 2024/1689 as consolidated on 27 July 2026, plus Regulation (EU) 2026/1744 (Annex III high-risk dates shown as 2027-12-02, product-embedded high-risk as 2028-08-02). Not legal advice; the bundled example data is synthetic.
+Encodes Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744, in the consolidated version of 27 July 2026 (Annex III high-risk dates shown as 2027-12-02, product-embedded high-risk as 2028-08-02). Not legal advice; the bundled example data is synthetic.
 
 ## Who it's for
 
@@ -26,7 +26,7 @@ Encodes Regulation (EU) 2024/1689 as consolidated on 27 July 2026, plus Regulati
 
 *Screenshot/GIF placeholder: to be added*
 
-> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 17 synthetic examples, or scroll to [Example output](#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 18 synthetic examples, or scroll to [Example output](#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
 ## Quick start
 
@@ -79,6 +79,11 @@ Disposition: DETERMINED
 Scope status: in_scope
 Roles: provider
 
+Scope and intake:
+  AI system: True
+  EU nexus: True
+  Transitional status: No transitional limitation identified from the submitted facts.
+
 Findings:
   [blocker] Art. 5(1)(c) AIA: Social scoring leading to detrimental or unfavourable treatment
       Prohibited practice under Art. 5 AIA. The system may not be placed on the market, put into service, or used.
@@ -96,7 +101,7 @@ Source manifest:
   ...
 ```
 
-A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: Creditworthiness evaluation and credit scoring`, and 14 cited obligations, for example:
+A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons`, and 14 cited obligations, for example:
 
 ```text
   - Art. 9 AIA: Risk management system. Establish, document and maintain a continuous risk management system.
@@ -106,7 +111,7 @@ A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK 
 
 When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](examples/classification-packet.md) and [`examples/classification-packet.json`](examples/classification-packet.json).
 
-![CLI sample output: CreditSightScore classified high-risk with Articles 9, 10 and 11 obligations](docs/demo.png)
+This output, the worked examples and the playground reflect this repository. Release 0.2.1, the current release on PyPI, which `pip`, `uvx` and eu-reg-mcp's `classify` extra install, does not include the changes of 14 October 2026 listed under [Honest limits](#honest-limits), so its findings differ in places: for example, it prints `High-risk: Creditworthiness evaluation and credit scoring` without `of natural persons`, lists the Art. 44 certificate item for an Annex III point 5(b) provider, and cites the profiling rule as `Art. 6(3) subpara. 2 AIA`. Until a release includes these changes, the git form under [Quick start](#quick-start), which installs `main`, runs this version.
 
 ## What it checks
 
@@ -119,6 +124,8 @@ When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `exampl
 | Transparency | Limited-risk cases | `examples/deepfake_generator.json`, `examples/support_chatbot.json` |
 
 Which example lands in which tier is asserted in `tests/test_examples.py`. See [examples/README.md](examples/README.md).
+
+Two worked examples show a run end to end, with what the classifier decided and what a lawyer still has to decide: [a bank's credit-scoring model](docs/worked-examples/bank-credit-scoring.md) and [a life insurer's pricing model](docs/worked-examples/life-insurer-pricing.md).
 
 ## Surfaces
 
@@ -147,9 +154,9 @@ uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-cl
 
 Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1; the 0.2.0 extra does not. Client configuration is in [docs/mcp-configuration-guide.md](docs/mcp-configuration-guide.md).
 
-## Human-authored legal judgment
+## Human legal judgment
 
-AI tools assisted the implementation, but the parts that carry the value are human-authored: the Annex/Article mappings, the obligation set, and the prohibited-practice and review-status logic. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable. The rules are plain Python under `src/eu_ai_act_classifier/`, and the eval set is tested for drift.
+AI tools assisted the implementation and drafted some changes to the mappings. The legal judgment that carries the value stays with the author: the Annex and Article mappings, the obligation set, and the prohibited-practice and review-status logic are written by the author or, where AI drafted them, reviewed and adopted by the author before the change is merged. The worked examples carry their own AI-assistance disclosure. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable. The rules are plain Python under `src/eu_ai_act_classifier/`, and the eval set is tested for drift.
 
 ## Honest limits
 
@@ -158,6 +165,7 @@ AI tools assisted the implementation, but the parts that carry the value are hum
 - Guidance changes, and national implementation and supervisory practice may vary by Member State.
 - The engine applies rules to characterised facts and does not decide disputed intended purpose, operator role or factual deployment scope.
 - `requires_review`, draft artifacts and advisory overlays must be reviewed before reliance.
+- The changes of 14 October 2026 (Art. 6(3), third subparagraph; the Annex III point 5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and (3)) are in this repository but not in release 0.2.1, the current release on PyPI. They were checked against a GitHub mirror of the consolidated text, not against EUR-Lex itself. The two Art. 50 sources in the manifest carry `[noch zu verifizieren]` because their Commission pages were not checked. Recheck both on the official pages before reliance.
 
 ## Docs and links
 

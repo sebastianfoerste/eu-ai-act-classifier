@@ -30,7 +30,7 @@ from eu_ai_act_classifier.models import (  # noqa: E402
     Role,
 )
 
-# The 17 base examples, grouped by the outcome tests/test_examples.py asserts.
+# The 18 base examples, grouped by the outcome tests/test_examples.py asserts.
 SAMPLE_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
     (
         "Prohibited",
@@ -44,6 +44,7 @@ SAMPLE_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
         [
             ("credit_scoring", "Credit scoring, provider"),
             ("credit_scoring_deployer", "Credit scoring, deployer"),
+            ("life_insurer_pricing", "Life insurance pricing, provider and deployer"),
             ("cv_screening", "CV screening"),
             ("proctoring_education", "Exam proctoring"),
             ("law_enforcement", "Reoffending risk"),
@@ -132,6 +133,11 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
                 "annex_iii_area",
                 "Art. 6(2) and Annex III. III.unsure: an area is implicated but the point is "
                 "unsettled; treated as high-risk and routed to review.",
+            ),
+            (
+                "used_for_financial_fraud_detection",
+                "Annex III(5)(b) AIA excepts financial-fraud detection. True or null on a "
+                "III.5.b profile raises a review question.",
             ),
             (
                 "derogation",

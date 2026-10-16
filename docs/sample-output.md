@@ -1,7 +1,10 @@
 # Sample Output
 
-This page shows the shape of the v0.2 output. The exact obligation list may grow
-as the source registry and obligation graph are extended.
+This page shows the shape of the output on `main`, run from a clone. Release 0.2.1,
+the current release on PyPI, does not include the October 2026 mapping changes: it
+prints the 5(b) label without "of natural persons" and the Art. 44 certificate item
+instead of `high-risk.provider.43.2`. The exact obligation list may grow as the
+source registry and obligation graph are extended.
 
 ## CLI Report
 
@@ -26,12 +29,13 @@ Scope and intake:
   Transitional status: No transitional limitation identified from the submitted facts.
 
 Findings:
-  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring
+  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons
 
 Obligation graph:
-  - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix, review: draft
-  - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file, review: review_required
-  - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan, review: draft
+  - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
+  - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
+  - high-risk.provider.43.2: Art. 43(2) AIA (provider), evidence: Annex VI internal-control assessment record., review: review_required
+  - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan., review: determined
 
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)

@@ -35,6 +35,7 @@ export type SystemProfile = {
   annex_i_safety_component: boolean;
   annex_i_third_party_assessment: boolean;
   annex_iii_area: string | null;
+  used_for_financial_fraud_detection: NullableBoolean;
   derogation: Derogation;
   interacts_with_natural_persons: boolean;
   generates_synthetic_content: boolean;

@@ -97,3 +97,61 @@ def test_cli_sources_outputs_source_manifest(capsys) -> None:
 
     assert any(source["source_id"] == "ai-act-2024-1689" for source in data)
     assert any(source["source_id"] == "ai-act-amendment-2026-1744" for source in data)
+
+
+def _provider_graph_articles(**facts) -> set[str]:
+    report = classify(SystemProfile(name="x", roles=[Role.PROVIDER], **facts))
+    return {item.article for item in report.obligation_graph}
+
+
+def test_annex_iii_points_2_to_8_use_internal_control_without_notified_body() -> None:
+    # Art. 43(2) AIA: points 2 to 8 of Annex III follow internal control (Annex VI).
+    for area in (
+        AnnexIII.CRITICAL_INFRASTRUCTURE,
+        AnnexIII.EMPLOYMENT_SELECTION,
+        AnnexIII.CREDITWORTHINESS,
+        AnnexIII.INSURANCE_LIFE_HEALTH,
+        AnnexIII.JUSTICE,
+    ):
+        articles = _provider_graph_articles(annex_iii_area=area)
+        assert "Art. 43(2) AIA" in articles
+        assert "Art. 44 AIA" not in articles
+
+
+def test_internal_control_item_is_review_required_and_names_annex_vi() -> None:
+    report = classify(
+        SystemProfile(name="x", roles=[Role.PROVIDER], annex_iii_area=AnnexIII.CREDITWORTHINESS)
+    )
+    item = next(item for item in report.obligation_graph if item.article == "Art. 43(2) AIA")
+    assert item.obligation_id == "high-risk.provider.43.2"
+    assert "Annex VI" in item.requirement
+    assert item.review_status.value == "review_required"
+
+
+def test_notified_body_item_stays_where_a_notified_body_can_be_involved() -> None:
+    # Annex III point 1 (Art. 43(1)), an unsettled Annex III point, the Annex I route,
+    # and an Annex III system that is also an Annex I product (Art. 43(3)).
+    for facts in (
+        {"annex_iii_area": AnnexIII.BIOMETRICS_REMOTE_ID},
+        {"annex_iii_area": AnnexIII.BIOMETRICS_EMOTION},
+        {"annex_iii_area": AnnexIII.UNSURE},
+        {"annex_i_safety_component": True, "annex_i_third_party_assessment": True},
+        {
+            "annex_iii_area": AnnexIII.CREDITWORTHINESS,
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+        },
+        # Art. 43(3), last subparagraph, does not depend on a third-party assessment.
+        {"annex_iii_area": AnnexIII.CRITICAL_INFRASTRUCTURE, "annex_i_safety_component": True},
+        {"annex_iii_area": AnnexIII.CREDITWORTHINESS, "annex_i_safety_component": True},
+        {"annex_iii_area": AnnexIII.INSURANCE_LIFE_HEALTH, "annex_i_safety_component": True},
+    ):
+        articles = _provider_graph_articles(**facts)
+        assert "Art. 44 AIA" in articles
+        assert "Art. 43(2) AIA" not in articles
+
+
+def test_report_cites_the_ai_act_as_amended_by_regulation_2026_1744() -> None:
+    report = classify(SystemProfile(name="x"))
+    assert report.regulation.startswith("Regulation (EU) 2024/1689 ")
+    assert report.regulation.endswith(", as amended by Regulation (EU) 2026/1744")

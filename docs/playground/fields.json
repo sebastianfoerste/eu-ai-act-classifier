@@ -367,6 +367,12 @@
           ]
         },
         {
+          "name": "used_for_financial_fraud_detection",
+          "type": "boolean or null",
+          "default": false,
+          "hint": "Annex III(5)(b) AIA excepts financial-fraud detection. True or null on a III.5.b profile raises a review question."
+        },
+        {
           "name": "derogation",
           "type": "object",
           "default": {

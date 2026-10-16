@@ -21,6 +21,7 @@ EXPECTATIONS: dict[str, tuple[RiskTier, Disposition]] = {
     "credit_scoring.json": (RiskTier.HIGH, Disposition.DETERMINED),
     "proctoring_education.json": (RiskTier.HIGH, Disposition.DETERMINED),
     "credit_scoring_deployer.json": (RiskTier.HIGH, Disposition.DETERMINED),
+    "life_insurer_pricing.json": (RiskTier.HIGH, Disposition.DETERMINED),
     "law_enforcement.json": (RiskTier.HIGH, Disposition.DETERMINED),
     "ambiguous_use_case.json": (RiskTier.HIGH, Disposition.REQUIRES_REVIEW),
     "employment_derogation.json": (RiskTier.HIGH, Disposition.REQUIRES_REVIEW),
@@ -63,6 +64,25 @@ def test_credit_deployer_requires_fria() -> None:
     articles = {ob.article for ob in report.obligations}
     assert "Art. 26 AIA" in articles
     assert "Art. 27 AIA" in articles
+    # docs/worked-examples/bank-credit-scoring.md states the date of both graph items.
+    assert [item.application_date for item in report.obligation_graph] == ["2027-12-02"] * 2
+
+
+def test_life_insurer_carries_provider_and_deployer_duties() -> None:
+    report = classify(_load("life_insurer_pricing.json"))
+    articles = {ob.article for ob in report.obligations}
+    assert {"Art. 9 AIA", "Art. 43 AIA", "Art. 26 AIA", "Art. 27 AIA"} <= articles
+    graph = {item.article for item in report.obligation_graph}
+    assert "Art. 43(2) AIA" in graph
+    assert "Art. 44 AIA" not in graph
+    assert {item.application_date for item in report.obligation_graph} == {"2027-12-02"}
+    # Counts stated in docs/worked-examples/life-insurer-pricing.md.
+    assert len([ob for ob in report.obligations if ob.applies_to.value == "provider"]) == 14
+    assert len(report.documentation_required) == 5
+    assert len(report.obligation_graph) == 18
+    assert (
+        sum(item.review_status.value == "review_required" for item in report.obligation_graph) == 10
+    )
 
 
 def test_systemic_gpai_carries_article_55() -> None:

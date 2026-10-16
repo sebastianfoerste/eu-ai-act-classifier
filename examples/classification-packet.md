@@ -10,7 +10,7 @@ Scope and intake:
   Transitional status: No transitional limitation identified from the submitted facts.
 
 Findings:
-  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring
+  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons
       Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.
 
 Obligations:
@@ -47,7 +47,7 @@ Obligation graph:
   - high-risk.provider.41: Art. 41 AIA (provider), evidence: Common specifications assessment., review: review_required
   - high-risk.provider.42: Art. 42 AIA (provider), evidence: Presumption of conformity mapping., review: review_required
   - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
-  - high-risk.provider.44: Art. 44 AIA (provider), evidence: Certificate register., review: review_required
+  - high-risk.provider.43.2: Art. 43(2) AIA (provider), evidence: Annex VI internal-control assessment record., review: review_required
   - high-risk.provider.47: Art. 47 AIA (provider), evidence: EU declaration of conformity., review: determined
   - high-risk.provider.48: Art. 48 AIA (provider), evidence: CE marking record., review: determined
   - high-risk.provider.49: Art. 49 AIA (provider), evidence: EU database registration record., review: review_required
@@ -70,7 +70,8 @@ Source manifest:
   - Draft high-risk classification guidelines: nonbinding_guidance, retrieved 2026-06-18
   - GPAI Code of Practice: nonbinding_guidance, retrieved 2026-06-18
   - GPAI provider guidelines: nonbinding_guidance, retrieved 2026-06-18
-  - Transparency guidance tracker: nonbinding_guidance, retrieved 2026-06-18
+  - Art. 50 marking and labelling Code of Practice [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
+  - Commission Art. 50 transparency guidelines [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.
