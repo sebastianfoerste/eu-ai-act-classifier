@@ -10,6 +10,15 @@ EXAMPLES = Path("examples")
 README = Path("README.md")
 EXAMPLES_README = EXAMPLES / "README.md"
 PYPROJECT = Path("pyproject.toml")
+# Docs that hold sections moved out of the README.
+README_CONTENT_DOCS = [
+    Path("docs/README.md"),
+    Path("docs/overview.md"),
+    Path("docs/FEATURES.md"),
+    Path("docs/SETUP.md"),
+    Path("docs/sample-output.md"),
+    Path("docs/surfaces.md"),
+]
 PUBLIC_MARKDOWN = [
     README,
     EXAMPLES_README,
@@ -17,10 +26,49 @@ PUBLIC_MARKDOWN = [
     Path("docs/launch-readiness.md"),
     Path("docs/methodology.md"),
     Path("docs/reviewer-notes.md"),
-    Path("docs/sample-output.md"),
+    *README_CONTENT_DOCS,
 ]
 EM_DASH = "\u2014"
 EN_DASH = "\u2013"
+README_MAX_WORDS = 350
+ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+DAY_MONTH_YEAR = re.compile(
+    r"\b\d{1,2}(?:st|nd|rd|th)?\s+"
+    r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?"
+    r"|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b\.?,?\s+\d{4}\b",
+    re.IGNORECASE,
+)
+
+
+def _github_slug(heading: str) -> str:
+    # Slug the rendered text: images render no text and links render only their label.
+    text = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", heading)
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
+    return re.sub(r"[^\w\- ]", "", text.lower()).replace(" ", "-")
+
+
+def _heading_anchors(path: Path) -> set[str]:
+    anchors: set[str] = set()
+    fence = ""
+    for line in path.read_text(encoding="utf-8").splitlines():
+        marker = re.match(r" {0,3}(`{3,}|~{3,})", line)
+        if fence:
+            if marker and marker.group(1).startswith(fence) and not line[marker.end() :].strip():
+                fence = ""
+            continue
+        if marker:
+            fence = marker.group(1)
+            continue
+        heading = re.match(r" {0,3}#{1,6}(?:\s+(.*?))?(?:\s+#+)?\s*$", line)
+        if not heading:
+            continue
+        slug = _github_slug(heading.group(1) or "")
+        anchor, suffix = slug, 0
+        while anchor in anchors:
+            suffix += 1
+            anchor = f"{slug}-{suffix}"
+        anchors.add(anchor)
+    return anchors
 
 
 def test_examples_readme_lists_every_json_example() -> None:
@@ -38,6 +86,38 @@ def test_readme_local_markdown_links_exist() -> None:
 
     for link in markdown_links:
         assert Path(link).exists(), f"README link target does not exist: {link}"
+
+
+def test_readme_and_moved_sections_have_working_relative_links() -> None:
+    for path in [README, *README_CONTENT_DOCS]:
+        text = path.read_text(encoding="utf-8")
+        for target in re.findall(r"\]\(([^)\s]+)\)", text):
+            if target.startswith(("http://", "https://")):
+                continue
+            file_part, _, anchor = target.partition("#")
+            resolved = path.parent / file_part if file_part else path
+            assert resolved.exists(), f"{path} link target does not exist: {target}"
+            if anchor and resolved.suffix == ".md":
+                assert anchor in _heading_anchors(resolved), f"{path} anchor not found: {target}"
+
+
+def test_readme_stays_within_word_budget() -> None:
+    words = len(README.read_text(encoding="utf-8").split())
+    assert words <= README_MAX_WORDS, f"README has {words} words, budget is {README_MAX_WORDS}"
+
+
+def test_readme_states_no_dates() -> None:
+    readme = README.read_text(encoding="utf-8")
+    iso_dates = ISO_DATE.findall(readme)
+    assert not iso_dates, f"ISO date in README: {iso_dates}"
+    dates = DAY_MONTH_YEAR.findall(readme)
+    assert not dates, f"day month year date in README: {dates}"
+
+
+def test_readme_links_docs_index_overview_and_claim_ledger() -> None:
+    readme = README.read_text(encoding="utf-8")
+    for target in ("docs/README.md", "docs/overview.md", "docs/REGULATORY_CLAIM_LEDGER.md"):
+        assert f"]({target})" in readme
 
 
 def test_launch_readiness_is_discoverable_from_readme() -> None:
