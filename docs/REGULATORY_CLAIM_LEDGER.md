@@ -1,6 +1,6 @@
 # EU AI Act regulatory claim ledger
 
-Stand: 26 August 2026. The last row was re-checked on 13 October 2026.
+Stand: 26 August 2026. The row on how far Regulation (EU) 2026/1744 is encoded was re-checked on 13 October 2026.
 
 | Status | Claim | Actor and obligation | Primary source | Provision or publication state | Access date | Review note |
 | --- | --- | --- | --- | --- | --- | --- |
