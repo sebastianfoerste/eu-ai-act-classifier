@@ -2,6 +2,15 @@
 
 Longer reference material moved out of the README. The CLI remains the authoritative product surface and the Python classifier is the legal source of truth for every other surface.
 
+## Surfaces
+
+| Surface | Use it for | Details |
+|---|---|---|
+| Browser playground | Zero-install trial, nothing leaves the page | [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) |
+| CLI (`eu-ai-act-classify`) | Authoritative surface; `--json`, `--strict`, `--sources`, draft artifacts | [Local verification](#local-verification) |
+| MCP server | Let an agent call the classifier | [docs/mcp-configuration-guide.md](mcp-configuration-guide.md) |
+| Local API and web cockpit | Local inventory, review and export workflow | [MCP and local API](#mcp-and-local-api), [Optional web cockpit](#optional-web-cockpit) |
+
 ## Local verification
 
 Use the CLI first. It does not require web dependencies:
@@ -29,6 +38,8 @@ The page installs a wheel of this package, so it applies the same rules as the C
 uv run python scripts/build_playground.py
 ```
 
+[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
+
 ## MCP and local API
 
 The MCP server ships in the [PyPI package](https://pypi.org/project/eu-ai-act-classifier/) behind the `[mcp]` extra. Install it and start the server:
@@ -37,6 +48,8 @@ The MCP server ships in the [PyPI package](https://pypi.org/project/eu-ai-act-cl
 pip install "eu-ai-act-classifier[mcp]" "mcp<2"
 eu-ai-act-classifier-mcp
 ```
+
+Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1; the 0.2.0 extra does not.
 
 Or let uv fetch and run it: `uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp`. Client configuration (Claude Desktop, Cursor) and the reason for the `mcp<2` constraint are in [mcp-configuration-guide.md](mcp-configuration-guide.md).
 

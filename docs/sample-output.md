@@ -3,6 +3,46 @@
 This page shows the shape of the v0.2 output. The exact obligation list may grow
 as the source registry and obligation graph are extended.
 
+## Example Output
+
+Real output of `uv run eu-ai-act-classify examples/social_scoring.json` (excerpt, run on this repo):
+
+```text
+EU AI Act classification: CitizenScore
+Risk tier: PROHIBITED (Art. 5 AIA)
+Disposition: DETERMINED
+Scope status: in_scope
+Roles: provider
+
+Findings:
+  [blocker] Art. 5(1)(c) AIA: Social scoring leading to detrimental or unfavourable treatment
+      Prohibited practice under Art. 5 AIA. The system may not be placed on the market, put into service, or used.
+
+Binding application timeline:
+  2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
+  ...
+  2026-08-02: General application for provisions without a later specific date
+  ...
+  2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
+
+Source manifest:
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-10-18
+  ...
+```
+
+A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: Creditworthiness evaluation and credit scoring`, and 14 cited obligations, for example:
+
+```text
+  - Art. 9 AIA: Risk management system. Establish, document and maintain a continuous risk management system.
+  - Art. 10 AIA: Data and data governance. Apply data governance to training, validation and testing data sets.
+  - Art. 11 AIA: Technical documentation. Draw up technical documentation (Annex IV) before placing on the market.
+```
+
+When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](../examples/classification-packet.md) and [`examples/classification-packet.json`](../examples/classification-packet.json).
+
+![CLI sample output: CreditSightScore classified high-risk with Articles 9, 10 and 11 obligations](demo.png)
+
 ## CLI Report
 
 Command:

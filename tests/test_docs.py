@@ -10,6 +10,15 @@ EXAMPLES = Path("examples")
 README = Path("README.md")
 EXAMPLES_README = EXAMPLES / "README.md"
 PYPROJECT = Path("pyproject.toml")
+# Docs that hold sections moved out of the README.
+README_CONTENT_DOCS = [
+    Path("docs/README.md"),
+    Path("docs/overview.md"),
+    Path("docs/FEATURES.md"),
+    Path("docs/SETUP.md"),
+    Path("docs/sample-output.md"),
+    Path("docs/surfaces.md"),
+]
 PUBLIC_MARKDOWN = [
     README,
     EXAMPLES_README,
@@ -17,7 +26,7 @@ PUBLIC_MARKDOWN = [
     Path("docs/launch-readiness.md"),
     Path("docs/methodology.md"),
     Path("docs/reviewer-notes.md"),
-    Path("docs/sample-output.md"),
+    *README_CONTENT_DOCS,
 ]
 EM_DASH = "\u2014"
 EN_DASH = "\u2013"
@@ -38,6 +47,22 @@ def test_readme_local_markdown_links_exist() -> None:
 
     for link in markdown_links:
         assert Path(link).exists(), f"README link target does not exist: {link}"
+
+
+def test_readme_and_moved_sections_have_working_relative_links() -> None:
+    for path in [README, *README_CONTENT_DOCS]:
+        text = path.read_text(encoding="utf-8")
+        for target in re.findall(r"\]\(([^)\s]+)\)", text):
+            if target.startswith(("http://", "https://", "#")):
+                continue
+            resolved = path.parent / target.split("#")[0]
+            assert resolved.exists(), f"{path} link target does not exist: {target}"
+
+
+def test_readme_links_docs_index_overview_and_claim_ledger() -> None:
+    readme = README.read_text(encoding="utf-8")
+    for target in ("docs/README.md", "docs/overview.md", "docs/REGULATORY_CLAIM_LEDGER.md"):
+        assert f"]({target})" in readme
 
 
 def test_launch_readiness_is_discoverable_from_readme() -> None:
