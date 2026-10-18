@@ -14,7 +14,7 @@ legal conclusion; a lawyer reviews every result.
 | `III.1.a` | Annex III(1)(a) AIA | Remote biometric identification | high_risk, determined | none | none |
 | `III.1.b` | Annex III(1)(b) AIA | Biometric categorisation by sensitive/protected attributes | high_risk, determined | none | none |
 | `III.1.c` | Annex III(1)(c) AIA | Emotion recognition | high_risk, determined | none | none |
-| `III.2` | Annex III(2) AIA | Safety component of critical infrastructure | high_risk, determined | none | `tests/test_high_risk.py` |
+| `III.2` | Annex III(2) AIA | Safety component of critical infrastructure | high_risk, determined | none | `tests/test_high_risk.py`<br>`tests/test_obligations_and_artifacts.py` |
 | `III.3.a` | Annex III(3)(a) AIA | Education: access and admission | high_risk, determined | none | none |
 | `III.3.b` | Annex III(3)(b) AIA | Education: evaluating learning outcomes | high_risk, determined | none | none |
 | `III.3.c` | Annex III(3)(c) AIA | Education: assessing appropriate level | high_risk, determined | none | none |
@@ -36,6 +36,6 @@ legal conclusion; a lawyer reviews every result.
 | `III.7.d` | Annex III(7)(d) AIA | Migration: detecting, recognising or identifying natural persons | high_risk, determined | none | none |
 | `III.8.a` | Annex III(8)(a) AIA | Administration of justice: assisting a judicial authority | high_risk, determined | none | none |
 | `III.8.b` | Annex III(8)(b) AIA | Influencing elections, referenda or voting behaviour | high_risk, determined | none | none |
-| `III.unsure` | Annex III AIA  [noch zu verifizieren] | An Annex III area is implicated but the specific point is unsettled | high_risk, requires_review | `examples/ambiguous_use_case.json` | `tests/test_coverage.py`<br>`tests/test_high_risk.py`<br>`tests/test_system_inventory.py` |
+| `III.unsure` | Annex III AIA  [noch zu verifizieren] | An Annex III area is implicated but the specific point is unsettled | high_risk, requires_review | `examples/ambiguous_use_case.json` | `tests/test_coverage.py`<br>`tests/test_high_risk.py`<br>`tests/test_obligations_and_artifacts.py`<br>`tests/test_system_inventory.py` |
 
 26 points listed; 5 have a bundled example and 6 are referenced by a test. Points without an example or test are classified by the same generic Annex III rule as the others; `tests/test_coverage.py` checks the minimal-profile outcome of every point.

@@ -103,6 +103,8 @@ def render_review_dossier_markdown(dossier: ReviewDossier) -> str:
                 f"{item['obligation_id']}: {item['article']} ({item['actor']}), "
                 f"evidence: {item['evidence_artifact']}, review: {item['review_status']}"
             )
+            if item.get("application_date_note"):
+                lines.append(f"  - {item['application_date_note']}")
     else:
         lines.append("- No obligation graph items generated for the submitted facts.")
     lines.extend(["", "## Source Manifest", ""])

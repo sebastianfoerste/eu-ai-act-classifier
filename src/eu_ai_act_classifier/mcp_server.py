@@ -76,7 +76,8 @@ def build_server() -> Any:
 
         `profile` is a SystemProfile object (name, roles, annex_iii_area,
         prohibited_practices, is_gpai_model, training_flops, transparency
-        screens, …). Returns a ClassificationReport: risk tier, disposition,
+        screens, …; dates YYYY-MM-DD, e.g. placing_on_market_date
+        "2026-03-01"). Returns a ClassificationReport: risk tier, disposition,
         obligations with article citations, required documentation, open
         questions for review, and any citations pending verification.
         """

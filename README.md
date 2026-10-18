@@ -9,7 +9,7 @@
 
 Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm.
 
-Encodes Regulation (EU) 2024/1689 as consolidated on 27 July 2026, plus Regulation (EU) 2026/1744 (Annex III high-risk dates shown as 2027-12-02, product-embedded high-risk as 2028-08-02). Not legal advice; the bundled example data is synthetic.
+Encodes Regulation (EU) 2024/1689 as consolidated on 27 July 2026, plus Regulation (EU) 2026/1744 (Chapter III Sections 1-3: Annex III 2027-12-02, Annex I 2028-08-02). Not legal advice; the bundled example data is synthetic.
 
 ## Who it's for
 
@@ -85,14 +85,14 @@ Findings:
 
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
-  2025-08-02: Chapter V (general-purpose AI models)
+  ...
   2026-08-02: General application for provisions without a later specific date
-  2027-12-02: Regulation (EU) 2026/1744: Annex III high-risk systems
-  2028-08-02: Regulation (EU) 2026/1744: product-embedded high-risk systems
+  ...
+  2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
 
 Source manifest:
-  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
-  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-08-26
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-10-18
   ...
 ```
 

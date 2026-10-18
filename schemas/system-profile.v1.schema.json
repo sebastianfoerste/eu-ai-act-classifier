@@ -175,6 +175,7 @@
     "placing_on_market_date": {
       "anyOf": [
         {
+          "format": "date",
           "type": "string"
         },
         {
@@ -187,6 +188,7 @@
     "putting_into_service_date": {
       "anyOf": [
         {
+          "format": "date",
           "type": "string"
         },
         {

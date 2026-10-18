@@ -134,6 +134,7 @@ footer a { margin-left: 18px; }
 #count-unverified { color: var(--red); }
 #count-questions.is-zero, #count-unverified.is-zero { color: var(--ink); }
 .unverified { color: var(--red); font-weight: 550; }
+.date-note { color: var(--amber); font-weight: 550; }
 #input-error { white-space: pre-line; }
 .advisory-toggle { margin: 16px 24px 0; display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--ink); cursor: pointer; }
 .advisory-toggle input { width: 15px; height: 15px; accent-color: var(--accent); margin: 0; }

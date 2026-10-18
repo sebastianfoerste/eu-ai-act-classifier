@@ -219,15 +219,33 @@ def _public_label(value: str) -> str:
 
 
 def load_example_profiles(examples_dir: Path | str = Path("examples")) -> list[SystemProfile]:
+    return _load_example_profiles(examples_dir)[0]
+
+
+def _load_example_profiles(examples_dir: Path | str) -> tuple[list[SystemProfile], list[str]]:
+    """Profiles in ``examples_dir`` and a warning for each file that has a profile
+    "name" but fails validation (for example a date not in YYYY-MM-DD form), so it
+    does not drop out of the inventory unnoticed. Files without a "name", such as
+    the classification packet, are not profiles and are skipped silently."""
+
     root = Path(examples_dir)
     profiles: list[SystemProfile] = []
+    warnings: list[str] = []
     for path in sorted(root.glob("*.json")):
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
-            profiles.append(SystemProfile.model_validate(payload))
-        except (OSError, json.JSONDecodeError, ValidationError):
+        except (OSError, json.JSONDecodeError):
             continue
-    return profiles
+        try:
+            profiles.append(SystemProfile.model_validate(payload))
+        except ValidationError as exc:
+            if isinstance(payload, dict) and "name" in payload:
+                errors = "; ".join(
+                    f"{'.'.join(str(part) for part in error['loc'])}: {error['msg']}"
+                    for error in exc.errors()
+                )
+                warnings.append(f"{path.name}: skipped, invalid system profile ({errors})")
+    return profiles, warnings
 
 
 def _source_manifest_status(
@@ -935,6 +953,7 @@ def build_system_inventory(
     *,
     generated_at: str | None = None,
     subject_id: str = "example-profile-inventory",
+    load_warnings: list[str] | None = None,
 ) -> AISystemInventory:
     generated_at_value = generated_at or _now()
     classified = [(profile, classify(profile, include_advisory=True)) for profile in profiles]
@@ -944,7 +963,8 @@ def build_system_inventory(
     rows = [inventory_row for _, _, inventory_row in profile_reports]
     blockers = [f"{row.system_id}: prohibited" for row in rows if row.review_status == "blocked"]
     warnings = [
-        f"{row.system_id}: open facts" for row in rows if row.review_status == "review_required"
+        *(load_warnings or []),
+        *(f"{row.system_id}: open facts" for row in rows if row.review_status == "review_required"),
     ]
     review_status: Literal["determined", "review_required", "blocked"]
     if blockers:
@@ -985,7 +1005,9 @@ def build_example_inventory(
     *,
     generated_at: str | None = None,
 ) -> AISystemInventory:
+    profiles, load_warnings = _load_example_profiles(examples_dir)
     return build_system_inventory(
-        load_example_profiles(examples_dir),
+        profiles,
         generated_at=generated_at,
+        load_warnings=load_warnings,
     )
