@@ -216,10 +216,13 @@ def _relevant_graph(report: ClassificationReport, title: str) -> list[Obligation
 
 
 def _format_graph_item(item: ObligationGraphItem) -> str:
-    return (
+    line = (
         f"- {item.article} ({item.actor.value}): {item.requirement} "
         f"Evidence: {item.evidence_artifact}. Review: {item.review_status.value}."
     )
+    if item.application_date_note:
+        line += f" {item.application_date_note}"
+    return line
 
 
 def _slug(value: str) -> str:

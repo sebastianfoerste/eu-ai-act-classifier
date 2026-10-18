@@ -14,6 +14,15 @@ from .models import (
     SystemProfile,
 )
 
+# Art. 113, second paragraph AIA.
+_GENERAL_APPLICATION_DATE = "2026-08-02"
+_SECTION_5 = "Chapter III, Section 5"
+_CHAPTER_IX = "Chapter IX"
+_ART_111_4_NOTE = (
+    "Art. 111(4) AIA: providers of systems placed on the market before 2026-08-02 "
+    "comply with Art. 50(2) by 2026-12-02."
+)
+
 
 def build_obligation_graph(
     *,
@@ -141,7 +150,10 @@ def build_obligation_graph(
                 "Art. 50 transparency trigger in the submitted profile.",
                 obligation.requirement,
                 "Transparency notice, label or disclosure record.",
-                "2026-08-02",
+                _GENERAL_APPLICATION_DATE,
+                application_date_note=(
+                    _art_111_4_note(profile) if obligation.article == "Art. 50(2) AIA" else None
+                ),
             )
         )
 
@@ -206,6 +218,10 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             application_date,
             ReviewStatus.REVIEW_REQUIRED,
         ),
+        # Chapter III, Section 5 (Arts. 40-49) and Chapter IX (Arts. 72-73) are not in
+        # the Art. 113, third paragraph, point (c) deferral. Read literally they apply
+        # from the general date; whether they follow Sections 1 to 3 is contested, so
+        # each item carries the deferred alternative and goes to review.
         _item(
             "high-risk.provider.40",
             "Art. 40 AIA",
@@ -213,8 +229,9 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             "High-risk requirements where harmonised standards are available.",
             "Track applicable harmonised standards and standardisation deliverables.",
             "Standards applicability matrix.",
-            application_date,
+            _GENERAL_APPLICATION_DATE,
             ReviewStatus.REVIEW_REQUIRED,
+            _literal_reading_note(_SECTION_5, application_date),
         ),
         _item(
             "high-risk.provider.41",
@@ -226,8 +243,9 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
                 "or insufficient."
             ),
             "Common specifications assessment.",
-            application_date,
+            _GENERAL_APPLICATION_DATE,
             ReviewStatus.REVIEW_REQUIRED,
+            _literal_reading_note(_SECTION_5, application_date),
         ),
         _item(
             "high-risk.provider.42",
@@ -236,8 +254,9 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             "Use of standards or specifications for presumption of conformity.",
             "Map implemented controls to standards, specifications or alternative evidence.",
             "Presumption of conformity mapping.",
-            application_date,
+            _GENERAL_APPLICATION_DATE,
             ReviewStatus.REVIEW_REQUIRED,
+            _literal_reading_note(_SECTION_5, application_date),
         ),
         _item(
             "high-risk.provider.43",
@@ -246,8 +265,9 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             "Before placing high-risk AI system on the market or putting into service.",
             "Complete the applicable conformity assessment.",
             "Conformity assessment file.",
-            application_date,
+            _GENERAL_APPLICATION_DATE,
             ReviewStatus.REVIEW_REQUIRED,
+            _literal_reading_note(_SECTION_5, application_date),
         ),
         _item(
             "high-risk.provider.44",
@@ -256,8 +276,9 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             "Certificate issued by notified body where applicable.",
             "Track certificate validity, changes and renewal obligations.",
             "Certificate register.",
-            application_date,
+            _GENERAL_APPLICATION_DATE,
             ReviewStatus.REVIEW_REQUIRED,
+            _literal_reading_note(_SECTION_5, application_date),
         ),
         _item(
             "high-risk.provider.47",
@@ -266,7 +287,9 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             "Conformity established.",
             "Draw up and keep the EU declaration of conformity.",
             "EU declaration of conformity.",
-            application_date,
+            _GENERAL_APPLICATION_DATE,
+            ReviewStatus.REVIEW_REQUIRED,
+            _literal_reading_note(_SECTION_5, application_date),
         ),
         _item(
             "high-risk.provider.48",
@@ -275,7 +298,9 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             "Conformity established for a high-risk AI system.",
             "Affix CE marking where required.",
             "CE marking record.",
-            application_date,
+            _GENERAL_APPLICATION_DATE,
+            ReviewStatus.REVIEW_REQUIRED,
+            _literal_reading_note(_SECTION_5, application_date),
         ),
         _item(
             "high-risk.provider.49",
@@ -287,8 +312,9 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             ),
             "Register the provider and system in the EU database where required.",
             "EU database registration record.",
-            application_date,
+            _GENERAL_APPLICATION_DATE,
             ReviewStatus.REVIEW_REQUIRED,
+            _literal_reading_note(_SECTION_5, application_date),
         ),
         _item(
             "high-risk.provider.72",
@@ -297,7 +323,9 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             "High-risk AI system lifecycle.",
             "Operate a post-market monitoring system and plan.",
             "Post-market monitoring plan.",
-            application_date,
+            _GENERAL_APPLICATION_DATE,
+            ReviewStatus.REVIEW_REQUIRED,
+            _literal_reading_note(_CHAPTER_IX, application_date),
         ),
         _item(
             "high-risk.provider.73",
@@ -306,8 +334,9 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             "Serious incident identified.",
             "Report serious incidents to the market surveillance authority.",
             "Serious incident register.",
-            application_date,
+            _GENERAL_APPLICATION_DATE,
             ReviewStatus.REVIEW_REQUIRED,
+            _literal_reading_note(_CHAPTER_IX, application_date),
         ),
     ]
 
@@ -420,6 +449,7 @@ def _item(
     evidence_artifact: str,
     application_date: str,
     review_status: ReviewStatus = ReviewStatus.DETERMINED,
+    application_date_note: str | None = None,
 ) -> ObligationGraphItem:
     return ObligationGraphItem(
         obligation_id=obligation_id,
@@ -432,10 +462,29 @@ def _item(
         source_url=AI_ACT_URL,
         application_date=application_date,
         review_status=review_status,
+        application_date_note=application_date_note,
+    )
+
+
+def _art_111_4_note(profile: SystemProfile) -> str | None:
+    placed = profile.placing_on_market_date
+    if placed and placed >= _GENERAL_APPLICATION_DATE:
+        return None
+    return _ART_111_4_NOTE
+
+
+def _literal_reading_note(location: str, deferred_date: str) -> str:
+    return (
+        "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA "
+        f"defers only Chapter III, Sections 1, 2 and 3, so this {location} duty applies "
+        f"from {_GENERAL_APPLICATION_DATE} (Art. 113, second paragraph). If it is read as "
+        f"following that deferral, {deferred_date} applies."
     )
 
 
 def _high_risk_application_date(profile: SystemProfile) -> str:
+    """Art. 113, third paragraph, point (c) AIA date for Chapter III, Sections 1 to 3."""
+
     if profile.annex_i_safety_component and profile.annex_i_third_party_assessment:
         return "2028-08-02"
     if profile.annex_iii_area is AnnexIII.UNSURE or profile.annex_iii_area is not None:

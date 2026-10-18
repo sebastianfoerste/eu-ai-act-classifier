@@ -116,7 +116,7 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
             source_id=a.source_id,
             source_url=a.source_url,
         )
-        for a in APPLICATION_DATES + AMENDING_APPLICATION_DATES
+        for a in sorted(APPLICATION_DATES + AMENDING_APPLICATION_DATES, key=lambda d: d.date)
     ]
 
     obligation_graph = build_obligation_graph(

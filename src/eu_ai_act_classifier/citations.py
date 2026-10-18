@@ -50,7 +50,7 @@ TRANSPARENCY_GUIDANCE_URL = (
 )
 
 
-BINDING_SOURCE_RETRIEVED_ON = "2026-08-26"
+BINDING_SOURCE_RETRIEVED_ON = "2026-10-18"
 ADVISORY_SOURCE_RETRIEVED_ON = "2026-06-18"
 
 
@@ -169,7 +169,11 @@ def cite(ref: str, *, verified: bool = True) -> Citation:
 
 
 # --- Application timeline (Art. 113 AIA) -----------------------------------
-# Entry into force 1.8.2024; staggered application thereafter.
+# Entry into force 1.8.2024; staggered application thereafter. Checked on
+# 2026-10-18 against Art. 113 and Art. 111 in the consolidated text of
+# 27 July 2026 (CELEX 02024R1689-20260727) and against Art. 1, points (39) and
+# (40) of Regulation (EU) 2026/1744 (OJ L, 2026/1744, 24.7.2026; in force
+# 27.7.2026 under its Art. 4). The engine sorts the entries by date.
 @dataclass(frozen=True, slots=True)
 class ApplicationDate:
     provision: str
@@ -184,19 +188,34 @@ APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ApplicationDate(
         "Chapters I-II, incl. Art. 5 (prohibited practices)",
         "2025-02-02",
-        "Prohibitions apply from 2 February 2025 (Art. 113(a) AIA).",
+        (
+            "Art. 113, third paragraph, point (a) AIA. Art. 5(1), first subparagraph, "
+            "points (ba) and (bb), and Art. 5(1a) and (1b) apply from 2 December 2026."
+        ),
     ),
     ApplicationDate(
         "Chapter V (general-purpose AI models)",
         "2025-08-02",
-        "GPAI obligations apply from 2 August 2025 (Art. 113(b) AIA).",
+        "GPAI obligations apply from 2 August 2025 (Art. 113, third paragraph, point (b) AIA).",
+    ),
+    ApplicationDate(
+        "Chapter III Section 4, Chapter VII, Chapter XII (except Art. 101) and Art. 78",
+        "2025-08-02",
+        (
+            "Notifying authorities and notified bodies, governance, penalties and "
+            "confidentiality apply from 2 August 2025 (Art. 113, third paragraph, point (b) "
+            "AIA). Art. 101 applies from the general date."
+        ),
     ),
     ApplicationDate(
         "General application for provisions without a later specific date",
         "2026-08-02",
         (
-            "The general application date remains 2 August 2026, subject to the later "
-            "dates introduced by Regulation (EU) 2026/1744."
+            "Art. 113, second paragraph AIA. Literal reading, confirm with counsel: this "
+            "includes the high-risk duties in Chapter III, Section 5 (Arts. 40-49) and "
+            "Chapter IX (e.g. Arts. 72 and 73), which point (c) does not defer. If they are "
+            "read as following the Sections 1 to 3 deferral, 2 December 2027 (Annex III) "
+            "or 2 August 2028 (Annex I) applies."
         ),
     ),
 )
@@ -204,22 +223,60 @@ APPLICATION_DATES: tuple[ApplicationDate, ...] = (
 
 AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ApplicationDate(
-        "Regulation (EU) 2026/1744: Annex III high-risk systems",
-        "2027-12-02",
+        "Regulation (EU) 2026/1744: Arts. 102-110 AIA (amendments to other Union acts)",
+        "2026-07-27",
         (
-            "Regulation (EU) 2026/1744 sets 2 December 2027 for the relevant Annex III "
-            "high-risk system provisions."
+            "Art. 113, third paragraph, point (d) AIA, added by Art. 1, point (40) of "
+            "Regulation (EU) 2026/1744."
         ),
         SourceStatus.BINDING_LEVEL_1,
         "ai-act-amendment-2026-1744",
         AI_ACT_AMENDMENT_URL,
     ),
     ApplicationDate(
-        "Regulation (EU) 2026/1744: product-embedded high-risk systems",
+        "Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA",
+        "2026-12-02",
+        (
+            "Prohibitions on non-consensual intimate imagery and child sexual abuse "
+            "material apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA "
+            "as replaced by Art. 1, point (40) of Regulation (EU) 2026/1744)."
+        ),
+        SourceStatus.BINDING_LEVEL_1,
+        "ai-act-amendment-2026-1744",
+        AI_ACT_AMENDMENT_URL,
+    ),
+    ApplicationDate(
+        "Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market",
+        "2026-12-02",
+        (
+            "Providers of AI systems generating synthetic audio, image, video or text "
+            "content placed on the market before 2 August 2026 comply with Art. 50(2) by "
+            "2 December 2026 (Art. 111(4) AIA, added by Art. 1, point (39) of Regulation "
+            "(EU) 2026/1744)."
+        ),
+        SourceStatus.BINDING_LEVEL_1,
+        "ai-act-amendment-2026-1744",
+        AI_ACT_AMENDMENT_URL,
+    ),
+    ApplicationDate(
+        "Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems",
+        "2027-12-02",
+        (
+            "Chapter III, Sections 1, 2 and 3 (except Art. 6(5)) apply from 2 December 2027 "
+            "for systems classified high-risk under Art. 6(2) and Annex III (Art. 113, third "
+            "paragraph, point (c)(i) AIA as replaced by Regulation (EU) 2026/1744)."
+        ),
+        SourceStatus.BINDING_LEVEL_1,
+        "ai-act-amendment-2026-1744",
+        AI_ACT_AMENDMENT_URL,
+    ),
+    ApplicationDate(
+        "Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems",
         "2028-08-02",
         (
-            "Regulation (EU) 2026/1744 sets 2 August 2028 for the relevant product-embedded "
-            "high-risk system provisions."
+            "Chapter III, Sections 1, 2 and 3 (except Art. 6(5)) apply from 2 August 2028 "
+            "for systems classified high-risk under Art. 6(1) and Annex I (Art. 113, third "
+            "paragraph, point (c)(ii) AIA as replaced by Regulation (EU) 2026/1744)."
         ),
         SourceStatus.BINDING_LEVEL_1,
         "ai-act-amendment-2026-1744",

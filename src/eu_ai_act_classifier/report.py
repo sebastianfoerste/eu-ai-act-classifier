@@ -74,6 +74,8 @@ def render_report(report: ClassificationReport) -> str:
                 f"{item.obligation_id}: {item.article} ({item.actor.value}), "
                 f"evidence: {item.evidence_artifact}, review: {item.review_status.value}"
             )
+            if item.application_date_note:
+                lines.append(f"      {item.application_date_note}")
         lines.append("")
 
     if report.open_questions:

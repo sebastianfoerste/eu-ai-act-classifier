@@ -85,10 +85,45 @@ Each graph item records:
 8. Source URL.
 9. Application date.
 10. Review status.
+11. Application date note, where the date rests on a contestable reading or a
+    transitional rule.
 
 The graph covers high-risk provider, deployer, importer, distributor,
 authorised representative, value-chain, GPAI, transparency, post-market
 monitoring and serious-incident duties.
+
+## Application Dates
+
+Dates follow Art. 113 AIA as amended by Regulation (EU) 2026/1744, checked on
+18 October 2026 against the consolidated text of 27 July 2026.
+
+Chapter III, Sections 1, 2 and 3 (Arts. 6 to 27, except Art. 6(5)) apply from
+2 December 2027 for Annex III systems and from 2 August 2028 for Annex I
+systems (Art. 113, third paragraph, point (c)). Graph items for Arts. 16 to 27
+carry that date.
+
+Point (c) does not defer Chapter III, Section 5 (Arts. 40 to 49) or Chapter IX
+(Arts. 72 and 73). Read literally, those duties apply from the general date of
+2 August 2026 (Art. 113, second paragraph). That reading is contested: the
+duties bite only on systems classified high-risk under Art. 6, which is itself
+deferred. Art. 16(f) to (i) also makes Arts. 43, 47, 48 and 49(1) provider
+duties, and Art. 17(1)(h) and (i) builds Arts. 72 and 73 into the quality
+management system; both sit in Section 3 and are deferred too. The graph
+therefore gives these items
+2026-08-02 with the note "Literal reading, confirm with counsel", names the
+deferred date that applies if they follow Sections 1 to 3, and marks them
+`review_required`. The engine does not pick a side.
+
+Art. 50 items (Chapter IV) carry 2 August 2026. Under Art. 111(4), providers of
+generative systems placed on the market before that date have until
+2 December 2026 to comply with Art. 50(2); the Art. 50(2) item carries that
+transition as its note unless the profile gives a later placing-on-market date. GPAI items (Chapter V) carry 2 August 2025.
+
+The binding timeline also lists the point (a) exception (Art. 5(1), first
+subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b), from
+2 December 2026), the full point (b) list (Chapter III Section 4, Chapters V,
+VII and XII except Art. 101, and Art. 78, from 2 August 2025) and point (d)
+(Arts. 102 to 110, from 27 July 2026).
 
 ## Draft Work Products
 

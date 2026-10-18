@@ -23,7 +23,7 @@ Implementation:
 
 ## Obligation Graph
 
-Turns classification findings into reviewer-facing obligations with article, actor role, trigger, evidence artifact, source status, application date and review status.
+Turns classification findings into reviewer-facing obligations with article, actor role, trigger, evidence artifact, source status, application date, review status and, where the date rests on a contestable reading or a transitional rule, an application date note.
 
 Implementation:
 

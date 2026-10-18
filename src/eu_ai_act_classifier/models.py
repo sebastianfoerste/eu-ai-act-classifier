@@ -318,6 +318,9 @@ class ObligationGraphItem(BaseModel):
     source_url: str
     application_date: str
     review_status: ReviewStatus
+    # Qualifies the application date: a contestable reading of Art. 113 AIA or a
+    # transitional rule in Art. 111 AIA.
+    application_date_note: str | None = None
 
 
 class AdvisoryNote(BaseModel):

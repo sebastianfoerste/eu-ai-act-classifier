@@ -319,6 +319,7 @@ function itemCard(badge, title, citation, lines = [], meta = "") {
 
 const badge = (tone, text) => node("span", `badge ${tone}`, text);
 const unverifiedNote = verified => verified === false ? node("p", "item-text unverified", "noch zu verifizieren · citation pending verification") : null;
+const dateNote = note => note ? node("p", "item-text date-note", note) : null;
 
 function sectionDefinitions() {
   const r = report;
@@ -358,9 +359,9 @@ function sectionDefinitions() {
     {
       title: "Obligation graph · evidence and review",
       items: r.obligation_graph.map(g => ({
-        search: [g.obligation_id, g.article, g.actor, g.trigger, g.requirement, g.evidence_artifact, g.review_status],
+        search: [g.obligation_id, g.article, g.actor, g.trigger, g.requirement, g.evidence_artifact, g.review_status, g.application_date_note],
         render: () => itemCard(badge(REVIEW_TONE[g.review_status] ?? "tone-grey", REVIEW_LABEL[g.review_status] ?? g.review_status), g.requirement, g.article,
-          [`Trigger: ${g.trigger}`, `Evidence: ${g.evidence_artifact}`],
+          [`Trigger: ${g.trigger}`, `Evidence: ${g.evidence_artifact}`, dateNote(g.application_date_note)],
           `${ROLE_LABELS[g.actor] ?? g.actor} · applies from ${g.application_date} · ${SOURCE_LABEL[g.source_status] ?? g.source_status} · ${g.obligation_id}`),
       })),
     },
