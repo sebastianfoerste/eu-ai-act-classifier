@@ -31,6 +31,15 @@ PUBLIC_MARKDOWN = [
 EM_DASH = "\u2014"
 EN_DASH = "\u2013"
 README_MAX_WORDS = 350
+# The README is the PyPI long description, so it links into the repository by absolute URL.
+GITHUB_REPO = "https://github.com/sebastianfoerste/eu-ai-act-classifier"
+RAW_REPO = "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier"
+REPO_LINK_PREFIXES = (f"{GITHUB_REPO}/blob/", f"{GITHUB_REPO}/tree/", f"{RAW_REPO}/")
+REPO_MAIN_LINK = re.compile(
+    rf"(?:{re.escape(GITHUB_REPO)}/(?P<kind>blob|tree)|{re.escape(RAW_REPO)})/main"
+    r"(?:/(?P<path>[^#]*))?(?:#(?P<anchor>.*))?"
+)
+URL_SCHEME = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*:")
 ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 DAY_MONTH_YEAR = re.compile(
     r"\b\d{1,2}(?:st|nd|rd|th)?\s+"
@@ -71,6 +80,15 @@ def _heading_anchors(path: Path) -> set[str]:
     return anchors
 
 
+def _link_targets(text: str) -> list[str]:
+    # Inline links and images, reference definitions, and HTML href or src attributes.
+    return [
+        *re.findall(r"\]\(\s*<?([^)\s>]+)", text),
+        *re.findall(r"^ {0,3}\[[^\]]+\]:\s*<?([^\s>]+)", text, re.M),
+        *re.findall(r"\b(?:href|src)\s*=\s*[\"']([^\"']+)", text),
+    ]
+
+
 def test_examples_readme_lists_every_json_example() -> None:
     example_docs = EXAMPLES_README.read_text(encoding="utf-8")
 
@@ -80,16 +98,28 @@ def test_examples_readme_lists_every_json_example() -> None:
         assert f"`{path.name}`" in example_docs
 
 
-def test_readme_local_markdown_links_exist() -> None:
+def test_readme_has_no_relative_links() -> None:
     readme = README.read_text(encoding="utf-8")
-    markdown_links = re.findall(r"\[[^\]]+\]\(([^)]+\.md)\)", readme)
-
-    for link in markdown_links:
-        assert Path(link).exists(), f"README link target does not exist: {link}"
+    relative = [target for target in _link_targets(readme) if not URL_SCHEME.match(target)]
+    assert not relative, f"README is the PyPI description, use absolute links: {relative}"
 
 
-def test_readme_and_moved_sections_have_working_relative_links() -> None:
-    for path in [README, *README_CONTENT_DOCS]:
+def test_readme_repository_links_resolve_locally() -> None:
+    for target in _link_targets(README.read_text(encoding="utf-8")):
+        if not target.startswith(REPO_LINK_PREFIXES):
+            continue
+        link = REPO_MAIN_LINK.fullmatch(target)
+        assert link, f"README repository link does not point at main: {target}"
+        resolved, anchor = Path(link["path"] or "."), link["anchor"]
+        expected = "directory" if link["kind"] == "tree" else "file"
+        found = resolved.is_dir() if expected == "directory" else resolved.is_file()
+        assert found, f"README link target is not a {expected}: {target}"
+        if anchor and resolved.suffix == ".md":
+            assert anchor in _heading_anchors(resolved), f"README anchor not found: {target}"
+
+
+def test_moved_sections_have_working_relative_links() -> None:
+    for path in README_CONTENT_DOCS:
         text = path.read_text(encoding="utf-8")
         for target in re.findall(r"\]\(([^)\s]+)\)", text):
             if target.startswith(("http://", "https://")):
@@ -117,7 +147,7 @@ def test_readme_states_no_dates() -> None:
 def test_readme_links_docs_index_overview_and_claim_ledger() -> None:
     readme = README.read_text(encoding="utf-8")
     for target in ("docs/README.md", "docs/overview.md", "docs/REGULATORY_CLAIM_LEDGER.md"):
-        assert f"]({target})" in readme
+        assert f"]({GITHUB_REPO}/blob/main/{target})" in readme
 
 
 def test_launch_readiness_is_discoverable_from_readme() -> None:
