@@ -35,6 +35,15 @@
       "title": "AnnexIII",
       "type": "string"
     },
+    "AnnexISection": {
+      "description": "Annex I sections for the Art. 6(1) AIA product route.\n\nFor a Section B product only Art. 6(1), Art. 60a and Arts. 102 to 112 apply,\nand Arts. 57 to 59 only in so far as the high-risk requirements have been\nintegrated in the sectoral legislation (Art. 2(2) AIA). Regulation (EU)\n2026/1744 moved machinery to Section B:\nSection A, point 1 is deleted and Regulation (EU) 2023/1230 is Section B,\npoint 21.",
+      "enum": [
+        "A",
+        "B"
+      ],
+      "title": "AnnexISection",
+      "type": "string"
+    },
     "Derogation": {
       "description": "Art. 6(3) AIA derogation facts for an Annex III system.\n\nAn Annex III system is *not* high-risk if it does not pose a significant\nrisk of harm, but only where one of the four conditions holds AND the\nsystem does not perform profiling of natural persons. Profiling always\nkeeps the system high-risk (Art. 6(3) subpara. 2 AIA).",
       "properties": {
@@ -83,6 +92,8 @@
       "enum": [
         "5.1.a",
         "5.1.b",
+        "5.1.ba",
+        "5.1.bb",
         "5.1.c",
         "5.1.d",
         "5.1.e",
@@ -215,6 +226,18 @@
       "title": "Public Authority Use",
       "type": "boolean"
     },
+    "deployer_public_authority": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Deployer Public Authority"
+    },
     "deployer_public_law_body": {
       "anyOf": [
         {
@@ -289,6 +312,19 @@
       "title": "Gpai Systemic Risk Designated",
       "type": "boolean"
     },
+    "gpai_model_placing_on_market_date": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Gpai Model Placing On Market Date"
+    },
     "prohibited_practices": {
       "items": {
         "$ref": "#/$defs/ProhibitedPractice"
@@ -305,6 +341,17 @@
       "default": false,
       "title": "Annex I Third Party Assessment",
       "type": "boolean"
+    },
+    "annex_i_section": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AnnexISection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "annex_iii_area": {
       "anyOf": [

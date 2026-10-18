@@ -14,9 +14,9 @@ Implementation:
 
 | Gate | Decides | Example from the eval set |
 |---|---|---|
-| Scope and intake | AI-system status, EU nexus, transitional dates | `examples/ambiguous_use_case.json` |
-| Prohibited practices (Art. 5) | Flags prohibited use cases | `examples/social_scoring.json`, `examples/emotion_hiring.json` |
-| High-risk (Art. 6, Annex III) | Risk tier and provider/deployer obligations | `examples/credit_scoring.json`, `examples/cv_screening.json` |
+| Scope and intake | AI-system status, EU nexus, and the Art. 111(2) transition: placing-on-market and putting-into-service dates compared with the Chapter III date | `examples/ambiguous_use_case.json` |
+| Prohibited practices (Art. 5) | Flags prohibited use cases, including Art. 5(1)(ba) and (bb) from 2 December 2026 | `examples/social_scoring.json`, `examples/emotion_hiring.json`, `examples/intimate_imagery_generator.json` |
+| High-risk (Art. 6, Annex I, Annex III) | Risk tier and provider/deployer obligations; for an Annex I, Section B product only the Art. 2(2) provisions | `examples/credit_scoring.json`, `examples/cv_screening.json` |
 | GPAI | Systemic-risk status and compute scale | `examples/gpai_systemic_by_flops.json` |
 | Transparency | Limited-risk cases | `examples/deepfake_generator.json`, `examples/support_chatbot.json` |
 
@@ -38,6 +38,8 @@ Implementation:
 ## Obligation Graph
 
 Turns classification findings into reviewer-facing obligations with article, actor role, trigger, evidence artifact, source status, application date, review status and, where the date rests on a contestable reading or a transitional rule, an application date note.
+
+Beyond the Chapter III duties, the graph covers Art. 49(3) registration of use by public-authority deployers, the Art. 111(2) transition for high-risk systems already on the market (with the 2 August 2030 deadline for systems intended to be used by public authorities), the Art. 2(2) limit for Annex I, Section B products, and the Art. 111(3) and (4) transitions dated by separate model and system dates. Contested items carry "Literal reading, confirm with counsel".
 
 Implementation:
 

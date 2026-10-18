@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from .catalog import ART_49_2
+from .catalog import ART_2_2, ART_49_2
 from .models import ClassificationReport, Disposition, ObligationGraphItem
 
 ARTIFACT_NAMES = {
@@ -145,7 +145,7 @@ def _render_artifact(title: str, report: ClassificationReport, checklist: list[s
         "",
         "## Review Status",
         "",
-        _review_status(report),
+        _review_status(report) + _section_b_status(report, title),
         "",
         "## Checklist",
         "",
@@ -185,7 +185,37 @@ def _review_status(report: ClassificationReport) -> str:
     return "Classifier status is determined, but human legal review is still required."
 
 
+def _section_b_status(report: ClassificationReport, title: str) -> str:
+    """A Chapter III work product for an Annex I, Section B product with no Annex III
+    duty behind it: Art. 2(2) AIA does not require it."""
+
+    if not any(word in title.lower() for word in _HIGH_RISK_ARTIFACTS):
+        return ""
+    if _matching_graph(report, title) or not any(
+        item.article == ART_2_2 for item in report.obligation_graph
+    ):
+        return ""
+    return (
+        " Annex I, Section B product: Art. 2(2) AIA does not require this work product under "
+        "the AI Act. Use it only as far as the sectoral legislation integrates the high-risk "
+        "requirements."
+    )
+
+
 def _relevant_graph(report: ClassificationReport, title: str) -> list[ObligationGraphItem]:
+    items = _matching_graph(report, title)
+    title_lower = title.lower()
+    if any(word in title_lower for word in _HIGH_RISK_ARTIFACTS):
+        # Art. 2(2) AIA decides whether these Chapter III work products are owed at all
+        # for an Annex I, Section B product.
+        items += [item for item in report.obligation_graph if item.article == ART_2_2]
+    return items
+
+
+_HIGH_RISK_ARTIFACTS = ("fria", "fundamental rights", "annex iv", "post-market", "serious incident")
+
+
+def _matching_graph(report: ClassificationReport, title: str) -> list[ObligationGraphItem]:
     title_lower = title.lower()
     if "fria" in title_lower or "fundamental rights" in title_lower:
         return [item for item in report.obligation_graph if item.article.startswith("Art. 27")]

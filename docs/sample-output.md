@@ -25,6 +25,7 @@ Binding application timeline:
   ...
   2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
   2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
+  2030-08-02: Regulation (EU) 2026/1744: Art. 111(2) AIA, high-risk systems for public authorities
 
 Source manifest:
   - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-10-18
@@ -41,7 +42,9 @@ A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK 
 
 When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](../examples/classification-packet.md) and [`examples/classification-packet.json`](../examples/classification-packet.json).
 
-![CLI sample output: CreditSightScore classified high-risk with Articles 9, 10 and 11 obligations](demo.png)
+![CLI output of eu-ai-act-classify examples/credit_scoring.json: CreditSightScore classified high-risk, with its obligations, obligation graph and binding application timeline](demo.png)
+
+`docs/demo.png` is rendered from this real output by `scripts/render_demo.py`.
 
 ## CLI Report
 
@@ -86,10 +89,61 @@ Binding application timeline:
   2027-08-02: Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025
   2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
   2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
+  2030-08-02: Regulation (EU) 2026/1744: Art. 111(2) AIA, high-risk systems for public authorities
 
 Source manifest:
   - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-10-18
   - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-10-18
+```
+
+## Systems Already On The Market And Public-Authority Deployers
+
+Command (a synthetic profile on stdin):
+
+```bash
+echo '{"name":"Benefits triage","roles":["deployer"],"annex_iii_area":"III.5.a","public_authority_use":true,"putting_into_service_date":"2026-09-01"}' | eu-ai-act-classify -
+```
+
+Selected output. The system was put into service between 2 August 2026 and its Chapter III date, so whether Art. 111(2) covers it turns on which date "the date of application of Chapter III" means, and the counsel flag says so:
+
+```text
+  Transitional status: Article 111(2) check: the system was put into service on 2026-09-01, before 2027-12-02, when Chapter III, Sections 1 to 3 apply to this system (Art. 113, third paragraph, point (c)(i) AIA): apart from Art. 5 the Regulation applies only if its design changes significantly as from that date; confirm whether it has. As the system is intended to be used by public authorities, its providers and deployers comply by 2 August 2030 in any case. Literal reading, confirm with counsel: ...
+
+Obligation graph:
+  - high-risk.deployer.26: Art. 26 AIA (deployer), evidence: Deployer operating procedure and monitoring log., review: determined
+  - high-risk.deployer.49.3: Art. 49(3) AIA (deployer), evidence: EU database registration-of-use record., review: review_required
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+  - high-risk.deployer.111.2: Art. 111(2) AIA (deployer), evidence: First placing-on-market or putting-into-service record and design-change log., review: review_required
+      Literal reading, confirm with counsel: Art. 111(2) AIA refers to "the date of application of Chapter III referred to in Article 113", and Art. 113 gives Chapter III no single date. ...
+```
+
+In the JSON report the Art. 111(2) item has `"application_date": "2030-08-02"`.
+
+## Annex I, Section B Products
+
+Command:
+
+```bash
+echo '{"name":"Robot arm controller","annex_i_safety_component":true,"annex_i_third_party_assessment":true,"annex_i_section":"B"}' | eu-ai-act-classify -
+```
+
+The system stays high-risk under Art. 6(1), but the Chapter III set is replaced by the Art. 2(2) provisions:
+
+```text
+Obligations:
+  - Art. 2(2) AIA: Annex I, Section B product: limited application. Only Art. 6(1), Art. 60a and Arts. 102 to 112 AIA apply; Arts. 57, 58 and 59 apply only in so far as the high-risk requirements have been integrated in that Union harmonisation legislation. Meet the high-risk requirements through the sectoral Union harmonisation legislation.
+```
+
+## Prohibited Practices From 2 December 2026
+
+`examples/intimate_imagery_generator.json` uses the code `5.1.ba`:
+
+```text
+Risk tier: PROHIBITED (Art. 5 AIA)
+
+Findings:
+  [blocker] Art. 5(1)(ba) AIA: Generating or manipulating intimate imagery of an identifiable person without consent (prohibited from 2 December 2026)
+      Prohibited practice under Art. 5 AIA from 2 December 2026 (2026-12-02; Art. 113, third paragraph, point (a) AIA, as replaced by Regulation (EU) 2026/1744). Art. 5(1)(ba) AIA: "the placing on the market, ...". Art. 5(1a): ... Art. 5(1b): ...
 ```
 
 ## Artifact Draft

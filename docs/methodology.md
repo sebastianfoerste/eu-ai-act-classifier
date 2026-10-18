@@ -16,8 +16,10 @@ facts. The engine applies the rules and makes uncertainty visible.
 ## Gate Order
 
 1. Scope and intake: Art. 2, Art. 3(1), intended purpose, EU nexus, exclusions
-   and Article 111 transition facts.
-2. Prohibited practices: Art. 5(1)(a) to (h) AIA. A hit is a hard stop.
+   and the Art. 111(2) transition: the placing-on-market and
+   putting-into-service dates compared with the Chapter III date.
+2. Prohibited practices: Art. 5(1)(a) to (h) AIA, including points (ba) and
+   (bb), which apply from 2 December 2026. A hit is a hard stop.
 3. High-risk classification: Art. 6(1), Art. 6(2), Art. 6(3), Annex I and
    Annex III.
 4. GPAI: Art. 51 systemic threshold and Arts. 53, 55 and 56 obligations.
@@ -45,6 +47,25 @@ binding classification.
 
 Annex I product-safety systems are high-risk where both the safety-component
 route and third-party assessment route are asserted.
+
+`annex_i_section` says which section of Annex I lists the product's Union
+harmonisation legislation. For a Section B product, Art. 2(2) AIA, as replaced
+by Regulation (EU) 2026/1744, Art. 1, point (2)(a), applies "only Article 6(1),
+Article 60a and Articles 102 to 112"; Arts. 57, 58 and 59 apply only in so far
+as the high-risk requirements have been integrated in that legislation. The
+system stays high-risk under Art. 6(1), but the report lists no Chapter III
+obligation: one Art. 2(2) obligation and graph item replace them. Regulation
+(EU) 2026/1744, Art. 1, point (41) deleted Section A, point 1 and added
+Regulation (EU) 2023/1230 on machinery as Section B, point 21, so AI-enabled
+machinery is a Section B product. An unset section is treated as Section A
+(the full Chapter III set), and the Art. 6(1) finding says that a Section B
+product, machinery included, gets only the Art. 2(2) provisions.
+
+A Section B product that also falls in an Annex III area keeps the Annex III
+obligations: Art. 2(2) limits a system "classified as high-risk AI systems in
+accordance with Article 6(1)", and nothing in it disapplies the Art. 6(2)
+route. Its Art. 2(2) graph item carries "Literal reading, confirm with
+counsel" with the other reading.
 
 Annex III systems are treated as high-risk unless an Art. 6(3) derogation is
 asserted. An asserted derogation keeps the tier high-risk and changes the
@@ -132,6 +153,52 @@ Annex III, the deferred alternative named on these items is always
 2 December 2027 (point (c)(i)), also for a system that is an Annex I product
 too.
 
+Art. 49(3) adds a deployer item, `high-risk.deployer.49.3`, where the profile
+has the deployer role, the Annex III area is not point 2 (`III.unsure` keeps
+it, as for Art. 49(1)) and the deployer is a public authority. Deployers that
+are public authorities, Union institutions, bodies, offices or agencies, or
+persons acting on their behalf, register themselves, select the system and
+register its use in the EU database before putting it into service or using
+it. The test is the deployer's own status, `deployer_public_authority`, not
+the system's intended use. Where that field is not given and
+`public_authority_use` is true, the item still appears and its trigger asks
+the reviewer to confirm the deployer's status. For points 6
+and 7 the item adds the Art. 49(4) secure non-public section, and for point 1
+it adds it where the system is used in law enforcement, migration, asylum or
+border control management. As Section 5 duties, the item carries 2026-08-02,
+the counsel flag and the 2 December 2027 alternative, and is
+`review_required`. It also appears in the deployer obligations.
+
+Art. 111(2), as replaced by Regulation (EU) 2026/1744, Art. 1, point (39)(a),
+covers a high-risk system placed on the market or put into service before "the
+date of application of Chapter III referred to in Article 113" only if, as
+from that date, its design changes significantly. Providers and deployers of
+high-risk systems intended to be used by public authorities comply by
+2 August 2030 in any case. The engine compares `placing_on_market_date` and
+`putting_into_service_date` with the point (c) date for the system's route
+(2 December 2027, or 2 August 2028 for an Annex I product without an Annex III
+area). If either date is before it, the graph gets a `review_required`
+Art. 111(2) item for each provider and deployer role the profile holds (or,
+with neither role, for its first operator role). The item's requirement follows
+`significant_change_after_application_date`. With `public_authority_use` it
+adds the 2 August 2030 duty and carries 2030-08-02, unless a significant change
+is asserted, which brings the changed system in from the Chapter III date.
+Art. 113 gives Chapter III no single date: Section 4 applies from
+2 August 2025 and, on the literal reading above, Section 5 from
+2 August 2026. Where the earliest given date falls on or after 2 August 2026
+but before the point (c) date, the result turns on which date is meant, so the
+item and the scope text carry "Literal reading, confirm with counsel". The
+note also states the Art. 111(1) carve-out for the Annex X large-scale IT
+systems, and that the first unit of the type and model decides (recital (39)
+of Regulation (EU) 2026/1744). A Section B product without an Annex III area
+gets no Art. 111(2) item, since none of its Chapter III duties apply.
+
+The scope gate's transitional status states the same comparison in words:
+which dates were given, the Chapter III date and its point, whether the system
+predates it, the significant-change position and the 2030 deadline for
+public-authority use. Without dates it names the date to compare with; without
+a high-risk route it says there is no Chapter III date to compare with.
+
 Art. 50 items (Chapter IV) carry 2 August 2026, subject to the Art. 50(2) rule
 that follows. Under Art. 111(4), providers of generative systems placed on the
 market before that date have until 2 December 2026 to comply with Art. 50(2).
@@ -146,24 +213,38 @@ before that date have until 2 August 2027 to comply. If the profile's
 placing-on-market date is before 2 August 2025, every GPAI item (Arts. 53, 55
 and 56) carries 2027-08-02 and the Art. 111(3) note. If it is on or after that
 date, the items carry 2025-08-02 and no note. If the profile gives no date,
-they carry 2025-08-02 with the transition as their note. For a GPAI model
-profile, `placing_on_market_date` is read as the model's placing-on-market
-date.
+they carry 2025-08-02 with the transition as their note.
+
+Art. 111(3) dates the model, Art. 111(4) the system, so the profile has two
+fields. `gpai_model_placing_on_market_date` is the model's date and drives
+Art. 111(3); `placing_on_market_date` stays the AI system's date and drives
+Art. 111(4) (and Art. 111(2)). For backwards compatibility, a GPAI profile
+that gives only `placing_on_market_date` is dated by it as before, and every
+GPAI item's note says so and asks for the model's own date.
 
 Both transitions apply to systems (Art. 111(4)) and models (Art. 111(3))
 placed on the market "before" the cut-off date, so one placed on the cut-off
 date itself does not qualify. Only placing on the market counts; a
 putting-into-service date alone does not drop the note. Because the engine
-compares dates, `placing_on_market_date` and `putting_into_service_date` must
-be ISO dates (YYYY-MM-DD); a profile with any other format is rejected.
+compares dates, `placing_on_market_date`, `putting_into_service_date` and
+`gpai_model_placing_on_market_date` must be ISO dates (YYYY-MM-DD); a profile
+with any other format is rejected.
+
+The prohibited-practice codes `5.1.ba` and `5.1.bb` cover Art. 5(1), first
+subparagraph, points (ba) and (bb), inserted by Regulation (EU) 2026/1744,
+Art. 1, point (7). Their findings quote the point, summarise the Art. 5(1a)
+conditions (and, for point (ba), Art. 5(1b)) and say that the ban applies
+from 2 December 2026 (Art. 113, third paragraph, point (a)). The sentence
+does not depend on the date of the run, so the output stays deterministic.
 
 The binding timeline also lists the point (a) exception (Art. 5(1), first
 subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b), from
 2 December 2026), the full point (b) list (Chapter III Section 4, Chapters V,
 VII and XII except Art. 101, and Art. 78, from 2 August 2025), point (d)
-(Arts. 102 to 110, from 27 July 2026) and the Art. 111(3) deadline of
+(Arts. 102 to 110, from 27 July 2026), the Art. 111(3) deadline of
 2 August 2027 for general-purpose AI models already on the market before
-2 August 2025.
+2 August 2025, and the Art. 111(2) deadline of 2 August 2030 for high-risk
+systems intended to be used by public authorities.
 
 ## Draft Work Products
 

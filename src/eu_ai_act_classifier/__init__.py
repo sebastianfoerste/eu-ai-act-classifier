@@ -12,6 +12,7 @@ from __future__ import annotations
 from .engine import classify
 from .models import (
     AnnexIII,
+    AnnexISection,
     ClassificationReport,
     Derogation,
     Disposition,
@@ -29,6 +30,7 @@ from .report import render_report
 __version__ = "0.2.1"
 __all__ = [
     "AnnexIII",
+    "AnnexISection",
     "ClassificationReport",
     "Derogation",
     "Disposition",

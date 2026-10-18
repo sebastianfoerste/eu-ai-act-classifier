@@ -7,8 +7,9 @@ their own, with no higher tier, they place the system in the limited-risk tier.
 
 from __future__ import annotations
 
-from ..catalog import TRANSPARENCY
+from ..catalog import TRANSPARENCY, section_b_kept_flag
 from ..models import Finding, RiskTier, Severity
+from ..transitions import section_b_only
 from .base import GateOutput
 
 
@@ -27,12 +28,15 @@ def evaluate(profile) -> GateOutput:
     if out.transparency:
         out.tier_vote = RiskTier.LIMITED
         articles = ", ".join(ob.article for ob in out.transparency)
+        detail = "Art. 50 AIA transparency duties are triggered."
+        if section_b_only(profile):
+            detail += f" {section_b_kept_flag('Art. 50', 'the Art. 50 duties')}"
         out.findings.append(
             Finding(
                 rule_id="TRANSPARENCY.50",
                 citation=articles,
                 title="Transparency obligations apply",
-                detail="Art. 50 AIA transparency duties are triggered.",
+                detail=detail,
                 severity=Severity.MEDIUM,
                 tier=RiskTier.LIMITED,
             )

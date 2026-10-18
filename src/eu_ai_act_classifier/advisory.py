@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from .catalog import LATER_PROHIBITIONS
 from .citations import (
     AI_SYSTEM_DEFINITION_GUIDELINES_URL,
     GPAI_CODE_URL,
@@ -35,6 +36,12 @@ def build_advisory_notes(profile: SystemProfile) -> list[AdvisoryNote]:
                 detail=(
                     "Commission prohibited-practices guidance may help review the asserted "
                     "Art. 5 trigger and examples."
+                    + (
+                        " Art. 5(1)(ba) and (bb) were inserted by Regulation (EU) 2026/1744, "
+                        "so confirm that the version you use covers them."
+                        if set(profile.prohibited_practices) & set(LATER_PROHIBITIONS)
+                        else ""
+                    )
                 ),
                 source_id="prohibited-practices-guidelines",
                 source_url=PROHIBITED_GUIDELINES_URL,

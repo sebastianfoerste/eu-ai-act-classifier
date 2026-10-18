@@ -45,3 +45,20 @@ def test_examples_validate_against_schema_shape() -> None:
         data = json.loads(path.read_text(encoding="utf-8"))
         if "name" in data and isinstance(data, dict) and path.name != "classification-packet.json":
             assert set(data) <= props, path.name
+
+
+def test_profile_schema_carries_the_omnibus_follow_up_fields() -> None:
+    profile = schema("profile")
+    props = profile["properties"]
+
+    for field in (
+        "placing_on_market_date",
+        "putting_into_service_date",
+        "gpai_model_placing_on_market_date",
+    ):
+        assert {"type": "string", "format": "date"} in props[field]["anyOf"], field
+    assert profile["$defs"]["AnnexISection"]["enum"] == ["A", "B"]
+    assert {"$ref": "#/$defs/AnnexISection"} in props["annex_i_section"]["anyOf"]
+    practices = profile["$defs"]["ProhibitedPractice"]["enum"]
+    assert practices.index("5.1.ba") == practices.index("5.1.b") + 1
+    assert practices.index("5.1.bb") == practices.index("5.1.ba") + 1

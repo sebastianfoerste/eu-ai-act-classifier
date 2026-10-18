@@ -13,6 +13,9 @@ from .catalog import (
     high_risk_importer_obligations,
     high_risk_provider_obligations,
     high_risk_value_chain_obligations,
+    public_authority_registration_applies,
+    section_b_annex_iii_flag,
+    section_b_obligations,
 )
 from .citations import AMENDING_APPLICATION_DATES, APPLICATION_DATES, REGULATION, source_manifest
 from .models import (
@@ -22,12 +25,22 @@ from .models import (
     Disposition,
     Obligation,
     RiskTier,
+    Role,
     ScopeStatus,
     SystemProfile,
     TimelineItem,
 )
 from .obligation_graph import build_obligation_graph
 from .rules import gpai, high_risk, prohibited, scope, transparency
+from .transitions import (
+    chapter_iii_date,
+    derogation_asserted,
+    describe_dates,
+    legacy_dates,
+    operators,
+    section_b_only,
+    section_b_product,
+)
 
 _FRIA_AREAS = {AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH}
 _FRIA_EXCLUDED_AREAS = {AnnexIII.CRITICAL_INFRASTRUCTURE}
@@ -64,15 +77,37 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
     documentation: list[Obligation] = []
     fria_required = False
 
-    if final_tier is RiskTier.HIGH:
+    if final_tier is RiskTier.HIGH and section_b_only(profile):
+        # Art. 2(2) AIA: none of the Chapter III duties below, only the listed provisions.
+        for role in operators(profile, (Role.PROVIDER,)):
+            obligations += section_b_obligations(role)
+    elif final_tier is RiskTier.HIGH:
         if profile.is_provider:
             obligations += high_risk_provider_obligations(
-                eu_database_registration=eu_database_registration_applies(profile.annex_iii_area)
+                eu_database_registration=eu_database_registration_applies(profile.annex_iii_area),
+                annex_iii_area=profile.annex_iii_area,
             )
             documentation += high_risk_documentation()
         if profile.is_deployer:
             fria_required = _fria_required(profile)
-            obligations += high_risk_deployer_obligations(fria_required=fria_required)
+            public_authority_registration = public_authority_registration_applies(
+                profile.annex_iii_area,
+                profile.deployer_public_authority,
+                profile.public_authority_use,
+            )
+            obligations += high_risk_deployer_obligations(
+                fria_required=fria_required,
+                public_authority_registration=public_authority_registration,
+                annex_iii_area=profile.annex_iii_area,
+                deployer_public_authority=profile.deployer_public_authority,
+            )
+            if public_authority_registration and profile.deployer_public_authority is None:
+                open_questions.append(
+                    "Art. 49(3) AIA: the system is intended to be used by public authorities, "
+                    "but the deployer's status is not given. Confirm whether the deployer is, "
+                    "or acts on behalf of, a public authority or Union institution, body, "
+                    "office or agency (deployer_public_authority)."
+                )
             if _fria_needs_review(profile, fria_required):
                 open_questions.append(
                     "Art. 27 AIA: a fundamental rights impact assessment is also required "
@@ -95,6 +130,12 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
             )
         if profile.substantially_modifies_system or profile.puts_name_or_trademark_on_system:
             obligations += high_risk_value_chain_obligations()
+        if section_b_product(profile):
+            # Also in an Annex III area: the Annex III duties above stay, flagged here.
+            flag = section_b_annex_iii_flag(derogation_asserted(profile))
+            for role in operators(profile, (Role.PROVIDER,)):
+                obligations += section_b_obligations(role, flag)
+        open_questions += _art_111_2_questions(profile)
 
     if is_gpai and final_tier is not RiskTier.PROHIBITED:
         obligations += gpai_obligations(systemic_risk=gpai_systemic)
@@ -172,3 +213,19 @@ def _fria_needs_review(profile: SystemProfile, fria_required: bool) -> bool:
             or profile.deployer_private_public_service is None
         )
     )
+
+
+def _art_111_2_questions(profile: SystemProfile) -> list[str]:
+    """Art. 111(2) AIA: whether the Regulation applies to a legacy high-risk system at all
+    turns on a significant change in design, so an unknown answer is an open question."""
+
+    cut_off = chapter_iii_date(profile)
+    legacy = legacy_dates(profile, cut_off) if cut_off else []
+    if not legacy or profile.significant_change_after_application_date is not None:
+        return []
+    return [
+        f"Art. 111(2) AIA: the system was {describe_dates(legacy)}, before {cut_off}. Confirm "
+        "whether its design has changed significantly as from that date "
+        "(significant_change_after_application_date); apart from Art. 5, the Regulation "
+        "applies to it only then."
+    ]

@@ -34,6 +34,29 @@ cd web
 npm run build
 ```
 
+## Generated Files
+
+```bash
+uv run python scripts/build_schemas.py      # schemas/*.json
+uv run python scripts/build_playground.py   # playground samples, field guide and wheel
+uv run python scripts/build_coverage.py     # docs/coverage.md
+uv run eu-ai-act-classify examples/credit_scoring.json --json > examples/classification-packet.json
+uv run eu-ai-act-classify examples/credit_scoring.json > examples/classification-packet.md
+uv run python scripts/render_demo.py        # docs/demo.png, needs headless Chrome
+```
+
+`docs/cockpit.png` is a full-page capture of the production build, taken
+headlessly at 1920 px wide so the obligation tracker's dates are visible:
+
+```bash
+cd web && npm ci && CLASSIFIER_REPO_ROOT=.. npx next build
+CLASSIFIER_REPO_ROOT=.. npx next start -p 3917 &
+google-chrome --headless=new --no-sandbox --hide-scrollbars --force-device-scale-factor=1 \
+  --virtual-time-budget=20000 --window-size=1920,9000 --screenshot=cockpit.png http://127.0.0.1:3917/
+```
+
+Crop the empty space below the page before committing it.
+
 ## Quality Expectations
 
 1. Binding text, provisional context and nonbinding guidance stay visibly separated.

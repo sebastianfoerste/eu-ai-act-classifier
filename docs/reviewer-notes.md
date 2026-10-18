@@ -10,9 +10,17 @@ organisation-specific advice.
 
 ### Scope
 
-If AI-system status, EU nexus, intended purpose, excluded-use flags or Article
-111 transition facts are incomplete, the classifier records a scope review
-question.
+If AI-system status, EU nexus, intended purpose or excluded-use flags are
+incomplete, the classifier records a scope review question.
+
+### Systems Already On The Market
+
+The transitional status compares the placing-on-market and putting-into-service
+dates with the system's Chapter III date (Art. 111(2) AIA). A high-risk system
+that predates it gets a `review_required` Art. 111(2) item: confirm whether its
+design has changed significantly, and for public-authority use plan for
+2 August 2030. Where the cut-off turns on which Chapter III date is meant, the
+item says "Literal reading, confirm with counsel".
 
 ### Article 6(3) Derogation Claims
 

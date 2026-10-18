@@ -13,9 +13,20 @@ from .models import AnnexIII, Obligation, ProhibitedPractice, Role
 
 # Article labels other modules match on. Use these constants, not copies of the
 # string, so a wording change cannot silently break the match.
+ART_2_2 = "Art. 2(2) AIA"
 ART_49 = "Art. 49 AIA"
 ART_49_2 = "Art. 49(2) AIA"
+ART_49_3 = "Art. 49(3) AIA"
 ART_50_2 = "Art. 50(2) AIA"
+ART_111_2 = "Art. 111(2) AIA"
+
+# Art. 2(2) AIA, as replaced by Regulation (EU) 2026/1744, Art. 1, point (2)(a): what
+# still applies to an Art. 6(1) high-risk system for an Annex I, Section B product.
+SECTION_B_PROVISIONS = (
+    "only Art. 6(1), Art. 60a and Arts. 102 to 112 AIA apply; Arts. 57, 58 and 59 apply "
+    "only in so far as the high-risk requirements have been integrated in the sectoral "
+    "Union harmonisation legislation"
+)
 
 # --- Annex III high-risk areas (Art. 6(2) AIA) -----------------------------
 # Sub-point lettering for areas 6 (law enforcement) and 7 (migration) is
@@ -129,6 +140,15 @@ PROHIBITED: dict[ProhibitedPractice, tuple[Citation, str]] = {
         cite("Art. 5(1)(b) AIA"),
         "Exploiting vulnerabilities of age, disability or socio-economic situation",
     ),
+    ProhibitedPractice.NON_CONSENSUAL_INTIMATE_IMAGERY: (
+        cite("Art. 5(1)(ba) AIA"),
+        "Generating or manipulating realistic intimate material of an identifiable person "
+        "without consent",
+    ),
+    ProhibitedPractice.CHILD_SEXUAL_ABUSE_MATERIAL: (
+        cite("Art. 5(1)(bb) AIA"),
+        "Generating or manipulating child sexual abuse material under Directive 2011/93/EU",
+    ),
     ProhibitedPractice.SOCIAL_SCORING: (
         cite("Art. 5(1)(c) AIA"),
         "Social scoring leading to detrimental or unfavourable treatment",
@@ -156,6 +176,90 @@ PROHIBITED: dict[ProhibitedPractice, tuple[Citation, str]] = {
 }
 
 
+# Art. 5(1)(ba) and (bb) AIA, inserted by Regulation (EU) 2026/1744, Art. 1, point (7)(a),
+# in the words of the consolidated text. With Art. 5(1a) and (1b) they apply from
+# citations.POINT_A_EXCEPTION_DATE (Art. 113, third paragraph, point (a)), not from
+# 2 February 2025.
+LATER_PROHIBITIONS: dict[ProhibitedPractice, str] = {
+    ProhibitedPractice.NON_CONSENSUAL_INTIMATE_IMAGERY: (
+        "the placing on the market, the putting into service or the use of an AI system that "
+        "generates or manipulates realistic images, videos, audio or similar material of an "
+        "identifiable natural person's intimate parts, or of an identifiable natural person "
+        "engaged in sexually explicit activities, without that person's freely-given, "
+        "specific, informed, unambiguous and explicit consent for that generation or "
+        "manipulation"
+    ),
+    ProhibitedPractice.CHILD_SEXUAL_ABUSE_MATERIAL: (
+        "the placing on the market, the putting into service or the use of an AI system that "
+        "generates or manipulates material or performance within the meaning of Article 2, "
+        "points (c) and (e), of Directive 2011/93/EU, except where a 'without right' defence "
+        "applies under national law"
+    ),
+}
+# Art. 5(1a) and, for point (ba) only, Art. 5(1b) AIA, in the words of the
+# consolidated text (Regulation (EU) 2026/1744, Art. 1, point (7)(b)).
+ART_5_1A = (
+    "(a) the placing on the market or putting into service of an AI system that generates "
+    "or manipulates the material or performance referred to in paragraph 1, first "
+    "subparagraph, point (ba) or (bb) is only prohibited where: (i) that generation or "
+    "manipulation is the intended purpose of the AI system; or (ii) the system's design, "
+    "training, architecture, capabilities or user-facing functionalities make that "
+    "generation or manipulation a reasonably foreseeable and reproducible outcome, without "
+    "requiring significant technical modification, and the system does not have reasonable "
+    "and adequate technical safety measures and other safeguards to reliably prevent that "
+    "generation or manipulation, taking into account reasonably foreseeable misuse, and to "
+    "correct observed or reported misuse; (b) the use of an AI system that generates or "
+    "manipulates the material or performance referred to in paragraph 1, first "
+    "subparagraph, points (ba) and (bb) is only prohibited where the deployer uses the "
+    "system for the purpose of generating or manipulating such material or performance"
+)
+ART_5_1B = (
+    "an AI system that manipulates material in a way that does not increase the exposure of "
+    "any depicted intimate parts or alter the nature of any depicted sexually explicit "
+    "activities shall not constitute manipulation"
+)
+
+
+# Arts. 102 to 109 have the high-risk requirements taken into account in sectoral
+# delegated and implementing acts; Art. 2(2) adds no duty of its own.
+SECTION_B_ROUTE = (
+    "The high-risk requirements reach the product only through the sectoral legislation, as "
+    "far as its delegated or implementing acts integrate them."
+)
+
+
+# Contested Section B points. As in PR #26 the text says what the report does, then the
+# reading it departs from under "Literal reading, confirm with counsel".
+def section_b_kept_flag(provision: str, kept: str) -> str:
+    """Art. 2(2) AIA does not list ``provision`` for a Section B product; the report
+    keeps ``kept`` as the conservative reading."""
+
+    return (
+        f"This report keeps {kept} as the conservative reading. Literal reading, confirm with "
+        "counsel: for an Annex I, Section B product Art. 2(2) AIA lists only Art. 6(1), "
+        f"Art. 60a and Arts. 102 to 112, so on its wording {provision} does not apply."
+    )
+
+
+def section_b_annex_iii_flag(derogation_asserted: bool) -> str:
+    """A Section B product also in an Annex III area: the report keeps the Annex III
+    duties, although on its wording Art. 2(2) AIA leaves only the listed provisions."""
+
+    classified = "is also classified high-risk under Art. 6(2) and Annex III"
+    if derogation_asserted:
+        classified += (
+            " unless the asserted Art. 6(3) derogation is established, in which case only the "
+            "Art. 2(2) provisions apply"
+        )
+    return (
+        f"This system {classified}, and this report keeps the Annex III duties as the "
+        "conservative reading. Literal reading, confirm with counsel: on its wording Art. 2(2) "
+        "AIA covers any AI system classified high-risk in accordance with Art. 6(1) for a "
+        "Section B product, and Art. 6(2) is not among the provisions it lists, so only those "
+        "would apply."
+    )
+
+
 # --- High-risk obligation sets ---------------------------------------------
 def eu_database_registration_applies(annex_iii_area: AnnexIII | None) -> bool:
     """Art. 49(1) AIA provider registration in the EU database covers only high-risk
@@ -166,9 +270,72 @@ def eu_database_registration_applies(annex_iii_area: AnnexIII | None) -> bool:
     return annex_iii_area is not None and annex_iii_area is not AnnexIII.CRITICAL_INFRASTRUCTURE
 
 
-def high_risk_provider_obligations(*, eu_database_registration: bool) -> list[Obligation]:
+def public_authority_registration_applies(
+    annex_iii_area: AnnexIII | None,
+    deployer_public_authority: bool | None,
+    public_authority_use: bool,
+) -> bool:
+    """Art. 49(3) AIA: deployers that are public authorities, Union institutions, bodies,
+    offices or agencies, or persons acting on their behalf, register their use of an
+    Annex III system other than point 2. An unknown deployer status counts where the
+    system is intended to be used by public authorities, for the reviewer to confirm."""
+
+    if not eu_database_registration_applies(annex_iii_area):
+        return False
+    if deployer_public_authority is None:
+        return public_authority_use
+    return deployer_public_authority
+
+
+def secure_section_note(annex_iii_area: AnnexIII | None) -> str:
+    """Art. 49(4) AIA: the registration under Art. 49(1), (2) and (3) of points 6 and 7
+    of Annex III is in the secure non-public section of the EU database; point 1 is
+    there where used in law enforcement, migration, asylum or border control
+    management. ``UNSURE`` states the condition, since the point may be one of them."""
+
+    area = annex_iii_area.value if annex_iii_area else ""
+    if area.startswith(("III.6.", "III.7.")):
+        return " Register in the secure non-public section (Art. 49(4) AIA)."
+    if area.startswith("III.1."):
+        return (
+            " Where used in law enforcement, migration, asylum or border control management, "
+            "register in the secure non-public section (Art. 49(4) AIA)."
+        )
+    if annex_iii_area is AnnexIII.UNSURE:
+        return (
+            " If the Annex III point is 6 or 7, or 1 where used in law enforcement, migration, "
+            "asylum or border control management, register in the secure non-public section "
+            "(Art. 49(4) AIA)."
+        )
+    return ""
+
+
+def public_authority_registration_requirement(
+    annex_iii_area: AnnexIII | None, deployer_public_authority: bool | None
+) -> str:
+    """Art. 49(3) AIA, with the Art. 26(8) check that goes with it and any Art. 49(4)
+    note. Conditional where the deployer's status is inferred, not given."""
+
+    requirement = (
+        "Register as deployer, select the system and register its use in the EU database "
+        "before putting it into service or using it. If the system is not registered in the "
+        "EU database, do not use it and inform the provider or the distributor (Art. 26(8) "
+        f"AIA).{secure_section_note(annex_iii_area)}"
+    )
+    if deployer_public_authority is None:
+        return (
+            "Where the deployer is, or acts on behalf of, a public authority or Union "
+            f"institution, body, office or agency: {requirement[0].lower()}{requirement[1:]}"
+        )
+    return requirement
+
+
+def high_risk_provider_obligations(
+    *, eu_database_registration: bool, annex_iii_area: AnnexIII | None = None
+) -> list[Obligation]:
     """Provider duties for a high-risk system (Arts. 9-15, 17, 43, 47-49, 72-73 AIA).
-    Art. 49 only where ``eu_database_registration`` is true."""
+    Art. 49 only where ``eu_database_registration`` is true, with any Art. 49(4) note
+    for ``annex_iii_area``."""
     p = Role.PROVIDER
     obligations = [
         Obligation(
@@ -241,7 +408,10 @@ def high_risk_provider_obligations(*, eu_database_registration: bool) -> list[Ob
             article=ART_49,
             title="Registration",
             applies_to=p,
-            requirement="Register the system in the EU database before market placement.",
+            requirement=(
+                "Register the system in the EU database before market placement."
+                f"{secure_section_note(annex_iii_area)}"
+            ),
         ),
         Obligation(
             article="Art. 72 AIA",
@@ -261,8 +431,15 @@ def high_risk_provider_obligations(*, eu_database_registration: bool) -> list[Ob
     return [o for o in obligations if o.article != ART_49]
 
 
-def high_risk_deployer_obligations(*, fria_required: bool) -> list[Obligation]:
-    """Deployer duties for a high-risk system (Art. 26, and Art. 27 FRIA)."""
+def high_risk_deployer_obligations(
+    *,
+    fria_required: bool,
+    public_authority_registration: bool = False,
+    annex_iii_area: AnnexIII | None = None,
+    deployer_public_authority: bool | None = None,
+) -> list[Obligation]:
+    """Deployer duties for a high-risk system (Art. 26, Art. 27 FRIA, and Art. 49(3)
+    registration where ``public_authority_registration`` is true)."""
     d = Role.DEPLOYER
     out = [
         Obligation(
@@ -281,7 +458,44 @@ def high_risk_deployer_obligations(*, fria_required: bool) -> list[Obligation]:
                 requirement="Conduct a fundamental rights impact assessment before deployment.",
             )
         )
+    if public_authority_registration:
+        out.append(
+            Obligation(
+                article=ART_49_3,
+                title="Registration of use by a public-authority deployer",
+                applies_to=d,
+                requirement=public_authority_registration_requirement(
+                    annex_iii_area, deployer_public_authority
+                ),
+            )
+        )
     return out
+
+
+def section_b_requirement(*, annex_iii: bool = False, flag: str = "") -> str:
+    """The Art. 2(2) AIA requirement; for a Section B product also in an Annex III area
+    (``annex_iii``) limited to the Art. 6(1) route, with ``flag`` appended if given."""
+
+    requirement = f"{SECTION_B_PROVISIONS}. {SECTION_B_ROUTE}"
+    if not annex_iii:
+        return f"{requirement[0].upper()}{requirement[1:]}"
+    return f"Through the Art. 6(1) route, {requirement}{f' {flag}' if flag else ''}"
+
+
+def section_b_obligations(role: Role, annex_iii_flag: str | None = None) -> list[Obligation]:
+    """Art. 2(2) AIA: an Art. 6(1) high-risk system for an Annex I, Section B product gets
+    none of the Chapter III duties, only the provisions listed there. With an Annex III
+    area the Annex III duties stay and this obligation carries ``annex_iii_flag``."""
+    return [
+        Obligation(
+            article=ART_2_2,
+            title="Annex I, Section B product: limited application",
+            applies_to=role,
+            requirement=section_b_requirement(
+                annex_iii=annex_iii_flag is not None, flag=annex_iii_flag or ""
+            ),
+        )
+    ]
 
 
 def high_risk_importer_obligations() -> list[Obligation]:

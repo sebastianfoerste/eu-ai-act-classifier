@@ -23,7 +23,7 @@ Encodes Regulation (EU) 2024/1689 as consolidated on 27 July 2026, plus Regulati
 
 *Screenshot/GIF placeholder: to be added*
 
-> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 17 synthetic examples, or see [Example output](sample-output.md#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 18 synthetic examples, or see [Example output](sample-output.md#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
 ## Human-authored legal judgment
 

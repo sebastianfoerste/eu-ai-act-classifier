@@ -141,12 +141,30 @@ class ProhibitedPractice(StrEnum):
 
     SUBLIMINAL_MANIPULATION = "5.1.a"
     EXPLOITS_VULNERABILITIES = "5.1.b"
+    # Points (ba) and (bb), inserted by Regulation (EU) 2026/1744, apply from 2 December 2026.
+    NON_CONSENSUAL_INTIMATE_IMAGERY = "5.1.ba"
+    CHILD_SEXUAL_ABUSE_MATERIAL = "5.1.bb"
     SOCIAL_SCORING = "5.1.c"
     PREDICTIVE_POLICING_INDIVIDUAL = "5.1.d"
     FACIAL_SCRAPING = "5.1.e"
     EMOTION_RECOGNITION_WORK_EDUCATION = "5.1.f"
     BIOMETRIC_CATEGORISATION_SENSITIVE = "5.1.g"
     REALTIME_REMOTE_BIOMETRIC_ID = "5.1.h"
+
+
+class AnnexISection(StrEnum):
+    """Annex I sections for the Art. 6(1) AIA product route.
+
+    For a Section B product only Art. 6(1), Art. 60a and Arts. 102 to 112 apply,
+    and Arts. 57 to 59 only in so far as the high-risk requirements have been
+    integrated in the sectoral legislation (Art. 2(2) AIA). Regulation (EU)
+    2026/1744 moved machinery to Section B:
+    Section A, point 1 is deleted and Regulation (EU) 2023/1230 is Section B,
+    point 21.
+    """
+
+    SECTION_A = "A"
+    SECTION_B = "B"
 
 
 class Derogation(BaseModel):
@@ -218,10 +236,15 @@ class SystemProfile(BaseModel):
     intended_purpose_source: str = ""
     eu_nexus: bool | None = True
     excluded_use_flags: list[ExcludedUse] = Field(default_factory=list)
+    # The AI system's dates: Art. 111(2) and, for placing on the market, Art. 111(4) AIA.
     placing_on_market_date: IsoDate | None = None
     putting_into_service_date: IsoDate | None = None
     significant_change_after_application_date: bool | None = None
+    # A system intended to be used by public authorities (Art. 111(2) AIA).
     public_authority_use: bool = False
+    # The deployer is a public authority, Union institution, body, office or agency, or
+    # acts on behalf of one (Art. 49(3) AIA). None: not established.
+    deployer_public_authority: bool | None = None
     deployer_public_law_body: bool | None = None
     deployer_private_public_service: bool | None = None
     provider_established_outside_eu: bool = False
@@ -238,6 +261,8 @@ class SystemProfile(BaseModel):
         ),
     )
     gpai_systemic_risk_designated: bool = False  # Commission designation under Art. 51(1)(b)
+    # The model's own date for Art. 111(3) AIA, apart from the AI system's placing_on_market_date.
+    gpai_model_placing_on_market_date: IsoDate | None = None
 
     # Prohibited-practice screens (Art. 5(1) AIA)
     prohibited_practices: list[ProhibitedPractice] = Field(default_factory=list)
@@ -245,6 +270,7 @@ class SystemProfile(BaseModel):
     # High-risk screens
     annex_i_safety_component: bool = False  # Art. 6(1)(a): product / safety component
     annex_i_third_party_assessment: bool = False  # Art. 6(1)(b): third-party conformity assessment
+    annex_i_section: AnnexISection | None = None  # None: treated as Section A
     annex_iii_area: AnnexIII | None = None  # Art. 6(2) + Annex III
     derogation: Derogation = Field(default_factory=Derogation)
 

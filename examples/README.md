@@ -1,6 +1,6 @@
 # Example Systems
 
-Each file is a `SystemProfile`. The 17 base examples double as fixtures in
+Each file is a `SystemProfile`. The 18 base examples double as fixtures in
 `tests/test_examples.py`; expected classification is asserted on every run.
 
 ## Base Eval Set
@@ -10,6 +10,10 @@ Each file is a `SystemProfile`. The 17 base examples double as fixtures in
 
 `emotion_hiring.json`: Prohibited, determined. Emotion recognition in hiring
 under Art. 5(1)(f) AIA.
+
+`intimate_imagery_generator.json`: Prohibited, determined. Non-consensual
+intimate imagery under Art. 5(1)(ba) AIA, a ban that applies from 2 December
+2026.
 
 `cv_screening.json`: High-risk, determined. Employment selection under Annex III(4)(a)
 AIA.
