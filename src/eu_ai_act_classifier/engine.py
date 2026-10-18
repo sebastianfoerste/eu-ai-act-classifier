@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .advisory import build_advisory_notes
 from .catalog import (
+    eu_database_registration_applies,
     gpai_obligations,
     high_risk_authorized_representative_obligations,
     high_risk_deployer_obligations,
@@ -65,7 +66,9 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
 
     if final_tier is RiskTier.HIGH:
         if profile.is_provider:
-            obligations += high_risk_provider_obligations()
+            obligations += high_risk_provider_obligations(
+                eu_database_registration=eu_database_registration_applies(profile.annex_iii_area)
+            )
             documentation += high_risk_documentation()
         if profile.is_deployer:
             fria_required = _fria_required(profile)

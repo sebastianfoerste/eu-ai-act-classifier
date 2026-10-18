@@ -174,6 +174,22 @@ def cite(ref: str, *, verified: bool = True) -> Citation:
 # 27 July 2026 (CELEX 02024R1689-20260727) and against Art. 1, points (39) and
 # (40) of Regulation (EU) 2026/1744 (OJ L, 2026/1744, 24.7.2026; in force
 # 27.7.2026 under its Art. 4). The engine sorts the entries by date.
+#
+# Each date is written out once here; the timeline below and the obligation
+# graph both read these constants, so they cannot drift apart.
+POINT_A_DATE = "2025-02-02"  # Art. 113, third paragraph, point (a)
+POINT_A_EXCEPTION_DATE = "2026-12-02"  # point (a): Art. 5(1)(ba), (bb), 5(1a), (1b)
+POINT_B_DATE = "2025-08-02"  # point (b), incl. Chapter V (GPAI models)
+POINT_D_DATE = "2026-07-27"  # point (d): Arts. 102 to 110
+GENERAL_APPLICATION_DATE = "2026-08-02"  # Art. 113, second paragraph
+POINT_C_ANNEX_III = "2027-12-02"  # point (c)(i): Chapter III, Sections 1 to 3, Annex III
+POINT_C_ANNEX_I = "2028-08-02"  # point (c)(ii): Chapter III, Sections 1 to 3, Annex I
+# Art. 111(3): GPAI models placed on the market before POINT_B_DATE.
+ART_111_3_DEADLINE = "2027-08-02"
+# Art. 111(4): Art. 50(2) for systems placed on the market before GENERAL_APPLICATION_DATE.
+ART_111_4_DEADLINE = "2026-12-02"
+
+
 @dataclass(frozen=True, slots=True)
 class ApplicationDate:
     provision: str
@@ -187,7 +203,7 @@ class ApplicationDate:
 APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ApplicationDate(
         "Chapters I-II, incl. Art. 5 (prohibited practices)",
-        "2025-02-02",
+        POINT_A_DATE,
         (
             "Art. 113, third paragraph, point (a) AIA. Art. 5(1), first subparagraph, "
             "points (ba) and (bb), and Art. 5(1a) and (1b) apply from 2 December 2026."
@@ -195,12 +211,12 @@ APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ),
     ApplicationDate(
         "Chapter V (general-purpose AI models)",
-        "2025-08-02",
+        POINT_B_DATE,
         "GPAI obligations apply from 2 August 2025 (Art. 113, third paragraph, point (b) AIA).",
     ),
     ApplicationDate(
         "Chapter III Section 4, Chapter VII, Chapter XII (except Art. 101) and Art. 78",
-        "2025-08-02",
+        POINT_B_DATE,
         (
             "Notifying authorities and notified bodies, governance, penalties and "
             "confidentiality apply from 2 August 2025 (Art. 113, third paragraph, point (b) "
@@ -209,7 +225,7 @@ APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ),
     ApplicationDate(
         "General application for provisions without a later specific date",
-        "2026-08-02",
+        GENERAL_APPLICATION_DATE,
         (
             "Art. 113, second paragraph AIA. Literal reading, confirm with counsel: this "
             "includes the high-risk duties in Chapter III, Section 5 (Arts. 40-49) and "
@@ -224,7 +240,7 @@ APPLICATION_DATES: tuple[ApplicationDate, ...] = (
 AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ApplicationDate(
         "Regulation (EU) 2026/1744: Arts. 102-110 AIA (amendments to other Union acts)",
-        "2026-07-27",
+        POINT_D_DATE,
         (
             "Art. 113, third paragraph, point (d) AIA, added by Art. 1, point (40) of "
             "Regulation (EU) 2026/1744."
@@ -235,7 +251,7 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ),
     ApplicationDate(
         "Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA",
-        "2026-12-02",
+        POINT_A_EXCEPTION_DATE,
         (
             "Prohibitions on non-consensual intimate imagery and child sexual abuse "
             "material apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA "
@@ -247,7 +263,7 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ),
     ApplicationDate(
         "Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market",
-        "2026-12-02",
+        ART_111_4_DEADLINE,
         (
             "Providers of AI systems generating synthetic audio, image, video or text "
             "content placed on the market before 2 August 2026 comply with Art. 50(2) by "
@@ -260,7 +276,7 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ),
     ApplicationDate(
         "Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems",
-        "2027-12-02",
+        POINT_C_ANNEX_III,
         (
             "Chapter III, Sections 1, 2 and 3 (except Art. 6(5)) apply from 2 December 2027 "
             "for systems classified high-risk under Art. 6(2) and Annex III (Art. 113, third "
@@ -272,7 +288,7 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
     ),
     ApplicationDate(
         "Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems",
-        "2028-08-02",
+        POINT_C_ANNEX_I,
         (
             "Chapter III, Sections 1, 2 and 3 (except Art. 6(5)) apply from 2 August 2028 "
             "for systems classified high-risk under Art. 6(1) and Annex I (Art. 113, third "

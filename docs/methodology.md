@@ -109,15 +109,42 @@ duties bite only on systems classified high-risk under Art. 6, which is itself
 deferred. Art. 16(f) to (i) also makes Arts. 43, 47, 48 and 49(1) provider
 duties, and Art. 17(1)(h) and (i) builds Arts. 72 and 73 into the quality
 management system; both sit in Section 3 and are deferred too. The graph
-therefore gives these items
-2026-08-02 with the note "Literal reading, confirm with counsel", names the
-deferred date that applies if they follow Sections 1 to 3, and marks them
-`review_required`. The engine does not pick a side.
+therefore gives these items 2026-08-02 with the note "Literal reading, confirm
+with counsel", names the deferred date that applies if they follow Sections 1
+to 3, and marks them `review_required`. The engine does not pick a side.
 
-Art. 50 items (Chapter IV) carry 2 August 2026. Under Art. 111(4), providers of
-generative systems placed on the market before that date have until
-2 December 2026 to comply with Art. 50(2); the Art. 50(2) item carries that
-transition as its note unless the profile gives a later placing-on-market date. GPAI items (Chapter V) carry 2 August 2025.
+The Art. 49 registration duty appears only where Art. 49(1) reaches the system:
+high-risk systems listed in Annex III, except point 2 (critical
+infrastructure). An Annex I product without an Annex III area gets no Art. 49
+obligation or graph item. A point 2 system gets an Art. 49(5) graph item
+instead (registration at national level, not in the EU database), marked
+`review_required`. An unsettled Annex III point (`III.unsure`) keeps the
+Art. 49 item for review. Because registration reaches a system only through
+Annex III, the deferred alternative named on these items is always
+2 December 2027 (point (c)(i)), also for a system that is an Annex I product
+too.
+
+Art. 50 items (Chapter IV) carry 2 August 2026, subject to the Art. 50(2) rule
+that follows. Under Art. 111(4), providers of generative systems placed on the
+market before that date have until 2 December 2026 to comply with Art. 50(2).
+If the profile's placing-on-market date is before 2 August 2026, the
+Art. 50(2) item carries 2026-12-02 and the Art. 111(4) note. If it is on or
+after that date, the item carries 2026-08-02 and no note. If the profile gives
+no date, the item carries 2026-08-02 with the transition as its note.
+
+GPAI items (Chapter V) carry 2 August 2025. Under Art. 111(3), providers of
+general-purpose AI models placed on the market before that date have until
+2 August 2027 to comply. Each GPAI item keeps 2025-08-02 and carries that
+transition as its note, unless the profile's placing-on-market date is on or
+after 2 August 2025. For a GPAI model profile, `placing_on_market_date` is read
+as the model's placing-on-market date.
+
+Both transitions apply to systems (Art. 111(4)) and models (Art. 111(3))
+placed on the market "before" the cut-off date, so one placed on the cut-off
+date itself does not qualify. Only placing on the market counts; a
+putting-into-service date alone does not drop the note. Because the engine
+compares dates, `placing_on_market_date` and `putting_into_service_date` must
+be ISO dates (YYYY-MM-DD); a profile with any other format is rejected.
 
 The binding timeline also lists the point (a) exception (Art. 5(1), first
 subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b), from

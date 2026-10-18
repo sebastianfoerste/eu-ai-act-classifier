@@ -11,6 +11,11 @@ from __future__ import annotations
 from .citations import Citation, cite
 from .models import AnnexIII, Obligation, ProhibitedPractice, Role
 
+# Article labels other modules match on. Use these constants, not copies of the
+# string, so a wording change cannot silently break the match.
+ART_49 = "Art. 49 AIA"
+ART_50_2 = "Art. 50(2) AIA"
+
 # --- Annex III high-risk areas (Art. 6(2) AIA) -----------------------------
 # Sub-point lettering for areas 6 (law enforcement) and 7 (migration) is
 # verified against the consolidated Annex III text. The residual UNSURE entry
@@ -151,10 +156,20 @@ PROHIBITED: dict[ProhibitedPractice, tuple[Citation, str]] = {
 
 
 # --- High-risk obligation sets ---------------------------------------------
-def high_risk_provider_obligations() -> list[Obligation]:
-    """Provider duties for a high-risk system (Arts. 9-21, 43-49, 72-73 AIA)."""
+def eu_database_registration_applies(annex_iii_area: AnnexIII | None) -> bool:
+    """Art. 49(1) AIA provider registration in the EU database covers only high-risk
+    systems listed in Annex III, except point 2 (critical infrastructure), which
+    Art. 49(5) registers at national level. ``UNSURE`` keeps the duty, since the point
+    may not be point 2."""
+
+    return annex_iii_area is not None and annex_iii_area is not AnnexIII.CRITICAL_INFRASTRUCTURE
+
+
+def high_risk_provider_obligations(*, eu_database_registration: bool) -> list[Obligation]:
+    """Provider duties for a high-risk system (Arts. 9-15, 17, 43, 47-49, 72-73 AIA).
+    Art. 49 only where ``eu_database_registration`` is true."""
     p = Role.PROVIDER
-    return [
+    obligations = [
         Obligation(
             article="Art. 9 AIA",
             title="Risk management system",
@@ -222,7 +237,7 @@ def high_risk_provider_obligations() -> list[Obligation]:
             requirement="Affix the CE marking to indicate conformity.",
         ),
         Obligation(
-            article="Art. 49 AIA",
+            article=ART_49,
             title="Registration",
             applies_to=p,
             requirement="Register the system in the EU database before market placement.",
@@ -240,6 +255,9 @@ def high_risk_provider_obligations() -> list[Obligation]:
             requirement="Report serious incidents to the market surveillance authority.",
         ),
     ]
+    if eu_database_registration:
+        return obligations
+    return [o for o in obligations if o.article != ART_49]
 
 
 def high_risk_deployer_obligations(*, fria_required: bool) -> list[Obligation]:
@@ -431,7 +449,7 @@ TRANSPARENCY = {
         ),
     ),
     "synthetic": Obligation(
-        article="Art. 50(2) AIA",
+        article=ART_50_2,
         title="Mark synthetic content",
         applies_to=Role.PROVIDER,
         requirement=(

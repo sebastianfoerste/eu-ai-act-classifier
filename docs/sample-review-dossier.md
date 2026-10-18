@@ -13,9 +13,9 @@ The table below summarizes the classification status, risk tier, number of direc
 
 | Profile / Model ID | Risk Tier | Scope Status | Roles | Obligations | Next Compliance Deadline |
 | :--- | :--- | :--- | :--- | :---: | :--- |
-| **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 4 | 2025-08-02 (Chapter V general-purpose AI models) |
-| **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 8 | 2025-08-02 (Chapter V general-purpose AI models) |
-| **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 8 | 2025-08-02 (Chapter V general-purpose AI models) |
+| **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 4 | 2025-08-02 (Chapter V general-purpose AI models; 2027-08-02 under Art. 111(3) AIA if placed on the market before 2025-08-02) |
+| **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 8 | 2025-08-02 (Chapter V general-purpose AI models; 2027-08-02 under Art. 111(3) AIA if placed on the market before 2025-08-02) |
+| **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 8 | 2025-08-02 (Chapter V general-purpose AI models; 2027-08-02 under Art. 111(3) AIA if placed on the market before 2025-08-02) |
 | **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 14 | 2026-08-02 (Arts. 40-44, 47-49, 72 and 73; literal reading, confirm with counsel; 2027-12-02 if they follow the Sections 1 to 3 deferral), then 2027-12-02 (Annex III, Chapter III Sections 1 to 3) |
 
 ---
@@ -47,10 +47,15 @@ Obligations:
 
 Obligation graph:
   - gpai.provider.53.a: Art. 53(1)(a) AIA (gpai_provider), evidence: GPAI model documentation checklist., review: determined
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.53.b: Art. 53(1)(b) AIA (gpai_provider), evidence: Downstream provider information pack., review: determined
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.53.c: Art. 53(1)(c) AIA (gpai_provider), evidence: Copyright compliance policy., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.53.d: Art. 53(1)(d) AIA (gpai_provider), evidence: Training-content summary., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.56: Art. 56 AIA (gpai_provider), evidence: GPAI Code of Practice adherence record., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
 
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
@@ -111,14 +116,23 @@ Obligations:
 
 Obligation graph:
   - gpai.provider.53.a: Art. 53(1)(a) AIA (gpai_provider), evidence: GPAI model documentation checklist., review: determined
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.53.b: Art. 53(1)(b) AIA (gpai_provider), evidence: Downstream provider information pack., review: determined
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.53.c: Art. 53(1)(c) AIA (gpai_provider), evidence: Copyright compliance policy., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.53.d: Art. 53(1)(d) AIA (gpai_provider), evidence: Training-content summary., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.56: Art. 56 AIA (gpai_provider), evidence: GPAI Code of Practice adherence record., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.55.a: Art. 55(1)(a) AIA (gpai_provider), evidence: Systemic model evaluation file., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.55.b: Art. 55(1)(b) AIA (gpai_provider), evidence: Systemic risk assessment and mitigation plan., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.55.c: Art. 55(1)(c) AIA (gpai_provider), evidence: GPAI serious incident register., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.55.d: Art. 55(1)(d) AIA (gpai_provider), evidence: Cybersecurity control file., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
 
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
@@ -179,14 +193,23 @@ Obligations:
 
 Obligation graph:
   - gpai.provider.53.a: Art. 53(1)(a) AIA (gpai_provider), evidence: GPAI model documentation checklist., review: determined
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.53.b: Art. 53(1)(b) AIA (gpai_provider), evidence: Downstream provider information pack., review: determined
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.53.c: Art. 53(1)(c) AIA (gpai_provider), evidence: Copyright compliance policy., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.53.d: Art. 53(1)(d) AIA (gpai_provider), evidence: Training-content summary., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.56: Art. 56 AIA (gpai_provider), evidence: GPAI Code of Practice adherence record., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.55.a: Art. 55(1)(a) AIA (gpai_provider), evidence: Systemic model evaluation file., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.55.b: Art. 55(1)(b) AIA (gpai_provider), evidence: Systemic risk assessment and mitigation plan., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.55.c: Art. 55(1)(c) AIA (gpai_provider), evidence: GPAI serious incident register., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
   - gpai.provider.55.d: Art. 55(1)(d) AIA (gpai_provider), evidence: Cybersecurity control file., review: review_required
+      Art. 111(3) AIA: providers of general-purpose AI models placed on the market before 2025-08-02 comply with this Regulation by 2027-08-02.
 
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
@@ -316,6 +339,6 @@ This is a screening tool, not legal advice. It does not produce a conformity ass
 ## Validation
 
 All rules, classifications, and timelines are validated against the test suite.
-- **Total passing tests:** 189
+- **Total passing tests:** 216
 - **Test execution status:** 100% green
 - **Command used:** `uv run pytest`

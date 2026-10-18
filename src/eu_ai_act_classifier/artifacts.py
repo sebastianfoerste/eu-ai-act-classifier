@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from .catalog import ART_49
 from .models import ClassificationReport, Disposition, ObligationGraphItem
 
 ARTIFACT_NAMES = {
@@ -211,7 +212,7 @@ def _relevant_graph(report: ClassificationReport, title: str) -> list[Obligation
     if "training-content" in title_lower:
         return [item for item in report.obligation_graph if item.article == "Art. 53(1)(d) AIA"]
     if "6(4)" in title_lower:
-        return [item for item in report.obligation_graph if item.article == "Art. 49 AIA"]
+        return [item for item in report.obligation_graph if item.article == ART_49]
     return []
 
 

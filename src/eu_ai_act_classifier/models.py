@@ -15,10 +15,11 @@ the output deterministic and auditable.
 
 from __future__ import annotations
 
+from datetime import date
 from enum import StrEnum
-from typing import Any
+from typing import Annotated, Any
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import AfterValidator, BaseModel, Field, WithJsonSchema, model_validator
 
 
 class Role(StrEnum):
@@ -173,6 +174,24 @@ class Derogation(BaseModel):
         )
 
 
+def _iso_date(value: str) -> str:
+    # The Art. 111 AIA transitions compare these dates with fixed cut-off dates, so
+    # only a calendar date in YYYY-MM-DD form is accepted ("2026-03-01", not
+    # "March 2026" or "01.03.2026").
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError:
+        parsed = None
+    if parsed is None or parsed.isoformat() != value:
+        raise ValueError("must be an ISO date in YYYY-MM-DD form")
+    return value
+
+
+IsoDate = Annotated[
+    str, AfterValidator(_iso_date), WithJsonSchema({"type": "string", "format": "date"})
+]
+
+
 class SystemProfile(BaseModel):
     """Structured description of an AI system with characterised facts."""
 
@@ -199,8 +218,8 @@ class SystemProfile(BaseModel):
     intended_purpose_source: str = ""
     eu_nexus: bool | None = True
     excluded_use_flags: list[ExcludedUse] = Field(default_factory=list)
-    placing_on_market_date: str | None = None
-    putting_into_service_date: str | None = None
+    placing_on_market_date: IsoDate | None = None
+    putting_into_service_date: IsoDate | None = None
     significant_change_after_application_date: bool | None = None
     public_authority_use: bool = False
     deployer_public_law_body: bool | None = None
