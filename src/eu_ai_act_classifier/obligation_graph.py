@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from .catalog import ART_49, ART_50_2, eu_database_registration_applies
+from .catalog import ART_49, ART_49_2, ART_50_2, eu_database_registration_applies
 from .citations import (
     AI_ACT_URL,
     ART_111_3_DEADLINE,
@@ -51,7 +51,7 @@ def build_obligation_graph(
     if final_tier is RiskTier.HIGH:
         application_date = _high_risk_application_date(profile)
         if profile.is_provider:
-            items.extend(_high_risk_provider_graph(application_date, profile.annex_iii_area))
+            items.extend(_high_risk_provider_graph(application_date, profile))
         if profile.is_deployer:
             items.append(
                 _item(
@@ -152,12 +152,19 @@ def build_obligation_graph(
             )
 
     if is_gpai and final_tier is not RiskTier.PROHIBITED:
-        items.extend(_gpai_graph(gpai_systemic, _art_111_3_note(profile)))
+        items.extend(
+            _gpai_graph(
+                gpai_systemic,
+                *_art_111_dating(profile, POINT_B_DATE, ART_111_3_DEADLINE, _ART_111_3_NOTE),
+            )
+        )
 
     for index, obligation in enumerate(transparency_obligations, start=1):
         applies_from, note = GENERAL_APPLICATION_DATE, None
         if obligation.article == ART_50_2:
-            applies_from, note = _art_50_2_dating(profile)
+            applies_from, note = _art_111_dating(
+                profile, GENERAL_APPLICATION_DATE, ART_111_4_DEADLINE, _ART_111_4_NOTE
+            )
         items.append(
             _item(
                 f"transparency.{index}",
@@ -175,7 +182,7 @@ def build_obligation_graph(
 
 
 def _high_risk_provider_graph(
-    application_date: str, annex_iii_area: AnnexIII | None
+    application_date: str, profile: SystemProfile
 ) -> list[ObligationGraphItem]:
     return [
         _item(
@@ -304,7 +311,7 @@ def _high_risk_provider_graph(
             _SECTION_5,
             application_date,
         ),
-        *_registration_items(annex_iii_area),
+        *_registration_items(profile),
         _undeferred_item(
             "high-risk.provider.72",
             "Art. 72 AIA",
@@ -326,13 +333,14 @@ def _high_risk_provider_graph(
     ]
 
 
-def _registration_items(annex_iii_area: AnnexIII | None) -> list[ObligationGraphItem]:
-    """Art. 49 AIA registration. Only Annex III systems register under Art. 49(1) and
-    (5), so the deferred alternative is the point (c)(i) date even for a system that
-    is also an Annex I product."""
+def _registration_items(profile: SystemProfile) -> list[ObligationGraphItem]:
+    """Art. 49 AIA registration. Every item here needs an Annex III area, so the
+    deferred alternative is the point (c)(i) date."""
 
+    annex_iii_area = profile.annex_iii_area
+    items: list[ObligationGraphItem] = []
     if eu_database_registration_applies(annex_iii_area):
-        return [
+        items.append(
             _undeferred_item(
                 "high-risk.provider.49",
                 ART_49,
@@ -345,9 +353,9 @@ def _registration_items(annex_iii_area: AnnexIII | None) -> list[ObligationGraph
                 _SECTION_5,
                 POINT_C_ANNEX_III,
             )
-        ]
-    if annex_iii_area is AnnexIII.CRITICAL_INFRASTRUCTURE:
-        return [
+        )
+    elif annex_iii_area is AnnexIII.CRITICAL_INFRASTRUCTURE:
+        items.append(
             _undeferred_item(
                 "high-risk.provider.49.5",
                 "Art. 49(5) AIA",
@@ -360,13 +368,37 @@ def _registration_items(annex_iii_area: AnnexIII | None) -> list[ObligationGraph
                 _SECTION_5,
                 POINT_C_ANNEX_III,
             )
-        ]
-    return []
+        )
+    derogation = profile.derogation
+    if (
+        annex_iii_area is not None
+        and derogation.any_condition
+        and not derogation.performs_profiling
+    ):
+        # Art. 49(2) has no point 2 exception: a provider relying on Art. 6(3) registers
+        # in the EU database whatever the Annex III point.
+        items.append(
+            _undeferred_item(
+                "high-risk.provider.49.2",
+                ART_49_2,
+                "Art. 6(3) derogation asserted for an Annex III AI system.",
+                (
+                    "If the provider concludes under Art. 6(3) that the system is not "
+                    "high-risk, register the provider and system in the EU database before "
+                    "placing it on the market or putting it into service."
+                ),
+                "Art. 6(4) assessment and EU database registration record.",
+                _SECTION_5,
+                POINT_C_ANNEX_III,
+            )
+        )
+    return items
 
 
-def _gpai_graph(systemic: bool, note: str | None) -> list[ObligationGraphItem]:
-    # Every Chapter V item carries the Art. 111(3) AIA transition unless the model was
-    # placed on the market on or after the point (b) date.
+def _gpai_graph(
+    systemic: bool, application_date: str, note: str | None
+) -> list[ObligationGraphItem]:
+    # Every Chapter V item takes the same date and Art. 111(3) AIA note (_art_111_dating).
     items = [
         _item(
             "gpai.provider.53.a",
@@ -375,7 +407,7 @@ def _gpai_graph(systemic: bool, note: str | None) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Keep model technical documentation per Annex XI.",
             "GPAI model documentation checklist.",
-            POINT_B_DATE,
+            application_date,
             ReviewStatus.DETERMINED,
             note,
         ),
@@ -386,7 +418,7 @@ def _gpai_graph(systemic: bool, note: str | None) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Provide downstream providers with information per Annex XII.",
             "Downstream provider information pack.",
-            POINT_B_DATE,
+            application_date,
             ReviewStatus.DETERMINED,
             note,
         ),
@@ -397,7 +429,7 @@ def _gpai_graph(systemic: bool, note: str | None) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Maintain a policy to comply with Union copyright law.",
             "Copyright compliance policy.",
-            POINT_B_DATE,
+            application_date,
             ReviewStatus.REVIEW_REQUIRED,
             note,
         ),
@@ -408,7 +440,7 @@ def _gpai_graph(systemic: bool, note: str | None) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Publish a sufficiently detailed summary of training content.",
             "Training-content summary.",
-            POINT_B_DATE,
+            application_date,
             ReviewStatus.REVIEW_REQUIRED,
             note,
         ),
@@ -419,7 +451,7 @@ def _gpai_graph(systemic: bool, note: str | None) -> list[ObligationGraphItem]:
             "Provider choosing a Code of Practice route or alternative compliance evidence.",
             "Track Code of Practice adherence or alternative means of compliance.",
             "GPAI Code of Practice adherence record.",
-            POINT_B_DATE,
+            application_date,
             ReviewStatus.REVIEW_REQUIRED,
             note,
         ),
@@ -434,7 +466,7 @@ def _gpai_graph(systemic: bool, note: str | None) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Perform model evaluation, including adversarial testing.",
                     "Systemic model evaluation file.",
-                    POINT_B_DATE,
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
                     note,
                 ),
@@ -445,7 +477,7 @@ def _gpai_graph(systemic: bool, note: str | None) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Assess and mitigate systemic risks at Union level.",
                     "Systemic risk assessment and mitigation plan.",
-                    POINT_B_DATE,
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
                     note,
                 ),
@@ -456,7 +488,7 @@ def _gpai_graph(systemic: bool, note: str | None) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Track, document and report serious incidents.",
                     "GPAI serious incident register.",
-                    POINT_B_DATE,
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
                     note,
                 ),
@@ -467,7 +499,7 @@ def _gpai_graph(systemic: bool, note: str | None) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Ensure an adequate level of cybersecurity protection.",
                     "Cybersecurity control file.",
-                    POINT_B_DATE,
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
                     note,
                 ),
@@ -536,22 +568,19 @@ def _placed_before(profile: SystemProfile, cut_off: str) -> bool | None:
     return date.fromisoformat(profile.placing_on_market_date) < date.fromisoformat(cut_off)
 
 
-def _art_111_3_note(profile: SystemProfile) -> str | None:
-    if _placed_before(profile, POINT_B_DATE) is False:
-        return None
-    return _ART_111_3_NOTE
+def _art_111_dating(
+    profile: SystemProfile, cut_off: str, deadline: str, note: str
+) -> tuple[str, str | None]:
+    """Application date and note under Art. 111(3) or (4) AIA. The duty applies from
+    ``cut_off``; what was placed on the market before that date has until ``deadline``."""
 
-
-def _art_50_2_dating(profile: SystemProfile) -> tuple[str, str | None]:
-    """Application date and note for the Art. 50(2) item under Art. 111(4) AIA."""
-
-    placed_before = _placed_before(profile, GENERAL_APPLICATION_DATE)
+    placed_before = _placed_before(profile, cut_off)
     if placed_before is None:
-        # Placing date unknown: the general date, with the transition as a condition.
-        return GENERAL_APPLICATION_DATE, _ART_111_4_NOTE
+        # Placing date unknown: the cut-off date, with the transition as a condition.
+        return cut_off, note
     if placed_before:
-        return ART_111_4_DEADLINE, _ART_111_4_NOTE
-    return GENERAL_APPLICATION_DATE, None
+        return deadline, note
+    return cut_off, None
 
 
 def _literal_reading_note(location: str, deferred_date: str) -> str:
@@ -566,8 +595,10 @@ def _literal_reading_note(location: str, deferred_date: str) -> str:
 def _high_risk_application_date(profile: SystemProfile) -> str:
     """Art. 113, third paragraph, point (c) AIA date for Chapter III, Sections 1 to 3."""
 
-    if profile.annex_i_safety_component and profile.annex_i_third_party_assessment:
-        return POINT_C_ANNEX_I  # point (c)(ii): Art. 6(1) and Annex I
-    # Point (c)(i): every other high-risk route here runs through Art. 6(2) and
-    # Annex III, including III.unsure.
+    annex_i = profile.annex_i_safety_component and profile.annex_i_third_party_assessment
+    if annex_i and profile.annex_iii_area is None:
+        return POINT_C_ANNEX_I  # point (c)(ii): Art. 6(1) and Annex I only
+    # Point (c)(i): every route through Art. 6(2) and Annex III, including III.unsure
+    # and a system that is also an Annex I product, which is still "classified as
+    # high-risk pursuant to Article 6(2) and Annex III".
     return POINT_C_ANNEX_III

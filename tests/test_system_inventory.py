@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from eu_ai_act_classifier.inventory import (
     INVENTORY_SCHEMA,
     SYSTEM_REVIEW_TABLE_SCHEMA,
+    build_example_inventory,
     build_system_inventory,
     load_example_profiles,
 )
@@ -173,3 +175,32 @@ def test_inventory_preserves_unverified_citation_state() -> None:
     assert any(
         citation.derived_from == "classifier_finding" for citation in risk_row.pinpoint_citations
     )
+
+
+def test_example_inventory_warns_about_profiles_that_fail_validation(tmp_path: Path) -> None:
+    profiles = {
+        "valid.json": {"name": "Spam filter"},
+        # Accepted before dates had to be YYYY-MM-DD; now rejected.
+        "old_date.json": {"name": "Legacy model", "placing_on_market_date": "2025-03"},
+        # Not a profile (no "name"), like the committed classification packet.
+        "packet.json": {"system": "CreditSightScore", "risk_tier": "high_risk"},
+    }
+    for filename, payload in profiles.items():
+        (tmp_path / filename).write_text(json.dumps(payload), encoding="utf-8")
+
+    inventory = build_example_inventory(tmp_path, generated_at="2026-06-27T10:00:00+00:00")
+
+    assert [row.name for row in inventory.systems] == ["Spam filter"]
+    assert len(load_example_profiles(tmp_path)) == 1
+    (warning,) = inventory.warnings
+    assert warning.startswith("old_date.json: skipped, invalid system profile")
+    assert "placing_on_market_date" in warning
+    assert "YYYY-MM-DD" in warning
+    assert inventory.reviewStatus == "review_required"
+    assert inventory.nextAction == warning
+
+
+def test_committed_example_inventory_has_no_load_warnings() -> None:
+    inventory = build_example_inventory(generated_at="2026-06-27T10:00:00+00:00")
+
+    assert not any("skipped" in warning for warning in inventory.warnings)

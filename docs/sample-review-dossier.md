@@ -65,6 +65,7 @@ Binding application timeline:
   2026-08-02: General application for provisions without a later specific date
   2026-12-02: Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA
   2026-12-02: Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market
+  2027-08-02: Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025
   2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
   2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
 
@@ -142,6 +143,7 @@ Binding application timeline:
   2026-08-02: General application for provisions without a later specific date
   2026-12-02: Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA
   2026-12-02: Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market
+  2027-08-02: Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025
   2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
   2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
 
@@ -219,6 +221,7 @@ Binding application timeline:
   2026-08-02: General application for provisions without a later specific date
   2026-12-02: Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA
   2026-12-02: Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market
+  2027-08-02: Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025
   2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
   2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
 
@@ -316,6 +319,7 @@ Binding application timeline:
   2026-08-02: General application for provisions without a later specific date
   2026-12-02: Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA
   2026-12-02: Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market
+  2027-08-02: Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025
   2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
   2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
 
@@ -339,6 +343,6 @@ This is a screening tool, not legal advice. It does not produce a conformity ass
 ## Validation
 
 All rules, classifications, and timelines are validated against the test suite.
-- **Total passing tests:** 216
+- **Total passing tests:** 225
 - **Test execution status:** 100% green
 - **Command used:** `uv run pytest`

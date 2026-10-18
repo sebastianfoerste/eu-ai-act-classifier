@@ -230,8 +230,19 @@ APPLICATION_DATES: tuple[ApplicationDate, ...] = (
             "Art. 113, second paragraph AIA. Literal reading, confirm with counsel: this "
             "includes the high-risk duties in Chapter III, Section 5 (Arts. 40-49) and "
             "Chapter IX (e.g. Arts. 72 and 73), which point (c) does not defer. If they are "
-            "read as following the Sections 1 to 3 deferral, 2 December 2027 (Annex III) "
-            "or 2 August 2028 (Annex I) applies."
+            "read as following the Sections 1 to 3 deferral, 2 December 2027 (Annex III, "
+            "also for a system that is an Annex I product too) or 2 August 2028 (Annex I "
+            "only) applies."
+        ),
+    ),
+    ApplicationDate(
+        "Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025",
+        ART_111_3_DEADLINE,
+        (
+            "Providers of general-purpose AI models placed on the market before 2 August 2025 "
+            "take the necessary steps to comply with the obligations of this Regulation by "
+            "2 August 2027 (Art. 111(3) AIA, original text, not amended by Regulation (EU) "
+            "2026/1744)."
         ),
     ),
 )

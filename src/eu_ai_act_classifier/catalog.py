@@ -14,6 +14,7 @@ from .models import AnnexIII, Obligation, ProhibitedPractice, Role
 # Article labels other modules match on. Use these constants, not copies of the
 # string, so a wording change cannot silently break the match.
 ART_49 = "Art. 49 AIA"
+ART_49_2 = "Art. 49(2) AIA"
 ART_50_2 = "Art. 50(2) AIA"
 
 # --- Annex III high-risk areas (Art. 6(2) AIA) -----------------------------

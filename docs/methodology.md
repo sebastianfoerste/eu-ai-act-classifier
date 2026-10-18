@@ -100,7 +100,10 @@ Dates follow Art. 113 AIA as amended by Regulation (EU) 2026/1744, checked on
 Chapter III, Sections 1, 2 and 3 (Arts. 6 to 27, except Art. 6(5)) apply from
 2 December 2027 for Annex III systems and from 2 August 2028 for Annex I
 systems (Art. 113, third paragraph, point (c)). Graph items for Arts. 16 to 27
-carry that date.
+carry that date. A system that is an Annex I product and also falls in an
+Annex III area is still "classified as high-risk pursuant to Article 6(2) and
+Annex III", so point (c)(i) applies and its items carry 2 December 2027. Only
+the Annex I route without an Annex III area gives 2 August 2028.
 
 Point (c) does not defer Chapter III, Section 5 (Arts. 40 to 49) or Chapter IX
 (Arts. 72 and 73). Read literally, those duties apply from the general date of
@@ -119,7 +122,12 @@ infrastructure). An Annex I product without an Annex III area gets no Art. 49
 obligation or graph item. A point 2 system gets an Art. 49(5) graph item
 instead (registration at national level, not in the EU database), marked
 `review_required`. An unsettled Annex III point (`III.unsure`) keeps the
-Art. 49 item for review. Because registration reaches a system only through
+Art. 49 item for review. Where the profile asserts an Art. 6(3) derogation
+condition for any Annex III area, point 2 included, and no profiling, the graph
+also has an Art. 49(2) item: a provider that relies on the derogation registers
+itself and the system in the EU database (Art. 6(4)), and Art. 49(2) has no
+point 2 exception. It is marked `review_required` and is the item the Art. 6(4)
+assessment artifact lists. Because registration reaches a system only through
 Annex III, the deferred alternative named on these items is always
 2 December 2027 (point (c)(i)), also for a system that is an Annex I product
 too.
@@ -132,12 +140,15 @@ Art. 50(2) item carries 2026-12-02 and the Art. 111(4) note. If it is on or
 after that date, the item carries 2026-08-02 and no note. If the profile gives
 no date, the item carries 2026-08-02 with the transition as its note.
 
-GPAI items (Chapter V) carry 2 August 2025. Under Art. 111(3), providers of
-general-purpose AI models placed on the market before that date have until
-2 August 2027 to comply. Each GPAI item keeps 2025-08-02 and carries that
-transition as its note, unless the profile's placing-on-market date is on or
-after 2 August 2025. For a GPAI model profile, `placing_on_market_date` is read
-as the model's placing-on-market date.
+GPAI items (Chapter V) carry 2 August 2025, subject to the same kind of rule.
+Under Art. 111(3), providers of general-purpose AI models placed on the market
+before that date have until 2 August 2027 to comply. If the profile's
+placing-on-market date is before 2 August 2025, every GPAI item (Arts. 53, 55
+and 56) carries 2027-08-02 and the Art. 111(3) note. If it is on or after that
+date, the items carry 2025-08-02 and no note. If the profile gives no date,
+they carry 2025-08-02 with the transition as their note. For a GPAI model
+profile, `placing_on_market_date` is read as the model's placing-on-market
+date.
 
 Both transitions apply to systems (Art. 111(4)) and models (Art. 111(3))
 placed on the market "before" the cut-off date, so one placed on the cut-off
@@ -149,8 +160,10 @@ be ISO dates (YYYY-MM-DD); a profile with any other format is rejected.
 The binding timeline also lists the point (a) exception (Art. 5(1), first
 subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b), from
 2 December 2026), the full point (b) list (Chapter III Section 4, Chapters V,
-VII and XII except Art. 101, and Art. 78, from 2 August 2025) and point (d)
-(Arts. 102 to 110, from 27 July 2026).
+VII and XII except Art. 101, and Art. 78, from 2 August 2025), point (d)
+(Arts. 102 to 110, from 27 July 2026) and the Art. 111(3) deadline of
+2 August 2027 for general-purpose AI models already on the market before
+2 August 2025.
 
 ## Draft Work Products
 

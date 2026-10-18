@@ -10,6 +10,7 @@ from eu_ai_act_classifier.artifacts import render_artifact, write_artifacts
 from eu_ai_act_classifier.cli import main
 from eu_ai_act_classifier.dossier import build_review_dossier, render_review_dossier_markdown
 from eu_ai_act_classifier.models import (
+    Derogation,
     ObligationGraphItem,
     ReviewStatus,
     RiskTier,
@@ -75,6 +76,18 @@ HIGH_RISK_ROUTES = [
         "2028-08-02",
         UNDEFERRED_ARTICLES - {"Art. 49 AIA"},
         id="annex-i",
+    ),
+    # Still "classified as high-risk pursuant to Article 6(2) and Annex III", so
+    # point (c)(i) dates Sections 1 to 3, not point (c)(ii).
+    pytest.param(
+        {
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_iii_area": AnnexIII.CREDITWORTHINESS,
+        },
+        "2027-12-02",
+        UNDEFERRED_ARTICLES,
+        id="annex-i-and-annex-iii",
     ),
 ]
 
@@ -185,6 +198,79 @@ def test_art_49_registration_follows_art_49_scope(
         assert "2027-12-02 applies" in item.application_date_note
 
 
+# Art. 49(2) AIA: a provider relying on the Art. 6(3) derogation registers in the EU
+# database. Unlike Art. 49(1), it has no exception for Annex III point 2.
+@pytest.mark.parametrize(
+    ("area", "high_risk_registration"),
+    [
+        pytest.param(AnnexIII.CRITICAL_INFRASTRUCTURE, "Art. 49(5) AIA", id="annex-iii-2"),
+        pytest.param(AnnexIII.EMPLOYMENT_SELECTION, "Art. 49 AIA", id="annex-iii-4a"),
+    ],
+)
+def test_derogation_adds_art_49_2_registration_item(
+    area: AnnexIII, high_risk_registration: str
+) -> None:
+    report = classify(
+        SystemProfile(
+            name="derogation",
+            annex_iii_area=area,
+            derogation=Derogation(preparatory_task=True),
+        )
+    )
+
+    assert report.risk_tier is RiskTier.HIGH
+    graph = {item.article: item for item in report.obligation_graph}
+    assert {"Art. 49(2) AIA", high_risk_registration} <= graph.keys()
+    item = graph["Art. 49(2) AIA"]
+    assert item.obligation_id == "high-risk.provider.49.2"
+    assert item.application_date == "2026-08-02"
+    assert item.review_status is ReviewStatus.REVIEW_REQUIRED
+    assert item.application_date_note is not None
+    assert item.application_date_note.startswith("Literal reading, confirm with counsel")
+    assert "Chapter III, Section 5 duty" in item.application_date_note
+    assert "2027-12-02 applies" in item.application_date_note
+    assert "Art. 49(2) AIA" not in {ob.article for ob in report.obligations}
+
+
+@pytest.mark.parametrize(
+    "derogation",
+    [
+        pytest.param({}, id="none-asserted"),
+        # Profiling forecloses the derogation (Art. 6(3), third subparagraph).
+        pytest.param({"preparatory_task": True, "performs_profiling": True}, id="profiling"),
+    ],
+)
+def test_no_art_49_2_item_without_an_available_derogation(derogation: dict[str, bool]) -> None:
+    report = classify(
+        SystemProfile(
+            name="no derogation",
+            annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
+            derogation=Derogation(**derogation),
+        )
+    )
+
+    assert "Art. 49(2) AIA" not in {item.article for item in report.obligation_graph}
+
+
+def test_art_6_4_artifact_lists_the_art_49_2_item_for_a_point_2_derogation() -> None:
+    report = classify(
+        SystemProfile(
+            name="grid balancer",
+            annex_iii_area=AnnexIII.CRITICAL_INFRASTRUCTURE,
+            derogation=Derogation(preparatory_task=True),
+        )
+    )
+    artifact = render_artifact("art-6-4-assessment", report)
+    graph_section = artifact.split("## Relevant Obligation Graph Items")[1].split("## ")[0]
+
+    assert "- Art. 49(2) AIA (provider): If the provider concludes under Art. 6(3)" in (
+        graph_section
+    )
+    assert "Literal reading, confirm with counsel" in graph_section
+    assert "No directly matching graph item" not in graph_section
+    assert "Art. 49(5) AIA" not in graph_section
+
+
 def test_gpai_and_transparency_items_keep_their_chapter_dates() -> None:
     report = classify(
         SystemProfile(
@@ -238,18 +324,21 @@ def test_art_50_2_item_follows_the_art_111_4_transition(
 
 
 # Art. 111(3) AIA: GPAI models placed on the market before 2 August 2025 comply by
-# 2 August 2027. The items keep the Chapter V date and carry the transition as a note.
+# 2 August 2027. Dated like Art. 50(2) under Art. 111(4): an unknown date keeps the
+# Chapter V date with the transition as a condition.
 @pytest.mark.parametrize(
-    ("placed", "noted"),
+    ("placed", "application_date", "noted"),
     [
-        pytest.param(None, True, id="unknown"),
-        pytest.param("2025-03-01", True, id="before"),
-        pytest.param("2025-08-01", True, id="day-before-cut-off"),
-        pytest.param("2025-08-02", False, id="on-cut-off"),
-        pytest.param("2026-01-01", False, id="after"),
+        pytest.param(None, "2025-08-02", True, id="unknown"),
+        pytest.param("2025-03-01", "2027-08-02", True, id="before"),
+        pytest.param("2025-08-01", "2027-08-02", True, id="day-before-cut-off"),
+        pytest.param("2025-08-02", "2025-08-02", False, id="on-cut-off"),
+        pytest.param("2026-01-01", "2025-08-02", False, id="after"),
     ],
 )
-def test_gpai_items_note_the_art_111_3_transition(placed: str | None, noted: bool) -> None:
+def test_gpai_items_follow_the_art_111_3_transition(
+    placed: str | None, application_date: str, noted: bool
+) -> None:
     report = classify(
         SystemProfile(
             name="model",
@@ -261,8 +350,12 @@ def test_gpai_items_note_the_art_111_3_transition(placed: str | None, noted: boo
     )
     gpai = [item for item in report.obligation_graph if item.actor is Role.GPAI_PROVIDER]
 
-    assert {item.article for item in gpai} >= {"Art. 53(1)(a) AIA", "Art. 55(1)(d) AIA"}
-    assert {item.application_date for item in gpai} == {"2025-08-02"}
+    assert {item.article for item in gpai} >= {
+        "Art. 53(1)(a) AIA",
+        "Art. 55(1)(d) AIA",
+        "Art. 56 AIA",
+    }
+    assert {item.application_date for item in gpai} == {application_date}
     for item in gpai:
         if noted:
             assert item.application_date_note is not None
@@ -300,7 +393,7 @@ def test_counsel_flag_is_visible_in_text_report_dossier_and_artifacts() -> None:
     assert flag in render_artifact("post-market-monitoring-plan", report)
 
 
-def test_timeline_encodes_every_art_113_limb_and_art_111_4() -> None:
+def test_timeline_encodes_every_art_113_limb_and_art_111_3_and_4() -> None:
     timeline = classify(SystemProfile(name="x")).timeline
     dates = [item.applies_from for item in timeline]
     by_date: dict[str, list[TimelineItem]] = {}
@@ -331,6 +424,12 @@ def test_timeline_encodes_every_art_113_limb_and_art_111_4() -> None:
     assert any("Art. 5(1)(ba) and (bb)" in item.provision for item in late)
     assert any("Art. 50(2)" in item.provision and "Art. 111(4)" in item.note for item in late)
     assert {item.source_id for item in late} == {"ai-act-amendment-2026-1744"}
+    # Art. 111(3), original text: GPAI models already on the market before 2 August 2025.
+    (art_111_3,) = by_date["2027-08-02"]
+    assert "Art. 111(3)" in art_111_3.provision
+    assert "general-purpose AI models" in art_111_3.provision
+    assert "before 2 August 2025" in art_111_3.note
+    assert art_111_3.source_id == "ai-act-2024-1689"
     # Point (c): Chapter III, Sections 1 to 3.
     (annex_iii,) = by_date["2027-12-02"]
     (annex_i,) = by_date["2028-08-02"]
