@@ -1,7 +1,7 @@
 {
   "schema": "eu-ai-act-classifier.proof.v1",
   "productId": "eu-ai-act-classifier",
-  "sourceCurrencyDate": "2026-08-26",
+  "sourceCurrencyDate": "2026-10-18",
   "bindingSources": [
     {
       "sourceId": "ai-act-2024-1689",

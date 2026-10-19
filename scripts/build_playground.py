@@ -96,8 +96,12 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             ("intended_purpose_source", ""),
             ("eu_nexus", ""),
             ("excluded_use_flags", "Scope exclusions or carve-outs that need visible review."),
-            ("placing_on_market_date", "ISO date, for transitional status."),
-            ("putting_into_service_date", "ISO date, for transitional status."),
+            (
+                "placing_on_market_date",
+                "YYYY-MM-DD; for a GPAI model, the model's date. Drives the Art. 111 AIA "
+                "transitions.",
+            ),
+            ("putting_into_service_date", "YYYY-MM-DD, for transitional status."),
             ("significant_change_after_application_date", ""),
             ("public_authority_use", ""),
             ("deployer_public_law_body", "Art. 27 AIA: fundamental rights impact assessment."),
