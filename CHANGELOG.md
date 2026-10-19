@@ -25,6 +25,9 @@ counsel".
   duties. Machinery (Regulation (EU) 2023/1230) is now a Section B product.
 - Art. 49(3) AIA: registration of use by public-authority deployers of Annex
   III systems other than point 2, as an obligation and a flagged graph item.
+  The new `deployer_public_authority` field records the deployer's own status;
+  where it is unknown, `public_authority_use` triggers the item with a request
+  to confirm that status.
 - `gpai_model_placing_on_market_date`: the model's own date for Art. 111(3).
   `placing_on_market_date` stays the AI system's date for Art. 111(2) and (4).
 - Prohibited-practice codes `5.1.ba` and `5.1.bb` (Art. 5(1)(ba) and (bb)),
