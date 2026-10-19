@@ -7,7 +7,14 @@ from types import ModuleType
 
 import pytest
 
-from eu_ai_act_classifier import SystemProfile, classify, render_report
+from eu_ai_act_classifier import (
+    ClassificationReport,
+    ReviewStatus,
+    Role,
+    SystemProfile,
+    classify,
+    render_report,
+)
 from eu_ai_act_classifier.artifacts import render_artifact
 from eu_ai_act_classifier.cli import main
 
@@ -273,3 +280,109 @@ def test_case_study_quotes_a_prefix_of_the_real_cv_screening_output(
     assert match, "CASE_STUDY.md no longer quotes the cv_screening output block"
     quoted = match.group(1)
     assert _cli_output(capsys, str(CV_SCREENING)).startswith(quoted)
+
+
+# The docs spell out numbers below ten ("five documentation items").
+NUMBER_WORDS = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+DATE = rf"({ISO_DATE.pattern})"
+
+
+def _report(path: Path) -> ClassificationReport:
+    return classify(SystemProfile.model_validate_json(path.read_text(encoding="utf-8")))
+
+
+def _evaluation() -> str:
+    case_study = CASE_STUDY.read_text(encoding="utf-8")
+    section = case_study[case_study.index("## Evaluation") : case_study.index("## Limitations")]
+    return " ".join(section.split())
+
+
+def _count(token: str) -> int:
+    return int(token) if token.isdigit() else NUMBER_WORDS.index(token.lower())
+
+
+def _article_list(span: str) -> list[int]:
+    """Expand prose such as '9 to 15, 17, 43 and 73' into article numbers."""
+    numbers: list[int] = []
+    for part in re.split(r", | and ", span):
+        low, _, high = part.partition(" to ")
+        numbers.extend(range(int(low), int(high or low) + 1))
+    return numbers
+
+
+def _article_numbers(articles: list[str]) -> list[int]:
+    return sorted(int(re.fullmatch(r"Art\. (\d+) AIA", article).group(1)) for article in articles)
+
+
+def _search(pattern: str, text: str) -> re.Match[str]:
+    match = re.search(pattern, text)
+    assert match, f"CASE_STUDY.md Evaluation no longer matches {pattern!r}"
+    return match
+
+
+def test_case_study_evaluation_counts_match_the_real_cv_screening_report() -> None:
+    report = _report(CV_SCREENING)
+    evaluation = _evaluation()
+
+    obligations = _search(r"lists (\w+) provider obligations \(Art\. ([^)]+) AIA\)", evaluation)
+    assert _count(obligations.group(1)) == len(report.obligations)
+    assert {obligation.applies_to for obligation in report.obligations} == {Role.PROVIDER}
+    assert _article_list(obligations.group(2)) == _article_numbers(
+        [obligation.article for obligation in report.obligations]
+    )
+
+    documentation = _search(r"and (\w+) documentation items", evaluation)
+    assert _count(documentation.group(1)) == len(report.documentation_required)
+
+    graph = _search(
+        r"marks (\d+) of (\d+) items `review: review_required` \(Art\. ([^)]+) AIA\)",
+        evaluation,
+    )
+    flagged = [
+        item
+        for item in report.obligation_graph
+        if item.review_status is ReviewStatus.REVIEW_REQUIRED
+    ]
+    assert int(graph.group(1)) == len(flagged)
+    assert int(graph.group(2)) == len(report.obligation_graph)
+    assert _article_list(graph.group(3)) == _article_numbers([item.article for item in flagged])
+
+    notes = _search(
+        r"Each of the Art\. (.+?) items carries a note: on a literal reading, confirm with "
+        rf"counsel, it applies from {DATE}, or from {DATE} if it follows",
+        evaluation,
+    )
+    noted = [item for item in report.obligation_graph if item.application_date_note]
+    assert _article_list(notes.group(1)) == _article_numbers([item.article for item in noted])
+    assert all(item.review_status is ReviewStatus.REVIEW_REQUIRED for item in noted)
+    assert all(
+        item.application_date_note.startswith("Literal reading, confirm with counsel")
+        for item in noted
+    )
+    assert {item.application_date for item in noted} == {notes.group(2)}
+    deferred = {
+        re.search(rf"following that deferral, {DATE} applies", item.application_date_note).group(1)
+        for item in noted
+    }
+    assert deferred == {notes.group(3)}
+
+
+def test_case_study_packet_sentence_matches_the_real_credit_scoring_report() -> None:
+    credit, cv = _report(CREDIT_SCORING), _report(CV_SCREENING)
+    sentence = _search(
+        r"CreditSightScore, classified high-risk under (Annex III\(\d+\)\(\w\)), "
+        r"with the same (\w+) provider obligations and the same dating notes",
+        _evaluation(),
+    )
+    assert any(finding.citation == sentence.group(1) + " AIA" for finding in credit.findings)
+    assert _count(sentence.group(2)) == len(credit.obligations)
+    assert [o.article for o in credit.obligations] == [o.article for o in cv.obligations]
+
+    def dating(report: ClassificationReport) -> list[tuple[str, str, str]]:
+        return [
+            (item.article, item.application_date, item.application_date_note)
+            for item in report.obligation_graph
+            if item.application_date_note
+        ]
+
+    assert dating(credit) and dating(credit) == dating(cv)
