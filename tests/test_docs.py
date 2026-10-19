@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import importlib.util
 import re
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 
@@ -18,6 +20,7 @@ CV_SCREENING = EXAMPLES / "cv_screening.json"
 PACKET_MD = EXAMPLES / "classification-packet.md"
 PACKET_JSON = EXAMPLES / "classification-packet.json"
 SAMPLE_OUTPUT = Path("docs/sample-output.md")
+DEMO_PNG = Path("docs/demo.png")
 PYPROJECT = Path("pyproject.toml")
 # Docs that hold sections moved out of the README.
 README_CONTENT_DOCS = [
@@ -226,14 +229,35 @@ def test_committed_packet_json_matches_real_cli_output(
     )
 
 
-def test_demo_image_caption_states_the_real_line_count_of_the_demo_output(
+def _load_script(name: str) -> ModuleType:
+    path = Path(__file__).resolve().parents[1] / "scripts" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_demo_image_shows_the_real_cli_output_and_its_caption_counts_the_lines(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    line_count = len(_cli_output(capsys, str(CREDIT_SCORING)).splitlines())
+    # scripts/render_demo_png.py records the exact text it draws in the PNG, so the
+    # cut marker in the image can be checked without a browser or OCR.
+    render_demo = _load_script("render_demo_png")
+    output = _cli_output(capsys, str(CREDIT_SCORING))
+    total = len(output.splitlines())
+    shown = render_demo.SHOWN_LINES
+    drawn = render_demo.drawn_text(DEMO_PNG.read_bytes())
+    assert drawn == render_demo.terminal_text(output), (
+        f"{DEMO_PNG} is stale; re-render it with `uv run python scripts/render_demo_png.py`"
+    )
+    assert drawn.splitlines()[-1] == f"[\u2026 {total - shown} more lines not shown]"
+
     sample_output = SAMPLE_OUTPUT.read_text(encoding="utf-8")
     caption = re.search(r"\]\(demo\.png\)\n\n\*(.*?)\*\n", sample_output, re.S)
     assert caption, f"{SAMPLE_OUTPUT} no longer captions demo.png"
-    assert f"of {line_count} lines" in caption.group(1)
+    assert f"`{render_demo.COMMAND}`" in caption.group(1)
+    assert f"first {shown} of {total} lines" in caption.group(1)
 
 
 def test_case_study_quotes_a_prefix_of_the_real_cv_screening_output(
