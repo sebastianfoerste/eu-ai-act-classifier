@@ -402,12 +402,25 @@ def build_collaboration_workspace(
     }
 
 
+def _inventory_timestamp(now: datetime | None) -> str | None:
+    """Stamp the inventory with the injected clock, as the inventory's own clock would.
+
+    The inventory digest covers its timestamp, so two actions given the same `now` must
+    build the same inventory. Without `now` the inventory reads the clock, as before.
+    """
+
+    if now is None:
+        return None
+    now_utc = now if now.tzinfo is not None else now.replace(tzinfo=UTC)
+    return now_utc.astimezone(UTC).replace(microsecond=0).isoformat()
+
+
 def apply_workspace_action(
     payload: dict[str, object], runtime_path: Path, *, now: datetime | None = None
 ) -> dict[str, object]:
     """Apply one local mutation against the fixed ignored runtime workspace."""
 
-    inventory = build_example_inventory()
+    inventory = build_example_inventory(generated_at=_inventory_timestamp(now))
     current = (
         load_workspace(runtime_path, inventory)
         if runtime_path.exists()
