@@ -122,9 +122,10 @@ def _transitional_status(profile: SystemProfile) -> str:
         and profile.significant_change_after_application_date is False
     ):
         return (
-            "Article 111 check: the system was placed on the market before the relevant "
-            "application date and no significant change is asserted. Confirm the exact "
-            "legacy treatment before relying on this classification."
+            "Article 111 check: a placing-on-market date is given and no significant "
+            "change is asserted. Confirm that the system was placed on the market before "
+            "the relevant application date, and the exact legacy treatment, before relying "
+            "on this classification."
         )
     if profile.significant_change_after_application_date is True:
         return (

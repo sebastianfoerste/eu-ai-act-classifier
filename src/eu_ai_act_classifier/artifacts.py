@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from .catalog import ART_49_2
 from .models import ClassificationReport, Disposition, ObligationGraphItem
 
 ARTIFACT_NAMES = {
@@ -211,15 +212,20 @@ def _relevant_graph(report: ClassificationReport, title: str) -> list[Obligation
     if "training-content" in title_lower:
         return [item for item in report.obligation_graph if item.article == "Art. 53(1)(d) AIA"]
     if "6(4)" in title_lower:
-        return [item for item in report.obligation_graph if item.article == "Art. 49 AIA"]
+        # Art. 6(4), second sentence: a provider relying on Art. 6(3) registers under
+        # Art. 49(2), not under the Art. 49(1) high-risk registration.
+        return [item for item in report.obligation_graph if item.article == ART_49_2]
     return []
 
 
 def _format_graph_item(item: ObligationGraphItem) -> str:
-    return (
+    line = (
         f"- {item.article} ({item.actor.value}): {item.requirement} "
         f"Evidence: {item.evidence_artifact}. Review: {item.review_status.value}."
     )
+    if item.application_date_note:
+        line += f" {item.application_date_note}"
+    return line
 
 
 def _slug(value: str) -> str:

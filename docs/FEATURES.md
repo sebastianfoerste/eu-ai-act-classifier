@@ -10,6 +10,20 @@ Implementation:
 2. `src/eu_ai_act_classifier/models.py`
 3. `tests/test_engine.py`
 
+## What It Checks
+
+| Gate | Decides | Example from the eval set |
+|---|---|---|
+| Scope and intake | AI-system status, EU nexus, transitional dates | `examples/ambiguous_use_case.json` |
+| Prohibited practices (Art. 5) | Flags prohibited use cases | `examples/social_scoring.json`, `examples/emotion_hiring.json` |
+| High-risk (Art. 6, Annex III) | Risk tier and provider/deployer obligations | `examples/credit_scoring.json`, `examples/cv_screening.json` |
+| GPAI | Systemic-risk status and compute scale | `examples/gpai_systemic_by_flops.json` |
+| Transparency | Limited-risk cases | `examples/deepfake_generator.json`, `examples/support_chatbot.json` |
+
+Which example lands in which tier is asserted in `tests/test_examples.py`. See [examples/README.md](../examples/README.md).
+
+Which Annex III points the classifier covers, with the citation each emits and the examples and tests behind it: [docs/coverage.md](coverage.md), generated from the code.
+
 ## Source Status Model
 
 Separates binding Level 1 text, any future provisional political-agreement context and nonbinding guidance. Regulation (EU) 2026/1744 is recorded as an adopted and published Level 1 amendment. Guidance overlays are advisory and do not change the deterministic classification path.
@@ -23,7 +37,7 @@ Implementation:
 
 ## Obligation Graph
 
-Turns classification findings into reviewer-facing obligations with article, actor role, trigger, evidence artifact, source status, application date and review status.
+Turns classification findings into reviewer-facing obligations with article, actor role, trigger, evidence artifact, source status, application date, review status and, where the date rests on a contestable reading or a transitional rule, an application date note.
 
 Implementation:
 

@@ -2,7 +2,18 @@
 
 from __future__ import annotations
 
-from .citations import AI_ACT_URL
+from datetime import date
+
+from .catalog import ART_49, ART_49_2, ART_50_2, eu_database_registration_applies
+from .citations import (
+    AI_ACT_URL,
+    ART_111_3_DEADLINE,
+    ART_111_4_DEADLINE,
+    GENERAL_APPLICATION_DATE,
+    POINT_B_DATE,
+    POINT_C_ANNEX_I,
+    POINT_C_ANNEX_III,
+)
 from .models import (
     AnnexIII,
     Obligation,
@@ -12,6 +23,17 @@ from .models import (
     Role,
     SourceStatus,
     SystemProfile,
+)
+
+_SECTION_5 = "Chapter III, Section 5"
+_CHAPTER_IX = "Chapter IX"
+_ART_111_3_NOTE = (
+    "Art. 111(3) AIA: providers of general-purpose AI models placed on the market before "
+    f"{POINT_B_DATE} comply with this Regulation by {ART_111_3_DEADLINE}."
+)
+_ART_111_4_NOTE = (
+    f"Art. 111(4) AIA: providers of systems placed on the market before "
+    f"{GENERAL_APPLICATION_DATE} comply with Art. 50(2) by {ART_111_4_DEADLINE}."
 )
 
 
@@ -29,7 +51,7 @@ def build_obligation_graph(
     if final_tier is RiskTier.HIGH:
         application_date = _high_risk_application_date(profile)
         if profile.is_provider:
-            items.extend(_high_risk_provider_graph(application_date))
+            items.extend(_high_risk_provider_graph(application_date, profile))
         if profile.is_deployer:
             items.append(
                 _item(
@@ -130,9 +152,19 @@ def build_obligation_graph(
             )
 
     if is_gpai and final_tier is not RiskTier.PROHIBITED:
-        items.extend(_gpai_graph(gpai_systemic))
+        items.extend(
+            _gpai_graph(
+                gpai_systemic,
+                *_art_111_dating(profile, POINT_B_DATE, ART_111_3_DEADLINE, _ART_111_3_NOTE),
+            )
+        )
 
     for index, obligation in enumerate(transparency_obligations, start=1):
+        applies_from, note = GENERAL_APPLICATION_DATE, None
+        if obligation.article == ART_50_2:
+            applies_from, note = _art_111_dating(
+                profile, GENERAL_APPLICATION_DATE, ART_111_4_DEADLINE, _ART_111_4_NOTE
+            )
         items.append(
             _item(
                 f"transparency.{index}",
@@ -141,14 +173,17 @@ def build_obligation_graph(
                 "Art. 50 transparency trigger in the submitted profile.",
                 obligation.requirement,
                 "Transparency notice, label or disclosure record.",
-                "2026-08-02",
+                applies_from,
+                application_date_note=note,
             )
         )
 
     return items
 
 
-def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem]:
+def _high_risk_provider_graph(
+    application_date: str, profile: SystemProfile
+) -> list[ObligationGraphItem]:
     return [
         _item(
             "high-risk.provider.16",
@@ -206,113 +241,164 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             application_date,
             ReviewStatus.REVIEW_REQUIRED,
         ),
-        _item(
+        # Chapter III, Section 5 (Arts. 40-49) and Chapter IX (Arts. 72-73) are not in
+        # the Art. 113, third paragraph, point (c) deferral. Read literally they apply
+        # from the general date; whether they follow Sections 1 to 3 is contested, so
+        # each item carries the deferred alternative and goes to review.
+        _undeferred_item(
             "high-risk.provider.40",
             "Art. 40 AIA",
-            Role.PROVIDER,
             "High-risk requirements where harmonised standards are available.",
             "Track applicable harmonised standards and standardisation deliverables.",
             "Standards applicability matrix.",
+            _SECTION_5,
             application_date,
-            ReviewStatus.REVIEW_REQUIRED,
         ),
-        _item(
+        _undeferred_item(
             "high-risk.provider.41",
             "Art. 41 AIA",
-            Role.PROVIDER,
             "Common specifications become applicable.",
             (
                 "Assess common specifications where harmonised standards are unavailable "
                 "or insufficient."
             ),
             "Common specifications assessment.",
+            _SECTION_5,
             application_date,
-            ReviewStatus.REVIEW_REQUIRED,
         ),
-        _item(
+        _undeferred_item(
             "high-risk.provider.42",
             "Art. 42 AIA",
-            Role.PROVIDER,
             "Use of standards or specifications for presumption of conformity.",
             "Map implemented controls to standards, specifications or alternative evidence.",
             "Presumption of conformity mapping.",
+            _SECTION_5,
             application_date,
-            ReviewStatus.REVIEW_REQUIRED,
         ),
-        _item(
+        _undeferred_item(
             "high-risk.provider.43",
             "Art. 43 AIA",
-            Role.PROVIDER,
             "Before placing high-risk AI system on the market or putting into service.",
             "Complete the applicable conformity assessment.",
             "Conformity assessment file.",
+            _SECTION_5,
             application_date,
-            ReviewStatus.REVIEW_REQUIRED,
         ),
-        _item(
+        _undeferred_item(
             "high-risk.provider.44",
             "Art. 44 AIA",
-            Role.PROVIDER,
             "Certificate issued by notified body where applicable.",
             "Track certificate validity, changes and renewal obligations.",
             "Certificate register.",
+            _SECTION_5,
             application_date,
-            ReviewStatus.REVIEW_REQUIRED,
         ),
-        _item(
+        _undeferred_item(
             "high-risk.provider.47",
             "Art. 47 AIA",
-            Role.PROVIDER,
             "Conformity established.",
             "Draw up and keep the EU declaration of conformity.",
             "EU declaration of conformity.",
+            _SECTION_5,
             application_date,
         ),
-        _item(
+        _undeferred_item(
             "high-risk.provider.48",
             "Art. 48 AIA",
-            Role.PROVIDER,
             "Conformity established for a high-risk AI system.",
             "Affix CE marking where required.",
             "CE marking record.",
+            _SECTION_5,
             application_date,
         ),
-        _item(
-            "high-risk.provider.49",
-            "Art. 49 AIA",
-            Role.PROVIDER,
-            (
-                "Before placing an Annex III high-risk AI system on the market or putting "
-                "it into service."
-            ),
-            "Register the provider and system in the EU database where required.",
-            "EU database registration record.",
-            application_date,
-            ReviewStatus.REVIEW_REQUIRED,
-        ),
-        _item(
+        *_registration_items(profile),
+        _undeferred_item(
             "high-risk.provider.72",
             "Art. 72 AIA",
-            Role.PROVIDER,
             "High-risk AI system lifecycle.",
             "Operate a post-market monitoring system and plan.",
             "Post-market monitoring plan.",
+            _CHAPTER_IX,
             application_date,
         ),
-        _item(
+        _undeferred_item(
             "high-risk.provider.73",
             "Art. 73 AIA",
-            Role.PROVIDER,
             "Serious incident identified.",
             "Report serious incidents to the market surveillance authority.",
             "Serious incident register.",
+            _CHAPTER_IX,
             application_date,
-            ReviewStatus.REVIEW_REQUIRED,
         ),
     ]
 
 
-def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
+def _registration_items(profile: SystemProfile) -> list[ObligationGraphItem]:
+    """Art. 49 AIA registration. Every item here needs an Annex III area, so the
+    deferred alternative is the point (c)(i) date."""
+
+    annex_iii_area = profile.annex_iii_area
+    items: list[ObligationGraphItem] = []
+    if eu_database_registration_applies(annex_iii_area):
+        items.append(
+            _undeferred_item(
+                "high-risk.provider.49",
+                ART_49,
+                (
+                    "Before placing an Annex III high-risk AI system on the market or putting "
+                    "it into service."
+                ),
+                "Register the provider and system in the EU database where required.",
+                "EU database registration record.",
+                _SECTION_5,
+                POINT_C_ANNEX_III,
+            )
+        )
+    elif annex_iii_area is AnnexIII.CRITICAL_INFRASTRUCTURE:
+        items.append(
+            _undeferred_item(
+                "high-risk.provider.49.5",
+                "Art. 49(5) AIA",
+                "Annex III point 2 high-risk AI system (critical infrastructure).",
+                (
+                    "Have the system registered at national level, not in the EU database; "
+                    "confirm the national procedure and who registers."
+                ),
+                "National registration record.",
+                _SECTION_5,
+                POINT_C_ANNEX_III,
+            )
+        )
+    derogation = profile.derogation
+    if (
+        annex_iii_area is not None
+        and derogation.any_condition
+        and not derogation.performs_profiling
+    ):
+        # Art. 49(2) has no point 2 exception: a provider relying on Art. 6(3) registers
+        # in the EU database whatever the Annex III point.
+        items.append(
+            _undeferred_item(
+                "high-risk.provider.49.2",
+                ART_49_2,
+                "Art. 6(3) derogation asserted for an Annex III AI system.",
+                (
+                    "If the provider concludes under Art. 6(3) that the system is not "
+                    "high-risk, register the provider and system in the EU database before "
+                    "placing it on the market or putting it into service."
+                ),
+                "Art. 6(4) assessment and EU database registration record.",
+                _SECTION_5,
+                POINT_C_ANNEX_III,
+            )
+        )
+    return items
+
+
+def _gpai_graph(
+    systemic: bool, application_date: str, note: str | None
+) -> list[ObligationGraphItem]:
+    # Every Chapter V item takes the same date and Art. 111(3) AIA note (_art_111_dating).
     items = [
         _item(
             "gpai.provider.53.a",
@@ -321,7 +407,9 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Keep model technical documentation per Annex XI.",
             "GPAI model documentation checklist.",
-            "2025-08-02",
+            application_date,
+            ReviewStatus.DETERMINED,
+            note,
         ),
         _item(
             "gpai.provider.53.b",
@@ -330,7 +418,9 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Provide downstream providers with information per Annex XII.",
             "Downstream provider information pack.",
-            "2025-08-02",
+            application_date,
+            ReviewStatus.DETERMINED,
+            note,
         ),
         _item(
             "gpai.provider.53.c",
@@ -339,8 +429,9 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Maintain a policy to comply with Union copyright law.",
             "Copyright compliance policy.",
-            "2025-08-02",
+            application_date,
             ReviewStatus.REVIEW_REQUIRED,
+            note,
         ),
         _item(
             "gpai.provider.53.d",
@@ -349,8 +440,9 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
             "Provider of a general-purpose AI model.",
             "Publish a sufficiently detailed summary of training content.",
             "Training-content summary.",
-            "2025-08-02",
+            application_date,
             ReviewStatus.REVIEW_REQUIRED,
+            note,
         ),
         _item(
             "gpai.provider.56",
@@ -359,8 +451,9 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
             "Provider choosing a Code of Practice route or alternative compliance evidence.",
             "Track Code of Practice adherence or alternative means of compliance.",
             "GPAI Code of Practice adherence record.",
-            "2025-08-02",
+            application_date,
             ReviewStatus.REVIEW_REQUIRED,
+            note,
         ),
     ]
     if systemic:
@@ -373,8 +466,9 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Perform model evaluation, including adversarial testing.",
                     "Systemic model evaluation file.",
-                    "2025-08-02",
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
+                    note,
                 ),
                 _item(
                     "gpai.provider.55.b",
@@ -383,8 +477,9 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Assess and mitigate systemic risks at Union level.",
                     "Systemic risk assessment and mitigation plan.",
-                    "2025-08-02",
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
+                    note,
                 ),
                 _item(
                     "gpai.provider.55.c",
@@ -393,8 +488,9 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Track, document and report serious incidents.",
                     "GPAI serious incident register.",
-                    "2025-08-02",
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
+                    note,
                 ),
                 _item(
                     "gpai.provider.55.d",
@@ -403,8 +499,9 @@ def _gpai_graph(systemic: bool) -> list[ObligationGraphItem]:
                     "GPAI model with systemic risk.",
                     "Ensure an adequate level of cybersecurity protection.",
                     "Cybersecurity control file.",
-                    "2025-08-02",
+                    application_date,
                     ReviewStatus.REVIEW_REQUIRED,
+                    note,
                 ),
             ]
         )
@@ -420,6 +517,7 @@ def _item(
     evidence_artifact: str,
     application_date: str,
     review_status: ReviewStatus = ReviewStatus.DETERMINED,
+    application_date_note: str | None = None,
 ) -> ObligationGraphItem:
     return ObligationGraphItem(
         obligation_id=obligation_id,
@@ -432,12 +530,75 @@ def _item(
         source_url=AI_ACT_URL,
         application_date=application_date,
         review_status=review_status,
+        application_date_note=application_date_note,
+    )
+
+
+def _undeferred_item(
+    obligation_id: str,
+    article: str,
+    trigger: str,
+    requirement: str,
+    evidence_artifact: str,
+    location: str,
+    deferred_date: str,
+) -> ObligationGraphItem:
+    """A provider duty outside the point (c) deferral: the literal general date, the
+    deferred alternative in the note, and review."""
+
+    return _item(
+        obligation_id,
+        article,
+        Role.PROVIDER,
+        trigger,
+        requirement,
+        evidence_artifact,
+        GENERAL_APPLICATION_DATE,
+        ReviewStatus.REVIEW_REQUIRED,
+        _literal_reading_note(location, deferred_date),
+    )
+
+
+def _placed_before(profile: SystemProfile, cut_off: str) -> bool | None:
+    """Whether the system was placed on the market before ``cut_off``, as Art. 111(3)
+    and (4) AIA require; None when the profile gives no placing-on-market date."""
+
+    if profile.placing_on_market_date is None:
+        return None
+    return date.fromisoformat(profile.placing_on_market_date) < date.fromisoformat(cut_off)
+
+
+def _art_111_dating(
+    profile: SystemProfile, cut_off: str, deadline: str, note: str
+) -> tuple[str, str | None]:
+    """Application date and note under Art. 111(3) or (4) AIA. The duty applies from
+    ``cut_off``; what was placed on the market before that date has until ``deadline``."""
+
+    placed_before = _placed_before(profile, cut_off)
+    if placed_before is None:
+        # Placing date unknown: the cut-off date, with the transition as a condition.
+        return cut_off, note
+    if placed_before:
+        return deadline, note
+    return cut_off, None
+
+
+def _literal_reading_note(location: str, deferred_date: str) -> str:
+    return (
+        "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA "
+        f"defers only Chapter III, Sections 1, 2 and 3, so this {location} duty applies "
+        f"from {GENERAL_APPLICATION_DATE} (Art. 113, second paragraph). If it is read as "
+        f"following that deferral, {deferred_date} applies."
     )
 
 
 def _high_risk_application_date(profile: SystemProfile) -> str:
-    if profile.annex_i_safety_component and profile.annex_i_third_party_assessment:
-        return "2028-08-02"
-    if profile.annex_iii_area is AnnexIII.UNSURE or profile.annex_iii_area is not None:
-        return "2027-12-02"
-    return "2027-12-02"
+    """Art. 113, third paragraph, point (c) AIA date for Chapter III, Sections 1 to 3."""
+
+    annex_i = profile.annex_i_safety_component and profile.annex_i_third_party_assessment
+    if annex_i and profile.annex_iii_area is None:
+        return POINT_C_ANNEX_I  # point (c)(ii): Art. 6(1) and Annex I only
+    # Point (c)(i): every route through Art. 6(2) and Annex III, including III.unsure
+    # and a system that is also an Annex I product, which is still "classified as
+    # high-risk pursuant to Article 6(2) and Annex III".
+    return POINT_C_ANNEX_III

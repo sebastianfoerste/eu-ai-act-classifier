@@ -183,6 +183,18 @@
         },
         "review_status": {
           "$ref": "#/$defs/ReviewStatus"
+        },
+        "application_date_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Application Date Note"
         }
       },
       "required": [
