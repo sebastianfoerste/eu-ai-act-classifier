@@ -90,6 +90,7 @@ export type ObligationGraphItem = {
   source_url: string;
   application_date: string;
   review_status: string;
+  application_date_note?: string | null;
 };
 
 export type RegulatorySource = {

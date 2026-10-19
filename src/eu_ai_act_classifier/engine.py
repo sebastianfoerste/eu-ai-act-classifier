@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .advisory import build_advisory_notes
 from .catalog import (
+    eu_database_registration_applies,
     gpai_obligations,
     high_risk_authorized_representative_obligations,
     high_risk_deployer_obligations,
@@ -65,7 +66,9 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
 
     if final_tier is RiskTier.HIGH:
         if profile.is_provider:
-            obligations += high_risk_provider_obligations()
+            obligations += high_risk_provider_obligations(
+                eu_database_registration=eu_database_registration_applies(profile.annex_iii_area)
+            )
             documentation += high_risk_documentation()
         if profile.is_deployer:
             fria_required = _fria_required(profile)
@@ -116,7 +119,7 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
             source_id=a.source_id,
             source_url=a.source_url,
         )
-        for a in APPLICATION_DATES + AMENDING_APPLICATION_DATES
+        for a in sorted(APPLICATION_DATES + AMENDING_APPLICATION_DATES, key=lambda d: d.date)
     ]
 
     obligation_graph = build_obligation_graph(
