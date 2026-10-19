@@ -23,6 +23,8 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "demo.png"
 COMMAND = ["eu-ai-act-classify", "examples/credit_scoring.json"]
 
+# Seconds before a stuck CLI run or browser is killed, so the script cannot hang.
+TIMEOUT_S = 120
 COLUMNS = 120
 FONT_PX = 13
 LINE_PX = 18
@@ -64,7 +66,12 @@ def _chrome() -> str:
 
 def main() -> int:
     output = subprocess.run(
-        ["uv", "run", *COMMAND], cwd=ROOT, check=True, capture_output=True, text=True
+        ["uv", "run", *COMMAND],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=TIMEOUT_S,
     ).stdout
     lines = _wrap(output.rstrip("\n"))
     command = " ".join(COMMAND)
@@ -96,6 +103,7 @@ def main() -> int:
             ],
             check=True,
             capture_output=True,
+            timeout=TIMEOUT_S,
         )
     print(f"wrote {OUT.relative_to(ROOT)} ({width}x{height}, {len(lines)} lines)")
     return 0

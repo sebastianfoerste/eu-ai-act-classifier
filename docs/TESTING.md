@@ -46,13 +46,17 @@ uv run python scripts/render_demo.py        # docs/demo.png, needs headless Chro
 ```
 
 `docs/cockpit.png` is a full-page capture of the production build, taken
-headlessly at 1920 px wide so the obligation tracker's dates are visible:
+headlessly at 1180 px wide. That is the single-column layout: in the wider
+layouts the obligation tracker's table scrolls sideways, so a capture cuts off
+its Status column and notes.
 
 ```bash
 cd web && npm ci && CLASSIFIER_REPO_ROOT=.. npx next build
-CLASSIFIER_REPO_ROOT=.. npx next start -p 3917 &
-google-chrome --headless=new --no-sandbox --hide-scrollbars --force-device-scale-factor=1 \
-  --virtual-time-budget=20000 --window-size=1920,9000 --screenshot=cockpit.png http://127.0.0.1:3917/
+CLASSIFIER_REPO_ROOT=.. timeout 600 npx next start -p 3917 &
+SERVER=$!
+timeout 120 google-chrome --headless=new --no-sandbox --hide-scrollbars --force-device-scale-factor=1 \
+  --virtual-time-budget=20000 --window-size=1180,16000 --screenshot=cockpit.png http://127.0.0.1:3917/
+kill "$SERVER"
 ```
 
 Crop the empty space below the page before committing it.

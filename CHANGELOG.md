@@ -42,3 +42,7 @@ counsel".
   before, with a note asking for the model's own date.
 - `docs/integrations/eu-ai-act-classifier.adapter.v1.json`: `sourceCurrencyDate`
   is 2026-10-18, as in the proof contract.
+- `docs/demo.png` is rendered from real CLI output by the new
+  `scripts/render_demo.py`; it used to be a copy of the cockpit screenshot.
+  `docs/cockpit.png` is a full-page headless capture of the production build.
+  Both recipes are in `docs/TESTING.md`.
