@@ -70,9 +70,9 @@ The inventory payload includes a system review table with classifier-backed rows
 
 ## Optional web cockpit
 
-![Screenshot of the local web cockpit with the CreditSightScore sample: system inventory, guided intake, review panel showing determined with 0 open questions, reviewer notes, an obligation tracker with 16 graph items from Art. 16 AIA, source provenance and a draft export pack](cockpit.png)
+![Full-page screenshot of the local web cockpit with the CreditSightScore sample: sample inventory, guided intake, review panel showing determined with 0 open questions, reviewer notes, the AI systems inventory and system review tables, an obligation tracker with 16 graph items from Art. 16 AIA in which the Art. 40 to 44, 47 to 49, 72 and 73 items are due 2026-08-02 with a literal-reading note, source provenance and a draft export pack](cockpit.png)
 
-*Screenshot of the local web cockpit (`web/`) with the CreditSightScore sample loaded.*
+*Full-page screenshot of the local web cockpit (`web/`, production build, 1440 px wide) with the CreditSightScore sample loaded. The obligation tracker cuts off wide cells; each item's full `application_date` and `application_date_note` are in [`examples/classification-packet.json`](../examples/classification-packet.json).*
 
 The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
 
