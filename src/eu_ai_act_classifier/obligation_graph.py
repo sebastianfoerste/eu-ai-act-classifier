@@ -513,13 +513,14 @@ def _art_111_2_items(profile: SystemProfile, cut_off: str) -> list[ObligationGra
     elif change is False:
         requirement = (
             "No significant change in design is asserted: apart from Art. 5, the Regulation "
-            f"applies only if, as from {cut_off}, the design changes significantly. Keep a "
+            f"applies only if the design changes significantly as from {cut_off}. Keep a "
             "design-change log."
         )
     else:
         requirement = (
-            f"Apart from Art. 5, the Regulation applies only if, as from {cut_off}, the design "
-            "changes significantly. Confirm whether it has and keep a design-change log."
+            "Apart from Art. 5, the Regulation applies only if the design changes "
+            f"significantly as from {cut_off}. Confirm whether it has and keep a "
+            "design-change log."
         )
     note = (
         "Art. 111(2) AIA: covers high-risk systems placed on the market or put into service "
@@ -534,7 +535,7 @@ def _art_111_2_items(profile: SystemProfile, cut_off: str) -> list[ObligationGra
     if profile.public_authority_use:
         deadline = (
             "The system is intended to be used by public authorities: its providers and "
-            f"deployers {PUBLIC_AUTHORITY_DUTY} in any case."
+            f"deployers {PUBLIC_AUTHORITY_DUTY}."
         )
     elif profile.deployer_public_authority:
         # Art. 111(2) turns on intended use, not on who deploys; a public-authority
@@ -542,7 +543,7 @@ def _art_111_2_items(profile: SystemProfile, cut_off: str) -> list[ObligationGra
         deadline = (
             "A public-authority deployer is asserted: confirm whether the system is intended "
             "to be used by public authorities. If it is, its providers and deployers "
-            f"{PUBLIC_AUTHORITY_DUTY} in any case."
+            f"{PUBLIC_AUTHORITY_DUTY}."
         )
     else:
         deadline = ""
@@ -582,11 +583,11 @@ def _with_legacy_notes(
     if not legacy or profile.significant_change_after_application_date is True:
         return items
     condition = (
-        f"Art. 111(2) AIA: the system was {describe_dates(legacy)}, before {cut_off}, so this "
-        "duty attaches only if, as from that date, its design changes significantly"
+        f"Art. 111(2) AIA: the system was {describe_dates(legacy)}, before {cut_off}. As from "
+        "that date this duty attaches only once its design changes significantly"
     )
     public_authority = (
-        f", and in any case by {DEADLINE_2030}, as the system is intended to be used by "
+        f", and by {DEADLINE_2030} in any case, as the system is intended to be used by "
         "public authorities"
     )
     contested = cut_off_contested(profile, cut_off)
@@ -622,15 +623,15 @@ def _legacy_transparency_flag(profile: SystemProfile) -> str | None:
     if not legacy:
         return None
     flag = (
-        "This report keeps the Art. 50 dating as the conservative reading. Literal reading, "
-        "confirm with counsel: Art. 111(2) AIA applies this Regulation to a high-risk system "
-        f"{describe_dates(legacy)}, before {cut_off}, only if, as from that date, its design "
-        "changes significantly, so on its wording Art. 50 would apply to it only then."
+        "Literal reading, confirm with counsel: Art. 111(2) AIA applies this Regulation to a "
+        f"high-risk system {describe_dates(legacy)}, before {cut_off}, only if its design "
+        "changes significantly as from that date, so on its wording Art. 50 would apply to it "
+        "only then. This report keeps the Art. 50 dating as the conservative reading."
     )
     if profile.public_authority_use:
         flag += (
             " As the system is intended to be used by public authorities, its providers and "
-            f"deployers {PUBLIC_AUTHORITY_DUTY} in any case."
+            f"deployers {PUBLIC_AUTHORITY_DUTY}."
         )
     if cut_off_contested(profile, cut_off):
         flag += " The cut-off is itself contested (see the Art. 111(2) item)."

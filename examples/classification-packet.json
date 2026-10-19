@@ -460,7 +460,7 @@
     {
       "provision": "Regulation (EU) 2026/1744: Art. 111(2) AIA, high-risk systems for public authorities",
       "applies_from": "2030-08-02",
-      "note": "High-risk systems placed on the market or put into service before the date of application of Chapter III are covered only after a significant change in their design, but providers and deployers of high-risk systems intended to be used by public authorities comply by 2 August 2030 in any case (Art. 111(2) AIA as replaced by Art. 1, point (39)(a) of Regulation (EU) 2026/1744).",
+      "note": "Apart from Art. 5, high-risk systems placed on the market or put into service before the date of application of Chapter III are covered only if, as from that date, their designs change significantly, but providers and deployers of high-risk systems intended to be used by public authorities take the necessary steps to comply with the requirements and obligations laid down in the Regulation by 2 August 2030 in any case (Art. 111(2) AIA as replaced by Art. 1, point (39)(a) of Regulation (EU) 2026/1744). Components of the Annex X large-scale IT systems follow Art. 111(1) instead.",
       "source_status": "binding_level_1",
       "source_id": "ai-act-amendment-2026-1744",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"

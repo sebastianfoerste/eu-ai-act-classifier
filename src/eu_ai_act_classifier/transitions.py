@@ -19,11 +19,11 @@ from .citations import (
 from .models import AnnexISection, Role, SystemProfile
 
 DEADLINE_2030 = long_date(ART_111_2_PUBLIC_AUTHORITY_DEADLINE)  # "2 August 2030"
-# Art. 111(2), second sentence, in its own words: what providers and deployers of
-# high-risk systems intended to be used by public authorities do "in any case".
+# Art. 111(2), second sentence: what providers and deployers of high-risk systems intended
+# to be used by public authorities do "in any case", whatever their design changes.
 PUBLIC_AUTHORITY_DUTY = (
-    "take the necessary steps to comply with the requirements and obligations laid down in "
-    f"this Regulation by {DEADLINE_2030}"
+    f"comply by {DEADLINE_2030} in any case with the requirements and obligations laid down "
+    "in this Regulation"
 )
 
 

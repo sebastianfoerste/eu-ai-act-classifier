@@ -37,8 +37,9 @@ def build_advisory_notes(profile: SystemProfile) -> list[AdvisoryNote]:
                     "Commission prohibited-practices guidance may help review the asserted "
                     "Art. 5 trigger and examples."
                     + (
-                        " Art. 5(1)(ba) and (bb) were inserted by Regulation (EU) 2026/1744, "
-                        "so confirm that the version you use covers them."
+                        " The linked guidance predates Art. 5(1)(ba) and (bb), inserted by "
+                        "Regulation (EU) 2026/1744, so confirm whether a later version covers "
+                        "them."
                         if set(profile.prohibited_practices) & set(LATER_PROHIBITIONS)
                         else ""
                     )

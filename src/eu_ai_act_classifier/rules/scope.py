@@ -167,7 +167,7 @@ def _transitional_status(profile: SystemProfile) -> str:
     if not dates:
         return (
             "Article 111(2) check: no placing-on-market or putting-into-service date is "
-            f"given to compare with {applies}. {_undated_change_sentence(profile, cut_off)}"
+            f"given to compare with {applies}. {_undated_change_sentence(profile)}"
             f"{_public_authority_sentence(profile)}"
         )
     legacy = legacy_dates(profile, cut_off)
@@ -181,27 +181,30 @@ def _transitional_status(profile: SystemProfile) -> str:
     text = f"Article 111(2) check: the system was {describe_dates(legacy)}, before {applies}"
     if later:
         text += f", and {describe_dates(later)}"
-    text += f": {_change_clause(profile, cut_off)}.{_public_authority_sentence(profile)}"
+    text += f": {_change_clause(profile)}.{_public_authority_sentence(profile)}"
     if cut_off_contested(profile, cut_off):
         text += f" {cut_off_flag(cut_off)}"
     return text
 
 
-def _change_clause(profile: SystemProfile, cut_off: str) -> str:
+def _change_clause(profile: SystemProfile) -> str:
+    """The clause after "before <cut-off>, when Chapter III ... applies", so "that date"
+    is the cut-off."""
+
     change = profile.significant_change_after_application_date
     if change is True:
         return (
-            f"a significant change in design as from {cut_off} is asserted, so the Regulation "
+            "a significant change in design as from that date is asserted, so the Regulation "
             "applies to the changed system"
         )
     if change is False:
         return (
             "no significant change in design is asserted, so apart from Art. 5 the Regulation "
-            f"applies to it only if, as from {cut_off}, its design changes significantly"
+            "applies to it only if its design changes significantly as from that date"
         )
     return (
-        f"apart from Art. 5 the Regulation applies to it only if, as from {cut_off}, its "
-        "design changes significantly; confirm whether it has"
+        "apart from Art. 5 the Regulation applies to it only if its design changes "
+        "significantly as from that date; confirm whether it has"
     )
 
 
@@ -213,35 +216,37 @@ def _public_authority_sentence(profile: SystemProfile) -> str:
     if profile.public_authority_use:
         return (
             " As the system is intended to be used by public authorities, its providers and "
-            f"deployers {PUBLIC_AUTHORITY_DUTY} in any case."
+            f"deployers {PUBLIC_AUTHORITY_DUTY}."
         )
     if profile.deployer_public_authority:
         return (
             " A public-authority deployer is asserted: confirm whether the system is intended "
             "to be used by public authorities. If it is, its providers and deployers "
-            f"{PUBLIC_AUTHORITY_DUTY} in any case."
+            f"{PUBLIC_AUTHORITY_DUTY}."
         )
     return ""
 
 
-def _undated_change_sentence(profile: SystemProfile, cut_off: str) -> str:
+def _undated_change_sentence(profile: SystemProfile) -> str:
     change = profile.significant_change_after_application_date
     if change is True:
+        # Art. 111(2): for a system already on the market the change counts only "as from
+        # that date"; the undated profile cannot show which case it is.
         return (
-            f"A significant change in design as from {cut_off} is asserted, so the Regulation "
-            "applies to the changed system even if it was placed on the market or put into "
-            "service before that date."
+            "A significant change in design is asserted, so the Regulation applies to the "
+            "changed system even if it was placed on the market or put into service before "
+            "that date, provided the change was made as from that date."
         )
     if_legacy = "If the system was placed on the market or put into service before that date"
     if change is False:
         return (
             f"No significant change in design is asserted. {if_legacy}, apart from Art. 5 "
-            "the Regulation applies to it only if, as from that date, its design changes "
-            "significantly."
+            "the Regulation applies to it only if its design changes significantly as from "
+            "that date."
         )
     return (
-        f"{if_legacy}, apart from Art. 5 the Regulation applies to it only if, as from that "
-        "date, its design changes significantly."
+        f"{if_legacy}, apart from Art. 5 the Regulation applies to it only if its design "
+        "changes significantly as from that date."
     )
 
 
@@ -263,6 +268,6 @@ def _no_high_risk_route(profile: SystemProfile) -> str:
             "Article 111(2) check: public-authority use is asserted, but no high-risk route is "
             "screened. The providers and deployers of a high-risk system intended to be used "
             "by public authorities and placed on the market or put into service before its "
-            f"Chapter III date {PUBLIC_AUTHORITY_DUTY} in any case."
+            f"Chapter III date {PUBLIC_AUTHORITY_DUTY}."
         )
     return ""

@@ -228,16 +228,16 @@ SECTION_B_ROUTE = (
 )
 
 
-# Contested Section B points. As in PR #26 the text says what the report does, then the
-# reading it departs from under "Literal reading, confirm with counsel".
+# Contested Section B points. As in PR #26 the text opens with "Literal reading, confirm
+# with counsel", states the reading the report departs from, then what the report does.
 def section_b_kept_flag(provision: str, kept: str) -> str:
     """Art. 2(2) AIA does not list ``provision`` for a Section B product; the report
     keeps ``kept`` as the conservative reading."""
 
     return (
-        f"This report keeps {kept} as the conservative reading. Literal reading, confirm with "
-        "counsel: for an Annex I, Section B product Art. 2(2) AIA lists only Art. 6(1), "
-        f"Art. 60a and Arts. 102 to 112, so on its wording {provision} does not apply."
+        "Literal reading, confirm with counsel: for an Annex I, Section B product Art. 2(2) "
+        "AIA lists only Art. 6(1), Art. 60a and Arts. 102 to 112, so on its wording "
+        f"{provision} does not apply. This report keeps {kept} as the conservative reading."
     )
 
 
@@ -252,11 +252,10 @@ def section_b_annex_iii_flag(derogation_asserted: bool) -> str:
             "Art. 2(2) provisions apply"
         )
     return (
-        f"This system {classified}, and this report keeps the Annex III duties as the "
-        "conservative reading. Literal reading, confirm with counsel: on its wording Art. 2(2) "
-        "AIA covers any AI system classified high-risk in accordance with Art. 6(1) for a "
-        "Section B product, and Art. 6(2) is not among the provisions it lists, so only those "
-        "would apply."
+        "Literal reading, confirm with counsel: on its wording Art. 2(2) AIA covers any AI "
+        "system classified high-risk in accordance with Art. 6(1) for a Section B product, and "
+        "Art. 6(2) is not among the provisions it lists, so only those would apply. This system "
+        f"{classified}, and this report keeps the Annex III duties as the conservative reading."
     )
 
 
