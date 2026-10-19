@@ -26,7 +26,7 @@ A German life insurer builds a gradient-boosted model in house and uses it in it
 uv run eu-ai-act-classify examples/life_insurer_pricing.json
 ```
 
-Output (81 lines; the cuts are marked):
+Output (96 lines; the cuts are marked):
 
 ```text
 EU AI Act classification: Musterversicherung term-life pricing model
@@ -52,27 +52,30 @@ Obligations:
 
 [... 7 lines omitted]
 Obligation graph:
-[... 9 lines omitted]
+[... 12 lines omitted]
   - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
   - high-risk.provider.43.2: Art. 43(2) AIA (provider), evidence: Annex VI internal-control assessment record., review: review_required
-  - high-risk.provider.47: Art. 47 AIA (provider), evidence: EU declaration of conformity., review: determined
-  - high-risk.provider.48: Art. 48 AIA (provider), evidence: CE marking record., review: determined
-  - high-risk.provider.49: Art. 49 AIA (provider), evidence: EU database registration record., review: review_required
-  - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan., review: determined
-  - high-risk.provider.73: Art. 73 AIA (provider), evidence: Serious incident register., review: review_required
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+[... 10 lines omitted]
   - high-risk.deployer.26: Art. 26 AIA (deployer), evidence: Deployer operating procedure and monitoring log., review: determined
   - high-risk.deployer.27: Art. 27 AIA (deployer), evidence: Draft FRIA and notification record., review: review_required
 
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
   2025-08-02: Chapter V (general-purpose AI models)
+  2025-08-02: Chapter III Section 4, Chapter VII, Chapter XII (except Art. 101) and Art. 78
+  2026-07-27: Regulation (EU) 2026/1744: Arts. 102-110 AIA (amendments to other Union acts)
   2026-08-02: General application for provisions without a later specific date
-  2027-12-02: Regulation (EU) 2026/1744: Annex III high-risk systems
-  2028-08-02: Regulation (EU) 2026/1744: product-embedded high-risk systems
+  2026-12-02: Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA
+  2026-12-02: Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market
+  2027-08-02: Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025
+  2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
 
 Source manifest:
-  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
-  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-08-26
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-10-18
+  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-10-18
 [... 8 lines omitted]
 
 Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744
@@ -85,7 +88,7 @@ This is a screening tool, not legal advice. It does not produce a conformity ass
 - **Disposition:** `DETERMINED`, so `--strict` exits 0.
 - **Duties:** as provider, 14 obligations (Art. 9 to 15, 17, 43, 47, 48, 49, 72 and 73) and five documentation items; as deployer, Art. 26 and the Art. 27 FRIA, which Art. 27(1) and (2) require of point 5(c) deployers before first use.
 - **Conformity route:** item `high-risk.provider.43.2`, internal control under Art. 43(2) and Annex VI, without a notified body, as for every Annex III point from 2 to 8 unless the system is also an Annex I product (Art. 43(3), last subparagraph).
-- **Date and review:** in the JSON report (`--json`) all 18 graph items carry `"application_date": "2027-12-02"`, and 10 of them are `review_required`. Art. 113, third paragraph, point (c)(i), as amended by Regulation (EU) 2026/1744, sets that date for Chapter III, Sections 1 to 3. The classifier also gives it to items outside those sections (Arts. 40 to 43 and 47 to 49 in Section 5, Arts. 72 and 73 in Chapter IX); that is a modelling choice to review.
+- **Date and review:** in the JSON report (`--json`), 8 of the 18 graph items carry `"application_date": "2027-12-02"`: the provider's Arts. 16 to 21 and the deployer's Arts. 26 and 27, all in Chapter III, Section 3. Art. 113, third paragraph, point (c)(i), as amended by Regulation (EU) 2026/1744, sets that date for Chapter III, Sections 1 to 3. The other 10 items are the provider's Section 5 items (Arts. 40 to 43, the Art. 43(2) item and Arts. 47 to 49) and its Chapter IX items (Arts. 72 and 73). Point (c) does not defer them, so they carry `"application_date": "2026-08-02"`, the general date in Art. 113, second paragraph, on a literal reading. Each of them says so in a note, gives 2027-12-02 if it is read as following the deferral, and is `review_required`. In all, 13 of the 18 items are `review_required`.
 
 ## What a lawyer still has to decide
 

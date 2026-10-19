@@ -23,7 +23,7 @@ A bank uses a credit-scoring model bought from a third party to decide consumer 
 uv run eu-ai-act-classify examples/credit_scoring_deployer.json
 ```
 
-Output (44 lines; only the nonbinding entries of the source manifest are cut):
+Output (49 lines; only the nonbinding entries of the source manifest are cut):
 
 ```text
 EU AI Act classification: BankCo loan underwriting
@@ -52,13 +52,18 @@ Obligation graph:
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
   2025-08-02: Chapter V (general-purpose AI models)
+  2025-08-02: Chapter III Section 4, Chapter VII, Chapter XII (except Art. 101) and Art. 78
+  2026-07-27: Regulation (EU) 2026/1744: Arts. 102-110 AIA (amendments to other Union acts)
   2026-08-02: General application for provisions without a later specific date
-  2027-12-02: Regulation (EU) 2026/1744: Annex III high-risk systems
-  2028-08-02: Regulation (EU) 2026/1744: product-embedded high-risk systems
+  2026-12-02: Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA
+  2026-12-02: Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market
+  2027-08-02: Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025
+  2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
 
 Source manifest:
-  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
-  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-08-26
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-10-18
+  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-10-18
 [... 8 lines omitted]
 
 Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744

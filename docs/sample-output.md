@@ -1,10 +1,54 @@
 # Sample Output
 
 This page shows the shape of the output on `main`, run from a clone. Release 0.2.1,
-the current release on PyPI, does not include the October 2026 mapping changes: it
-prints the 5(b) label without "of natural persons" and the Art. 44 certificate item
-instead of `high-risk.provider.43.2`. The exact obligation list may grow as the
-source registry and obligation graph are extended.
+the current release on PyPI, prints different output in places; see the note after
+the example output. The exact obligation list may grow as the source registry and
+obligation graph are extended.
+
+## Example Output
+
+Real output of `uv run eu-ai-act-classify examples/social_scoring.json` (excerpt, run on this repo):
+
+```text
+EU AI Act classification: CitizenScore
+Risk tier: PROHIBITED (Art. 5 AIA)
+Disposition: DETERMINED
+Scope status: in_scope
+Roles: provider
+
+Scope and intake:
+  AI system: True
+  EU nexus: True
+  Transitional status: No transitional limitation identified from the submitted facts.
+
+Findings:
+  [blocker] Art. 5(1)(c) AIA: Social scoring leading to detrimental or unfavourable treatment
+      Prohibited practice under Art. 5 AIA. The system may not be placed on the market, put into service, or used.
+
+Binding application timeline:
+  2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
+  ...
+  2026-08-02: General application for provisions without a later specific date
+  ...
+  2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
+
+Source manifest:
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-10-18
+  ...
+```
+
+A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons`, and 14 cited obligations, for example:
+
+```text
+  - Art. 9 AIA: Risk management system. Establish, document and maintain a continuous risk management system.
+  - Art. 10 AIA: Data and data governance. Apply data governance to training, validation and testing data sets.
+  - Art. 11 AIA: Technical documentation. Draw up technical documentation (Annex IV) before placing on the market.
+```
+
+When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](../examples/classification-packet.md) and [`examples/classification-packet.json`](../examples/classification-packet.json).
+
+This output, the worked examples and the playground reflect this repository. Release 0.2.1, the current release on PyPI, which `pip`, `uvx` and eu-reg-mcp's `classify` extra install, does not include the changes of 14 October 2026 listed under [Honest limits](overview.md#honest-limits) or the Art. 113 dating of the Chapter III, Section 5 and Chapter IX items, so its output differs in places. For example, it prints `High-risk: Creditworthiness evaluation and credit scoring` without `of natural persons`, lists the Art. 44 certificate item instead of `high-risk.provider.43.2` for an Annex III point 5(b) provider, and cites the profiling rule as `Art. 6(3) subpara. 2 AIA`. Its obligation graph dates the Section 5 and Chapter IX items 2027-12-02 without the literal-reading note, and its timeline has five entries. Until a release includes these changes, the git form under [Quick start](SETUP.md#quick-start), which installs `main`, runs this version.
 
 ## CLI Report
 
@@ -34,19 +78,27 @@ Findings:
 Obligation graph:
   - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
   - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
   - high-risk.provider.43.2: Art. 43(2) AIA (provider), evidence: Annex VI internal-control assessment record., review: review_required
-  - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan., review: determined
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+  - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan., review: review_required
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter IX duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
 
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
   2025-08-02: Chapter V (general-purpose AI models)
+  2025-08-02: Chapter III Section 4, Chapter VII, Chapter XII (except Art. 101) and Art. 78
+  2026-07-27: Regulation (EU) 2026/1744: Arts. 102-110 AIA (amendments to other Union acts)
   2026-08-02: General application for provisions without a later specific date
-  2027-12-02: Regulation (EU) 2026/1744: Annex III high-risk systems
-  2028-08-02: Regulation (EU) 2026/1744: product-embedded high-risk systems
+  2026-12-02: Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA
+  2026-12-02: Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market
+  2027-08-02: Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025
+  2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
+  2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
 
 Source manifest:
-  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-08-26
-  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-08-26
+  - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-10-18
+  - Regulation (EU) 2026/1744: binding_level_1, retrieved 2026-10-18
 ```
 
 ## Artifact Draft

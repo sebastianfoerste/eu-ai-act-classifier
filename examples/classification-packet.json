@@ -177,7 +177,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "application_date_note": null
     },
     {
       "obligation_id": "high-risk.provider.17",
@@ -189,7 +190,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "application_date_note": null
     },
     {
       "obligation_id": "high-risk.provider.18",
@@ -201,7 +203,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "application_date_note": null
     },
     {
       "obligation_id": "high-risk.provider.19",
@@ -213,7 +216,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "determined"
+      "review_status": "determined",
+      "application_date_note": null
     },
     {
       "obligation_id": "high-risk.provider.20",
@@ -225,7 +229,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "application_date_note": null
     },
     {
       "obligation_id": "high-risk.provider.21",
@@ -237,7 +242,8 @@
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "review_status": "review_required",
+      "application_date_note": null
     },
     {
       "obligation_id": "high-risk.provider.40",
@@ -248,8 +254,9 @@
       "evidence_artifact": "Standards applicability matrix.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "application_date": "2026-08-02",
+      "review_status": "review_required",
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     },
     {
       "obligation_id": "high-risk.provider.41",
@@ -260,8 +267,9 @@
       "evidence_artifact": "Common specifications assessment.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "application_date": "2026-08-02",
+      "review_status": "review_required",
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     },
     {
       "obligation_id": "high-risk.provider.42",
@@ -272,8 +280,9 @@
       "evidence_artifact": "Presumption of conformity mapping.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "application_date": "2026-08-02",
+      "review_status": "review_required",
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     },
     {
       "obligation_id": "high-risk.provider.43",
@@ -284,8 +293,9 @@
       "evidence_artifact": "Conformity assessment file.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "application_date": "2026-08-02",
+      "review_status": "review_required",
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     },
     {
       "obligation_id": "high-risk.provider.43.2",
@@ -296,8 +306,9 @@
       "evidence_artifact": "Annex VI internal-control assessment record.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "application_date": "2026-08-02",
+      "review_status": "review_required",
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     },
     {
       "obligation_id": "high-risk.provider.47",
@@ -308,8 +319,9 @@
       "evidence_artifact": "EU declaration of conformity.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "application_date": "2027-12-02",
-      "review_status": "determined"
+      "application_date": "2026-08-02",
+      "review_status": "review_required",
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     },
     {
       "obligation_id": "high-risk.provider.48",
@@ -320,8 +332,9 @@
       "evidence_artifact": "CE marking record.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "application_date": "2027-12-02",
-      "review_status": "determined"
+      "application_date": "2026-08-02",
+      "review_status": "review_required",
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     },
     {
       "obligation_id": "high-risk.provider.49",
@@ -332,8 +345,9 @@
       "evidence_artifact": "EU database registration record.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "application_date": "2026-08-02",
+      "review_status": "review_required",
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     },
     {
       "obligation_id": "high-risk.provider.72",
@@ -344,8 +358,9 @@
       "evidence_artifact": "Post-market monitoring plan.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "application_date": "2027-12-02",
-      "review_status": "determined"
+      "application_date": "2026-08-02",
+      "review_status": "review_required",
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter IX duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     },
     {
       "obligation_id": "high-risk.provider.73",
@@ -356,15 +371,16 @@
       "evidence_artifact": "Serious incident register.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "application_date": "2027-12-02",
-      "review_status": "review_required"
+      "application_date": "2026-08-02",
+      "review_status": "review_required",
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter IX duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     }
   ],
   "timeline": [
     {
       "provision": "Chapters I-II, incl. Art. 5 (prohibited practices)",
       "applies_from": "2025-02-02",
-      "note": "Prohibitions apply from 2 February 2025 (Art. 113(a) AIA).",
+      "note": "Art. 113, third paragraph, point (a) AIA. Art. 5(1), first subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b) apply from 2 December 2026.",
       "source_status": "binding_level_1",
       "source_id": "ai-act-2024-1689",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
@@ -372,31 +388,71 @@
     {
       "provision": "Chapter V (general-purpose AI models)",
       "applies_from": "2025-08-02",
-      "note": "GPAI obligations apply from 2 August 2025 (Art. 113(b) AIA).",
+      "note": "GPAI obligations apply from 2 August 2025 (Art. 113, third paragraph, point (b) AIA).",
       "source_status": "binding_level_1",
       "source_id": "ai-act-2024-1689",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
     },
     {
-      "provision": "General application for provisions without a later specific date",
-      "applies_from": "2026-08-02",
-      "note": "The general application date remains 2 August 2026, subject to the later dates introduced by Regulation (EU) 2026/1744.",
+      "provision": "Chapter III Section 4, Chapter VII, Chapter XII (except Art. 101) and Art. 78",
+      "applies_from": "2025-08-02",
+      "note": "Notifying authorities and notified bodies, governance, penalties and confidentiality apply from 2 August 2025 (Art. 113, third paragraph, point (b) AIA). Art. 101 applies from the general date.",
       "source_status": "binding_level_1",
       "source_id": "ai-act-2024-1689",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
     },
     {
-      "provision": "Regulation (EU) 2026/1744: Annex III high-risk systems",
-      "applies_from": "2027-12-02",
-      "note": "Regulation (EU) 2026/1744 sets 2 December 2027 for the relevant Annex III high-risk system provisions.",
+      "provision": "Regulation (EU) 2026/1744: Arts. 102-110 AIA (amendments to other Union acts)",
+      "applies_from": "2026-07-27",
+      "note": "Art. 113, third paragraph, point (d) AIA, added by Art. 1, point (40) of Regulation (EU) 2026/1744.",
       "source_status": "binding_level_1",
       "source_id": "ai-act-amendment-2026-1744",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
     },
     {
-      "provision": "Regulation (EU) 2026/1744: product-embedded high-risk systems",
+      "provision": "General application for provisions without a later specific date",
+      "applies_from": "2026-08-02",
+      "note": "Art. 113, second paragraph AIA. Literal reading, confirm with counsel: this includes the high-risk duties in Chapter III, Section 5 (Arts. 40-49) and Chapter IX (e.g. Arts. 72 and 73), which point (c) does not defer. If they are read as following the Sections 1 to 3 deferral, 2 December 2027 (Annex III, also for a system that is an Annex I product too) or 2 August 2028 (Annex I only) applies.",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-2024-1689",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
+    },
+    {
+      "provision": "Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA",
+      "applies_from": "2026-12-02",
+      "note": "Prohibitions on non-consensual intimate imagery and child sexual abuse material apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA as replaced by Art. 1, point (40) of Regulation (EU) 2026/1744).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-amendment-2026-1744",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
+    },
+    {
+      "provision": "Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market",
+      "applies_from": "2026-12-02",
+      "note": "Providers of AI systems generating synthetic audio, image, video or text content placed on the market before 2 August 2026 comply with Art. 50(2) by 2 December 2026 (Art. 111(4) AIA, added by Art. 1, point (39) of Regulation (EU) 2026/1744).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-amendment-2026-1744",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
+    },
+    {
+      "provision": "Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025",
+      "applies_from": "2027-08-02",
+      "note": "Providers of general-purpose AI models placed on the market before 2 August 2025 take the necessary steps to comply with the obligations of this Regulation by 2 August 2027 (Art. 111(3) AIA, original text, not amended by Regulation (EU) 2026/1744).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-2024-1689",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
+    },
+    {
+      "provision": "Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems",
+      "applies_from": "2027-12-02",
+      "note": "Chapter III, Sections 1, 2 and 3 (except Art. 6(5)) apply from 2 December 2027 for systems classified high-risk under Art. 6(2) and Annex III (Art. 113, third paragraph, point (c)(i) AIA as replaced by Regulation (EU) 2026/1744).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-amendment-2026-1744",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
+    },
+    {
+      "provision": "Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems",
       "applies_from": "2028-08-02",
-      "note": "Regulation (EU) 2026/1744 sets 2 August 2028 for the relevant product-embedded high-risk system provisions.",
+      "note": "Chapter III, Sections 1, 2 and 3 (except Art. 6(5)) apply from 2 August 2028 for systems classified high-risk under Art. 6(1) and Annex I (Art. 113, third paragraph, point (c)(ii) AIA as replaced by Regulation (EU) 2026/1744).",
       "source_status": "binding_level_1",
       "source_id": "ai-act-amendment-2026-1744",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
@@ -408,7 +464,7 @@
       "title": "Regulation (EU) 2024/1689, Artificial Intelligence Act",
       "legal_status": "binding_level_1",
       "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
-      "retrieved_on": "2026-08-26",
+      "retrieved_on": "2026-10-18",
       "citation_label": "Regulation (EU) 2024/1689",
       "implementation_note": "Binding Level 1 source for classifications and obligations."
     },
@@ -417,7 +473,7 @@
       "title": "Regulation (EU) 2026/1744 amending the Artificial Intelligence Act",
       "legal_status": "binding_level_1",
       "url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng",
-      "retrieved_on": "2026-08-26",
+      "retrieved_on": "2026-10-18",
       "citation_label": "Regulation (EU) 2026/1744",
       "implementation_note": "Binding amendment adopted on 8 July 2026 and published in the Official Journal on 24 July 2026."
     },

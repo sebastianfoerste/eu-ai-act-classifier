@@ -113,13 +113,13 @@
           "name": "placing_on_market_date",
           "type": "string or null",
           "default": null,
-          "hint": "ISO date, for transitional status."
+          "hint": "YYYY-MM-DD; for a GPAI model, the model's date. Drives the Art. 111 AIA transitions."
         },
         {
           "name": "putting_into_service_date",
           "type": "string or null",
           "default": null,
-          "hint": "ISO date, for transitional status."
+          "hint": "YYYY-MM-DD, for transitional status."
         },
         {
           "name": "significant_change_after_application_date",

@@ -10,7 +10,7 @@ import {
   RefreshCw,
   ShieldCheck,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { baseProfile, emptyDerogation, inventory } from "../lib/samples";
 import type {
   ArtifactPreview,
@@ -529,13 +529,22 @@ export function Cockpit() {
               <tbody>
                 {report?.obligation_graph.length ? (
                   report.obligation_graph.map((item) => (
-                    <tr key={item.obligation_id}>
-                      <td>{item.article}</td>
-                      <td>{item.actor}</td>
-                      <td>{item.evidence_artifact}</td>
-                      <td>{item.application_date}</td>
-                      <td>{formatLabel(item.review_status)}</td>
-                    </tr>
+                    <Fragment key={item.obligation_id}>
+                      <tr>
+                        <td>{item.article}</td>
+                        <td>{item.actor}</td>
+                        <td>{item.evidence_artifact}</td>
+                        <td>{item.application_date}</td>
+                        <td>{formatLabel(item.review_status)}</td>
+                      </tr>
+                      {item.application_date_note ? (
+                        <tr>
+                          <td colSpan={5}>
+                            <small>{item.application_date_note}</small>
+                          </td>
+                        </tr>
+                      ) : null}
+                    </Fragment>
                   ))
                 ) : (
                   <tr>
