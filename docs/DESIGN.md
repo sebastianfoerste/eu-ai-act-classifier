@@ -43,6 +43,12 @@ report.
 
 `advisory.py` adds optional nonbinding guidance notes.
 
+`intake.py` defines the guided intake: questions, order, skip conditions and
+the handling of "I don't know". The playground interprets the generated
+definition and holds no legal logic of its own.
+
+`labels.py` is the one display-label catalog for the playground and cockpit.
+
 `guidance_eval.py` evaluates the Commission-derived guidance corpus.
 
 `local_api.py` is the JSON bridge for the optional web cockpit.
@@ -64,6 +70,8 @@ and export preview.
 
 ## Key Decisions
 
+Architecture decisions are recorded in [docs/adr/](adr/README.md).
+
 The Python classifier remains the source of legal truth.
 
 Guidance overlays are advisory only. They remain separate from Level 1 logic.
@@ -83,7 +91,7 @@ returned `ClassificationReport`.
 
 ## Testing
 
-The base eval set has 14 synthetic examples. The guidance corpus adds
+The base eval set has 17 synthetic examples. The guidance corpus adds
 Commission-derived examples and stored beta Compliance Checker comparisons as
 nonbinding review evidence.
 

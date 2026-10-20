@@ -60,6 +60,26 @@ Implementation:
 4. `web/lib/types.ts`
 5. `tests/test_system_inventory.py`
 
+## Guided Intake
+
+Collects characterised facts one question per page in the browser playground, with the article under each question and a check-answers page that lists every defaulted value. Questions, order and skip conditions are defined once in Python. "I don't know" never becomes "no": it records an unconfirmed value that routes the result to review, marks the Annex III point as unsettled, or pauses the run until counsel answers.
+
+Implementation:
+
+1. `src/eu_ai_act_classifier/intake.py`
+2. `docs/playground/intake.mjs` and `docs/playground/wizard.mjs`
+3. `tests/test_intake.py` and `tests/playground/intake.test.mjs`
+
+## Display Labels
+
+One label catalog for Annex III points, Art. 5 practices, roles, statuses and draft artifacts, generated for the playground field guide and the cockpit. Annex III and Art. 5 labels reuse the pinpoints and titles in `catalog.py`.
+
+Implementation:
+
+1. `src/eu_ai_act_classifier/labels.py`
+2. `web/lib/labels.ts`
+3. `tests/test_labels.py`
+
 ## Draft Review Artifacts
 
 Generates draft-only artifacts for supervised review, including an Art. 6(4) assessment, FRIA, Annex IV checklist, post-market monitoring plan, serious-incident register, GPAI model documentation and training-content summary.
@@ -78,3 +98,4 @@ Implementation:
 
 1. `web/app`
 2. `src/eu_ai_act_classifier/local_api.py`
+3. `web/app/globals.css`: plain CSS for every cockpit page, including the portfolio (`/workspace`) and self-assessment pages
