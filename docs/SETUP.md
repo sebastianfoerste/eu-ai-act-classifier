@@ -42,7 +42,7 @@ uv run eu-ai-act-classify examples/credit_scoring.json
 
 Runs end to end, offline and deterministically. [Example output](sample-output.md#example-output) shows the output, and [Local verification](surfaces.md#local-verification) has more commands, starting with the test suite.
 
-JSON Schemas for the input profile and the report are in [schemas/](../schemas/) (also `eu-ai-act-classify --schema profile` or `--schema report`). Add `"$schema": "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier/main/schemas/system-profile.v1.schema.json"` to a profile for editor autocomplete; the classifier ignores that key.
+JSON Schemas for the input profile and the report are in [schemas/](../schemas/). On `main`, `eu-ai-act-classify --schema profile` (or `--schema report`) prints them, and the classifier ignores a `"$schema"` key, so adding `"$schema": "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier/main/schemas/system-profile.v1.schema.json"` to a profile gives editor autocomplete. Both came after the 0.2.1 release on PyPI, which rejects the flag and the key (a git or clone install still reports 0.2.1); until the next release, use the git form above or a clone.
 
 ## Python Package
 
