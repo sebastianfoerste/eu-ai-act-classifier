@@ -22,9 +22,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PLAYGROUND = ROOT / "docs" / "playground"
 WEB_LABELS = ROOT / "web" / "lib" / "labels.json"
+INTAKE_FIXTURES = ROOT / "tests" / "playground" / "intake-fixtures.json"
 sys.path.insert(0, str(ROOT / "src"))
 
 from eu_ai_act_classifier import Derogation, SystemProfile, __version__  # noqa: E402
+from eu_ai_act_classifier.intake import (  # noqa: E402
+    QUESTIONS,
+    answers_to_profile,
+    intake_definition,
+    profile_to_answers,
+)
 from eu_ai_act_classifier.labels import label_catalog, option_label  # noqa: E402
 from eu_ai_act_classifier.models import (  # noqa: E402
     AnnexIII,
@@ -210,6 +217,27 @@ def build_fields() -> dict:
     return {"version": __version__, "groups": groups}
 
 
+def build_intake_fixtures() -> dict:
+    """Python's answers for every example, so the browser interpreter can be held to them."""
+
+    cases = {}
+    for _group, entries in SAMPLE_GROUPS:
+        for key, _label in entries:
+            example = json.loads((ROOT / "examples" / f"{key}.json").read_text(encoding="utf-8"))
+            answers = profile_to_answers(example)
+            cases[key] = {"answers": answers}
+            if key not in ("credit_scoring_deployer", "spam_filter"):
+                continue
+            for question in QUESTIONS:
+                if question.get("unknown") is not None:
+                    unknown = {**answers, question["id"]: "unknown"}
+                    cases[f"{key}+unknown:{question['id']}"] = {"answers": unknown}
+    for case in cases.values():
+        profile, asked, blocked = answers_to_profile(case["answers"])
+        case.update(profile=profile, asked=asked, blocked=blocked)
+    return {"cases": dict(sorted(cases.items()))}
+
+
 def render(data: dict) -> str:
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
@@ -235,6 +263,8 @@ def main() -> int:
     (PLAYGROUND / "samples.json").write_text(render(build_samples()), encoding="utf-8")
     (PLAYGROUND / "fields.json").write_text(render(build_fields()), encoding="utf-8")
     WEB_LABELS.write_text(render(label_catalog()), encoding="utf-8")
+    (PLAYGROUND / "intake.json").write_text(render(intake_definition()), encoding="utf-8")
+    INTAKE_FIXTURES.write_text(render(build_intake_fixtures()), encoding="utf-8")
     build_wheel()
     print(f"playground rebuilt for eu-ai-act-classifier {__version__}")
     return 0

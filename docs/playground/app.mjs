@@ -1,9 +1,14 @@
+import { profileToAnswers } from "./intake.mjs";
+import { createWizard } from "./wizard.mjs";
 import { DISPOSITIONS, MAX_BYTES, ROLE_LABELS, TIERS, annexCitation, describeDefault, formatProfile, groupByRole, matchesQuery, parseProfile, practiceCitation, reportIsCurrent } from "./model.mjs";
 
 const $ = id => document.getElementById(id);
 const input = $("input");
 let worker, timer, ready = false, busy = false, samples;
 let report = null, reportText = "", checked = null, pending = null, requestId = 0, modified = false;
+// Guided intake state. The JSON textarea stays the one profile that is
+// classified and exported; the guided mode writes its profile there on Classify.
+let mode = "guided", wizard = null, intake = null, answersChanged = false;
 
 const SEVERITY_TONE = { blocker: "tone-red", high: "tone-amber", medium: "tone-blue", info: "tone-grey" };
 const SEVERITY_LABEL = { blocker: "Blocker", high: "High", medium: "Medium", info: "Info" };
@@ -35,7 +40,7 @@ function syncDraft() {
   const size = new TextEncoder().encode(input.value).length;
   $("size").textContent = `${(size / 1024).toFixed(1)} KB`;
   $("summary").textContent = profileSummary(input.value);
-  const fresh = reportIsCurrent(report, checked, current());
+  const fresh = reportIsCurrent(report, checked, current()) && !(mode === "guided" && answersChanged);
   $("stale").hidden = !report || fresh;
   $("export-json").disabled = !fresh || busy;
   $("export-text").disabled = !fresh || busy;
@@ -43,6 +48,75 @@ function syncDraft() {
   $("classify").firstChild.textContent = busy ? "Classifying… " : "Classify ";
   $("result-state").textContent = busy ? "Classifying" : report ? (fresh ? "Classification complete" : "Profile changed") : "Awaiting classification";
   document.querySelector(".results-panel").setAttribute("aria-busy", String(busy));
+  wizard?.refresh();
+}
+
+function setMode(next) {
+  mode = next;
+  $("guided").hidden = mode !== "guided";
+  $("json-mode").hidden = mode !== "json";
+  $("run-area").hidden = mode !== "json";
+  $("mode-guided").setAttribute("aria-pressed", String(mode === "guided"));
+  $("mode-json").setAttribute("aria-pressed", String(mode === "json"));
+  $("mode-badge").textContent = mode === "guided" ? "GUIDED" : "JSON";
+  syncDraft();
+}
+
+// Opens a JSON profile in the guided intake. Fields the intake does not know
+// are refused rather than dropped, so nothing in the profile is lost silently.
+function reviewInWizard(text) {
+  if (!wizard) return false;
+  const profile = parseProfile(text);
+  const known = new Set([...Object.keys(intake.defaults), "$schema"]);
+  const derogation = profile.derogation ?? {};
+  const unknown = [...Object.keys(profile).filter(key => !known.has(key)),
+    ...Object.keys(derogation).filter(key => !(key in intake.defaults.derogation)).map(key => `derogation.${key}`)];
+  if (unknown.length) throw new Error(`The guided questions do not cover ${unknown.join(", ")}. Fix the profile in the JSON editor.`);
+  wizard.review(profileToAnswers(intake, profile));
+  return true;
+}
+
+$("mode-guided").onclick = () => {
+  if (mode === "guided") return;
+  if (modified) {
+    try { reviewInWizard(input.value); }
+    catch (error) { showError("input-error", error.message); return; }
+  }
+  setMode("guided");
+};
+$("mode-json").onclick = () => setMode("json");
+
+async function loadIntake() {
+  try {
+    const response = await fetch("intake.json");
+    if (!response.ok) throw new Error();
+    intake = await response.json();
+    wizard = createWizard({
+      root: $("guided"),
+      definition: intake,
+      canClassify: () => ready && !busy,
+      onChange: () => { answersChanged = true; syncDraft(); },
+      onClassify: profile => {
+        input.value = JSON.stringify(profile, null, 2);
+        modified = true;
+        answersChanged = false;
+        clearInputState();
+        syncDraft();
+        runClassification();
+      },
+      onEditJson: profile => {
+        replaceDraft(JSON.stringify(profile, null, 2));
+        setMode("json");
+        input.focus();
+      },
+    });
+    wizard.reset();
+    answersChanged = false;
+    syncDraft();
+  } catch {
+    $("guided").replaceChildren(node("p", "error", "The guided questions could not load. Use the JSON editor instead."));
+    setMode("json");
+  }
 }
 
 function clearInputState() {
@@ -155,7 +229,16 @@ async function loadFields() {
 
 $("load-example").onclick = async () => {
   if (!samples) await loadSamples();
-  if (samples) replaceDraft(JSON.stringify(samples.profiles[$("example").value], null, 2));
+  if (!samples) return;
+  const text = JSON.stringify(samples.profiles[$("example").value], null, 2);
+  if (mode === "guided" && wizard) {
+    input.value = text;
+    modified = false;
+    clearInputState();
+    reviewInWizard(text);
+    return;
+  }
+  replaceDraft(text);
 };
 $("import").onclick = () => $("file").click();
 $("file").onchange = async event => {
@@ -172,7 +255,11 @@ $("file").onchange = async event => {
     parseProfile(text);
     if (input.value !== before) throw new Error("The profile changed while the file was opening. Import the file again when you are ready.");
     replaceDraft(text);
-  } catch (error) { showError("input-error", error.message || "The file could not be read. Try a UTF-8 JSON file."); }
+    if (mode === "guided") {
+      try { reviewInWizard(text); }
+      catch (error) { setMode("json"); throw error; }
+    }
+  } catch (error) { showError(mode === "guided" ? "sample-error" : "input-error", error.message || "The file could not be read. Try a UTF-8 JSON file."); }
 };
 
 $("format").onclick = () => {
@@ -239,7 +326,7 @@ function startRuntime() {
         busy = false;
         if (data.errors) {
           const lines = data.errors.map(error => `• ${error.loc}: ${error.msg}`);
-          showError("input-error", ["The profile does not fit the classifier's fields. Fix these and classify again:", ...lines].join("\n"));
+          showError(mode === "guided" ? "run-error" : "input-error", ["The profile does not fit the classifier's fields. Fix these and classify again:", ...lines].join("\n"));
           input.setAttribute("aria-invalid", "true");
         } else {
           report = data.report;
@@ -455,6 +542,8 @@ window.addEventListener("beforeunload", event => {
   if (modified) { event.preventDefault(); event.returnValue = ""; }
 });
 
+setMode("guided");
 loadSamples();
 loadFields();
+loadIntake();
 startRuntime();
