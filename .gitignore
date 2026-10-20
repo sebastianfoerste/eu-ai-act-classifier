@@ -20,3 +20,5 @@ web/.vercel/
 .env
 .env.*
 !.env.example
+research/_captures/
+research/_tools/

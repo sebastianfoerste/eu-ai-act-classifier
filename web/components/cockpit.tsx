@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { formatLabel, labelFor, type LabelNamespace } from "../lib/labels";
 import { baseProfile, emptyDerogation, inventory } from "../lib/samples";
 import type {
   ArtifactPreview,
@@ -315,6 +316,7 @@ export function Cockpit() {
               />
               <MultiCheck
                 label="Excluded-use flags"
+                namespace="excluded_use_flags"
                 options={schema.excluded_use_flags}
                 selected={profile.excluded_use_flags}
                 onToggle={(value) => toggleArray("excluded_use_flags", value)}
@@ -325,6 +327,7 @@ export function Cockpit() {
               <h3>Actors</h3>
               <MultiCheck
                 label="Roles"
+                namespace="roles"
                 options={schema.roles}
                 selected={profile.roles}
                 onToggle={(value) => toggleArray("roles", value)}
@@ -362,7 +365,7 @@ export function Cockpit() {
                   <option value="">None</option>
                   {schema.annex_iii_areas.map((area) => (
                     <option key={area} value={area}>
-                      {formatLabel(area)}
+                      {labelFor("annex_iii_area", area)}
                     </option>
                   ))}
                 </select>
@@ -425,7 +428,7 @@ export function Cockpit() {
               {(Object.keys(profile.derogation) as Array<keyof SystemProfile["derogation"]>).map((key) => (
                 <Toggle
                   key={key}
-                  label={formatLabel(key)}
+                  label={labelFor("derogation", key)}
                   checked={profile.derogation[key]}
                   onChange={(checked) => updateDerogation(key, checked)}
                 />
@@ -435,6 +438,7 @@ export function Cockpit() {
               <h3>Prohibited Practices</h3>
               <MultiCheck
                 label="Art. 5 flags"
+                namespace="prohibited_practices"
                 options={schema.prohibited_practices}
                 selected={profile.prohibited_practices}
                 onToggle={(value) => toggleArray("prohibited_practices", value)}
@@ -532,10 +536,10 @@ export function Cockpit() {
                     <Fragment key={item.obligation_id}>
                       <tr>
                         <td>{item.article}</td>
-                        <td>{item.actor}</td>
+                        <td>{labelFor("roles", item.actor)}</td>
                         <td>{item.evidence_artifact}</td>
                         <td>{item.application_date}</td>
-                        <td>{formatLabel(item.review_status)}</td>
+                        <td>{labelFor("review_status", item.review_status)}</td>
                       </tr>
                       {item.application_date_note ? (
                         <tr>
@@ -568,7 +572,7 @@ export function Cockpit() {
             {sourceRows.map((source) => (
               <a href={source.url} key={source.source_id} rel="noreferrer" target="_blank">
                 <strong>{source.citation_label}</strong>
-                <span>{formatLabel(source.legal_status)}</span>
+                <span>{labelFor("source_status", source.legal_status)}</span>
                 <small>Retrieved {source.retrieved_on}</small>
               </a>
             ))}
@@ -618,7 +622,7 @@ export function Cockpit() {
                 >
                   {artifacts.artifacts.map((artifact) => (
                     <option key={artifact.name} value={artifact.name}>
-                      {formatLabel(artifact.name)}
+                      {labelFor("artifacts", artifact.name)}
                     </option>
                   ))}
                 </select>
@@ -685,7 +689,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
                 </td>
                 <td>{formatLabel(system.role)}</td>
                 <td>{riskLabel(system.risk_tier)}</td>
-                <td>{formatLabel(system.disposition)}</td>
+                <td>{labelFor("disposition", system.disposition)}</td>
                 <td>{formatLabel(system.source_manifest_status)}</td>
                 <td>{system.open_facts.length ? system.open_facts.length : "none"}</td>
                 <td>{system.obligations.length}</td>
@@ -1082,11 +1086,13 @@ function TriStateControl({
 
 function MultiCheck({
   label,
+  namespace,
   options,
   selected,
   onToggle,
 }: {
   label: string;
+  namespace: LabelNamespace;
   options: string[];
   selected: string[];
   onToggle: (value: string) => void;
@@ -1103,7 +1109,7 @@ function MultiCheck({
                 checked={selected.includes(option)}
                 onChange={() => onToggle(option)}
               />
-              <span>{formatLabel(option)}</span>
+              <span>{labelFor(namespace, option)}</span>
             </label>
           ))
         ) : (
@@ -1162,14 +1168,6 @@ function cloneProfile(profile: SystemProfile): SystemProfile {
   return JSON.parse(JSON.stringify(profile)) as SystemProfile;
 }
 
-function formatLabel(value: string) {
-  return value
-    .replaceAll("_", " ")
-    .replaceAll("-", " ")
-    .replaceAll(".", " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
 function safeFilename(value: string) {
   return value
     .trim()
@@ -1188,14 +1186,7 @@ function artifactResponseFromDossier(dossier: ReviewDossier): ArtifactResponse {
 }
 
 function riskLabel(value: string) {
-  const labels: Record<string, string> = {
-    outside_scope: "Outside scope",
-    prohibited: "Prohibited",
-    high_risk: "High risk",
-    limited_risk: "Limited risk",
-    minimal_risk: "Minimal risk",
-  };
-  return labels[value] ?? value;
+  return labelFor("risk_tier", value);
 }
 
 function riskTone(value?: string) {

@@ -3,8 +3,9 @@
     uv run python scripts/build_playground.py
 
 Writes samples.json and fields.json from the canonical examples and the
-SystemProfile model, then rebuilds the classifier wheel the page installs.
-tests/test_playground.py fails if any of the three drifts from the source.
+SystemProfile model, writes the label catalog the web cockpit reads
+(web/lib/labels.json), then rebuilds the classifier wheel the page installs.
+tests/test_playground.py fails if any of them drifts from the source.
 """
 
 from __future__ import annotations
@@ -20,9 +21,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAYGROUND = ROOT / "docs" / "playground"
+WEB_LABELS = ROOT / "web" / "lib" / "labels.json"
 sys.path.insert(0, str(ROOT / "src"))
 
 from eu_ai_act_classifier import Derogation, SystemProfile, __version__  # noqa: E402
+from eu_ai_act_classifier.labels import label_catalog, option_label  # noqa: E402
 from eu_ai_act_classifier.models import (  # noqa: E402
     AnnexIII,
     ExcludedUse,
@@ -162,10 +165,6 @@ _ENUMS: dict[str, type[StrEnum]] = {
 }
 
 
-def _option_label(member: StrEnum) -> str:
-    return member.name.replace("_", " ").capitalize()
-
-
 def _field_type(name: str, schema: dict) -> str:
     if name == "derogation":
         return "object"
@@ -202,7 +201,7 @@ def build_fields() -> dict:
             }
             if name in _ENUMS:
                 field["options"] = [
-                    {"value": m.value, "label": _option_label(m)} for m in _ENUMS[name]
+                    {"value": m.value, "label": option_label(m)} for m in _ENUMS[name]
                 ]
             if name == "derogation":
                 field["keys"] = list(Derogation.model_fields)
@@ -235,6 +234,7 @@ def build_wheel() -> None:
 def main() -> int:
     (PLAYGROUND / "samples.json").write_text(render(build_samples()), encoding="utf-8")
     (PLAYGROUND / "fields.json").write_text(render(build_fields()), encoding="utf-8")
+    WEB_LABELS.write_text(render(label_catalog()), encoding="utf-8")
     build_wheel()
     print(f"playground rebuilt for eu-ai-act-classifier {__version__}")
     return 0
