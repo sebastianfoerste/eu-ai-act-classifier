@@ -43,7 +43,21 @@ A selection of the queries; per-product sources are in the `sources` column of t
 | FR | conformite AI Act questionnaire gratuit | AiActo diagnostic (role and tier, short and full versions) |
 | FR | AiActo diagnostic AI Act role fournisseur deployeur niveau de risque | AiActo roles, tiers, PDF report, 2 Dec 2027 date (Claimed) |
 | EN | EU AI Act digital omnibus 2026/1744 high-risk delay 2 December 2027 | secondary sources on the amended dates |
-| EN | Collibra acquires trail ML October 2026 | acquisition announced 2026-10-05 (Claimed) |
+| EN | Collibra acquires trail ML October 2026 | acquisition announced 2026-10-05, https://www.collibra.com/company/newsroom/press-releases/collibra-acquires-trail-ml-to-automate-ai-governance-from-policy-to-production (Claimed) |
+
+## Owner's awesome lists
+
+Checked through raw.githubusercontent.com on 2026-10-20 (all returned the README; Observed). Entries were listed, not visited or verified.
+
+| List | Commit | EU AI Act entries |
+|---|---|---|
+| [awesome-eu-fintech-regulation](https://github.com/sebastianfoerste/awesome-eu-fintech-regulation) | `c77ef2f` | AI Act Explorer (guide); AegisAI; AI Act Implementation Tool (questionnaire-based classification); AI Assessment Tool (ALTAI); EuConform; this repository and eu-reg-mcp (curator-maintained, disclosed); a related awesome-eu-ai-act list |
+| [awesome-legal-tech](https://github.com/sebastianfoerste/awesome-legal-tech) | `7614f25` | EU AI Act Dataset; Regulus; Regula (Apache-2.0); an EU AI Act legal RAG prototype; EuConform; Pinpoint (MIT); two EU AI Act MCP servers (SonnyLabs, Lexbeam); Awesome EU AI Act (CC0-1.0) |
+| [awesome-in-house-legal](https://github.com/sebastianfoerste/awesome-in-house-legal) | `43b145e` | none (compliance section lists CISO Assistant and Giskard) |
+| [awesome-legal-nlp](https://github.com/sebastianfoerste/awesome-legal-nlp) | `397ef5e` (master) | none |
+| [Awesome-LegalAI-Resources](https://github.com/sebastianfoerste/Awesome-LegalAI-Resources) | `97fec0d` | none |
+
+EuConform and Lexbeam from these lists are in the matrix. AegisAI, the AI Act Implementation Tool, Regula, Regulus and Pinpoint were not researched in this run (coverage gap).
 
 ## Products
 
@@ -70,17 +84,17 @@ Each finding names its source and tag. Paths are at the commits listed in the ma
 7. **Exports rarely say "draft".** No inspected project exports DOCX. EuConform (PDF) and Attestor (Annex IV PDF) carry disclaimers or placeholders but no persistent draft status (Observed absence in the files read).
 8. **Guided-question conventions.** GOV.UK patterns call for one question per page, the question as the page heading, an "I do not know" answer where valid, an error summary that takes focus, and a check-answers page with Change links (`alphagov/govuk-design-system@2508866a`, Observed).
 9. **URL sharing without a server is practical.** Svelte compresses with the browser's native `CompressionStream` and base64url (Observed); our example profiles come to 160 to 316 characters that way (Observed measurement). Ruff's playground now stores shares server-side (Observed), which this project must not do.
-10. **Commission checker.** Reviewers describe it as role-first, English only and light on help with ambiguity (ZwillGen review, Claimed). Its per-article Service Desk pages were indexed as not yet updated for the amendment (Claimed).
+10. **Commission checker.** Reviewers describe it as role-first, English only and light on help with ambiguity (review at https://www.zwillgen.com/artificial-intelligence/the-eus-ai-act-compliance-checker-explorer-whats-useful-today-whats-still-come/, Claimed). Its per-article Service Desk pages were indexed as not yet updated for the amendment (Claimed).
 
 ## Context (verify against the Official Journal)
 
 All Claimed: EUR-Lex was not reachable, so none of these could be checked against the official text. The repository's own dates remain those in the [claim ledger](../REGULATORY_CLAIM_LEDGER.md), which this research did not change.
 
-- Reg. (EU) 2026/1744 published in the OJ on 24 July 2026, in force 27 July 2026; Annex III high-risk from 2 December 2027 and Annex I from 2 August 2028 (secondary sources: pillitteri.it, hunton.com, cooley.com).
-- Draft Art. 6 high-risk guidelines published 19 May 2026, consultation to 23 June 2026 (hunton.com, williamfry.com, skadden.com).
-- Final Art. 50 guidelines 20 July 2026 and GPAI scope guidelines 18 July 2026 (mayerbrown.com).
+- Reg. (EU) 2026/1744 published in the OJ on 24 July 2026, in force 27 July 2026; Annex III high-risk from 2 December 2027 and Annex I from 2 August 2028 (secondary sources: https://pasqualepillitteri.it/en/news/8951/eu-regulation-2026-1744-digital-omnibus-ai-act, https://www.hunton.com/privacy-and-cybersecurity-law-blog/eu-digital-omnibus-on-ai-enters-into-force, https://cdp.cooley.com/digital-ai-omnibus-delays-key-deadlines-introduces-new-rules/).
+- Draft Art. 6 high-risk guidelines published 19 May 2026, consultation to 23 June 2026 (https://www.hunton.com/privacy-and-cybersecurity-law-blog/european-commission-releases-draft-guidelines-on-high-risk-ai-under-the-eu-ai-act, https://www.williamfry.com/knowledge/eu-publishes-draft-guidelines-on-classification-of-high-risk-ai-systems/, https://www.skadden.com/insights/publications/2026/05/ai-act-update).
+- Final Art. 50 guidelines 20 July 2026 and GPAI scope guidelines 18 July 2026 (https://www.mayerbrown.com/en/insights/publications/2026/07/eu-ai-act-news-digital-omnibus-on-ai-new-guidance-on-risk-classification-gpai-and-transparency-obligations).
 - AI Act Explorer per-article URL pattern on the new consolidation: **not verified**. An indexed Service Desk URL followed `/{lang}/ai-act/article-{n}` and said it was not yet updated.
-- **Conflict to review:** secondary sources disagree on when the Art. 50(2) grace period ends (2 December 2026 at pillitteri.it versus 2 December 2027 at gornitzky.com). The engine uses 2026-12-02 (Art. 111(4)) per the ledger. This is flagged for the confirming lawyer in the [adaptation plan](adaptation-plan.md#needs-owner-decision); no date was changed.
+- **Conflict to review:** secondary sources disagree on when the Art. 50(2) grace period ends (2 December 2026 at https://pasqualepillitteri.it/en/news/8951/eu-regulation-2026-1744-digital-omnibus-ai-act versus 2 December 2027 at https://www.gornitzky.com/eu-ai-omnibus-enters-into-force/). The engine uses 2026-12-02 (Art. 111(4)) per the ledger. This is flagged for the confirming lawyer in the [adaptation plan](adaptation-plan.md#needs-owner-decision); no date was changed.
 
 ## Not reachable
 

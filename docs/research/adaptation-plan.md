@@ -118,26 +118,88 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 ### S5. Annex III synthetic benchmark (next)
 
 - **Story.** As a legal engineer I see per-source agreement on synthetic profiles for each of the 21 Annex III rows that have no example today.
-- **References.** DanielHuette benchmark (Observed).
-- **Different.** `examples/guidance/annex_iii_synthetic_benchmark.json` with `source_status: "synthetic"`, `expected` written from the legal text by a lawyer, never from the engine; `guidance_eval.py` reports tier and disposition separately; an unresolved result never counts as agreement.
-- **Risk.** Rule 8: each expectation needs the legal text, so drafting waits for EUR-Lex access and review. No existing golden changes.
+- **References.** DanielHuette benchmark, `@88e9710:data/evaluation/*` and `showcase.py` (Observed).
+- **Different.** `examples/guidance/annex_iii_synthetic_benchmark.json` with `source_status: "synthetic"`; `expected` written from the legal text by a lawyer, never from the engine; `guidance_eval.py` reports tier and disposition separately per source; an unresolved result never counts as agreement.
+- **Acceptance.** One profile per uncovered Annex III row; each `expected` cites its Annex III point; `guidance_eval` prints agreement per source and per field; `docs/coverage.md` shows the new examples.
+- **Files.** `examples/guidance/annex_iii_synthetic_benchmark.json`, `src/eu_ai_act_classifier/guidance_eval.py`, `scripts/build_coverage.py` output, `docs/coverage.md`.
+- **Tests.** `tests/test_guidance_eval.py`: the file loads, every row has a lawyer-written `expected`, scoring separates tier from disposition, and a `requires_review` result never counts as a match for `determined`.
+- **Risk.** Rule 8: each expectation rests on the legal text, so drafting waits for EUR-Lex access and review; until then rows stay `PENDING`. No existing golden, expectation or example outcome changes.
 
 ### S6. Share link in the URL hash (next)
 
 - **Story.** As a user I share a synthetic profile with a colleague without a server.
 - **References.** Svelte playground native compression; TypeScript playground hash (Observed); Ruff stores shares on a server (Observed), which this project rejects.
-- **Different.** Only on "Create share link": compact profile, `deflate-raw` via `CompressionStream`, base64url, prefix `#p1.`; plain base64url fallback; refuse above 8,000 characters and offer download; validate before loading; never auto-classify; warn that history sync and chat services keep links. No dependency. [ADR 0005](../adr/0005-url-state-encoding.md).
+- **Different.** Only on "Create share link": compact profile, `deflate-raw` via `CompressionStream`, base64url, prefix `#p1.`; plain base64url fallback (`#j1.`); refuse above 8,000 characters and offer download; validate before loading; never auto-classify; warn that history sync and chat services keep links. No dependency. [ADR 0005](../adr/0005-url-state-encoding.md).
+- **Acceptance.** All 17 examples encode below 400 characters and decode to the same compact profile; a corrupted or oversized hash shows an error summary and loads nothing; the hash is written only by the button; no network request carries the profile.
+- **Files.** `docs/playground/share.mjs` (pure encode and decode), `docs/playground/app.mjs`, `docs/playground/index.html`, `docs/playground/styles.css`.
+- **Tests.** `tests/playground/share.test.mjs`: round trip for every example, version prefix, size cap, invalid input; Playwright check that loading a share link does not classify automatically.
+- **Risk.** Privacy: links persist in history and chat logs, so the warning is required and the feature stays opt-in. Rule 9: no server, no build step.
 
 ### S7. Source content hash (next)
 
 - **Story.** As a legal engineer I can tell whether the consolidated text changed since the ledger was reviewed.
-- **References.** Lexbeam `law/manifest.json` (Observed).
+- **References.** Lexbeam `@efcbae2:law/manifest.json` (Observed).
 - **Different.** Record sha256 of the retrieved HTML alongside each source in the manifest; `--verify-sources` reports a mismatch as review needed and never updates on its own (rule 8).
+- **Acceptance.** Each binding source in `citations.py` carries a recorded hash and retrieval date; a changed page prints "content changed, review required" and exits non-zero under `--strict`; `--update` is never run by CI.
+- **Files.** `src/eu_ai_act_classifier/citations.py`, `src/eu_ai_act_classifier/verify_sources.py`, `docs/REGULATORY_CLAIM_LEDGER.md` (a `PENDING` row per recorded hash).
+- **Tests.** `tests/test_verify_sources.py` with a stubbed fetch: same content passes, changed content flags review, network failure is reported and does not pass.
+- **Risk.** Rule 3: the check stays outside the classification path and is never required for a result. Recording the first hashes needs EUR-Lex access.
 
 ### S8. Draft PDF via print stylesheet, then DOCX (next)
 
 - **Story.** As counsel I send a draft artifact to a colleague as PDF or Word without losing the draft notice.
+- **References.** Attestor and EuConform PDFs (Observed); npm `docx` and python-docx licences and sizes (Observed); MDN data on `@page` margin boxes (Observed).
 - **Different.** PDF: a print stylesheet on the artifact preview with `DRAFT_NOTICE` as the first block of the page flow (not a running header). DOCX: `python-docx` in an optional `[docx]` extra, outside the core; rename the cockpit's "Word package" to "Draft package" until then. [ADR 0003](../adr/0003-export-route.md).
+- **Acceptance.** The printed preview shows `DRAFT_NOTICE` first and "DRAFT" in the title in Chromium, Firefox and WebKit; the DOCX has the notice as its first paragraph and in its core title; the core install stays Pydantic-only.
+- **Files.** `web/app/globals.css` (print rules), `web/components/cockpit.tsx`, `src/eu_ai_act_classifier/docx_export.py` (extra only), `pyproject.toml` (`[docx]` extra), an ADR update.
+- **Tests.** A test that every artifact rendered for print or DOCX contains `DRAFT_NOTICE`; a test that importing the core package does not import `docx`.
+- **Risk.** Rule 7: the notice must survive every format, so the test covers each. Rule 3: the new dependency sits in an extra, with an ADR.
+
+## Design upgrades
+
+Each is specified, not built in this change.
+
+### D1. Dark mode on both surfaces
+
+- **Story.** As a reviewer working at night I read results without glare, with the same tier colours and labels.
+- **References.** EuConform `ThemeToggle.tsx`; DanielHuette `prefers-color-scheme` (Observed).
+- **Spec.** Replace `color-scheme: light` with token sets under `prefers-color-scheme: dark`, plus a manual override stored per viewer. Text at least 4.5:1, borders and focus rings at least 3:1, tier colours always paired with a text label.
+- **Acceptance.** axe clean in both schemes at 1280 and 375 px; contrast checked per token pair.
+- **Files.** `docs/playground/styles.css`, `web/app/globals.css`, a small toggle in each header.
+- **Risk.** None to the non-negotiables; no web fonts or dependencies.
+
+### D2. Separate tier and link colours
+
+- **Story.** As a reader I do not mistake a link for a limited-risk badge.
+- **Spec.** Split `--blue` (limited tier) from `--accent` (links and primary actions); both are `#2c4f7c` today.
+- **Acceptance.** No element uses the tier token for interaction; badges keep their text labels.
+- **Files.** `docs/playground/styles.css`.
+- **Risk.** None.
+
+### D3. Application-date timeline
+
+- **Story.** As counsel I see which obligations apply now, which are upcoming and which rest on a contested reading.
+- **References.** legalithm `appliesFrom` (Observed); Stripe Tax status chips (Claimed).
+- **Spec.** A horizontal timeline from the report's `timeline` and graph dates, with contested readings marked and a text list as the accessible alternative; a vertical list at 375 px.
+- **Acceptance.** Every date shown is one the report already carries; the text list states the same content; axe clean.
+- **Files.** `docs/playground/app.mjs`, `docs/playground/styles.css`.
+- **Risk.** Rule 4 and 8: no date is computed in the browser; the view only displays report data.
+
+### D4. Binding result apart from the advisory overlay
+
+- **Story.** As a reviewer I never confuse nonbinding guidance notes with the binding classification.
+- **Spec.** Group findings, open questions and obligations under "Binding result"; show advisory notes in a separate, visibly nonbinding box after them.
+- **Acceptance.** The advisory box appears only when the toggle is on, carries "Nonbinding" in its heading, and sits after the binding sections in DOM and visual order.
+- **Files.** `docs/playground/app.mjs`, `docs/playground/styles.css`.
+- **Risk.** Supports rule 6.
+
+### D5. Annex III in two steps
+
+- **Story.** As counsel on a phone I choose the Annex III area first, then the point, instead of scanning 26 options.
+- **Spec.** Split the Annex III question into area then point in `intake.py`; "I don't know" on either step writes `III.unsure`.
+- **Acceptance.** The skip-rule and round-trip tests still pass; the point page lists only the chosen area's points.
+- **Files.** `src/eu_ai_act_classifier/intake.py`, generated `intake.json`, tests.
+- **Risk.** Rule 10: the split lives in Python; the area step must not become a profile field of its own.
 
 ## Design direction
 
