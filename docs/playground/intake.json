@@ -82,7 +82,6 @@
       "field": "roles",
       "title": "Which roles does your organisation hold for this system?",
       "hint": "Select every role that applies. A single company often holds several.",
-      "article": "Art. 3 AIA",
       "options": [
         {
           "value": "provider",
@@ -167,8 +166,8 @@
       "kind": "multi",
       "field": "prohibited_practices",
       "title": "Does the system involve any of these practices?",
-      "hint": "Each is a prohibited practice under Art. 5(1) AIA.",
-      "article": "Art. 5(1) AIA",
+      "hint": "Each is a prohibited practice under Art. 5 AIA.",
+      "article": "Art. 5 AIA",
       "options": [
         {
           "value": "5.1.a",
@@ -227,7 +226,7 @@
       "kind": "boolean",
       "field": "annex_i_safety_component",
       "title": "Is the system a product, or a safety component of a product, covered by the Union harmonisation legislation in Annex I?",
-      "article": "Art. 6(1)(a) AIA",
+      "article": "Art. 6(1) AIA",
       "show_if": {
         "all": [
           {
@@ -251,7 +250,7 @@
       "kind": "boolean",
       "field": "annex_i_third_party_assessment",
       "title": "Does that product need a third-party conformity assessment under that legislation?",
-      "article": "Art. 6(1)(b) AIA",
+      "article": "Art. 6(1) AIA",
       "show_if": {
         "all": [
           {
@@ -284,7 +283,7 @@
       "field": "annex_iii_area",
       "title": "Is the system intended for a use listed in Annex III?",
       "hint": "Choose the point that applies. If an area applies but not which point, choose the unsettled option; it is treated as high-risk and routed to review.",
-      "article": "Art. 6(2) and Annex III AIA",
+      "article": "Art. 6(2) AIA",
       "options": [
         {
           "value": "III.1.a",
@@ -834,7 +833,6 @@
       "kind": "boolean",
       "field": "is_gpai_model",
       "title": "Is this a general-purpose AI model?",
-      "article": "Art. 3(63) AIA",
       "show_if": {
         "all": [
           {
@@ -964,7 +962,6 @@
       "kind": "boolean",
       "field": "public_authority_use",
       "title": "Is the system intended to be used by public authorities?",
-      "article": "Art. 111 AIA",
       "unknown": "block"
     },
     {
@@ -972,7 +969,6 @@
       "kind": "details",
       "title": "Market dates",
       "hint": "YYYY-MM-DD. Leave blank if not yet placed on the market or put into service. For a GPAI model, give the model's date.",
-      "article": "Art. 111 AIA",
       "fields": [
         {
           "field": "placing_on_market_date",
@@ -991,10 +987,7 @@
       "kind": "boolean",
       "field": "significant_change_after_application_date",
       "title": "Has the system changed significantly after the relevant application date?",
-      "article": "Art. 111 AIA",
-      "unknown": {
-        "value": null
-      }
+      "unknown": "block"
     }
   ]
 }

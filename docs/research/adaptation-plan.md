@@ -89,7 +89,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **User story.** As counsel without the schema in my head, I answer one plain question at a time and see every answer, and every value I was not asked about, before I classify.
 - **References.** GOV.UK question pages and check answers (`alphagov/govuk-design-system@2508866a`); DanielHuette generated flow and parity script; AbdelStark as the counter-example of drifting trees.
 - **Adapted versus different.** One question per page, question as heading, article under it, error summary with focus, check-answers page with Change links. Different: questions, order and skip rules are Python data; the browser only interprets them; "I don't know" never becomes false and can block the run.
-- **Acceptance.** All 17 examples round-trip; every fail-closed unknown yields `requires_review`; each skip condition is shown not to change the report over a 3,240-profile grid; the browser interpreter matches Python on 57 fixtures; no new axe violations.
+- **Acceptance.** All 17 examples round-trip; every fail-closed unknown yields `requires_review`; every answer to each skipped question is tried over a 3,240-profile grid without changing the report; the browser interpreter matches Python on the generated fixtures, including padded text and unanswered questions; every question article is a pinpoint the engine already cites; a profile whose values the questions would drop is refused; no new axe violations.
 - **Files.** `src/eu_ai_act_classifier/intake.py`, `scripts/build_playground.py`, `docs/playground/{intake.json,intake.mjs,wizard.mjs,app.mjs,index.html,styles.css}`, `tests/test_intake.py`, `tests/playground/{intake.test.mjs,intake-fixtures.json}`.
 - **Risk.** Rule 10 (no legal logic outside Python): the conditions are data and their effect is tested in Python. Rule 5: covered by tests. Follow-ups: split the 26-option Annex III page into area then point; map `/self-assessment` and the cockpit toggles onto the same definition; update `document.title` per page.
 
@@ -160,7 +160,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 
 ## Needs owner decision
 
-1. **Unknown on `significant_change_after_application_date`.** The intake writes the model default (null), which adds no Art. 111 note and does not force review. Option: block instead, or make null raise a review question in the engine (an engine change).
+1. **Unknown on `significant_change_after_application_date`.** Resolved in the audit follow-up: "I don't know" now blocks, and a profile that leaves the field at its default opens with the question unanswered. Open: whether the engine should raise a review question for a null value instead, which would let the run proceed.
 2. **Nullable screens.** Most screens are non-nullable booleans, so the intake blocks on "I don't know". Making more fields nullable with engine-side review questions would let more runs proceed ([ADR 0007](../adr/0007-systemprofile-change-proposals.md)).
 3. **Art. 50(2) grace period.** Secondary sources disagree (2 December 2026 versus 2 December 2027, both Claimed). The engine and ledger use 2026-12-02; please re-check against the consolidated text. Nothing was changed.
 4. **Art. 5(1)(ba)/(bb), Art. 5(1a)/(1b) and Art. 4 screens (H7).** Parked until the wording can be checked on EUR-Lex; each needs a `PENDING` ledger row and a test.

@@ -15,4 +15,4 @@
 
 ### Unchanged
 
-- Classification rules, citations, application dates, examples and goldens. No new legal claim was added.
+- Classification rules, citations, application dates, examples and goldens. No new legal claim was added: the article shown under each guided question is one the engine already cites, and `tests/test_intake.py` enforces that.

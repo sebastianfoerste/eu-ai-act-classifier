@@ -10,9 +10,11 @@ The playground took JSON only, and the cockpit's toggles and `/self-assessment` 
 
 `src/eu_ai_act_classifier/intake.py` defines every guided question: the profile fields it sets, its order, a declarative condition for when it is asked, and its "I don't know" policy. `scripts/build_playground.py` writes it to `docs/playground/intake.json`. The browser module `intake.mjs` only interprets that data; it holds no question text or rule of its own.
 
-"I don't know" is one of three policies, declared per question: write `null` where the field is nullable and the engine routes it to review; write `III.unsure` for the Annex III point; or block the run until counsel characterises the fact. It is never `false` and never an omitted field.
+"I don't know" is one of three policies, declared per question: write `null` where the field is nullable and the engine routes it to review; write `III.unsure` for the Annex III point; or block the run until counsel characterises the fact. It is never `false` and never an omitted field: a value policy may not write the model default, which the compact profile would drop, and a model-default null opens as unanswered rather than as "I don't know". `significant_change_after_application_date` blocks, because its default null adds no transitional note and does not route the result to review.
 
-A condition may skip a question only where `tests/test_intake.py` shows, over a grid of earlier answers, that no answer to it changes the report.
+The article shown under a question must be a pinpoint the engine already cites; a test enforces this, so the intake cannot add a citation outside the claim ledger.
+
+A condition may skip a question only where `tests/test_intake.py` tries every answer to it over a grid of earlier answers and finds no change in the report. The grid fixes some secondary fields at one value, so this is a check, not a proof.
 
 ## Consequences
 

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { UNKNOWN, answerError, answersToProfile, askedQuestions, compactProfile, describeAnswer, isIsoDate, profileToAnswers } from "../../docs/playground/intake.mjs";
+import { UNKNOWN, answerError, answersToProfile, askedQuestions, compactProfile, describeAnswer, droppedFields, isIsoDate, profileToAnswers, readField } from "../../docs/playground/intake.mjs";
 
 const read = path => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const definition = read("../../docs/playground/intake.json");
@@ -11,7 +11,7 @@ const { cases } = read("./intake-fixtures.json");
 test("asks, skips and blocks exactly as the Python interpreter does", () => {
   for (const [key, expected] of Object.entries(cases)) {
     const { profile, asked, blocked, missing } = answersToProfile(definition, expected.answers);
-    assert.deepEqual(missing, [], key);
+    assert.deepEqual(missing, expected.missing, key);
     assert.deepEqual(asked, expected.asked, key);
     assert.deepEqual(blocked, expected.blocked, key);
     assert.deepEqual(profile, expected.profile, key);
@@ -84,4 +84,29 @@ test("check-answers text says what an unknown answer does", () => {
   assert.match(describeAnswer(definition, roles, UNKNOWN), /counsel must answer/);
   assert.match(describeAnswer(definition, annex, UNKNOWN), /III\.unsure.*review/);
   assert.match(describeAnswer(definition, annex, "III.5.b"), /^Annex III\(5\)\(b\): Creditworthiness/);
+});
+
+test("every recorded unknown says it routes the result to review", () => {
+  for (const question of definition.questions) {
+    if (!question.unknown || question.unknown === "block") continue;
+    assert.match(describeAnswer(definition, question, UNKNOWN), /routed to review/, question.id);
+    assert.notDeepEqual(question.unknown.value, readField(definition.defaults, question.field), question.id);
+  }
+});
+
+test("a model-default null is left unanswered, not shown as I don't know", () => {
+  for (const profile of Object.values(samples.profiles)) {
+    const answers = profileToAnswers(definition, profile);
+    assert.equal(answers.significant_change, undefined);
+    for (const question of definition.questions) {
+      if (answers[question.id] === UNKNOWN) assert.equal(question.unknown?.value, null, question.id);
+    }
+  }
+});
+
+test("opening a profile reports values the questions would drop", () => {
+  for (const profile of Object.values(samples.profiles)) assert.deepEqual(droppedFields(definition, profile), []);
+  const skipped = { name: "x", annex_iii_area: "III.4.a", derogation: { performs_profiling: true, narrow_procedural_task: true } };
+  assert.deepEqual(droppedFields(definition, skipped), ["derogation.narrow_procedural_task"]);
+  assert.deepEqual(droppedFields(definition, { name: "  padded  " }), []);
 });

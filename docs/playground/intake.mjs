@@ -129,7 +129,12 @@ export function profileToAnswers(definition, profile) {
       answers[question.id] = question.options.filter(option => readField(full, option.field)).map(option => option.field);
     } else {
       const value = readField(full, question.field);
-      if (question.kind === "boolean") answers[question.id] = value === null ? UNKNOWN : value ? "yes" : "no";
+      // null is "I don't know" only where that answer writes null; any other
+      // null (a model default) is left unanswered for the user.
+      if (question.kind === "boolean") {
+        if (value !== null) answers[question.id] = value ? "yes" : "no";
+        else if (question.unknown?.value === null) answers[question.id] = UNKNOWN;
+      }
       else if (question.kind === "single") answers[question.id] = value === null ? "none" : value;
       else if (question.kind === "multi") answers[question.id] = [...value];
       else if (question.kind === "number") answers[question.id] = value === null ? "" : value;
@@ -180,4 +185,27 @@ export function compactProfile(definition, profile) {
     } else if (JSON.stringify(value) !== JSON.stringify(fallback)) out[key] = value;
   }
   return out;
+}
+
+// Fields of a profile that the guided questions would not carry over: values
+// set on questions that earlier answers skip. Opening such a profile in the
+// guided mode would drop them, so the caller refuses it instead.
+export function droppedFields(definition, profile) {
+  const full = structuredClone(definition.defaults);
+  for (const [key, value] of Object.entries(profile)) {
+    if (key === "derogation") Object.assign(full.derogation, value);
+    else if (key !== "$schema") full[key] = value;
+  }
+  const { profile: rebuilt } = answersToProfile(definition, profileToAnswers(definition, full));
+  const same = (a, b) => JSON.stringify(typeof a === "string" ? a.trim() : a) === JSON.stringify(typeof b === "string" ? b.trim() : b);
+  const dropped = [];
+  for (const key of Object.keys(profile)) {
+    if (key === "$schema") continue;
+    if (key === "derogation") {
+      for (const flag of Object.keys(profile.derogation ?? {})) {
+        if (!same(full.derogation[flag], rebuilt.derogation[flag])) dropped.push(`derogation.${flag}`);
+      }
+    } else if (!same(full[key], rebuilt[key])) dropped.push(key);
+  }
+  return dropped;
 }

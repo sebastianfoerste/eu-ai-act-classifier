@@ -20,6 +20,7 @@ the earlier answers, no answer to it can change the report.
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from .labels import DEROGATION_LABELS, option_label
@@ -27,6 +28,7 @@ from .models import AnnexIII, ExcludedUse, ProhibitedPractice, Role, SystemProfi
 
 SCHEMA_ID = "eu-ai-act-classifier.intake.v1"
 BLOCK = "block"
+UNKNOWN = "unknown"
 
 # Conditions are plain data so the browser can evaluate exactly what Python does:
 #   {"field": f, "is": v}      the field equals v (v may be null)
@@ -110,7 +112,6 @@ QUESTIONS: list[dict[str, Any]] = [
         "field": "roles",
         "title": "Which roles does your organisation hold for this system?",
         "hint": "Select every role that applies. A single company often holds several.",
-        "article": "Art. 3 AIA",
         "options": _options(Role),
         "required": True,
         "unknown": BLOCK,
@@ -149,8 +150,8 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "multi",
         "field": "prohibited_practices",
         "title": "Does the system involve any of these practices?",
-        "hint": "Each is a prohibited practice under Art. 5(1) AIA.",
-        "article": "Art. 5(1) AIA",
+        "hint": "Each is a prohibited practice under Art. 5 AIA.",
+        "article": "Art. 5 AIA",
         "options": _options(ProhibitedPractice),
         "none_label": "None of these",
         "show_if": IN_SCOPE,
@@ -162,7 +163,7 @@ QUESTIONS: list[dict[str, Any]] = [
         "field": "annex_i_safety_component",
         "title": "Is the system a product, or a safety component of a product, covered by "
         "the Union harmonisation legislation in Annex I?",
-        "article": "Art. 6(1)(a) AIA",
+        "article": "Art. 6(1) AIA",
         "show_if": IN_SCOPE,
         "unknown": BLOCK,
     },
@@ -172,7 +173,7 @@ QUESTIONS: list[dict[str, Any]] = [
         "field": "annex_i_third_party_assessment",
         "title": "Does that product need a third-party conformity assessment under that "
         "legislation?",
-        "article": "Art. 6(1)(b) AIA",
+        "article": "Art. 6(1) AIA",
         "show_if": {"all": [IN_SCOPE, {"field": "annex_i_safety_component", "is": True}]},
         "unknown": BLOCK,
     },
@@ -183,7 +184,7 @@ QUESTIONS: list[dict[str, Any]] = [
         "title": "Is the system intended for a use listed in Annex III?",
         "hint": "Choose the point that applies. If an area applies but not which point, choose "
         "the unsettled option; it is treated as high-risk and routed to review.",
-        "article": "Art. 6(2) and Annex III AIA",
+        "article": "Art. 6(2) AIA",
         "options": _options(AnnexIII),
         "none_label": "None of these",
         "show_if": IN_SCOPE,
@@ -285,7 +286,6 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "boolean",
         "field": "is_gpai_model",
         "title": "Is this a general-purpose AI model?",
-        "article": "Art. 3(63) AIA",
         "show_if": IN_SCOPE,
         "unknown": BLOCK,
     },
@@ -340,7 +340,6 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "boolean",
         "field": "public_authority_use",
         "title": "Is the system intended to be used by public authorities?",
-        "article": "Art. 111 AIA",
         "unknown": BLOCK,
     },
     {
@@ -349,7 +348,6 @@ QUESTIONS: list[dict[str, Any]] = [
         "title": "Market dates",
         "hint": "YYYY-MM-DD. Leave blank if not yet placed on the market or put into service. "
         "For a GPAI model, give the model's date.",
-        "article": "Art. 111 AIA",
         "fields": [
             {"field": "placing_on_market_date", "label": "Placed on the market", "type": "date"},
             {"field": "putting_into_service_date", "label": "Put into service", "type": "date"},
@@ -360,20 +358,11 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "boolean",
         "field": "significant_change_after_application_date",
         "title": "Has the system changed significantly after the relevant application date?",
-        "article": "Art. 111 AIA",
-        # null is the model default; the engine then adds no Art. 111 note. Whether
-        # "I don't know" should block instead is an owner decision (see
-        # docs/research/adaptation-plan.md).
-        "unknown": {"value": None},
+        # The model default (null) adds no transitional note and does not route the
+        # result to review, so it is not a fail-closed value: "I don't know" blocks.
+        "unknown": BLOCK,
     },
 ]
-
-# Unknown answers that keep the engine's own null default without forcing a
-# review disposition, with the reason. tests/test_intake.py checks every other
-# fail-closed value yields requires_review.
-REVIEW_EXEMPT_UNKNOWNS = {
-    "significant_change": "Model default is null; the Art. 111 note depends on dates.",
-}
 
 
 def intake_definition() -> dict[str, Any]:
@@ -440,32 +429,81 @@ def _base_profile() -> dict[str, Any]:
     }
 
 
-def answers_to_profile(answers: dict[str, Any]) -> tuple[dict[str, Any], list[str], list[str]]:
-    """Apply answers in question order. Returns (profile, asked ids, blocked ids)."""
+def _is_number(value: Any) -> bool:
+    try:
+        return math.isfinite(float(value))
+    except (TypeError, ValueError):
+        return False
+
+
+def is_answered(question: dict[str, Any], answers: dict[str, Any]) -> bool:
+    """Whether the question has a usable answer (mirrors ``isAnswered`` in intake.mjs)."""
+
+    present = question["id"] in answers
+    answer = answers.get(question["id"])
+    kind = question["kind"]
+    if kind == "details":
+        values = answer if isinstance(answer, dict) else {}
+        return all(
+            not entry.get("required") or str(values.get(entry["field"]) or "").strip()
+            for entry in question["fields"]
+        )
+    if kind == "boolean":
+        return answer in ("yes", "no")
+    if kind == "single":
+        return answer == "none" or any(o["value"] == answer for o in question["options"])
+    if kind == "multi":
+        values = {o["value"] for o in question["options"]}
+        return (
+            isinstance(answer, list)
+            and (not question.get("required") or bool(answer))
+            and all(v in values for v in answer)
+        )
+    if kind == "flags":
+        return isinstance(answer, list)
+    if kind == "number":
+        return present and (answer in ("", None) or _is_number(answer))
+    return False
+
+
+def answers_to_profile(
+    answers: dict[str, Any],
+) -> tuple[dict[str, Any], list[str], list[str], list[str]]:
+    """Apply answers in question order.
+
+    Returns (profile, asked ids, blocked ids, missing ids). A question is asked only
+    if its condition holds on the profile built from the answers before it; a
+    missing answer leaves its fields at their defaults and is reported, never
+    filled in.
+    """
 
     profile = _base_profile()
     asked: list[str] = []
     blocked: list[str] = []
+    missing: list[str] = []
     for question in QUESTIONS:
         if not holds(question.get("show_if"), profile):
             continue
         asked.append(question["id"])
         answer = answers.get(question["id"])
-        if answer == "unknown":
+        if answer == UNKNOWN:
             policy = question.get("unknown")
             if policy == BLOCK or policy is None:
                 blocked.append(question["id"])
             else:
                 write_field(profile, question["field"], policy["value"])
             continue
+        if not is_answered(question, answers):
+            missing.append(question["id"])
+            continue
         kind = question["kind"]
         if kind == "details":
             for entry in question["fields"]:
-                text = (answer or {}).get(entry["field"], "")
+                text = str((answer or {}).get(entry["field"]) or "").strip()
                 is_date = entry.get("type") == "date"
                 write_field(profile, entry["field"], (text or None) if is_date else text)
         elif kind == "boolean":
-            write_field(profile, question["field"], {"yes": True, "no": False}[answer])
+            write_field(profile, question["field"], answer == "yes")
         elif kind == "single":
             write_field(profile, question["field"], None if answer == "none" else answer)
         elif kind == "multi":
@@ -475,7 +513,7 @@ def answers_to_profile(answers: dict[str, Any]) -> tuple[dict[str, Any], list[st
                 write_field(profile, option["field"], option["field"] in answer)
         elif kind == "number":
             write_field(profile, question["field"], None if answer in ("", None) else float(answer))
-    return profile, asked, blocked
+    return profile, asked, blocked, missing
 
 
 def profile_to_answers(profile: dict[str, Any]) -> dict[str, Any]:
@@ -504,7 +542,12 @@ def profile_to_answers(profile: dict[str, Any]) -> dict[str, Any]:
         else:
             value = read_field(full, question["field"])
             if kind == "boolean":
-                answers[question["id"]] = "unknown" if value is None else ("yes" if value else "no")
+                # null is "I don't know" only where that answer writes null; any
+                # other null (a model default) is left unanswered for the user.
+                if value is not None:
+                    answers[question["id"]] = "yes" if value else "no"
+                elif question.get("unknown") == {"value": None}:
+                    answers[question["id"]] = UNKNOWN
             elif kind == "single":
                 answers[question["id"]] = "none" if value is None else value
             elif kind == "multi":

@@ -232,9 +232,19 @@ def build_intake_fixtures() -> dict:
                 if question.get("unknown") is not None:
                     unknown = {**answers, question["id"]: "unknown"}
                     cases[f"{key}+unknown:{question['id']}"] = {"answers": unknown}
+    # Paths the examples never take: padded text and unanswered questions.
+    padded = profile_to_answers({"name": "x"})
+    padded["system"] = {"name": "  Padded name  ", "purpose": " Credit scoring "}
+    padded["dates"] = {"placing_on_market_date": " 2026-03-01 "}
+    cases["edge+padded-text"] = {"answers": padded}
+    cases["edge+no-answers"] = {"answers": {}}
+    partial = profile_to_answers(json.loads((ROOT / "examples" / "cv_screening.json").read_text()))
+    for question_id in ("roles", "annex_iii_area", "transparency", "training_flops"):
+        partial.pop(question_id, None)
+    cases["edge+partly-answered"] = {"answers": partial}
     for case in cases.values():
-        profile, asked, blocked = answers_to_profile(case["answers"])
-        case.update(profile=profile, asked=asked, blocked=blocked)
+        profile, asked, blocked, missing = answers_to_profile(case["answers"])
+        case.update(profile=profile, asked=asked, blocked=blocked, missing=missing)
     return {"cases": dict(sorted(cases.items()))}
 
 

@@ -14,6 +14,7 @@ from __future__ import annotations
 import copy
 import itertools
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -22,7 +23,6 @@ from eu_ai_act_classifier import SystemProfile, classify
 from eu_ai_act_classifier.intake import (
     BLOCK,
     QUESTIONS,
-    REVIEW_EXEMPT_UNKNOWNS,
     answers_to_profile,
     holds,
     intake_definition,
@@ -31,7 +31,7 @@ from eu_ai_act_classifier.intake import (
     read_field,
     write_field,
 )
-from eu_ai_act_classifier.models import Derogation
+from eu_ai_act_classifier.models import Derogation, ProhibitedPractice
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = {
@@ -87,8 +87,14 @@ def test_unknown_policies_are_declared() -> None:
 @pytest.mark.parametrize("key", sorted(EXAMPLES))
 def test_examples_round_trip_through_the_intake(key: str) -> None:
     example = EXAMPLES[key]
-    profile, _asked, blocked = answers_to_profile(profile_to_answers(example))
+    profile, _asked, blocked, missing = answers_to_profile(profile_to_answers(example))
     assert not blocked
+    # A model-default null on a question whose "I don't know" blocks is left for
+    # the user to answer, never shown as "I don't know".
+    by_id = {q["id"]: q for q in QUESTIONS}
+    for question_id in missing:
+        question = by_id[question_id]
+        assert question["unknown"] == BLOCK and read_field(profile, question["field"]) is None
     assert _normalised(profile) == _normalised(example)
     assert _report(profile) == _report(example)
 
@@ -143,7 +149,8 @@ def _alternatives(question: dict) -> list[dict[str, object]]:
     kind = question["kind"]
     if kind == "flags":
         fields = question_fields(question)
-        return [{f: f == chosen for f in fields} for chosen in [None, *fields]]
+        every = [{f: True for f in fields}]
+        return every + [{f: f == chosen for f in fields} for chosen in [None, *fields]]
     if kind == "details":
         return []
     field = question["field"]
@@ -154,9 +161,10 @@ def _alternatives(question: dict) -> list[dict[str, object]]:
         )
         return [{field: value} for value in ([True, False, None] if nullable else [True, False])]
     if kind == "single":
-        return [{field: v} for v in [None, "III.2", "III.4.a", "III.5.b", "III.unsure"]]
+        return [{field: None}] + [{field: o["value"]} for o in question["options"]]
     if kind == "multi":
-        return [{field: []}] + [{field: [o["value"]]} for o in question["options"][:4]]
+        values = [o["value"] for o in question["options"]]
+        return [{field: []}, {field: values}] + [{field: [v]} for v in values]
     if kind == "number":
         return [{field: v} for v in [None, 1e24, 2e25]]
     raise AssertionError(kind)
@@ -185,11 +193,7 @@ def test_a_skipped_question_cannot_change_the_report(question: dict) -> None:
 
 @pytest.mark.parametrize(
     "question",
-    [
-        q
-        for q in QUESTIONS
-        if isinstance(q.get("unknown"), dict) and q["id"] not in REVIEW_EXEMPT_UNKNOWNS
-    ],
+    [q for q in QUESTIONS if isinstance(q.get("unknown"), dict)],
     ids=lambda q: q["id"],
 )
 def test_a_fail_closed_unknown_always_yields_requires_review(question: dict) -> None:
@@ -200,18 +204,19 @@ def test_a_fail_closed_unknown_always_yields_requires_review(question: dict) -> 
         assert _report(changed)["disposition"] == "requires_review", (question["id"], profile)
 
 
-def test_review_exemptions_are_only_for_nullable_defaults() -> None:
-    by_id = {q["id"]: q for q in QUESTIONS}
-    for question_id in REVIEW_EXEMPT_UNKNOWNS:
-        question = by_id[question_id]
-        assert question["unknown"] == {"value": None}
-        assert SystemProfile.model_fields[question["field"]].default is None
+def test_value_unknowns_are_never_a_model_default() -> None:
+    # Otherwise the compact profile would drop the value and "I don't know" would
+    # be indistinguishable from an omitted field.
+    defaults = intake_definition()["defaults"]
+    for question in QUESTIONS:
+        if isinstance(question.get("unknown"), dict):
+            assert question["unknown"]["value"] != read_field(defaults, question["field"])
 
 
 def test_blocked_unknowns_stop_the_run() -> None:
     answers = profile_to_answers(EXAMPLES["credit_scoring"])
     answers["prohibited_practices"] = "unknown"
-    _profile, asked, blocked = answers_to_profile(answers)
+    _profile, asked, blocked, _missing = answers_to_profile(answers)
     assert blocked == ["prohibited_practices"]
     assert "prohibited_practices" in asked
 
@@ -219,7 +224,7 @@ def test_blocked_unknowns_stop_the_run() -> None:
 def test_annex_iii_unknown_is_unsettled_point() -> None:
     answers = profile_to_answers(EXAMPLES["spam_filter"])
     answers["annex_iii_area"] = "unknown"
-    profile, _asked, blocked = answers_to_profile(answers)
+    profile, _asked, blocked, _missing = answers_to_profile(answers)
     assert not blocked
     assert read_field(profile, "annex_iii_area") == "III.unsure"
     assert _report(profile)["disposition"] == "requires_review"
@@ -244,3 +249,55 @@ def test_generated_intake_files_are_current() -> None:
         (ROOT / "tests" / "playground" / "intake-fixtures.json", build.build_intake_fixtures()),
     ):
         assert path.read_text(encoding="utf-8") == build.render(data), f"{path.name} is stale"
+
+
+def test_unanswered_questions_are_reported_not_defaulted() -> None:
+    _profile, asked, blocked, missing = answers_to_profile({})
+    assert "system" in missing and "roles" in missing
+    assert not blocked
+    assert set(missing) <= set(asked)
+
+
+def test_text_answers_are_trimmed() -> None:
+    answers = profile_to_answers({"name": "x"})
+    answers["system"] = {"name": "  Padded name  "}
+    profile, _asked, _blocked, _missing = answers_to_profile(answers)
+    assert profile["name"] == "Padded name"
+
+
+def test_question_articles_are_citations_the_engine_already_makes() -> None:
+    """The intake adds no pinpoint of its own (claim ledger rule)."""
+
+    profiles = [*EXAMPLES.values(), *GRID[::40]]
+    profiles += [
+        {
+            "name": "x",
+            "annex_iii_area": "III.2",
+            "placing_on_market_date": "2025-01-01",
+            "significant_change_after_application_date": False,
+            "public_authority_use": True,
+            "provider_established_outside_eu": True,
+            "has_authorised_representative": False,
+            "substantially_modifies_system": True,
+            "derogation": {"narrow_procedural_task": True},
+        },
+        {
+            "name": "x",
+            "generates_synthetic_content": True,
+            "deploys_emotion_or_biometric_categorisation": True,
+            "is_gpai_model": True,
+            "gpai_systemic_risk_designated": True,
+        },
+        {"name": "x", "prohibited_practices": [p.value for p in ProhibitedPractice]},
+    ]
+    corpus = "\n".join(
+        classify(SystemProfile.model_validate(p), include_advisory=True).model_dump_json()
+        for p in profiles
+    )
+    pinpoints = re.compile(r"Art\. \d+(?:\(\w+\))*(?: AIA)?")
+    for question in QUESTIONS:
+        texts = [question.get("article") or "", question.get("hint") or "", question["title"]]
+        texts += [o.get("label", "") for o in question.get("options", [])]
+        for text in texts:
+            for pinpoint in pinpoints.findall(text):
+                assert pinpoint in corpus, (question["id"], pinpoint)

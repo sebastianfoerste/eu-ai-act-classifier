@@ -21,10 +21,7 @@
         "annex_iii_area": "III.unsure",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -34,8 +31,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InsightEngine",
@@ -97,7 +93,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "credit_scoring": {
       "answers": {
@@ -120,10 +119,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -133,8 +129,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "CreditSightScore",
@@ -196,7 +191,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "credit_scoring_deployer": {
       "answers": {
@@ -219,10 +217,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -232,8 +227,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -295,7 +289,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "credit_scoring_deployer+unknown:annex_i_safety_component": {
       "answers": {
@@ -318,10 +315,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -331,8 +325,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -396,6 +389,9 @@
       ],
       "blocked": [
         "annex_i_safety_component"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:annex_i_third_party_assessment": {
@@ -419,10 +415,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -432,8 +425,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -495,7 +487,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "credit_scoring_deployer+unknown:annex_iii_area": {
       "answers": {
@@ -518,10 +513,7 @@
         "annex_iii_area": "unknown",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -531,8 +523,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -596,9 +587,11 @@
         "dates",
         "significant_change"
       ],
-      "blocked": [
+      "blocked": [],
+      "missing": [
         "deployer_public_law_body",
-        "deployer_private_public_service"
+        "deployer_private_public_service",
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:deployer_private_public_service": {
@@ -622,10 +615,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -636,7 +626,7 @@
           "placing_on_market_date": "",
           "putting_into_service_date": ""
         },
-        "significant_change": "unknown"
+        "deployer_private_public_service": "unknown"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -698,7 +688,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "credit_scoring_deployer+unknown:deployer_public_law_body": {
       "answers": {
@@ -721,10 +714,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -735,7 +725,7 @@
           "placing_on_market_date": "",
           "putting_into_service_date": ""
         },
-        "significant_change": "unknown"
+        "deployer_public_law_body": "unknown"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -797,7 +787,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "credit_scoring_deployer+unknown:derogation": {
       "answers": {
@@ -820,10 +813,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": "unknown",
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -833,8 +823,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -898,6 +887,9 @@
       ],
       "blocked": [
         "derogation"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:eu_nexus": {
@@ -921,10 +913,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -934,8 +923,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -997,7 +985,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "credit_scoring_deployer+unknown:excluded_use_flags": {
       "answers": {
@@ -1020,10 +1011,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -1033,8 +1021,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1098,6 +1085,9 @@
       ],
       "blocked": [
         "excluded_use_flags"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:gpai_systemic_risk_designated": {
@@ -1121,10 +1111,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -1134,8 +1121,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1197,7 +1183,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "credit_scoring_deployer+unknown:has_authorised_representative": {
       "answers": {
@@ -1220,10 +1209,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -1234,7 +1220,7 @@
           "placing_on_market_date": "",
           "putting_into_service_date": ""
         },
-        "significant_change": "unknown"
+        "has_authorised_representative": "unknown"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1296,7 +1282,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "credit_scoring_deployer+unknown:is_ai_system": {
       "answers": {
@@ -1319,10 +1308,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -1332,8 +1318,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1395,7 +1380,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "credit_scoring_deployer+unknown:is_gpai_model": {
       "answers": {
@@ -1418,10 +1406,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "unknown",
         "training_flops": "",
@@ -1431,8 +1416,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1496,6 +1480,9 @@
       ],
       "blocked": [
         "is_gpai_model"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:performs_profiling": {
@@ -1519,10 +1506,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "unknown",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -1532,8 +1516,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1597,6 +1580,9 @@
       ],
       "blocked": [
         "performs_profiling"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:prohibited_practices": {
@@ -1620,10 +1606,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -1633,8 +1616,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1698,6 +1680,9 @@
       ],
       "blocked": [
         "prohibited_practices"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:provider_established_outside_eu": {
@@ -1721,10 +1706,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "unknown",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -1734,8 +1716,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1799,6 +1780,9 @@
       ],
       "blocked": [
         "provider_established_outside_eu"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:public_authority_use": {
@@ -1822,10 +1806,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -1835,8 +1816,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1900,6 +1880,9 @@
       ],
       "blocked": [
         "public_authority_use"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:roles": {
@@ -1921,10 +1904,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -1934,8 +1914,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1999,6 +1978,9 @@
       ],
       "blocked": [
         "roles"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:significant_change": {
@@ -2022,114 +2004,12 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
         "transparency": [],
-        "public_authority_use": "no",
-        "dates": {
-          "placing_on_market_date": "",
-          "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
-      },
-      "profile": {
-        "name": "BankCo loan underwriting",
-        "description": "A bank deploying a third-party credit scoring model for consumer loan decisions.",
-        "roles": [
-          "deployer"
-        ],
-        "purpose": "Loan underwriting",
-        "sector": "Banking",
-        "is_ai_system": true,
-        "intended_purpose_source": "",
-        "eu_nexus": true,
-        "excluded_use_flags": [],
-        "placing_on_market_date": null,
-        "putting_into_service_date": null,
-        "significant_change_after_application_date": null,
-        "public_authority_use": false,
-        "deployer_public_law_body": null,
-        "deployer_private_public_service": null,
-        "provider_established_outside_eu": false,
-        "has_authorised_representative": null,
-        "substantially_modifies_system": false,
-        "puts_name_or_trademark_on_system": false,
-        "is_gpai_model": false,
-        "training_flops": null,
-        "gpai_systemic_risk_designated": false,
-        "prohibited_practices": [],
-        "annex_i_safety_component": false,
-        "annex_i_third_party_assessment": false,
-        "annex_iii_area": "III.5.b",
-        "derogation": {
-          "narrow_procedural_task": false,
-          "improves_prior_human_activity": false,
-          "detects_patterns_without_replacing_human": false,
-          "preparatory_task": false,
-          "performs_profiling": false
-        },
-        "interacts_with_natural_persons": false,
-        "generates_synthetic_content": false,
-        "deploys_emotion_or_biometric_categorisation": false,
-        "generates_deepfakes": false
-      },
-      "asked": [
-        "system",
-        "roles",
-        "is_ai_system",
-        "eu_nexus",
-        "excluded_use_flags",
-        "prohibited_practices",
-        "annex_i_safety_component",
-        "annex_iii_area",
-        "performs_profiling",
-        "derogation",
-        "provider_established_outside_eu",
-        "value_chain",
-        "is_gpai_model",
-        "transparency",
-        "public_authority_use",
-        "dates",
-        "significant_change"
-      ],
-      "blocked": []
-    },
-    "credit_scoring_deployer+unknown:transparency": {
-      "answers": {
-        "system": {
-          "name": "BankCo loan underwriting",
-          "description": "A bank deploying a third-party credit scoring model for consumer loan decisions.",
-          "purpose": "Loan underwriting",
-          "sector": "Banking",
-          "intended_purpose_source": ""
-        },
-        "roles": [
-          "deployer"
-        ],
-        "is_ai_system": "yes",
-        "eu_nexus": "yes",
-        "excluded_use_flags": [],
-        "prohibited_practices": [],
-        "annex_i_safety_component": "no",
-        "annex_i_third_party_assessment": "no",
-        "annex_iii_area": "III.5.b",
-        "performs_profiling": "no",
-        "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
-        "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
-        "value_chain": [],
-        "is_gpai_model": "no",
-        "training_flops": "",
-        "gpai_systemic_risk_designated": "no",
-        "transparency": "unknown",
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
@@ -2198,7 +2078,108 @@
         "significant_change"
       ],
       "blocked": [
+        "significant_change"
+      ],
+      "missing": []
+    },
+    "credit_scoring_deployer+unknown:transparency": {
+      "answers": {
+        "system": {
+          "name": "BankCo loan underwriting",
+          "description": "A bank deploying a third-party credit scoring model for consumer loan decisions.",
+          "purpose": "Loan underwriting",
+          "sector": "Banking",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "deployer"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "III.5.b",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "no",
+        "training_flops": "",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": "unknown",
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "",
+          "putting_into_service_date": ""
+        }
+      },
+      "profile": {
+        "name": "BankCo loan underwriting",
+        "description": "A bank deploying a third-party credit scoring model for consumer loan decisions.",
+        "roles": [
+          "deployer"
+        ],
+        "purpose": "Loan underwriting",
+        "sector": "Banking",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": null,
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": false,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_iii_area": "III.5.b",
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "performs_profiling",
+        "derogation",
+        "provider_established_outside_eu",
+        "value_chain",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "significant_change"
+      ],
+      "blocked": [
         "transparency"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "credit_scoring_deployer+unknown:value_chain": {
@@ -2222,10 +2203,7 @@
         "annex_iii_area": "III.5.b",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": "unknown",
         "is_gpai_model": "no",
         "training_flops": "",
@@ -2235,8 +2213,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -2300,6 +2277,9 @@
       ],
       "blocked": [
         "value_chain"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "cv_screening": {
@@ -2323,10 +2303,7 @@
         "annex_iii_area": "III.4.a",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -2336,8 +2313,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "TalentRank CV Screener",
@@ -2399,7 +2375,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "deepfake_generator": {
       "answers": {
@@ -2422,10 +2401,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -2437,8 +2413,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "FaceSwap Studio",
@@ -2496,7 +2471,265 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
+    },
+    "edge+no-answers": {
+      "answers": {},
+      "profile": {
+        "name": "",
+        "description": "",
+        "roles": [
+          "provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": null,
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": false,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "significant_change"
+      ]
+    },
+    "edge+padded-text": {
+      "answers": {
+        "system": {
+          "name": "  Padded name  ",
+          "purpose": " Credit scoring "
+        },
+        "roles": [
+          "provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "no",
+        "training_flops": "",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": " 2026-03-01 "
+        }
+      },
+      "profile": {
+        "name": "Padded name",
+        "description": "",
+        "roles": [
+          "provider"
+        ],
+        "purpose": "Credit scoring",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": "2026-03-01",
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": false,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
+    },
+    "edge+partly-answered": {
+      "answers": {
+        "system": {
+          "name": "TalentRank CV Screener",
+          "description": "Ranks and filters job applicants from CV text for human reviewers.",
+          "purpose": "Employment selection and candidate screening",
+          "sector": "HR technology",
+          "intended_purpose_source": ""
+        },
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "no",
+        "gpai_systemic_risk_designated": "no",
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "",
+          "putting_into_service_date": ""
+        }
+      },
+      "profile": {
+        "name": "TalentRank CV Screener",
+        "description": "Ranks and filters job applicants from CV text for human reviewers.",
+        "roles": [
+          "provider"
+        ],
+        "purpose": "Employment selection and candidate screening",
+        "sector": "HR technology",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": null,
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": false,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "roles",
+        "annex_iii_area",
+        "transparency",
+        "significant_change"
+      ]
     },
     "emotion_hiring": {
       "answers": {
@@ -2521,10 +2754,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -2534,8 +2764,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "MoodHire",
@@ -2595,7 +2824,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "employment_derogation": {
       "answers": {
@@ -2620,10 +2852,7 @@
         "derogation": [
           "derogation.narrow_procedural_task"
         ],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -2633,8 +2862,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "ShiftSorter",
@@ -2696,7 +2924,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "foundation_model_systemic": {
       "answers": {
@@ -2720,10 +2951,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "yes",
         "training_flops": 5e+25,
@@ -2733,8 +2961,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "Atlas-70B",
@@ -2795,7 +3022,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "foundation_model_unknown_compute": {
       "answers": {
@@ -2818,10 +3048,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "yes",
         "training_flops": "",
@@ -2831,8 +3058,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "Nimbus-Base",
@@ -2892,7 +3118,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "gpai_non_systemic": {
       "answers": {
@@ -2916,10 +3145,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "yes",
         "training_flops": 1e+24,
@@ -2929,8 +3155,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "NexusLite-13B",
@@ -2991,7 +3216,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "gpai_systemic_by_flops": {
       "answers": {
@@ -3015,10 +3243,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "yes",
         "training_flops": 2e+25,
@@ -3028,8 +3253,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "NexusUltra-Large",
@@ -3090,7 +3314,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "gpai_systemic_designated": {
       "answers": {
@@ -3114,10 +3341,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "yes",
         "training_flops": 1e+24,
@@ -3127,8 +3351,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "NexusCustom-Reason",
@@ -3189,7 +3412,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "law_enforcement": {
       "answers": {
@@ -3212,10 +3438,7 @@
         "annex_iii_area": "III.6.d",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -3225,8 +3448,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "CrimePredict",
@@ -3288,7 +3510,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "proctoring_education": {
       "answers": {
@@ -3311,10 +3536,7 @@
         "annex_iii_area": "III.3.d",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -3324,8 +3546,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "ExamWatch",
@@ -3387,7 +3608,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "social_scoring": {
       "answers": {
@@ -3412,10 +3636,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -3425,8 +3646,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "CitizenScore",
@@ -3486,7 +3706,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter": {
       "answers": {
@@ -3509,10 +3732,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -3522,8 +3742,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -3581,7 +3800,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:annex_i_safety_component": {
       "answers": {
@@ -3604,10 +3826,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -3617,8 +3836,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -3678,6 +3896,9 @@
       ],
       "blocked": [
         "annex_i_safety_component"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "spam_filter+unknown:annex_i_third_party_assessment": {
@@ -3701,10 +3922,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -3714,8 +3932,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -3773,7 +3990,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:annex_iii_area": {
       "answers": {
@@ -3796,10 +4016,7 @@
         "annex_iii_area": "unknown",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -3809,8 +4026,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -3872,7 +4088,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:deployer_private_public_service": {
       "answers": {
@@ -3895,10 +4114,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -3909,7 +4125,7 @@
           "placing_on_market_date": "",
           "putting_into_service_date": ""
         },
-        "significant_change": "unknown"
+        "deployer_private_public_service": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -3967,7 +4183,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:deployer_public_law_body": {
       "answers": {
@@ -3990,10 +4209,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -4004,7 +4220,7 @@
           "placing_on_market_date": "",
           "putting_into_service_date": ""
         },
-        "significant_change": "unknown"
+        "deployer_public_law_body": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -4062,7 +4278,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:derogation": {
       "answers": {
@@ -4085,10 +4304,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": "unknown",
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -4098,8 +4314,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -4157,7 +4372,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:eu_nexus": {
       "answers": {
@@ -4180,10 +4398,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -4193,8 +4408,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -4252,7 +4466,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:excluded_use_flags": {
       "answers": {
@@ -4275,10 +4492,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -4288,8 +4502,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -4349,6 +4562,9 @@
       ],
       "blocked": [
         "excluded_use_flags"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "spam_filter+unknown:gpai_systemic_risk_designated": {
@@ -4372,10 +4588,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -4385,8 +4598,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -4444,7 +4656,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:has_authorised_representative": {
       "answers": {
@@ -4467,10 +4682,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -4481,7 +4693,7 @@
           "placing_on_market_date": "",
           "putting_into_service_date": ""
         },
-        "significant_change": "unknown"
+        "has_authorised_representative": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -4539,7 +4751,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:is_ai_system": {
       "answers": {
@@ -4562,10 +4777,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -4575,8 +4787,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -4634,7 +4845,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:is_gpai_model": {
       "answers": {
@@ -4657,10 +4871,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "unknown",
         "training_flops": "",
@@ -4670,8 +4881,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -4731,6 +4941,9 @@
       ],
       "blocked": [
         "is_gpai_model"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "spam_filter+unknown:performs_profiling": {
@@ -4754,10 +4967,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "unknown",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -4767,8 +4977,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -4826,7 +5035,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:prohibited_practices": {
       "answers": {
@@ -4849,10 +5061,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -4862,8 +5071,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -4923,6 +5131,9 @@
       ],
       "blocked": [
         "prohibited_practices"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "spam_filter+unknown:provider_established_outside_eu": {
@@ -4946,10 +5157,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "unknown",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -4959,8 +5167,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -5018,7 +5225,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "spam_filter+unknown:public_authority_use": {
       "answers": {
@@ -5041,10 +5251,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -5054,8 +5261,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -5115,6 +5321,9 @@
       ],
       "blocked": [
         "public_authority_use"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "spam_filter+unknown:roles": {
@@ -5136,10 +5345,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -5149,8 +5355,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -5210,6 +5415,9 @@
       ],
       "blocked": [
         "roles"
+      ],
+      "missing": [
+        "significant_change"
       ]
     },
     "spam_filter+unknown:significant_change": {
@@ -5233,110 +5441,12 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
         "transparency": [],
-        "public_authority_use": "no",
-        "dates": {
-          "placing_on_market_date": "",
-          "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
-      },
-      "profile": {
-        "name": "InboxGuard",
-        "description": "Classifies inbound email as spam or not spam.",
-        "roles": [
-          "provider"
-        ],
-        "purpose": "Email filtering",
-        "sector": "SaaS",
-        "is_ai_system": true,
-        "intended_purpose_source": "",
-        "eu_nexus": true,
-        "excluded_use_flags": [],
-        "placing_on_market_date": null,
-        "putting_into_service_date": null,
-        "significant_change_after_application_date": null,
-        "public_authority_use": false,
-        "deployer_public_law_body": null,
-        "deployer_private_public_service": null,
-        "provider_established_outside_eu": false,
-        "has_authorised_representative": null,
-        "substantially_modifies_system": false,
-        "puts_name_or_trademark_on_system": false,
-        "is_gpai_model": false,
-        "training_flops": null,
-        "gpai_systemic_risk_designated": false,
-        "prohibited_practices": [],
-        "annex_i_safety_component": false,
-        "annex_i_third_party_assessment": false,
-        "annex_iii_area": null,
-        "derogation": {
-          "narrow_procedural_task": false,
-          "improves_prior_human_activity": false,
-          "detects_patterns_without_replacing_human": false,
-          "preparatory_task": false,
-          "performs_profiling": false
-        },
-        "interacts_with_natural_persons": false,
-        "generates_synthetic_content": false,
-        "deploys_emotion_or_biometric_categorisation": false,
-        "generates_deepfakes": false
-      },
-      "asked": [
-        "system",
-        "roles",
-        "is_ai_system",
-        "eu_nexus",
-        "excluded_use_flags",
-        "prohibited_practices",
-        "annex_i_safety_component",
-        "annex_iii_area",
-        "is_gpai_model",
-        "transparency",
-        "public_authority_use",
-        "dates",
-        "significant_change"
-      ],
-      "blocked": []
-    },
-    "spam_filter+unknown:transparency": {
-      "answers": {
-        "system": {
-          "name": "InboxGuard",
-          "description": "Classifies inbound email as spam or not spam.",
-          "purpose": "Email filtering",
-          "sector": "SaaS",
-          "intended_purpose_source": ""
-        },
-        "roles": [
-          "provider"
-        ],
-        "is_ai_system": "yes",
-        "eu_nexus": "yes",
-        "excluded_use_flags": [],
-        "prohibited_practices": [],
-        "annex_i_safety_component": "no",
-        "annex_i_third_party_assessment": "no",
-        "annex_iii_area": "none",
-        "performs_profiling": "no",
-        "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
-        "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
-        "value_chain": [],
-        "is_gpai_model": "no",
-        "training_flops": "",
-        "gpai_systemic_risk_designated": "no",
-        "transparency": "unknown",
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
@@ -5401,10 +5511,11 @@
         "significant_change"
       ],
       "blocked": [
-        "transparency"
-      ]
+        "significant_change"
+      ],
+      "missing": []
     },
-    "spam_filter+unknown:value_chain": {
+    "spam_filter+unknown:transparency": {
       "answers": {
         "system": {
           "name": "InboxGuard",
@@ -5425,21 +5536,17 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
-        "value_chain": "unknown",
+        "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "transparency": [],
+        "transparency": "unknown",
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "InboxGuard",
@@ -5497,7 +5604,106 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [
+        "transparency"
+      ],
+      "missing": [
+        "significant_change"
+      ]
+    },
+    "spam_filter+unknown:value_chain": {
+      "answers": {
+        "system": {
+          "name": "InboxGuard",
+          "description": "Classifies inbound email as spam or not spam.",
+          "purpose": "Email filtering",
+          "sector": "SaaS",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": "unknown",
+        "is_gpai_model": "no",
+        "training_flops": "",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "",
+          "putting_into_service_date": ""
+        }
+      },
+      "profile": {
+        "name": "InboxGuard",
+        "description": "Classifies inbound email as spam or not spam.",
+        "roles": [
+          "provider"
+        ],
+        "purpose": "Email filtering",
+        "sector": "SaaS",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": null,
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": false,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     },
     "support_chatbot": {
       "answers": {
@@ -5520,10 +5726,7 @@
         "annex_iii_area": "none",
         "performs_profiling": "no",
         "derogation": [],
-        "deployer_public_law_body": "unknown",
-        "deployer_private_public_service": "unknown",
         "provider_established_outside_eu": "no",
-        "has_authorised_representative": "unknown",
         "value_chain": [],
         "is_gpai_model": "no",
         "training_flops": "",
@@ -5535,8 +5738,7 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
-        },
-        "significant_change": "unknown"
+        }
       },
       "profile": {
         "name": "HelpDesk Assistant",
@@ -5594,7 +5796,10 @@
         "dates",
         "significant_change"
       ],
-      "blocked": []
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
     }
   }
 }

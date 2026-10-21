@@ -1,4 +1,4 @@
-import { profileToAnswers } from "./intake.mjs";
+import { droppedFields, profileToAnswers } from "./intake.mjs";
 import { createWizard } from "./wizard.mjs";
 import { DISPOSITIONS, MAX_BYTES, ROLE_LABELS, TIERS, annexCitation, describeDefault, formatProfile, groupByRole, matchesQuery, parseProfile, practiceCitation, reportIsCurrent } from "./model.mjs";
 
@@ -9,6 +9,9 @@ let report = null, reportText = "", checked = null, pending = null, requestId = 
 // Guided intake state. The JSON textarea stays the one profile that is
 // classified and exported; the guided mode writes its profile there on Classify.
 let mode = "guided", wizard = null, intake = null, answersChanged = false;
+// True once the user has answered or changed a guided question that has not
+// yet been classified; guards replacing the answers and leaving the page.
+let guidedEdited = false;
 
 const SEVERITY_TONE = { blocker: "tone-red", high: "tone-amber", medium: "tone-blue", info: "tone-grey" };
 const SEVERITY_LABEL = { blocker: "Blocker", high: "High", medium: "Medium", info: "Info" };
@@ -72,13 +75,18 @@ function reviewInWizard(text) {
   const unknown = [...Object.keys(profile).filter(key => !known.has(key)),
     ...Object.keys(derogation).filter(key => !(key in intake.defaults.derogation)).map(key => `derogation.${key}`)];
   if (unknown.length) throw new Error(`The guided questions do not cover ${unknown.join(", ")}. Fix the profile in the JSON editor.`);
+  const dropped = droppedFields(intake, profile);
+  if (dropped.length) throw new Error(`Earlier answers in this profile skip the questions for ${dropped.join(", ")}, so the guided mode would drop their values. Edit the profile in the JSON editor.`);
   wizard.review(profileToAnswers(intake, profile));
+  guidedEdited = false;
   return true;
 }
 
 $("mode-guided").onclick = () => {
   if (mode === "guided") return;
-  if (modified) {
+  // Open the edited JSON in the questions, unless that would replace answers
+  // the user has not classified and they decline.
+  if (modified && (!guidedEdited || window.confirm("Replace your guided answers with the profile from the JSON editor?"))) {
     try { reviewInWizard(input.value); }
     catch (error) { showError("input-error", error.message); return; }
   }
@@ -95,11 +103,12 @@ async function loadIntake() {
       root: $("guided"),
       definition: intake,
       canClassify: () => ready && !busy,
-      onChange: () => { answersChanged = true; syncDraft(); },
+      onChange: () => { answersChanged = true; guidedEdited = true; syncDraft(); },
       onClassify: profile => {
         input.value = JSON.stringify(profile, null, 2);
         modified = true;
         answersChanged = false;
+        guidedEdited = false;
         clearInputState();
         syncDraft();
         runClassification();
@@ -112,6 +121,7 @@ async function loadIntake() {
     });
     wizard.reset();
     answersChanged = false;
+    guidedEdited = false;
     syncDraft();
   } catch {
     $("guided").replaceChildren(node("p", "error", "The guided questions could not load. Use the JSON editor instead."));
@@ -232,6 +242,7 @@ $("load-example").onclick = async () => {
   if (!samples) return;
   const text = JSON.stringify(samples.profiles[$("example").value], null, 2);
   if (mode === "guided" && wizard) {
+    if ((guidedEdited || modified) && !window.confirm("Replace your answers with this example? Save the profile JSON first if you need to keep them.")) return;
     input.value = text;
     modified = false;
     clearInputState();
@@ -254,11 +265,15 @@ $("file").onchange = async event => {
     catch { throw new Error("The file is not valid UTF-8. Save it as UTF-8 JSON and import it again."); }
     parseProfile(text);
     if (input.value !== before) throw new Error("The profile changed while the file was opening. Import the file again when you are ready.");
-    replaceDraft(text);
-    if (mode === "guided") {
+    if (mode === "guided" && wizard) {
+      if ((guidedEdited || modified) && !window.confirm("Replace your answers with the imported profile? Save the profile JSON first if you need to keep them.")) return;
+      input.value = text;
+      modified = false;
+      clearInputState();
+      syncDraft();
       try { reviewInWizard(text); }
       catch (error) { setMode("json"); throw error; }
-    }
+    } else replaceDraft(text);
   } catch (error) { showError(mode === "guided" ? "sample-error" : "input-error", error.message || "The file could not be read. Try a UTF-8 JSON file."); }
 };
 
@@ -539,7 +554,7 @@ $("export-text").onclick = () => {
   if (!busy && reportIsCurrent(report, checked, current())) download(reportText, `ai-act-classification-${exportName()}.txt`, "text/plain;charset=utf-8");
 };
 window.addEventListener("beforeunload", event => {
-  if (modified) { event.preventDefault(); event.returnValue = ""; }
+  if (modified || guidedEdited) { event.preventDefault(); event.returnValue = ""; }
 });
 
 setMode("guided");
