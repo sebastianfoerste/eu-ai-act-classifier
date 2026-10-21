@@ -100,7 +100,11 @@ class SelfAssessmentPortal(BaseModel):
 
 
 def _inventory_digest(inventory: AISystemInventory) -> str:
-    payload = inventory.model_dump_json(by_alias=True)
+    # The generation timestamps change on every rebuild without changing the
+    # inventory's content, so they stay out of the digest.
+    payload = inventory.model_dump_json(
+        by_alias=True, exclude={"generatedAt": True, "reviewTable": {"generatedAt"}}
+    )
     return hashlib.sha256(payload.encode()).hexdigest()
 
 

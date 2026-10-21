@@ -127,3 +127,13 @@ def test_empty_inventory_and_null_payloads_fail_closed(tmp_path) -> None:
             {"action": "import", "workspace": None},
             tmp_path / "workspace.json",
         )
+
+
+def test_workspace_survives_an_inventory_rebuilt_at_another_time(tmp_path) -> None:
+    # The inventory stamps its generation time; a saved workspace must not go
+    # stale just because the inventory was rebuilt a second later.
+    earlier = build_example_inventory(generated_at="2026-07-13T09:00:00+00:00")
+    later = build_example_inventory(generated_at="2026-07-13T09:00:01+00:00")
+    path = save_workspace(build_collaboration_state(earlier), tmp_path / "workspace.json")
+    loaded = load_workspace(path, later)
+    assert loaded.inventory_digest == build_collaboration_state(later).inventory_digest
