@@ -75,8 +75,9 @@ function reviewInWizard(text) {
   const unknown = [...Object.keys(profile).filter(key => !known.has(key)),
     ...Object.keys(derogation).filter(key => !(key in intake.defaults.derogation)).map(key => `derogation.${key}`)];
   if (unknown.length) throw new Error(`The guided questions do not cover ${unknown.join(", ")}. Fix the profile in the JSON editor.`);
-  const dropped = droppedFields(intake, profile);
-  if (dropped.length) throw new Error(`Earlier answers in this profile skip the questions for ${dropped.join(", ")}, so the guided mode would drop their values. Edit the profile in the JSON editor.`);
+  const { skipped, unsupported } = droppedFields(intake, profile);
+  if (unsupported.length) throw new Error(`The guided questions cannot show the value of ${unsupported.join(", ")} in this profile. Use the JSON editor for it.`);
+  if (skipped.length) throw new Error(`Earlier answers in this profile skip the questions for ${skipped.join(", ")}, so the guided mode would drop their values. Edit the profile in the JSON editor.`);
   wizard.review(profileToAnswers(intake, profile));
   guidedEdited = false;
   return true;

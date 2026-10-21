@@ -105,8 +105,12 @@ test("a model-default null is left unanswered, not shown as I don't know", () =>
 });
 
 test("opening a profile reports values the questions would drop", () => {
-  for (const profile of Object.values(samples.profiles)) assert.deepEqual(droppedFields(definition, profile), []);
+  const none = { skipped: [], unsupported: [] };
+  for (const profile of Object.values(samples.profiles)) assert.deepEqual(droppedFields(definition, profile), none);
   const skipped = { name: "x", annex_iii_area: "III.4.a", derogation: { performs_profiling: true, narrow_procedural_task: true } };
-  assert.deepEqual(droppedFields(definition, skipped), ["derogation.narrow_procedural_task"]);
-  assert.deepEqual(droppedFields(definition, { name: "  padded  " }), []);
+  assert.deepEqual(droppedFields(definition, skipped), { skipped: ["derogation.narrow_procedural_task"], unsupported: [] });
+  assert.deepEqual(droppedFields(definition, { name: "  padded  " }), none);
+  // Asked, but not expressible as an answer: a cause other than skipping.
+  assert.deepEqual(droppedFields(definition, { name: "x", roles: [] }), { skipped: [], unsupported: ["roles"] });
+  assert.deepEqual(droppedFields(definition, { name: "x", annex_iii_area: "III.9" }), { skipped: [], unsupported: ["annex_iii_area"] });
 });

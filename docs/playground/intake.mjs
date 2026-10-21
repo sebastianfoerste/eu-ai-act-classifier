@@ -187,25 +187,36 @@ export function compactProfile(definition, profile) {
   return out;
 }
 
-// Fields of a profile that the guided questions would not carry over: values
-// set on questions that earlier answers skip. Opening such a profile in the
-// guided mode would drop them, so the caller refuses it instead.
+// Fields of a profile that the guided questions would not carry over, by
+// cause. `skipped`: set on a question that earlier answers skip. `unsupported`:
+// on a question that is asked, but the value cannot be given as an answer
+// there (for example an empty role list or a value outside the options).
+// Opening such a profile in the guided mode would lose them, so the caller
+// refuses it instead.
 export function droppedFields(definition, profile) {
   const full = structuredClone(definition.defaults);
   for (const [key, value] of Object.entries(profile)) {
     if (key === "derogation") Object.assign(full.derogation, value);
     else if (key !== "$schema") full[key] = value;
   }
-  const { profile: rebuilt } = answersToProfile(definition, profileToAnswers(definition, full));
+  const { profile: rebuilt, asked } = answersToProfile(definition, profileToAnswers(definition, full));
+  const questionOf = new Map();
+  for (const question of definition.questions) {
+    const fields = question.kind === "details" ? question.fields.map(f => f.field)
+      : question.kind === "flags" ? question.options.map(o => o.field) : [question.field];
+    for (const field of fields) questionOf.set(field, question.id);
+  }
   const same = (a, b) => JSON.stringify(typeof a === "string" ? a.trim() : a) === JSON.stringify(typeof b === "string" ? b.trim() : b);
-  const dropped = [];
+  const skipped = [], unsupported = [];
+  const check = (field, value, rebuiltValue) => {
+    if (same(value, rebuiltValue)) return;
+    (asked.includes(questionOf.get(field)) ? unsupported : skipped).push(field);
+  };
   for (const key of Object.keys(profile)) {
     if (key === "$schema") continue;
     if (key === "derogation") {
-      for (const flag of Object.keys(profile.derogation ?? {})) {
-        if (!same(full.derogation[flag], rebuilt.derogation[flag])) dropped.push(`derogation.${flag}`);
-      }
-    } else if (!same(full[key], rebuilt[key])) dropped.push(key);
+      for (const flag of Object.keys(profile.derogation ?? {})) check(`derogation.${flag}`, full.derogation[flag], rebuilt.derogation[flag]);
+    } else check(key, full[key], rebuilt[key]);
   }
-  return dropped;
+  return { skipped, unsupported };
 }
