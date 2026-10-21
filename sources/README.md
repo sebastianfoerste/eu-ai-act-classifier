@@ -12,6 +12,7 @@ file no longer matches its digest.
 | `oj/32024R1689.en.xhtml` | Regulation (EU) 2024/1689 (AI Act), OJ L, 2024/1689, 12.7.2024, original wording | Official Journal |
 | `consolidated/02024R1689-20260727.en.xhtml` | AI Act consolidated as at 27 July 2026 | No legal effect; cross-check only |
 | `oj/32011L0093.en.xhtml` | Directive 2011/93/EU, referred to in Art. 5(1)(bb) AIA | Official Journal |
+| `oj/32026D2274.en.xhtml` | Commission Implementing Decision (EU) 2026/2274 (EN 18286:2026), OJ L, 2026/2274, 14.10.2026 | Official Journal |
 
 The authentic law is the Official Journal text of Regulation (EU) 2024/1689 read
 with the amendments made by Regulation (EU) 2026/1744. The consolidated version

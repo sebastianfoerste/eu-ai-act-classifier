@@ -86,6 +86,26 @@
         "Art. 5(1): conduct punishable when committed 'without right'"
       ],
       "notes": "A query of the Publications Office SPARQL endpoint on 2026-10-14 found no act amending or repealing 32011L0093."
+    },
+    {
+      "source_id": "oj-dec-impl-2026-2274",
+      "celex": "32026D2274",
+      "title": "Commission Implementing Decision (EU) 2026/2274 of 12 October 2026 on the harmonised standards for high-risk AI systems drafted in support of Regulation (EU) 2024/1689 of the European Parliament and of the Council",
+      "publication": "OJ L, 2026/2274, 14.10.2026",
+      "eli": "http://data.europa.eu/eli/dec_impl/2026/2274/oj",
+      "text_status": "Official Journal text (authentic)",
+      "request_url": "https://publications.europa.eu/resource/celex/32026D2274",
+      "resolved_url": "https://publications.europa.eu/resource/celex/32026D2274",
+      "content_type": "application/xhtml+xml;charset=UTF-8",
+      "retrieved_on": "2026-10-21",
+      "file": "oj/32026D2274.en.xhtml",
+      "bytes": 13455,
+      "sha256": "fd86b2160326d3af7f438e80abcb0649e87eac21dafb9bdc03175e60cc453961",
+      "relied_on_for": [
+        "Annex point 1: Harmonised standard EN 18286:2026 (Artificial intelligence – Quality management system for EU AI Act regulatory purposes)",
+        "Art. 1 and Recitals 1 to 6: Presumption of conformity under Art. 40(1) AIA for Art. 17 QMS requirements",
+        "Standardisation request C(2025) 3871 Annex I point 9"
+      ]
     }
   ]
 }

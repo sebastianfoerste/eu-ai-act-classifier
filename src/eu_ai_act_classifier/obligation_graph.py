@@ -247,7 +247,10 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             "Art. 40 AIA",
             Role.PROVIDER,
             "High-risk requirements where harmonised standards are available.",
-            "Track applicable harmonised standards and standardisation deliverables.",
+            (
+                "Track applicable harmonised standards and standardisation deliverables "
+                "(EN 18286:2026 published under Decision (EU) 2026/2274 for Art. 17 QMS)."
+            ),
             "Standards applicability matrix.",
             application_date,
             ReviewStatus.REVIEW_REQUIRED,
@@ -280,7 +283,11 @@ def _high_risk_provider_graph(application_date: str) -> list[ObligationGraphItem
             "Art. 43 AIA",
             Role.PROVIDER,
             "Before placing high-risk AI system on the market or putting into service.",
-            "Complete the applicable conformity assessment.",
+            (
+                "Complete the applicable conformity assessment. For Annex III point 1 systems, "
+                "Annex VI internal control requires harmonised standards for Chapter III Section 2 "
+                "(EN 18286:2026 covers Art. 17 only and does not open Annex VI on its own)."
+            ),
             "Conformity assessment file.",
             application_date,
             ReviewStatus.REVIEW_REQUIRED,

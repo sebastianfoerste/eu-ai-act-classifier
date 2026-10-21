@@ -30,6 +30,7 @@ REGULATION = (
 SHORT = "AIA"
 AI_ACT_URL = "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
 AI_ACT_AMENDMENT_URL = "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
+DECISION_2026_2274_URL = "https://publications.europa.eu/resource/celex/32026D2274"
 CSA_DIRECTIVE_URL = "https://publications.europa.eu/resource/celex/32011L0093"
 AI_ACT_SERVICE_DESK_URL = "https://ai-act-service-desk.ec.europa.eu/en/ai-act-explorer"
 HIGH_RISK_GUIDELINES_URL = (
@@ -55,6 +56,8 @@ BINDING_SOURCE_RETRIEVED_ON = "2026-08-26"
 ADVISORY_SOURCE_RETRIEVED_ON = "2026-06-18"
 # Read from the Official Journal snapshot in sources/oj/32011L0093.en.xhtml.
 CSA_DIRECTIVE_RETRIEVED_ON = "2026-10-14"
+# Read from the Official Journal snapshot in sources/oj/32026D2274.en.xhtml.
+DECISION_2026_2274_RETRIEVED_ON = "2026-10-21"
 
 # --- Dates the rules turn on -----------------------------------------------
 # Each comes from the snapshotted Official Journal text named beside it.
@@ -113,6 +116,21 @@ def source_manifest() -> list[RegulatorySource]:
             implementation_note=(
                 "Art. 2, points (c) and (e), define the material and performance referred to "
                 "in Art. 5(1), first subparagraph, point (bb) AIA."
+            ),
+        ),
+        RegulatorySource(
+            source_id="oj-dec-impl-2026-2274",
+            title=(
+                "Commission Implementing Decision (EU) 2026/2274 on the harmonised standards "
+                "for high-risk AI systems (EN 18286:2026)"
+            ),
+            legal_status=SourceStatus.BINDING_LEVEL_1,
+            url=DECISION_2026_2274_URL,
+            retrieved_on=DECISION_2026_2274_RETRIEVED_ON,
+            citation_label="Decision (EU) 2026/2274",
+            implementation_note=(
+                "First harmonised standard under Art. 40 AIA (EN 18286:2026 for Art. 17 QMS) "
+                "published in the Official Journal on 14 October 2026."
             ),
         ),
         RegulatorySource(
