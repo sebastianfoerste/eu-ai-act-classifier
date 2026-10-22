@@ -95,7 +95,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 
 ### S2. Label catalog (built, EN)
 
-- **Story.** As a reviewer I read "Annex III(5)(b): Creditworthiness evaluation and credit scoring", not "III 5 B".
+- **Story.** As a reviewer I read "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons", not "III 5 B".
 - **References.** EuConform and AbdelStark dictionaries (Observed); IATE (not reachable).
 - **Adapted.** One generated catalog (`labels.py` to `web/lib/labels.json` and `fields.json`) with titles taken from `catalog.py`. Different: no new citation is introduced by a label.
 - **Acceptance.** Every enum value labelled; generated file current; no raw value as a label. DE: add `locale: "de"` entries only after each term has a `PENDING` ledger row and a lawyer confirms it.

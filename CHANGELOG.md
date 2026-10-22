@@ -165,7 +165,7 @@ checked against the consolidated AI Act of 27 July 2026 and Regulation (EU)
 
 #### Changed
 
-- The cockpit shows catalog labels (for example "Annex III(5)(b): Creditworthiness evaluation and credit scoring") instead of mechanically formatted values.
+- The cockpit shows catalog labels (for example "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons") instead of mechanically formatted values.
 - The cockpit portfolio (`/workspace`) and self-assessment pages use plain CSS classes instead of Tailwind classes, which were not installed; self-assessment inputs have labels.
 
 #### Unchanged
