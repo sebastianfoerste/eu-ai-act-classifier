@@ -22,6 +22,7 @@ export type SystemProfile = {
   putting_into_service_date: string | null;
   significant_change_after_application_date: NullableBoolean;
   public_authority_use: boolean;
+  deployer_public_authority: NullableBoolean;
   deployer_public_law_body: NullableBoolean;
   deployer_private_public_service: NullableBoolean;
   provider_established_outside_eu: boolean;
@@ -31,9 +32,11 @@ export type SystemProfile = {
   is_gpai_model: boolean;
   training_flops: number | null;
   gpai_systemic_risk_designated: boolean;
+  gpai_model_placing_on_market_date: string | null;
   prohibited_practices: string[];
   annex_i_safety_component: boolean;
   annex_i_third_party_assessment: boolean;
+  annex_i_section: string | null;
   annex_iii_area: string | null;
   used_for_financial_fraud_detection: NullableBoolean;
   derogation: Derogation;
@@ -46,6 +49,7 @@ export type SystemProfile = {
 export type SchemaPayload = {
   roles: string[];
   annex_iii_areas: string[];
+  annex_i_sections: string[];
   prohibited_practices: string[];
   excluded_use_flags: string[];
   artifacts: string[];

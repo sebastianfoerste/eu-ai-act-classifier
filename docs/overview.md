@@ -21,7 +21,7 @@ Encodes Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744, in th
 
 [![Live playground: the synthetic CreditSightScore credit scoring profile classified high-risk under Art. 6 AIA, with its Annex III(5)(b) finding and the cited provider obligations from Article 9 onwards](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
-> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 18 synthetic examples, or see [Example output](sample-output.md#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 19 synthetic examples, or see [Example output](sample-output.md#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
 ## Human legal judgment
 

@@ -25,18 +25,20 @@ sys.path.insert(0, str(ROOT / "src"))
 from eu_ai_act_classifier import Derogation, SystemProfile, __version__  # noqa: E402
 from eu_ai_act_classifier.models import (  # noqa: E402
     AnnexIII,
+    AnnexISection,
     ExcludedUse,
     ProhibitedPractice,
     Role,
 )
 
-# The 18 base examples, grouped by the outcome tests/test_examples.py asserts.
+# The 19 base examples, grouped by the outcome tests/test_examples.py asserts.
 SAMPLE_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
     (
         "Prohibited",
         [
             ("social_scoring", "Social scoring"),
             ("emotion_hiring", "Emotion recognition in hiring"),
+            ("intimate_imagery_generator", "Non-consensual intimate imagery"),
         ],
     ),
     (
@@ -99,12 +101,28 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             ("excluded_use_flags", "Scope exclusions or carve-outs that need visible review."),
             (
                 "placing_on_market_date",
-                "YYYY-MM-DD; for a GPAI model, the model's date. Drives the Art. 111 AIA "
-                "transitions.",
+                "YYYY-MM-DD, the AI system's date. Drives Art. 111(2) and (4) AIA; for a GPAI "
+                "model without its own date, also Art. 111(3).",
             ),
-            ("putting_into_service_date", "YYYY-MM-DD, for transitional status."),
-            ("significant_change_after_application_date", ""),
-            ("public_authority_use", ""),
+            ("putting_into_service_date", "YYYY-MM-DD. Drives Art. 111(2) AIA."),
+            (
+                "significant_change_after_application_date",
+                "Art. 111(2) AIA: a significant design change as from the Chapter III date. "
+                "Which date is contested: 2027-12-02 (Annex III) or 2028-08-02 (Annex I), or "
+                "the general date 2026-08-02.",
+            ),
+            (
+                "public_authority_use",
+                "Intended to be used by public authorities: the 2 August 2030 deadline in "
+                "Art. 111(2) AIA and, while the deployer's status is unset, the Art. 49(3) "
+                "registration of use for review.",
+            ),
+            (
+                "deployer_public_authority",
+                "The deployer is, or acts on behalf of, a public authority or Union institution, "
+                "body, office or agency: Art. 49(3) AIA registration of use. Unset: inferred for "
+                "review from public-authority use or Annex III points 5(a), 6 and 7.",
+            ),
             ("deployer_public_law_body", "Art. 27 AIA: fundamental rights impact assessment."),
             (
                 "deployer_private_public_service",
@@ -122,17 +140,33 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             ("is_gpai_model", ""),
             ("training_flops", "Cumulative training compute in FLOP; drives Art. 51(2) AIA."),
             ("gpai_systemic_risk_designated", "Commission designation under Art. 51(1)(b) AIA."),
+            (
+                "gpai_model_placing_on_market_date",
+                "YYYY-MM-DD, the model's own date. Drives Art. 111(3) AIA.",
+            ),
         ],
     ),
     (
         "Prohibited-practice screens (Art. 5(1) AIA)",
-        [("prohibited_practices", "Keyed to the letters of Art. 5(1) AIA.")],
+        [
+            (
+                "prohibited_practices",
+                "Keyed to the letters of Art. 5(1) AIA. 5.1.ba and 5.1.bb apply from "
+                "2 December 2026.",
+            )
+        ],
     ),
     (
         "High-risk screens (Art. 6 AIA)",
         [
             ("annex_i_safety_component", "Art. 6(1)(a): product or safety component."),
             ("annex_i_third_party_assessment", "Art. 6(1)(b): third-party conformity assessment."),
+            (
+                "annex_i_section",
+                "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): "
+                "only Art. 6(1), 60a and 102-112 apply, and 57-59 as far as integrated in the "
+                "sectoral legislation (Art. 2(2) AIA). Unset: Section A.",
+            ),
             (
                 "annex_iii_area",
                 "Art. 6(2) and Annex III. III.unsure: an area is implicated but the point is "
@@ -164,12 +198,23 @@ _ENUMS: dict[str, type[StrEnum]] = {
     "roles": Role,
     "excluded_use_flags": ExcludedUse,
     "prohibited_practices": ProhibitedPractice,
+    "annex_i_section": AnnexISection,
     "annex_iii_area": AnnexIII,
 }
 
 
+# Labels the member name cannot spell.
+_OPTION_LABELS = {
+    ProhibitedPractice.NON_CONSENSUAL_INTIMATE_IMAGERY: "Non-consensual intimate material"
+}
+
+
 def _option_label(member: StrEnum) -> str:
-    return member.name.replace("_", " ").capitalize()
+    if member in _OPTION_LABELS:
+        return _OPTION_LABELS[member]
+    # "SECTION_B" -> "Section B": a one-letter word is a letter reference, not a word.
+    words = member.name.replace("_", " ").capitalize().split(" ")
+    return " ".join(word.upper() if len(word) == 1 else word for word in words)
 
 
 def _field_type(name: str, schema: dict) -> str:

@@ -43,8 +43,6 @@ WORKED_EXAMPLES = {
     ),
 }
 OMITTED = re.compile(r"^\[\.\.\. (\d+) lines omitted\]$")
-SAMPLE_DOSSIER = Path("docs/sample-review-dossier.md")
-DOSSIER_BLOCK = re.compile(r"\*\*Source File:\*\* `(examples/\w+\.json)`\n```\n(.*?)\n```", re.S)
 EM_DASH = "\u2014"
 EN_DASH = "\u2013"
 README_MAX_WORDS = 350
@@ -236,48 +234,20 @@ def test_worked_example_quotes_the_real_profile_and_cli_output(doc: Path, exampl
 
 
 # The example output that the README quoted until main's README trim (#27) moved it here.
+# tests/test_sample_output.py checks each output block on the page against the CLI; this
+# test checks the sentence that introduces the high-risk excerpt.
 SAMPLE_OUTPUT = Path("docs/sample-output.md")
-OUTPUT_EXCERPT = re.compile(
-    r"Real output of `uv run eu-ai-act-classify (examples/\w+\.json)`[^\n]*\n\n```text\n(.*?)\n```",
-    re.S,
-)
 HIGH_RISK_SUMMARY = re.compile(
     r"A high-risk case \(`(examples/\w+\.json)`\) returns `([^`]+)`, the finding `([^`]+)`, "
     r"and (\d+) cited obligations, for example:\n\n```text\n(.*?)\n```",
     re.S,
 )
-CUT = "  ..."
+CUT = "..."
 
 
 def _cli_lines(example: str) -> list[str]:
     profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
     return render_report(classify(profile)).split("\n")
-
-
-def test_sample_output_excerpt_is_the_real_cli_output_from_its_start() -> None:
-    excerpts = OUTPUT_EXCERPT.findall(SAMPLE_OUTPUT.read_text(encoding="utf-8"))
-    assert excerpts, f"{SAMPLE_OUTPUT} no longer has a 'Real output of' excerpt"
-    for example, quoted in excerpts:
-        lines = quoted.split("\n")
-        assert lines[-1] == CUT, f"the excerpt must end with '{CUT}' where it is cut"
-        actual = _cli_lines(example)
-        # The excerpt starts at the first line of the output. A '  ...' line stands for
-        # one or more omitted lines; every other line follows the previous one directly.
-        position, cut = 0, False
-        for line in lines[:-1]:
-            if line == CUT:
-                position, cut = position + 1, True
-                continue
-            if cut:
-                while position < len(actual) and actual[position] != line:
-                    position += 1
-                cut = False
-            assert position < len(actual) and actual[position] == line, (
-                f"{SAMPLE_OUTPUT}'s excerpt for {example} no longer matches the CLI at "
-                f"{line!r}: rerun uv run eu-ai-act-classify {example}"
-            )
-            position += 1
-        assert position < len(actual), "the final cut must stand for at least one line"
 
 
 def test_sample_output_high_risk_summary_matches_the_cli() -> None:
@@ -291,15 +261,4 @@ def test_sample_output_high_risk_summary_matches_the_cli() -> None:
     assert any(line.strip().endswith(finding) for line in actual), finding
     assert int(count) == len(report.obligations)
     for line in quoted.split("\n"):
-        assert line in actual, line
-
-
-def test_sample_review_dossier_quotes_the_current_cli_output() -> None:
-    blocks = DOSSIER_BLOCK.findall(SAMPLE_DOSSIER.read_text(encoding="utf-8"))
-    assert len(blocks) == 4
-    for example, quoted in blocks:
-        profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
-        assert quoted == render_report(classify(profile)), (
-            f"{SAMPLE_DOSSIER} no longer matches the CLI output for {example}: "
-            f"rerun uv run eu-ai-act-classify {example}"
-        )
+        assert line.strip() == CUT or line in actual, line

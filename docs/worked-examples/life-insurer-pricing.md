@@ -26,7 +26,7 @@ A German life insurer builds a gradient-boosted model in house and uses it in it
 uv run eu-ai-act-classify examples/life_insurer_pricing.json
 ```
 
-Output (96 lines; the cuts are marked):
+Output (97 lines; the cuts are marked):
 
 ```text
 EU AI Act classification: Musterversicherung term-life pricing model
@@ -72,6 +72,7 @@ Binding application timeline:
   2027-08-02: Art. 111(3) AIA: general-purpose AI models already on the market before 2 August 2025
   2027-12-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, Annex III high-risk systems
   2028-08-02: Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems
+  2030-08-02: Regulation (EU) 2026/1744: Art. 111(2) AIA, high-risk systems for public authorities
 
 Source manifest:
   - Regulation (EU) 2024/1689: binding_level_1, retrieved 2026-10-18

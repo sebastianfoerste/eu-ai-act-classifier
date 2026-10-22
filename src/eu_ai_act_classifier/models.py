@@ -141,12 +141,30 @@ class ProhibitedPractice(StrEnum):
 
     SUBLIMINAL_MANIPULATION = "5.1.a"
     EXPLOITS_VULNERABILITIES = "5.1.b"
+    # Points (ba) and (bb), inserted by Regulation (EU) 2026/1744, apply from 2 December 2026.
+    NON_CONSENSUAL_INTIMATE_IMAGERY = "5.1.ba"
+    CHILD_SEXUAL_ABUSE_MATERIAL = "5.1.bb"
     SOCIAL_SCORING = "5.1.c"
     PREDICTIVE_POLICING_INDIVIDUAL = "5.1.d"
     FACIAL_SCRAPING = "5.1.e"
     EMOTION_RECOGNITION_WORK_EDUCATION = "5.1.f"
     BIOMETRIC_CATEGORISATION_SENSITIVE = "5.1.g"
     REALTIME_REMOTE_BIOMETRIC_ID = "5.1.h"
+
+
+class AnnexISection(StrEnum):
+    """Annex I sections for the Art. 6(1) AIA product route.
+
+    For a Section B product only Art. 6(1), Art. 60a and Arts. 102 to 112 apply,
+    and Arts. 57 to 59 only in so far as the high-risk requirements have been
+    integrated in the sectoral legislation (Art. 2(2) AIA). Regulation (EU)
+    2026/1744 moved machinery to Section B:
+    Section A, point 1 is deleted and Regulation (EU) 2023/1230 is Section B,
+    point 21.
+    """
+
+    SECTION_A = "A"
+    SECTION_B = "B"
 
 
 class Derogation(BaseModel):
@@ -187,8 +205,12 @@ def _iso_date(value: str) -> str:
     return value
 
 
+# "format": "date" alone is an annotation many validators skip, so the pattern keeps
+# "March 2026" and "2026-W09-7" out at the schema level too.
 IsoDate = Annotated[
-    str, AfterValidator(_iso_date), WithJsonSchema({"type": "string", "format": "date"})
+    str,
+    AfterValidator(_iso_date),
+    WithJsonSchema({"type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}),
 ]
 
 
@@ -218,10 +240,32 @@ class SystemProfile(BaseModel):
     intended_purpose_source: str = ""
     eu_nexus: bool | None = True
     excluded_use_flags: list[ExcludedUse] = Field(default_factory=list)
+    # The AI system's dates: Art. 111(2) and, for placing on the market, Art. 111(4) AIA.
     placing_on_market_date: IsoDate | None = None
     putting_into_service_date: IsoDate | None = None
-    significant_change_after_application_date: bool | None = None
+    significant_change_after_application_date: bool | None = Field(
+        default=None,
+        description=(
+            "Art. 111(2) AIA: whether the design of a system placed on the market or put into "
+            "service before its Chapter III date has changed significantly as from that date. "
+            "That date is contested: the report uses the Art. 113, third paragraph, point (c) "
+            "date for the route (2027-12-02 for Annex III, 2028-08-02 for Annex I), but the "
+            "general date of 2026-08-02 may be meant. Null: not established."
+        ),
+    )
+    # A system intended to be used by public authorities (Art. 111(2) AIA).
     public_authority_use: bool = False
+    # The deployer is a public authority, Union institution, body, office or agency, or
+    # acts on behalf of one (Art. 49(3) AIA). None: not established.
+    deployer_public_authority: bool | None = Field(
+        default=None,
+        description=(
+            "Art. 49(3) AIA: the deployer is a public authority, Union institution, body, office "
+            "or agency, or acts on behalf of one. Null: not established, so the registration of "
+            "use is inferred, for review, where the system is intended to be used by public "
+            "authorities or its Annex III point (5(a), 6 or 7) describes such use."
+        ),
+    )
     deployer_public_law_body: bool | None = None
     deployer_private_public_service: bool | None = None
     provider_established_outside_eu: bool = False
@@ -238,6 +282,14 @@ class SystemProfile(BaseModel):
         ),
     )
     gpai_systemic_risk_designated: bool = False  # Commission designation under Art. 51(1)(b)
+    # The model's own date for Art. 111(3) AIA, apart from the AI system's placing_on_market_date.
+    gpai_model_placing_on_market_date: IsoDate | None = Field(
+        default=None,
+        description=(
+            "Art. 111(3) AIA: the date the general-purpose AI model itself was placed on the "
+            "market. Null: the model is dated by placing_on_market_date, for review."
+        ),
+    )
 
     # Prohibited-practice screens (Art. 5(1) AIA)
     prohibited_practices: list[ProhibitedPractice] = Field(default_factory=list)
@@ -245,6 +297,13 @@ class SystemProfile(BaseModel):
     # High-risk screens
     annex_i_safety_component: bool = False  # Art. 6(1)(a): product / safety component
     annex_i_third_party_assessment: bool = False  # Art. 6(1)(b): third-party conformity assessment
+    annex_i_section: AnnexISection | None = Field(
+        default=None,
+        description=(
+            "Annex I section of the Art. 6(1) AIA product. For Section B only the Art. 2(2) "
+            "provisions apply. Null: treated as Section A."
+        ),
+    )
     annex_iii_area: AnnexIII | None = None  # Art. 6(2) + Annex III
     # Annex III(5)(b) excepts AI systems used for the purpose of detecting financial
     # fraud. True (asserted) or None (unknown) on a III.5.b profile raises a review
