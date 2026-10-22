@@ -100,7 +100,11 @@ class SelfAssessmentPortal(BaseModel):
 
 
 def _inventory_digest(inventory: AISystemInventory) -> str:
-    payload = inventory.model_dump_json(by_alias=True)
+    # The generation timestamps change on every rebuild without changing the
+    # inventory's content, so they stay out of the digest.
+    payload = inventory.model_dump_json(
+        by_alias=True, exclude={"generatedAt": True, "reviewTable": {"generatedAt"}}
+    )
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
@@ -405,8 +409,9 @@ def build_collaboration_workspace(
 def _inventory_timestamp(now: datetime | None) -> str | None:
     """Stamp the inventory with the injected clock, as the inventory's own clock would.
 
-    The inventory digest covers its timestamp, so two actions given the same `now` must
-    build the same inventory. Without `now` the inventory reads the clock, as before.
+    This keeps the inventory, and so the returned payload, reproducible for a given
+    `now`. Without `now` the inventory reads the clock, as before. The digest leaves the
+    timestamp out either way (see `_inventory_digest`).
     """
 
     if now is None:
@@ -420,9 +425,9 @@ def apply_workspace_action(
 ) -> dict[str, object]:
     """Apply one local mutation against the fixed ignored runtime workspace.
 
-    The inventory, and so its digest, is stamped with ``now``. Every action on one
-    runtime file must therefore pass the same ``now`` (or none): a different one builds
-    a different inventory digest than the one the stored workspace was built from.
+    The inventory is stamped with ``now`` (or the clock). The digest the stored
+    workspace is checked against leaves that timestamp out, so actions at different
+    times operate on the same workspace.
     """
 
     inventory = build_example_inventory(generated_at=_inventory_timestamp(now))
