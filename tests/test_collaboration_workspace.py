@@ -150,27 +150,11 @@ def test_empty_inventory_and_null_payloads_fail_closed(tmp_path) -> None:
         )
 
 
-def test_saved_workspace_stays_loadable_when_the_clock_moves_on(tmp_path, monkeypatch) -> None:
-    # Each inventory build stamps generatedAt from the wall clock. Advance it one second per
-    # build so every action sees a different timestamp, as a real local API session would.
-    seconds = iter(range(60))
-    monkeypatch.setattr(
-        "eu_ai_act_classifier.inventory._now",
-        lambda: f"2026-07-13T00:00:{next(seconds):02d}+00:00",
-    )
-    runtime_path = tmp_path / "runtime-data" / "workspace.json"
-    snapshot = apply_workspace_action({"action": "snapshot"}, runtime_path)
-    target = snapshot["collaboration"]["cells"][0]["target_id"]
-    reviewed = apply_workspace_action(
-        {
-            "action": "review",
-            "targetId": target,
-            "expectedRevision": 1,
-            "actor": "Reviewer",
-            "reviewerOverride": "human_review_required",
-        },
-        runtime_path,
-        now=datetime(2026, 7, 13, tzinfo=UTC),
-    )
-    reloaded = apply_workspace_action({"action": "snapshot"}, runtime_path)
-    assert reloaded["collaboration"] == reviewed["collaboration"]
+def test_workspace_survives_an_inventory_rebuilt_at_another_time(tmp_path) -> None:
+    # The inventory stamps its generation time; a saved workspace must not go
+    # stale just because the inventory was rebuilt a second later.
+    earlier = build_example_inventory(generated_at="2026-07-13T09:00:00+00:00")
+    later = build_example_inventory(generated_at="2026-07-13T09:00:01+00:00")
+    path = save_workspace(build_collaboration_state(earlier), tmp_path / "workspace.json")
+    loaded = load_workspace(path, later)
+    assert loaded.inventory_digest == build_collaboration_state(later).inventory_digest
