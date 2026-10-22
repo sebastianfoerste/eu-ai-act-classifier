@@ -381,6 +381,7 @@
         }
       ],
       "default": false,
+      "description": "Annex III point 5(b) AIA excepts AI systems used for the purpose of detecting financial fraud. On a III.5.b profile, true (asserted) or null (unknown) raises a review question; the system stays high-risk until it is answered.",
       "title": "Used For Financial Fraud Detection"
     },
     "derogation": {

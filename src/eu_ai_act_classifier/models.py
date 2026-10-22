@@ -305,10 +305,14 @@ class SystemProfile(BaseModel):
         ),
     )
     annex_iii_area: AnnexIII | None = None  # Art. 6(2) + Annex III
-    # Annex III(5)(b) excepts AI systems used for the purpose of detecting financial
-    # fraud. True (asserted) or None (unknown) on a III.5.b profile raises a review
-    # question; the system stays high-risk until it is answered.
-    used_for_financial_fraud_detection: bool | None = False
+    used_for_financial_fraud_detection: bool | None = Field(
+        default=False,
+        description=(
+            "Annex III point 5(b) AIA excepts AI systems used for the purpose of detecting "
+            "financial fraud. On a III.5.b profile, true (asserted) or null (unknown) raises a "
+            "review question; the system stays high-risk until it is answered."
+        ),
+    )
     derogation: Derogation = Field(default_factory=Derogation)
 
     # Transparency screens (Art. 50 AIA)
