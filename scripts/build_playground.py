@@ -3,8 +3,9 @@
     uv run python scripts/build_playground.py
 
 Writes samples.json and fields.json from the canonical examples and the
-SystemProfile model, then rebuilds the classifier wheel the page installs.
-tests/test_playground.py fails if any of the three drifts from the source.
+SystemProfile model, writes the label catalog the web cockpit reads
+(web/lib/labels.json), then rebuilds the classifier wheel the page installs.
+tests/test_playground.py fails if any of them drifts from the source.
 """
 
 from __future__ import annotations
@@ -20,9 +21,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAYGROUND = ROOT / "docs" / "playground"
+WEB_LABELS = ROOT / "web" / "lib" / "labels.json"
+INTAKE_FIXTURES = ROOT / "tests" / "playground" / "intake-fixtures.json"
 sys.path.insert(0, str(ROOT / "src"))
 
 from eu_ai_act_classifier import Derogation, SystemProfile, __version__  # noqa: E402
+from eu_ai_act_classifier.intake import (  # noqa: E402
+    QUESTIONS,
+    answers_to_profile,
+    intake_definition,
+    profile_to_answers,
+)
+from eu_ai_act_classifier.labels import label_catalog, option_label  # noqa: E402
 from eu_ai_act_classifier.models import (  # noqa: E402
     AnnexIII,
     AnnexISection,
@@ -197,20 +207,6 @@ _ENUMS: dict[str, type[StrEnum]] = {
 }
 
 
-# Labels the member name cannot spell.
-_OPTION_LABELS = {
-    ProhibitedPractice.NON_CONSENSUAL_INTIMATE_IMAGERY: "Non-consensual intimate material"
-}
-
-
-def _option_label(member: StrEnum) -> str:
-    if member in _OPTION_LABELS:
-        return _OPTION_LABELS[member]
-    # "SECTION_B" -> "Section B": a one-letter word is a letter reference, not a word.
-    words = member.name.replace("_", " ").capitalize().split(" ")
-    return " ".join(word.upper() if len(word) == 1 else word for word in words)
-
-
 def _field_type(name: str, schema: dict) -> str:
     if name == "derogation":
         return "object"
@@ -247,13 +243,71 @@ def build_fields() -> dict:
             }
             if name in _ENUMS:
                 field["options"] = [
-                    {"value": m.value, "label": _option_label(m)} for m in _ENUMS[name]
+                    {"value": m.value, "label": option_label(m)} for m in _ENUMS[name]
                 ]
             if name == "derogation":
                 field["keys"] = list(Derogation.model_fields)
             fields.append(field)
         groups.append({"label": group, "fields": fields})
     return {"version": __version__, "groups": groups}
+
+
+def build_intake_fixtures() -> dict:
+    """Python's answers for every example, so the browser interpreter can be held to them."""
+
+    cases = {}
+    for _group, entries in SAMPLE_GROUPS:
+        for key, _label in entries:
+            example = json.loads((ROOT / "examples" / f"{key}.json").read_text(encoding="utf-8"))
+            answers = profile_to_answers(example)
+            cases[key] = {"answers": answers}
+            if key not in ("credit_scoring_deployer", "spam_filter"):
+                continue
+            for question in QUESTIONS:
+                if question.get("unknown") is not None:
+                    unknown = {**answers, question["id"]: "unknown"}
+                    cases[f"{key}+unknown:{question['id']}"] = {"answers": unknown}
+    # Paths the examples never take: padded text and unanswered questions.
+    padded = profile_to_answers({"name": "x"})
+    padded["system"] = {"name": "  Padded name  ", "purpose": " Credit scoring "}
+    padded["dates"] = {"placing_on_market_date": " 2026-03-01 "}
+    cases["edge+padded-text"] = {"answers": padded}
+    cases["edge+no-answers"] = {"answers": {}}
+    partial = profile_to_answers(json.loads((ROOT / "examples" / "cv_screening.json").read_text()))
+    for question_id in ("roles", "annex_iii_area", "transparency", "training_flops"):
+        partial.pop(question_id, None)
+    cases["edge+partly-answered"] = {"answers": partial}
+    # The Annex I route asks annex_i_section, a single question with no "none" option.
+    route = profile_to_answers(
+        {
+            "name": "x",
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_i_section": "B",
+        }
+    )
+    for answer in ("A", "B", "none", "unknown"):
+        cases[f"edge+annex-i-section:{answer}"] = {"answers": {**route, "annex_i_section": answer}}
+    cases["edge+annex-i-section:missing"] = {
+        "answers": {k: v for k, v in route.items() if k != "annex_i_section"}
+    }
+    model = profile_to_answers(
+        {
+            "name": "x",
+            "roles": ["gpai_provider"],
+            "is_gpai_model": True,
+            "training_flops": 1e24,
+            "placing_on_market_date": "2026-01-01",
+            "gpai_model_placing_on_market_date": "2025-03-01",
+        }
+    )
+    cases["edge+gpai-date"] = {"answers": model}
+    for flops in ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", ""):
+        cases[f"edge+training-flops:{flops!r}"] = {"answers": {**model, "training_flops": flops}}
+    for case in cases.values():
+        profile, asked, blocked, missing = answers_to_profile(case["answers"])
+        case.update(profile=profile, asked=asked, blocked=blocked, missing=missing)
+    return {"cases": dict(sorted(cases.items()))}
 
 
 def render(data: dict) -> str:
@@ -280,6 +334,9 @@ def build_wheel() -> None:
 def main() -> int:
     (PLAYGROUND / "samples.json").write_text(render(build_samples()), encoding="utf-8")
     (PLAYGROUND / "fields.json").write_text(render(build_fields()), encoding="utf-8")
+    WEB_LABELS.write_text(render(label_catalog()), encoding="utf-8")
+    (PLAYGROUND / "intake.json").write_text(render(intake_definition()), encoding="utf-8")
+    INTAKE_FIXTURES.write_text(render(build_intake_fixtures()), encoding="utf-8")
     build_wheel()
     print(f"playground rebuilt for eu-ai-act-classifier {__version__}")
     return 0

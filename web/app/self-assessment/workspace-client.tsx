@@ -79,54 +79,54 @@ export function WorkspaceClient({ initial }: { initial: Workspace }) {
 
   return (
     <>
-      <section className="grid gap-3 sm:grid-cols-3">
+      <section className="metricGrid" aria-label="Workspace summary">
         {[
           ["Review cells", workspace.collaboration.cells.length],
           ["Workflow templates", workspace.workflowDefinitions.length],
           ["Export allowed", String(workspace.selfAssessmentPortal.exportAllowed)],
         ].map(([label, value]) => (
-          <article key={label} className="rounded-lg border border-zinc-200 bg-white p-4">
-            <p className="text-xs uppercase text-zinc-500">{label}</p>
+          <article key={label} className="metricCard">
+            <p>{label}</p>
             <strong>{value}</strong>
           </article>
         ))}
       </section>
-      <section className="rounded-lg border border-zinc-200 bg-white p-5">
-        <h2 className="font-semibold">Persisted factor review</h2>
+      <section className="card">
+        <h2>Persisted factor review</h2>
         {cell ? (
-          <p className="mt-2 text-sm text-zinc-600">{cell.target_id}, revision {cell.revision}</p>
+          <p className="meta">{cell.target_id}, revision {cell.revision}</p>
         ) : (
-          <p className="mt-2 text-sm text-zinc-500">No active review cells found.</p>
+          <p className="meta">No active review cells found.</p>
         )}
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="buttonRow">
           {cell ? (
             <>
-              <button className="rounded bg-zinc-900 px-3 py-2 text-sm text-white" onClick={() => run({ action: "lock", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer" })}>Lock cell</button>
-              <button className="rounded border px-3 py-2 text-sm" onClick={() => run({ action: "comment", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", body: "Confirm the factor evidence against approved sources." })}>Add review comment</button>
-              <button className="rounded border px-3 py-2 text-sm" onClick={() => run({ action: "review", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", reviewerOverride: "human_review_required" })}>Record reviewer override</button>
+              <button type="button" className="primaryButton" onClick={() => run({ action: "lock", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer" })}>Lock cell</button>
+              <button type="button" className="secondaryButton" onClick={() => run({ action: "comment", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", body: "Confirm the factor evidence against approved sources." })}>Add review comment</button>
+              <button type="button" className="secondaryButton" onClick={() => run({ action: "review", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", reviewerOverride: "human_review_required" })}>Record reviewer override</button>
               {cell.comments.find((comment) => comment.status === "open") ? (
-                <button className="rounded border px-3 py-2 text-sm" onClick={() => run({ action: "resolve_comment", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", commentId: cell.comments.find((comment) => comment.status === "open")?.id })}>Resolve first comment</button>
+                <button type="button" className="secondaryButton" onClick={() => run({ action: "resolve_comment", targetId: cell.target_id, expectedRevision: cell.revision, actor: "Local reviewer", commentId: cell.comments.find((comment) => comment.status === "open")?.id })}>Resolve first comment</button>
               ) : null}
             </>
           ) : null}
-          <button className="rounded border px-3 py-2 text-sm" onClick={exportWorkspace}>Export local workspace</button>
-          <button className="rounded border px-3 py-2 text-sm" onClick={() => importInput.current?.click()}>Import local workspace</button>
-          <input ref={importInput} hidden type="file" accept="application/json" onChange={(event) => void importWorkspace(event.target.files?.[0])} />
+          <button type="button" className="secondaryButton" onClick={exportWorkspace}>Export local workspace</button>
+          <button type="button" className="secondaryButton" onClick={() => importInput.current?.click()}>Import local workspace</button>
+          <input ref={importInput} hidden aria-label="Import local workspace file" type="file" accept="application/json" onChange={(event) => void importWorkspace(event.target.files?.[0])} />
         </div>
-        {message ? <p className="mt-3 text-sm text-zinc-600">{message}</p> : null}
+        {message ? <p className="meta" role="status">{message}</p> : null}
       </section>
-      <section className="rounded-lg border border-zinc-200 bg-white p-5">
-        <h2 className="font-semibold">Guided questions</h2>
-        <ol className="mt-4 space-y-3">
+      <section className="card">
+        <h2>Guided questions</h2>
+        <ol className="questionList">
           {workspace.selfAssessmentPortal.questions.map((question) => (
-            <li key={question.id} className="rounded bg-zinc-50 p-3">
-              <strong>{question.label}</strong>
-              <div className="text-xs text-zinc-500">{question.required ? "Required" : "Optional"} · evidence and legal review required</div>
-              <input className="mt-2 w-full rounded border border-zinc-300 px-3 py-2 text-sm" value={answers[question.id] ?? ""} onChange={(event) => setAnswers((current) => ({ ...current, [question.id]: event.target.value }))} />
+            <li key={question.id}>
+              <label htmlFor={`question-${question.id}`}>{question.label}</label>
+              <p className="meta" id={`question-${question.id}-hint`}>{question.required ? "Required" : "Optional"} · evidence and legal review required</p>
+              <input id={`question-${question.id}`} aria-describedby={`question-${question.id}-hint`} className="textInput" value={answers[question.id] ?? ""} onChange={(event) => setAnswers((current) => ({ ...current, [question.id]: event.target.value }))} />
             </li>
           ))}
         </ol>
-        <button className="mt-4 rounded bg-zinc-900 px-3 py-2 text-sm text-white" onClick={() => run({ action: "self_assess", answers })}>Update draft assessment packet</button>
+        <div className="buttonRow"><button type="button" className="primaryButton" onClick={() => run({ action: "self_assess", answers })}>Update draft assessment packet</button></div>
       </section>
     </>
   );
