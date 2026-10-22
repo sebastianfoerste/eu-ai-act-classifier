@@ -11,6 +11,10 @@
         {
           "key": "emotion_hiring",
           "label": "Emotion recognition in hiring"
+        },
+        {
+          "key": "intimate_imagery_generator",
+          "label": "Non-consensual intimate imagery"
         }
       ]
     },
@@ -118,6 +122,19 @@
       "sector": "HR technology",
       "prohibited_practices": [
         "5.1.f"
+      ]
+    },
+    "intimate_imagery_generator": {
+      "name": "Nudification image app",
+      "description": "Generates realistic nude images of the people shown in uploaded photos, without their consent.",
+      "roles": [
+        "provider"
+      ],
+      "purpose": "Synthetic intimate imagery",
+      "sector": "Consumer apps",
+      "generates_synthetic_content": true,
+      "prohibited_practices": [
+        "5.1.ba"
       ]
     },
     "credit_scoring": {

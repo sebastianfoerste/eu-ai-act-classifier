@@ -13,6 +13,8 @@ def test_local_api_schema_exposes_cockpit_contract() -> None:
     schema = schema_payload()
 
     assert "provider" in schema["roles"]
+    assert schema["annex_i_sections"] == ["A", "B"]
+    assert {"5.1.ba", "5.1.bb"} <= set(schema["prohibited_practices"])
     assert "fria" in schema["artifacts"]
     assert schema["dossier_schema"] == "eu-ai-act.review-dossier.v1"
     assert schema["review_posture"] == "draft_only_human_review_required"
