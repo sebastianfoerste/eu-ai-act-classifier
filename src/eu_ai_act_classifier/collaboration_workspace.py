@@ -409,8 +409,8 @@ def build_collaboration_workspace(
 def _inventory_timestamp(now: datetime | None) -> str | None:
     """Stamp the inventory with the injected clock, as the inventory's own clock would.
 
-    The inventory digest covers its timestamp, so two actions given the same `now` must
-    build the same inventory. Without `now` the inventory reads the clock, as before.
+    The digest leaves the timestamps out (see `_inventory_digest`), so the stamp only fixes
+    the inventory's recorded build time. Without `now` the inventory reads the clock, as before.
     """
 
     if now is None:
@@ -424,9 +424,8 @@ def apply_workspace_action(
 ) -> dict[str, object]:
     """Apply one local mutation against the fixed ignored runtime workspace.
 
-    The inventory, and so its digest, is stamped with ``now``. Every action on one
-    runtime file must therefore pass the same ``now`` (or none): a different one builds
-    a different inventory digest than the one the stored workspace was built from.
+    The inventory is stamped with ``now``. Its digest leaves the timestamps out, so
+    actions on one runtime file match the stored workspace whatever ``now`` they pass.
     """
 
     inventory = build_example_inventory(generated_at=_inventory_timestamp(now))
