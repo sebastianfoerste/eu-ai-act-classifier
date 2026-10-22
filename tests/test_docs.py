@@ -262,3 +262,26 @@ def test_sample_output_high_risk_summary_matches_the_cli() -> None:
     assert int(count) == len(report.obligations)
     for line in quoted.split("\n"):
         assert line.strip() == CUT or line in actual, line
+
+
+# tests/test_sample_output.py checks each dossier block against the CLI. This test checks
+# that the summary table and the blocks name the same profiles in the same order, so a
+# block cannot go missing, and that the table's scope, roles and obligation counts match.
+SAMPLE_DOSSIER = Path("docs/sample-review-dossier.md")
+DOSSIER_SOURCE = re.compile(r"^\*\*Source File:\*\* `(examples/\w+\.json)`$", re.M)
+DOSSIER_ROW = re.compile(r"^\| \*\*([^*|]+)\*\* \| [^|]+ \| (\w+) \| ([^|]+) \| (\d+) \|", re.M)
+
+
+def test_sample_review_dossier_table_and_blocks_cover_the_same_profiles() -> None:
+    text = SAMPLE_DOSSIER.read_text(encoding="utf-8")
+    reports = [
+        classify(SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8")))
+        for example in DOSSIER_SOURCE.findall(text)
+    ]
+    rows = DOSSIER_ROW.findall(text)
+    assert rows, f"{SAMPLE_DOSSIER} has no summary table rows"
+    assert [name for name, *_ in rows] == [report.system for report in reports]
+    for (name, scope, roles, count), report in zip(rows, reports, strict=True):
+        assert scope == report.scope.status.value, name
+        assert roles.strip() == ", ".join(role.value for role in report.roles), name
+        assert int(count) == len(report.obligations), name
