@@ -9,7 +9,9 @@ A citation carries a ``verified`` flag. ``verified=False`` means the exact
 sub-point lettering is pending confirmation against the consolidated EUR-Lex
 text. All asserted Annex III sub-point letters (areas 1-8, including law
 enforcement and migration) and the Art. 5(1) prohibited-practice letters
-(a)-(h) were checked against the consolidated EUR-Lex text on 2026-06-23;
+(a)-(h) were checked against the consolidated EUR-Lex text on 2026-06-23, and
+points (ba) and (bb), inserted by Regulation (EU) 2026/1744, against the
+consolidated text of 27 July 2026 on 2026-10-18;
 only the residual ``UNSURE`` bucket — an Annex III area is implicated but the
 specific point is unsettled on the facts — carries the ``noch zu verifizieren``
 flag. The engine propagates this flag into its output so a reviewing lawyer
@@ -188,6 +190,31 @@ POINT_C_ANNEX_I = "2028-08-02"  # point (c)(ii): Chapter III, Sections 1 to 3, A
 ART_111_3_DEADLINE = "2027-08-02"
 # Art. 111(4): Art. 50(2) for systems placed on the market before GENERAL_APPLICATION_DATE.
 ART_111_4_DEADLINE = "2026-12-02"
+# Art. 111(2), second sentence: high-risk systems intended to be used by public authorities.
+ART_111_2_PUBLIC_AUTHORITY_DEADLINE = "2030-08-02"
+
+
+_MONTHS = (
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+)
+
+
+def long_date(iso: str) -> str:
+    """ "2026-12-02" -> "2 December 2026", whatever the process locale."""
+
+    year, month, day = (int(part) for part in iso.split("-"))
+    return f"{day} {_MONTHS[month - 1]} {year}"
 
 
 @dataclass(frozen=True, slots=True)
@@ -264,8 +291,8 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
         "Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA",
         POINT_A_EXCEPTION_DATE,
         (
-            "Prohibitions on non-consensual intimate imagery and child sexual abuse "
-            "material apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA "
+            "Prohibitions on non-consensual realistic intimate material and child sexual "
+            "abuse material apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA "
             "as replaced by Art. 1, point (40) of Regulation (EU) 2026/1744)."
         ),
         SourceStatus.BINDING_LEVEL_1,
@@ -277,7 +304,8 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
         ART_111_4_DEADLINE,
         (
             "Providers of AI systems generating synthetic audio, image, video or text "
-            "content placed on the market before 2 August 2026 comply with Art. 50(2) by "
+            "content placed on the market before 2 August 2026 take the necessary steps to "
+            "comply with Art. 50(2) by "
             "2 December 2026 (Art. 111(4) AIA, added by Art. 1, point (39) of Regulation "
             "(EU) 2026/1744)."
         ),
@@ -304,6 +332,24 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
             "Chapter III, Sections 1, 2 and 3 (except Art. 6(5)) apply from 2 August 2028 "
             "for systems classified high-risk under Art. 6(1) and Annex I (Art. 113, third "
             "paragraph, point (c)(ii) AIA as replaced by Regulation (EU) 2026/1744)."
+        ),
+        SourceStatus.BINDING_LEVEL_1,
+        "ai-act-amendment-2026-1744",
+        AI_ACT_AMENDMENT_URL,
+    ),
+    ApplicationDate(
+        "Regulation (EU) 2026/1744: Art. 111(2) AIA, high-risk systems for public authorities",
+        ART_111_2_PUBLIC_AUTHORITY_DEADLINE,
+        (
+            "Apart from Art. 5, high-risk systems placed on the market or put into service "
+            "before the date of application of Chapter III are covered only if, as from that "
+            "date, their designs change significantly, but providers and deployers of "
+            "high-risk systems intended to be used by public authorities take the necessary "
+            "steps to comply with the requirements and obligations laid down in the Regulation "
+            "by 2 August 2030 in any case (Art. 111(2) AIA as replaced by Art. 1, point (39)(a) "
+            "of Regulation (EU) 2026/1744). Components of the Annex X large-scale IT systems "
+            "placed on the market or put into service before 2 August 2027 follow Art. 111(1) "
+            "instead."
         ),
         SourceStatus.BINDING_LEVEL_1,
         "ai-act-amendment-2026-1744",

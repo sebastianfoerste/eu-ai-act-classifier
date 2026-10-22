@@ -420,7 +420,7 @@
     {
       "provision": "Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA",
       "applies_from": "2026-12-02",
-      "note": "Prohibitions on non-consensual intimate imagery and child sexual abuse material apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA as replaced by Art. 1, point (40) of Regulation (EU) 2026/1744).",
+      "note": "Prohibitions on non-consensual realistic intimate material and child sexual abuse material apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA as replaced by Art. 1, point (40) of Regulation (EU) 2026/1744).",
       "source_status": "binding_level_1",
       "source_id": "ai-act-amendment-2026-1744",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
@@ -428,7 +428,7 @@
     {
       "provision": "Regulation (EU) 2026/1744: Art. 50(2) AIA for generative systems already on the market",
       "applies_from": "2026-12-02",
-      "note": "Providers of AI systems generating synthetic audio, image, video or text content placed on the market before 2 August 2026 comply with Art. 50(2) by 2 December 2026 (Art. 111(4) AIA, added by Art. 1, point (39) of Regulation (EU) 2026/1744).",
+      "note": "Providers of AI systems generating synthetic audio, image, video or text content placed on the market before 2 August 2026 take the necessary steps to comply with Art. 50(2) by 2 December 2026 (Art. 111(4) AIA, added by Art. 1, point (39) of Regulation (EU) 2026/1744).",
       "source_status": "binding_level_1",
       "source_id": "ai-act-amendment-2026-1744",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
@@ -453,6 +453,14 @@
       "provision": "Regulation (EU) 2026/1744: Chapter III Sections 1-3, product-embedded high-risk systems",
       "applies_from": "2028-08-02",
       "note": "Chapter III, Sections 1, 2 and 3 (except Art. 6(5)) apply from 2 August 2028 for systems classified high-risk under Art. 6(1) and Annex I (Art. 113, third paragraph, point (c)(ii) AIA as replaced by Regulation (EU) 2026/1744).",
+      "source_status": "binding_level_1",
+      "source_id": "ai-act-amendment-2026-1744",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
+    },
+    {
+      "provision": "Regulation (EU) 2026/1744: Art. 111(2) AIA, high-risk systems for public authorities",
+      "applies_from": "2030-08-02",
+      "note": "Apart from Art. 5, high-risk systems placed on the market or put into service before the date of application of Chapter III are covered only if, as from that date, their designs change significantly, but providers and deployers of high-risk systems intended to be used by public authorities take the necessary steps to comply with the requirements and obligations laid down in the Regulation by 2 August 2030 in any case (Art. 111(2) AIA as replaced by Art. 1, point (39)(a) of Regulation (EU) 2026/1744). Components of the Annex X large-scale IT systems placed on the market or put into service before 2 August 2027 follow Art. 111(1) instead.",
       "source_status": "binding_level_1",
       "source_id": "ai-act-amendment-2026-1744",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng"
