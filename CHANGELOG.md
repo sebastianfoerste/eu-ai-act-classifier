@@ -182,8 +182,8 @@ mirror of EUR-Lex, not on EUR-Lex itself (see Honest limits in
 - Annex III labels as in Annex III: point 5(b) is "Creditworthiness
   evaluation and credit scoring of natural persons" and point 5(c) "Risk
   assessment and pricing for natural persons in life and health insurance".
-  The 5(b) finding title and the display labels from `labels.py` (#31)
-  change with it.
+  The 5(b) and 5(c) finding titles and the display labels from `labels.py`
+  (#31) change with them.
 - `used_for_financial_fraud_detection` (default `false`): point 5(b) excepts
   AI systems used for the purpose of detecting financial fraud. On a point
   5(b) profile, `true` or `null` adds an open question and the system stays
