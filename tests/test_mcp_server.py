@@ -92,6 +92,14 @@ def test_server_exposes_both_classification_tools() -> None:
     assert {tool.name for tool in tools} == {"classify_ai_system", "classify_ai_system_text"}
 
 
+def test_classify_tool_description_names_the_date_and_section_fields() -> None:
+    tools = {tool.name: tool for tool in asyncio.run(_server().list_tools())}
+    description = tools["classify_ai_system"].description
+
+    for field in ("annex_i_section", "placing_on_market_date", "gpai_model_placing_on_market_date"):
+        assert field in description
+
+
 def test_classify_ai_system_returns_report_json() -> None:
     result = asyncio.run(_server().call_tool("classify_ai_system", {"profile": PROFILE}))
     blocks = result[0] if isinstance(result, tuple) else result

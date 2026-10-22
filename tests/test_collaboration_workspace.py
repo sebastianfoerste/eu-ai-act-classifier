@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 
 import pytest
 
+import eu_ai_act_classifier.inventory as inventory_module
 from eu_ai_act_classifier import __version__
 from eu_ai_act_classifier.collaboration_workspace import (
     add_comment,
@@ -85,6 +86,26 @@ def test_comments_and_overrides_persist_without_changing_deterministic_baseline(
         now=datetime(2026, 7, 13, tzinfo=UTC),
     )
     assert imported["collaboration"] == snapshot["collaboration"]
+
+
+def test_actions_given_one_clock_build_the_same_inventory(tmp_path, monkeypatch) -> None:
+    # A second boundary between two inventory builds used to make the saved workspace stale.
+    ticks = iter(range(60))
+    monkeypatch.setattr(
+        inventory_module, "_now", lambda: f"2026-07-13T00:00:{next(ticks):02d}+00:00"
+    )
+    now = datetime(2026, 7, 13, tzinfo=UTC)
+    runtime_path = tmp_path / "workspace.json"
+    target = build_collaboration_state(build_example_inventory()).cells[0].target_id
+    reviewed = apply_workspace_action(
+        {"action": "review", "targetId": target, "expectedRevision": 1, "actor": "Reviewer"},
+        runtime_path,
+        now=now,
+    )
+    imported = apply_workspace_action(
+        {"action": "import", "workspace": reviewed["collaboration"]}, runtime_path, now=now
+    )
+    assert imported["collaboration"] == reviewed["collaboration"]
 
 
 def test_self_assessment_missing_answers_remain_blocking(tmp_path) -> None:

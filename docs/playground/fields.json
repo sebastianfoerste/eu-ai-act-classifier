@@ -113,25 +113,31 @@
           "name": "placing_on_market_date",
           "type": "string or null",
           "default": null,
-          "hint": "YYYY-MM-DD; for a GPAI model, the model's date. Drives the Art. 111 AIA transitions."
+          "hint": "YYYY-MM-DD, the AI system's date. Drives Art. 111(2) and (4) AIA; for a GPAI model without its own date, also Art. 111(3)."
         },
         {
           "name": "putting_into_service_date",
           "type": "string or null",
           "default": null,
-          "hint": "YYYY-MM-DD, for transitional status."
+          "hint": "YYYY-MM-DD. Drives Art. 111(2) AIA."
         },
         {
           "name": "significant_change_after_application_date",
           "type": "boolean or null",
           "default": null,
-          "hint": ""
+          "hint": "Art. 111(2) AIA: a significant design change as from the Chapter III date. Which date is contested: 2027-12-02 (Annex III) or 2028-08-02 (Annex I), or the general date 2026-08-02."
         },
         {
           "name": "public_authority_use",
           "type": "boolean",
           "default": false,
-          "hint": ""
+          "hint": "Intended to be used by public authorities: the 2 August 2030 deadline in Art. 111(2) AIA and, while the deployer's status is unset, the Art. 49(3) registration of use for review."
+        },
+        {
+          "name": "deployer_public_authority",
+          "type": "boolean or null",
+          "default": null,
+          "hint": "The deployer is, or acts on behalf of, a public authority or Union institution, body, office or agency: Art. 49(3) AIA registration of use. Unset: inferred for review from public-authority use or Annex III points 5(a), 6 and 7."
         },
         {
           "name": "deployer_public_law_body",
@@ -191,6 +197,12 @@
           "type": "boolean",
           "default": false,
           "hint": "Commission designation under Art. 51(1)(b) AIA."
+        },
+        {
+          "name": "gpai_model_placing_on_market_date",
+          "type": "string or null",
+          "default": null,
+          "hint": "YYYY-MM-DD, the model's own date. Drives Art. 111(3) AIA."
         }
       ]
     },
@@ -201,7 +213,7 @@
           "name": "prohibited_practices",
           "type": "list",
           "default": [],
-          "hint": "Keyed to the letters of Art. 5(1) AIA.",
+          "hint": "Keyed to the letters of Art. 5(1) AIA. 5.1.ba and 5.1.bb apply from 2 December 2026.",
           "options": [
             {
               "value": "5.1.a",
@@ -210,6 +222,14 @@
             {
               "value": "5.1.b",
               "label": "Exploits vulnerabilities"
+            },
+            {
+              "value": "5.1.ba",
+              "label": "Non-consensual intimate material"
+            },
+            {
+              "value": "5.1.bb",
+              "label": "Child sexual abuse material"
             },
             {
               "value": "5.1.c",
@@ -253,6 +273,22 @@
           "type": "boolean",
           "default": false,
           "hint": "Art. 6(1)(b): third-party conformity assessment."
+        },
+        {
+          "name": "annex_i_section",
+          "type": "choice",
+          "default": null,
+          "hint": "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): only Art. 6(1), 60a and 102-112 apply, and 57-59 as far as integrated in the sectoral legislation (Art. 2(2) AIA). Unset: Section A.",
+          "options": [
+            {
+              "value": "A",
+              "label": "Section A"
+            },
+            {
+              "value": "B",
+              "label": "Section B"
+            }
+          ]
         },
         {
           "name": "annex_iii_area",
