@@ -285,3 +285,18 @@ def test_sample_review_dossier_table_and_blocks_cover_the_same_profiles() -> Non
         assert scope == report.scope.status.value, name
         assert roles.strip() == ", ".join(role.value for role in report.roles), name
         assert int(count) == len(report.obligations), name
+
+
+def test_feature_matrix_capability_cells_use_the_allowed_values() -> None:
+    import csv
+
+    with Path("docs/research/feature-matrix.csv").open(encoding="utf-8", newline="") as handle:
+        rows = list(csv.reader(handle))
+    header = rows[0]
+    first, last = header.index("c01_intake"), header.index("c14_ui_shell")
+    evidence = header.index("evidence")
+    for row in rows[1:]:
+        assert len(row) == len(header), row[0]
+        assert row[evidence] in {"Observed", "Claimed", "Inferred"}, row[0]
+        for cell in row[first : last + 1]:
+            assert re.match(r"(yes|partial|no|unknown)(:|$)", cell), (row[0], cell)

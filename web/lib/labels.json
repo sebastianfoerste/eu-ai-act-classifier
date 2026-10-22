@@ -1,0 +1,105 @@
+{
+  "locale": "en",
+  "namespaces": {
+    "annex_iii_area": {
+      "III.1.a": "Annex III(1)(a): Remote biometric identification",
+      "III.1.b": "Annex III(1)(b): Biometric categorisation by sensitive/protected attributes",
+      "III.1.c": "Annex III(1)(c): Emotion recognition",
+      "III.2": "Annex III(2): Safety component of critical infrastructure",
+      "III.3.a": "Annex III(3)(a): Education: access and admission",
+      "III.3.b": "Annex III(3)(b): Education: evaluating learning outcomes",
+      "III.3.c": "Annex III(3)(c): Education: assessing appropriate level",
+      "III.3.d": "Annex III(3)(d): Education: monitoring prohibited behaviour during tests",
+      "III.4.a": "Annex III(4)(a): Employment selection and worker management",
+      "III.4.b": "Annex III(4)(b): Employment: decisions on terms, promotion, termination, task allocation",
+      "III.5.a": "Annex III(5)(a): Eligibility for essential public assistance benefits and services",
+      "III.5.b": "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons",
+      "III.5.c": "Annex III(5)(c): Risk assessment and pricing for natural persons in life and health insurance",
+      "III.5.d": "Annex III(5)(d): Emergency call dispatch and triage",
+      "III.6.a": "Annex III(6)(a): Law enforcement: risk of a person becoming a victim of crime",
+      "III.6.b": "Annex III(6)(b): Law enforcement: polygraphs and similar tools",
+      "III.6.c": "Annex III(6)(c): Law enforcement: evaluating the reliability of evidence",
+      "III.6.d": "Annex III(6)(d): Law enforcement: assessing the risk of offending or re-offending",
+      "III.6.e": "Annex III(6)(e): Law enforcement: profiling during detection, investigation or prosecution",
+      "III.7.a": "Annex III(7)(a): Migration: polygraphs and similar tools",
+      "III.7.b": "Annex III(7)(b): Migration: risk assessment for persons entering a Member State",
+      "III.7.c": "Annex III(7)(c): Migration: examining asylum, visa and residence-permit applications",
+      "III.7.d": "Annex III(7)(d): Migration: detecting, recognising or identifying natural persons",
+      "III.8.a": "Annex III(8)(a): Administration of justice: assisting a judicial authority",
+      "III.8.b": "Annex III(8)(b): Influencing elections, referenda or voting behaviour",
+      "III.unsure": "Annex III, point unsettled: An Annex III area is implicated but the specific point is unsettled"
+    },
+    "prohibited_practices": {
+      "5.1.a": "Art. 5(1)(a): Subliminal, manipulative or deceptive techniques causing significant harm",
+      "5.1.b": "Art. 5(1)(b): Exploiting vulnerabilities of age, disability or socio-economic situation",
+      "5.1.ba": "Art. 5(1)(ba): Generating or manipulating realistic intimate material of an identifiable person without consent",
+      "5.1.bb": "Art. 5(1)(bb): Generating or manipulating child sexual abuse material under Directive 2011/93/EU, save a 'without right' defence under national law",
+      "5.1.c": "Art. 5(1)(c): Social scoring leading to detrimental or unfavourable treatment",
+      "5.1.d": "Art. 5(1)(d): Predicting criminal offending based solely on profiling or personality",
+      "5.1.e": "Art. 5(1)(e): Untargeted scraping of facial images to build recognition databases",
+      "5.1.f": "Art. 5(1)(f): Emotion recognition in the workplace or education (no medical/safety exception)",
+      "5.1.g": "Art. 5(1)(g): Biometric categorisation inferring sensitive attributes",
+      "5.1.h": "Art. 5(1)(h): Real-time remote biometric identification in public spaces for law enforcement"
+    },
+    "roles": {
+      "provider": "Provider",
+      "deployer": "Deployer",
+      "importer": "Importer",
+      "distributor": "Distributor",
+      "authorized_representative": "Authorised representative",
+      "gpai_provider": "GPAI model provider"
+    },
+    "excluded_use_flags": {
+      "military_defence_national_security": "Military, defence or national security",
+      "research_development_testing": "Research, development or testing",
+      "personal_non_professional": "Personal, non-professional use",
+      "free_open_source": "Free and open-source licence"
+    },
+    "annex_i_section": {
+      "A": "Section A",
+      "B": "Section B"
+    },
+    "risk_tier": {
+      "prohibited": "Prohibited",
+      "high_risk": "High-risk",
+      "limited_risk": "Limited risk",
+      "minimal_risk": "Minimal risk",
+      "outside_scope": "Outside AI Act scope"
+    },
+    "disposition": {
+      "determined": "Determined",
+      "requires_review": "Requires review"
+    },
+    "review_status": {
+      "draft": "Draft",
+      "review_required": "Review required",
+      "determined": "Determined"
+    },
+    "source_status": {
+      "binding_level_1": "Binding",
+      "provisional_political_agreement": "Provisional",
+      "nonbinding_guidance": "Nonbinding guidance"
+    },
+    "scope_status": {
+      "in_scope": "In scope",
+      "outside_ai_act_scope": "Outside AI Act scope",
+      "scope_requires_review": "Scope requires review"
+    },
+    "derogation": {
+      "narrow_procedural_task": "Performs a narrow procedural task",
+      "improves_prior_human_activity": "Improves the result of a completed human activity",
+      "detects_patterns_without_replacing_human": "Detects decision patterns without replacing human assessment",
+      "preparatory_task": "Performs a preparatory task to an assessment",
+      "performs_profiling": "Performs profiling of natural persons"
+    },
+    "artifacts": {
+      "annex-iv-checklist": "Annex IV technical documentation checklist",
+      "art-6-4-assessment": "Art. 6(4) non-high-risk assessment",
+      "fria": "Fundamental rights impact assessment (Art. 27)",
+      "gpai-model-documentation": "GPAI model documentation checklist",
+      "post-market-monitoring-plan": "Post-market monitoring plan",
+      "serious-incident-register": "Serious-incident register",
+      "training-content-summary": "Training-content summary checklist"
+    }
+  }
+}
