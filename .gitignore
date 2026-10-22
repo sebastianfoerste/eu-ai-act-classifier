@@ -21,3 +21,5 @@ web/*.tsbuildinfo
 .env
 .env.*
 !.env.example
+research/_captures/
+research/_tools/
