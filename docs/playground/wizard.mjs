@@ -151,7 +151,7 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
     } else if (question.kind === "boolean" || question.kind === "single") {
       const options = question.kind === "boolean"
         ? [["yes", definition.answers.yes], ["no", definition.answers.no]]
-        : [...question.options.map(o => [o.value, o.label]), ["none", question.none_label]];
+        : [...question.options.map(o => [o.value, o.label]), ...(question.none_label ? [["none", question.none_label]] : [])];
       const group = node("div", "choices");
       for (const [value, label] of options) group.append(choice("radio", name, value, label, answer === value, () => setAnswer(question.id, value)));
       if (question.unknown) {

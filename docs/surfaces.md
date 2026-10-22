@@ -72,7 +72,7 @@ The inventory payload includes a system review table with classifier-backed rows
 
 ## Optional web cockpit
 
-![Web cockpit: a guided intake for CreditSightScore classified high-risk, with the system inventory, risk map, reviewer notes, source provenance, the Article 9-15 obligation tracker and a draft export pack](cockpit.png)
+![Web cockpit in its single-column layout: a guided intake for CreditSightScore, classified high-risk with an Art. 111(2) open question, with the system inventory, risk map, reviewer notes, the portfolio review tables, the obligation tracker, source provenance and a draft export pack](cockpit.png)
 
 The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
 

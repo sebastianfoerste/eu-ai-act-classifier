@@ -9,6 +9,7 @@ from eu_ai_act_classifier.catalog import ANNEX_III, PROHIBITED
 from eu_ai_act_classifier.labels import label_catalog, option_label
 from eu_ai_act_classifier.models import (
     AnnexIII,
+    AnnexISection,
     Disposition,
     ExcludedUse,
     ProhibitedPractice,
@@ -29,6 +30,7 @@ def test_every_enum_value_has_a_label() -> None:
         ("prohibited_practices", ProhibitedPractice),
         ("roles", Role),
         ("excluded_use_flags", ExcludedUse),
+        ("annex_i_section", AnnexISection),
         ("risk_tier", RiskTier),
         ("disposition", Disposition),
         ("review_status", ReviewStatus),

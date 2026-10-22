@@ -24,7 +24,14 @@ import math
 from typing import Any
 
 from .labels import DEROGATION_LABELS, option_label
-from .models import AnnexIII, ExcludedUse, ProhibitedPractice, Role, SystemProfile
+from .models import (
+    AnnexIII,
+    AnnexISection,
+    ExcludedUse,
+    ProhibitedPractice,
+    Role,
+    SystemProfile,
+)
 
 SCHEMA_ID = "eu-ai-act-classifier.intake.v1"
 BLOCK = "block"
@@ -77,6 +84,25 @@ FRIA_OPEN = {
                     AnnexIII.INSURANCE_LIFE_HEALTH.value,
                 ],
             }
+        },
+    ]
+}
+
+# Art. 49(3) and Art. 111(2) AIA read the deployer's public-authority status only where
+# the profile screens a prohibited practice, has a high-risk route, states public-authority
+# use or gives a market date.
+DEPLOYER_AUTHORITY_RELEVANT = {
+    "all": [
+        IN_SCOPE,
+        {
+            "any": [
+                {"field": "prohibited_practices", "empty": False},
+                {"not": {"field": "annex_iii_area", "is": None}},
+                ANNEX_I_ROUTE,
+                {"field": "public_authority_use", "is": True},
+                {"not": {"field": "placing_on_market_date", "is": None}},
+                {"not": {"field": "putting_into_service_date", "is": None}},
+            ]
         },
     ]
 }
@@ -175,6 +201,19 @@ QUESTIONS: list[dict[str, Any]] = [
         "legislation?",
         "article": "Art. 6(1) AIA",
         "show_if": {"all": [IN_SCOPE, {"field": "annex_i_safety_component", "is": True}]},
+        "unknown": BLOCK,
+    },
+    {
+        "id": "annex_i_section",
+        "kind": "single",
+        "field": "annex_i_section",
+        "title": "Which section of Annex I lists that legislation?",
+        "hint": "For a Section B product only the provisions in Art. 2(2) AIA apply.",
+        "article": "Art. 6(1) AIA",
+        "options": _options(AnnexISection),
+        # Off the Art. 6(1) route the engine reports a given section as unused.
+        "show_if": {"all": [IN_SCOPE, ANNEX_I_ROUTE]},
+        # A missing section is treated as Section A without routing to review.
         "unknown": BLOCK,
     },
     {
@@ -309,6 +348,24 @@ QUESTIONS: list[dict[str, Any]] = [
         "unknown": BLOCK,
     },
     {
+        "id": "gpai_date",
+        "kind": "details",
+        "title": "General-purpose AI model date",
+        "hint": "YYYY-MM-DD. Leave blank if not given; the model is then dated by the AI "
+        "system's placing-on-market date, which is flagged for review.",
+        "article": "Art. 111(3) AIA",
+        "fields": [
+            {
+                "field": "gpai_model_placing_on_market_date",
+                "label": "Model placed on the market",
+                "type": "date",
+            }
+        ],
+        # For a profile that screens no general-purpose AI model the engine reports the
+        # date as not used.
+        "show_if": {"all": [IN_SCOPE, {"field": "is_gpai_model", "is": True}]},
+    },
+    {
         "id": "transparency",
         "kind": "flags",
         "title": "Does the system do any of these?",
@@ -358,8 +415,20 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "boolean",
         "field": "significant_change_after_application_date",
         "title": "Has the system changed significantly after the relevant application date?",
-        # The model default (null) adds no transitional note and does not route the
-        # result to review, so it is not a fail-closed value: "I don't know" blocks.
+        # The model default (null) routes the result to review only for a high-risk system
+        # placed on the market before its Chapter III date (Art. 111(2) AIA), so it is not
+        # fail-closed everywhere: "I don't know" blocks.
+        "unknown": BLOCK,
+    },
+    {
+        "id": "deployer_public_authority",
+        "kind": "boolean",
+        "field": "deployer_public_authority",
+        "title": "Is the deployer a public authority or a Union institution, body, office or "
+        "agency, or does it act on behalf of one?",
+        "article": "Art. 49(3) AIA",
+        "show_if": DEPLOYER_AUTHORITY_RELEVANT,
+        # A missing status is inferred for review only in some contexts, so it blocks.
         "unknown": BLOCK,
     },
 ]
@@ -451,7 +520,9 @@ def is_answered(question: dict[str, Any], answers: dict[str, Any]) -> bool:
     if kind == "boolean":
         return answer in ("yes", "no")
     if kind == "single":
-        return answer == "none" or any(o["value"] == answer for o in question["options"])
+        return (answer == "none" and bool(question.get("none_label"))) or any(
+            o["value"] == answer for o in question["options"]
+        )
     if kind == "multi":
         values = {o["value"] for o in question["options"]}
         return (
@@ -549,7 +620,10 @@ def profile_to_answers(profile: dict[str, Any]) -> dict[str, Any]:
                 elif question.get("unknown") == {"value": None}:
                     answers[question["id"]] = UNKNOWN
             elif kind == "single":
-                answers[question["id"]] = "none" if value is None else value
+                if value is not None:
+                    answers[question["id"]] = value
+                elif question.get("none_label"):
+                    answers[question["id"]] = "none"
             elif kind == "multi":
                 answers[question["id"]] = list(value)
             elif kind == "number":

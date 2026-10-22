@@ -15,6 +15,7 @@ web/.next/
 web/node_modules/
 web/out/
 web/.vercel/
+web/*.tsbuildinfo
 
 # Environment files. Real values stay local; only example files are tracked.
 .env

@@ -11,31 +11,31 @@ legal conclusion; a lawyer reviews every result.
 
 | Point | Citation | Area | Minimal-profile outcome | Examples | Tests |
 |---|---|---|---|---|---|
-| `III.1.a` | Annex III(1)(a) AIA | Remote biometric identification | high_risk, determined | none | none |
+| `III.1.a` | Annex III(1)(a) AIA | Remote biometric identification | high_risk, determined | none | `tests/test_obligations_and_artifacts.py` |
 | `III.1.b` | Annex III(1)(b) AIA | Biometric categorisation by sensitive/protected attributes | high_risk, determined | none | none |
 | `III.1.c` | Annex III(1)(c) AIA | Emotion recognition | high_risk, determined | none | none |
 | `III.2` | Annex III(2) AIA | Safety component of critical infrastructure | high_risk, determined | none | `tests/test_high_risk.py`<br>`tests/test_intake.py`<br>`tests/test_obligations_and_artifacts.py` |
-| `III.3.a` | Annex III(3)(a) AIA | Education: access and admission | high_risk, determined | none | none |
+| `III.3.a` | Annex III(3)(a) AIA | Education: access and admission | high_risk, determined | none | `tests/test_obligations_and_artifacts.py` |
 | `III.3.b` | Annex III(3)(b) AIA | Education: evaluating learning outcomes | high_risk, determined | none | none |
 | `III.3.c` | Annex III(3)(c) AIA | Education: assessing appropriate level | high_risk, determined | none | none |
 | `III.3.d` | Annex III(3)(d) AIA | Education: monitoring prohibited behaviour during tests | high_risk, determined | `examples/proctoring_education.json` | none |
-| `III.4.a` | Annex III(4)(a) AIA | Employment selection and worker management | high_risk, determined | `examples/cv_screening.json`<br>`examples/employment_derogation.json`<br>`examples/guidance/commission_guidance_examples.json` | `tests/test_advisory.py`<br>`tests/test_high_risk.py`<br>`tests/test_intake.py`<br>`tests/test_obligations_and_artifacts.py`<br>`tests/test_prohibited.py`<br>`tests/test_system_inventory.py` |
+| `III.4.a` | Annex III(4)(a) AIA | Employment selection and worker management | high_risk, determined | `examples/cv_screening.json`<br>`examples/employment_derogation.json`<br>`examples/guidance/commission_guidance_examples.json` | `tests/test_advisory.py`<br>`tests/test_high_risk.py`<br>`tests/test_intake.py`<br>`tests/test_obligations_and_artifacts.py`<br>`tests/test_prohibited.py`<br>`tests/test_scope.py`<br>`tests/test_system_inventory.py` |
 | `III.4.b` | Annex III(4)(b) AIA | Employment: decisions on terms, promotion, termination, task allocation | high_risk, determined | none | none |
-| `III.5.a` | Annex III(5)(a) AIA | Eligibility for essential public assistance benefits and services | high_risk, determined | none | `tests/test_high_risk.py` |
-| `III.5.b` | Annex III(5)(b) AIA | Creditworthiness evaluation and credit scoring | high_risk, determined | `examples/credit_scoring.json`<br>`examples/credit_scoring_deployer.json` | `tests/test_engine.py`<br>`tests/test_high_risk.py`<br>`tests/test_intake.py`<br>`tests/test_labels.py`<br>`tests/test_obligations_and_artifacts.py`<br>`tests/test_transparency.py` |
+| `III.5.a` | Annex III(5)(a) AIA | Eligibility for essential public assistance benefits and services | high_risk, determined | none | `tests/test_high_risk.py`<br>`tests/test_obligations_and_artifacts.py`<br>`tests/test_scope.py` |
+| `III.5.b` | Annex III(5)(b) AIA | Creditworthiness evaluation and credit scoring | high_risk, determined | `examples/credit_scoring.json`<br>`examples/credit_scoring_deployer.json` | `tests/test_engine.py`<br>`tests/test_high_risk.py`<br>`tests/test_intake.py`<br>`tests/test_labels.py`<br>`tests/test_obligations_and_artifacts.py`<br>`tests/test_scope.py`<br>`tests/test_transparency.py` |
 | `III.5.c` | Annex III(5)(c) AIA | Risk assessment and pricing in life and health insurance | high_risk, determined | none | `tests/test_high_risk.py` |
 | `III.5.d` | Annex III(5)(d) AIA | Emergency call dispatch and triage | high_risk, determined | none | none |
-| `III.6.a` | Annex III(6)(a) AIA | Law enforcement: risk of a person becoming a victim of crime | high_risk, determined | none | none |
-| `III.6.b` | Annex III(6)(b) AIA | Law enforcement: polygraphs and similar tools | high_risk, determined | none | none |
+| `III.6.a` | Annex III(6)(a) AIA | Law enforcement: risk of a person becoming a victim of crime | high_risk, determined | none | `tests/test_intake.py`<br>`tests/test_obligations_and_artifacts.py` |
+| `III.6.b` | Annex III(6)(b) AIA | Law enforcement: polygraphs and similar tools | high_risk, determined | none | `tests/test_obligations_and_artifacts.py` |
 | `III.6.c` | Annex III(6)(c) AIA | Law enforcement: evaluating the reliability of evidence | high_risk, determined | none | none |
-| `III.6.d` | Annex III(6)(d) AIA | Law enforcement: assessing the risk of offending or re-offending | high_risk, determined | `examples/law_enforcement.json` | none |
+| `III.6.d` | Annex III(6)(d) AIA | Law enforcement: assessing the risk of offending or re-offending | high_risk, determined | `examples/law_enforcement.json` | `tests/test_obligations_and_artifacts.py` |
 | `III.6.e` | Annex III(6)(e) AIA | Law enforcement: profiling during detection, investigation or prosecution | high_risk, determined | none | none |
 | `III.7.a` | Annex III(7)(a) AIA | Migration: polygraphs and similar tools | high_risk, determined | none | none |
-| `III.7.b` | Annex III(7)(b) AIA | Migration: risk assessment for persons entering a Member State | high_risk, determined | none | none |
+| `III.7.b` | Annex III(7)(b) AIA | Migration: risk assessment for persons entering a Member State | high_risk, determined | none | `tests/test_obligations_and_artifacts.py` |
 | `III.7.c` | Annex III(7)(c) AIA | Migration: examining asylum, visa and residence-permit applications | high_risk, determined | none | none |
 | `III.7.d` | Annex III(7)(d) AIA | Migration: detecting, recognising or identifying natural persons | high_risk, determined | none | none |
-| `III.8.a` | Annex III(8)(a) AIA | Administration of justice: assisting a judicial authority | high_risk, determined | none | none |
+| `III.8.a` | Annex III(8)(a) AIA | Administration of justice: assisting a judicial authority | high_risk, determined | none | `tests/test_obligations_and_artifacts.py` |
 | `III.8.b` | Annex III(8)(b) AIA | Influencing elections, referenda or voting behaviour | high_risk, determined | none | none |
 | `III.unsure` | Annex III AIA  [noch zu verifizieren] | An Annex III area is implicated but the specific point is unsettled | high_risk, requires_review | `examples/ambiguous_use_case.json` | `tests/test_coverage.py`<br>`tests/test_high_risk.py`<br>`tests/test_intake.py`<br>`tests/test_labels.py`<br>`tests/test_obligations_and_artifacts.py`<br>`tests/test_system_inventory.py` |
 
-26 points listed; 5 have a bundled example and 6 are referenced by a test. Points without an example or test are classified by the same generic Annex III rule as the others; `tests/test_coverage.py` checks the minimal-profile outcome of every point.
+26 points listed; 5 have a bundled example and 13 are referenced by a test. Points without an example or test are classified by the same generic Annex III rule as the others; `tests/test_coverage.py` checks the minimal-profile outcome of every point.

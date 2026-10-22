@@ -32,6 +32,8 @@
     "prohibited_practices": {
       "5.1.a": "Art. 5(1)(a): Subliminal, manipulative or deceptive techniques causing significant harm",
       "5.1.b": "Art. 5(1)(b): Exploiting vulnerabilities of age, disability or socio-economic situation",
+      "5.1.ba": "Art. 5(1)(ba): Generating or manipulating realistic intimate material of an identifiable person without consent",
+      "5.1.bb": "Art. 5(1)(bb): Generating or manipulating child sexual abuse material under Directive 2011/93/EU, save a 'without right' defence under national law",
       "5.1.c": "Art. 5(1)(c): Social scoring leading to detrimental or unfavourable treatment",
       "5.1.d": "Art. 5(1)(d): Predicting criminal offending based solely on profiling or personality",
       "5.1.e": "Art. 5(1)(e): Untargeted scraping of facial images to build recognition databases",
@@ -52,6 +54,10 @@
       "research_development_testing": "Research, development or testing",
       "personal_non_professional": "Personal, non-professional use",
       "free_open_source": "Free and open-source licence"
+    },
+    "annex_i_section": {
+      "A": "Section A",
+      "B": "Section B"
     },
     "risk_tier": {
       "prohibited": "Prohibited",

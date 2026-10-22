@@ -21,6 +21,7 @@
     "putting_into_service_date": null,
     "significant_change_after_application_date": null,
     "public_authority_use": false,
+    "deployer_public_authority": null,
     "deployer_public_law_body": null,
     "deployer_private_public_service": null,
     "provider_established_outside_eu": false,
@@ -30,9 +31,11 @@
     "is_gpai_model": false,
     "training_flops": null,
     "gpai_systemic_risk_designated": false,
+    "gpai_model_placing_on_market_date": null,
     "prohibited_practices": [],
     "annex_i_safety_component": false,
     "annex_i_third_party_assessment": false,
+    "annex_i_section": null,
     "annex_iii_area": null,
     "derogation": {
       "narrow_procedural_task": false,
@@ -178,6 +181,14 @@
           "label": "Art. 5(1)(b): Exploiting vulnerabilities of age, disability or socio-economic situation"
         },
         {
+          "value": "5.1.ba",
+          "label": "Art. 5(1)(ba): Generating or manipulating realistic intimate material of an identifiable person without consent"
+        },
+        {
+          "value": "5.1.bb",
+          "label": "Art. 5(1)(bb): Generating or manipulating child sexual abuse material under Directive 2011/93/EU, save a 'without right' defence under national law"
+        },
+        {
           "value": "5.1.c",
           "label": "Art. 5(1)(c): Social scoring leading to detrimental or unfavourable treatment"
         },
@@ -272,6 +283,57 @@
           {
             "field": "annex_i_safety_component",
             "is": true
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "annex_i_section",
+      "kind": "single",
+      "field": "annex_i_section",
+      "title": "Which section of Annex I lists that legislation?",
+      "hint": "For a Section B product only the provisions in Art. 2(2) AIA apply.",
+      "article": "Art. 6(1) AIA",
+      "options": [
+        {
+          "value": "A",
+          "label": "Section A"
+        },
+        {
+          "value": "B",
+          "label": "Section B"
+        }
+      ],
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "field": "annex_i_safety_component",
+                "is": true
+              },
+              {
+                "field": "annex_i_third_party_assessment",
+                "is": true
+              }
+            ]
           }
         ]
       },
@@ -916,6 +978,44 @@
       "unknown": "block"
     },
     {
+      "id": "gpai_date",
+      "kind": "details",
+      "title": "General-purpose AI model date",
+      "hint": "YYYY-MM-DD. Leave blank if not given; the model is then dated by the AI system's placing-on-market date, which is flagged for review.",
+      "article": "Art. 111(3) AIA",
+      "fields": [
+        {
+          "field": "gpai_model_placing_on_market_date",
+          "label": "Model placed on the market",
+          "type": "date"
+        }
+      ],
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "is_gpai_model",
+            "is": true
+          }
+        ]
+      }
+    },
+    {
       "id": "transparency",
       "kind": "flags",
       "title": "Does the system do any of these?",
@@ -987,6 +1087,76 @@
       "kind": "boolean",
       "field": "significant_change_after_application_date",
       "title": "Has the system changed significantly after the relevant application date?",
+      "unknown": "block"
+    },
+    {
+      "id": "deployer_public_authority",
+      "kind": "boolean",
+      "field": "deployer_public_authority",
+      "title": "Is the deployer a public authority or a Union institution, body, office or agency, or does it act on behalf of one?",
+      "article": "Art. 49(3) AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "field": "prohibited_practices",
+                "empty": false
+              },
+              {
+                "not": {
+                  "field": "annex_iii_area",
+                  "is": null
+                }
+              },
+              {
+                "all": [
+                  {
+                    "field": "annex_i_safety_component",
+                    "is": true
+                  },
+                  {
+                    "field": "annex_i_third_party_assessment",
+                    "is": true
+                  }
+                ]
+              },
+              {
+                "field": "public_authority_use",
+                "is": true
+              },
+              {
+                "not": {
+                  "field": "placing_on_market_date",
+                  "is": null
+                }
+              },
+              {
+                "not": {
+                  "field": "putting_into_service_date",
+                  "is": null
+                }
+              }
+            ]
+          }
+        ]
+      },
       "unknown": "block"
     }
   ]

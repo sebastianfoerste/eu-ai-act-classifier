@@ -79,7 +79,7 @@ export function isAnswered(question, answer) {
     case "details":
       return question.fields.every(entry => !entry.required || String(answer?.[entry.field] ?? "").trim());
     case "boolean": return answer === "yes" || answer === "no";
-    case "single": return answer === "none" || question.options.some(option => option.value === answer);
+    case "single": return (answer === "none" && Boolean(question.none_label)) || question.options.some(option => option.value === answer);
     case "multi":
       return Array.isArray(answer) && (!question.required || answer.length > 0)
         && answer.every(value => question.options.some(option => option.value === value));
@@ -135,7 +135,10 @@ export function profileToAnswers(definition, profile) {
         if (value !== null) answers[question.id] = value ? "yes" : "no";
         else if (question.unknown?.value === null) answers[question.id] = UNKNOWN;
       }
-      else if (question.kind === "single") answers[question.id] = value === null ? "none" : value;
+      else if (question.kind === "single") {
+        if (value !== null) answers[question.id] = value;
+        else if (question.none_label) answers[question.id] = "none";
+      }
       else if (question.kind === "multi") answers[question.id] = [...value];
       else if (question.kind === "number") answers[question.id] = value === null ? "" : value;
     }

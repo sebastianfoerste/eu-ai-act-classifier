@@ -17,6 +17,7 @@ from .artifacts import ARTIFACT_NAMES
 from .catalog import ANNEX_III, PROHIBITED
 from .models import (
     AnnexIII,
+    AnnexISection,
     Derogation,
     Disposition,
     ExcludedUse,
@@ -37,6 +38,12 @@ ROLE_LABELS: dict[Role, str] = {
     Role.DISTRIBUTOR: "Distributor",
     Role.AUTHORIZED_REPRESENTATIVE: "Authorised representative",
     Role.GPAI_PROVIDER: "GPAI model provider",
+}
+
+# The same wording the cockpit's Annex I section select uses.
+ANNEX_I_SECTION_LABELS: dict[AnnexISection, str] = {
+    AnnexISection.SECTION_A: "Section A",
+    AnnexISection.SECTION_B: "Section B",
 }
 
 EXCLUDED_USE_LABELS: dict[ExcludedUse, str] = {
@@ -129,6 +136,8 @@ def option_label(member: StrEnum) -> str:
         return ROLE_LABELS[member]
     if isinstance(member, ExcludedUse):
         return EXCLUDED_USE_LABELS[member]
+    if isinstance(member, AnnexISection):
+        return ANNEX_I_SECTION_LABELS[member]
     raise KeyError(f"no label for {member!r}")
 
 
@@ -150,6 +159,7 @@ def label_catalog() -> dict:
             "prohibited_practices": {p.value: prohibited_label(p) for p in ProhibitedPractice},
             "roles": _values(ROLE_LABELS),
             "excluded_use_flags": _values(EXCLUDED_USE_LABELS),
+            "annex_i_section": _values(ANNEX_I_SECTION_LABELS),
             "risk_tier": _values(RISK_TIER_LABELS),
             "disposition": _values(DISPOSITION_LABELS),
             "review_status": _values(REVIEW_STATUS_LABELS),

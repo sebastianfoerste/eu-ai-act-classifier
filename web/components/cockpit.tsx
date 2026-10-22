@@ -29,6 +29,7 @@ import type {
 const fallbackSchema: SchemaPayload = {
   roles: ["provider", "deployer", "importer", "distributor", "authorized_representative"],
   annex_iii_areas: ["III.2", "III.4.a", "III.5.b", "III.5.c"],
+  annex_i_sections: ["A", "B"],
   prohibited_practices: [],
   excluded_use_flags: [],
   artifacts: [
@@ -314,6 +315,16 @@ export function Cockpit() {
                 checked={profile.public_authority_use}
                 onChange={(checked) => updateProfile("public_authority_use", checked)}
               />
+              <TextField
+                label="Placed on market (YYYY-MM-DD)"
+                value={profile.placing_on_market_date ?? ""}
+                onChange={(value) => updateProfile("placing_on_market_date", value)}
+              />
+              <TextField
+                label="Put into service (YYYY-MM-DD)"
+                value={profile.putting_into_service_date ?? ""}
+                onChange={(value) => updateProfile("putting_into_service_date", value)}
+              />
               <MultiCheck
                 label="Excluded-use flags"
                 namespace="excluded_use_flags"
@@ -331,6 +342,11 @@ export function Cockpit() {
                 options={schema.roles}
                 selected={profile.roles}
                 onToggle={(value) => toggleArray("roles", value)}
+              />
+              <TriStateControl
+                label="Public-authority deployer (or acting on its behalf)"
+                value={profile.deployer_public_authority}
+                onChange={(value) => updateProfile("deployer_public_authority", value)}
               />
               <TriStateControl
                 label="Public-law deployer"
@@ -380,6 +396,20 @@ export function Cockpit() {
                 checked={profile.annex_i_third_party_assessment}
                 onChange={(checked) => updateProfile("annex_i_third_party_assessment", checked)}
               />
+              <label className="field">
+                <span>Annex I section</span>
+                <select
+                  value={profile.annex_i_section ?? ""}
+                  onChange={(event) => updateProfile("annex_i_section", event.target.value || null)}
+                >
+                  <option value="">Not given (Section A)</option>
+                  {schema.annex_i_sections.map((section) => (
+                    <option key={section} value={section}>
+                      Section {section}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <Toggle
                 label="Substantial modification"
                 checked={profile.substantially_modifies_system}
@@ -408,6 +438,11 @@ export function Cockpit() {
                 label="Systemic designation"
                 checked={profile.gpai_systemic_risk_designated}
                 onChange={(checked) => updateProfile("gpai_systemic_risk_designated", checked)}
+              />
+              <TextField
+                label="Model placed on market (YYYY-MM-DD)"
+                value={profile.gpai_model_placing_on_market_date ?? ""}
+                onChange={(value) => updateProfile("gpai_model_placing_on_market_date", value)}
               />
               <Toggle
                 label="Natural-person interaction"
@@ -1151,8 +1186,10 @@ function cleanProfile(profile: SystemProfile): SystemProfile {
     ...profile,
     roles: profile.roles.length ? profile.roles : ["provider"],
     annex_iii_area: profile.annex_iii_area || null,
+    annex_i_section: profile.annex_i_section || null,
     placing_on_market_date: normalizeOptional(profile.placing_on_market_date),
     putting_into_service_date: normalizeOptional(profile.putting_into_service_date),
+    gpai_model_placing_on_market_date: normalizeOptional(profile.gpai_model_placing_on_market_date),
     derogation: { ...profile.derogation },
   };
 }

@@ -91,7 +91,7 @@ returned `ClassificationReport`.
 
 ## Testing
 
-The base eval set has 17 synthetic examples. The guidance corpus adds
+The base eval set has 18 synthetic examples. The guidance corpus adds
 Commission-derived examples and stored beta Compliance Checker comparisons as
 nonbinding review evidence.
 

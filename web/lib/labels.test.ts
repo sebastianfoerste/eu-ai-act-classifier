@@ -16,5 +16,7 @@ describe("labelFor", () => {
   it("falls back to a readable label for values outside the catalog", () => {
     expect(labelFor("roles", "custom_role")).toBe(formatLabel("custom_role"));
     expect(formatLabel("draft_only")).toBe("Draft Only");
+    expect(formatLabel("5.1.ba")).toBe("Art. 5(1)(ba)");
+    expect(formatLabel("5.1.c")).toBe("Art. 5(1)(c)");
   });
 });

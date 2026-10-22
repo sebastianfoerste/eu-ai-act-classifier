@@ -41,8 +41,14 @@ EXAMPLES = {
 }
 
 
+_REPORTS: dict[str, dict] = {}
+
+
 def _report(profile: dict) -> dict:
-    return classify(SystemProfile.model_validate(profile)).model_dump(mode="json")
+    key = json.dumps(profile, sort_keys=True)
+    if key not in _REPORTS:
+        _REPORTS[key] = classify(SystemProfile.model_validate(profile)).model_dump(mode="json")
+    return _REPORTS[key]
 
 
 def _normalised(profile: dict) -> dict:
@@ -135,12 +141,82 @@ def _grid() -> list[dict]:
                 "deployer_public_law_body": False,
                 "deployer_private_public_service": False,
                 "has_authorised_representative": True,
+                # Answered, as the intake requires wherever it asks; where it skips the
+                # question, its own skip check shows the value does not matter.
+                "deployer_public_authority": False,
             }
         )
     return profiles
 
 
 GRID = _grid()
+
+# The Art. 111 transitions, the Annex I section and Art. 49(3) read facts the grid
+# above holds fixed, so a second grid varies them.
+_TRANSITION_AXES = {
+    "roles": [["provider"], ["deployer"]],
+    "scope": [(True, True), (False, True)],
+    "prohibited_practices": [[], ["5.1.c"]],
+    "annex_i": [(False, False, None), (True, False, None), (True, True, None), (True, True, "B")],
+    "annex_iii_area": [None, "III.2", "III.6.a"],
+    "public_authority_use": [False, True],
+    "dates": [(None, None), ("2025-01-01", None), (None, "2028-01-01")],
+    "significant_change": [None, True],
+    "gpai": [(False, None), (True, "2025-01-01")],
+}
+
+
+def _transition_grid() -> list[dict]:
+    profiles = []
+    for combo in itertools.product(*_TRANSITION_AXES.values()):
+        roles, scope, prohibited, annex_i, annex_iii, authority, dates, change, gpai = combo
+        profiles.append(
+            {
+                "name": "Grid system",
+                "roles": roles,
+                "is_ai_system": scope[0],
+                "eu_nexus": scope[1],
+                "prohibited_practices": prohibited,
+                "annex_i_safety_component": annex_i[0],
+                "annex_i_third_party_assessment": annex_i[1],
+                "annex_i_section": annex_i[2],
+                "annex_iii_area": annex_iii,
+                "public_authority_use": authority,
+                "placing_on_market_date": dates[0],
+                "putting_into_service_date": dates[1],
+                "significant_change_after_application_date": change,
+                "is_gpai_model": gpai[0],
+                "gpai_model_placing_on_market_date": gpai[1],
+                "deployer_public_law_body": False,
+                "deployer_private_public_service": False,
+                "deployer_public_authority": False,
+            }
+        )
+    return profiles
+
+
+TRANSITION_GRID = _transition_grid()
+
+# A skipped question may change the report only by the engine's own statement that the
+# value is not used: a section without the Art. 6(1) route, a model date without a
+# general-purpose AI model. Everything else, the disposition included, must match.
+_SECTION_UNUSED = "HIGHRISK.6.1.section_unused"
+_GPAI_DATE_UNUSED = (
+    "Article 111(3) check: gpai_model_placing_on_market_date is given, but no general-purpose "
+    "AI model is screened (is_gpai_model is false), so the date is not used."
+)
+_NO_TRANSITION = "No transitional limitation identified from the submitted facts."
+
+
+def _without_unused_statements(report: dict) -> dict:
+    # Shallow copies: only "findings" and "scope" are replaced, never mutated in place.
+    scope = dict(report["scope"])
+    notes = (" ".join(note.replace(_GPAI_DATE_UNUSED, "").split()) for note in scope["notes"])
+    scope["notes"] = [note for note in notes if note]
+    status = " ".join(scope["transitional_status"].replace(_GPAI_DATE_UNUSED, "").split())
+    scope["transitional_status"] = status or _NO_TRANSITION
+    findings = [f for f in report["findings"] if f["rule_id"] != _SECTION_UNUSED]
+    return {**report, "findings": findings, "scope": scope}
 
 
 def _alternatives(question: dict) -> list[dict[str, object]]:
@@ -152,7 +228,8 @@ def _alternatives(question: dict) -> list[dict[str, object]]:
         every = [{f: True for f in fields}]
         return every + [{f: f == chosen for f in fields} for chosen in [None, *fields]]
     if kind == "details":
-        return []
+        dates = [e["field"] for e in question["fields"] if e.get("type") == "date"]
+        return [{f: d} for f in dates for d in ("2024-01-01", "2026-01-01", "2028-06-01")]
     field = question["field"]
     if kind == "boolean":
         nullable = field.startswith("derogation.") is False and (
@@ -181,14 +258,15 @@ def _with(profile: dict, assignment: dict[str, object]) -> dict:
     "question", [q for q in QUESTIONS if q.get("show_if")], ids=lambda q: q["id"]
 )
 def test_a_skipped_question_cannot_change_the_report(question: dict) -> None:
-    hidden = [p for p in GRID if not holds(question["show_if"], _normalised(p))]
+    hidden = [p for p in GRID + TRANSITION_GRID if not holds(question["show_if"], _normalised(p))]
     assert hidden, "the condition never hides the question on the grid"
     for profile in hidden:
-        baseline = _report(profile)
+        baseline = _without_unused_statements(_report(profile))
         for assignment in _alternatives(question):
             changed = _with(profile, assignment)
             assert not holds(question["show_if"], _normalised(changed))
-            assert _report(changed) == baseline, (question["id"], profile, assignment)
+            report = _without_unused_statements(_report(changed))
+            assert report == baseline, (question["id"], profile, assignment)
 
 
 @pytest.mark.parametrize(
@@ -197,7 +275,7 @@ def test_a_skipped_question_cannot_change_the_report(question: dict) -> None:
     ids=lambda q: q["id"],
 )
 def test_a_fail_closed_unknown_always_yields_requires_review(question: dict) -> None:
-    visible = [p for p in GRID if holds(question.get("show_if"), _normalised(p))]
+    visible = [p for p in GRID + TRANSITION_GRID if holds(question.get("show_if"), _normalised(p))]
     assert visible
     for profile in visible:
         changed = _with(profile, {question["field"]: question["unknown"]["value"]})
@@ -289,6 +367,7 @@ def test_question_articles_are_citations_the_engine_already_makes() -> None:
             "gpai_systemic_risk_designated": True,
         },
         {"name": "x", "prohibited_practices": [p.value for p in ProhibitedPractice]},
+        {"name": "x", "roles": ["deployer"], "annex_iii_area": "III.6.a"},
     ]
     corpus = "\n".join(
         classify(SystemProfile.model_validate(p), include_advisory=True).model_dump_json()
