@@ -577,10 +577,16 @@ def test_art_111_2_item_only_for_a_system_on_the_market_before_its_chapter_iii_d
         assert f"before {cut_off}" in item.trigger
         assert f"significantly as from {cut_off}" in item.requirement
         # Before 2 August 2026 the system is a legacy system on either reading of the
-        # Chapter III date, so the cut-off is not contested.
-        assert item.application_date_note is not None
-        assert item.application_date_note.startswith("Art. 111(2) AIA")
-        assert "Annex X" in item.application_date_note
+        # Chapter III date, but Art. 111(2) uses the same date for "as from that date": on
+        # the general-date reading a change counts from 2 August 2026, so the note is
+        # flagged for the change window.
+        note = item.application_date_note
+        assert note is not None
+        assert note.startswith("Literal reading, confirm with counsel")
+        assert "a significant change in design made on or after that date already counts" in note
+        assert "not a legacy system" not in note
+        assert "Art. 111(2) AIA: covers" in note
+        assert "Annex X" in note
 
 
 def test_art_111_2_public_authority_systems_comply_by_2_august_2030() -> None:
@@ -596,7 +602,10 @@ def test_art_111_2_public_authority_systems_comply_by_2_august_2030() -> None:
     for item in items:
         assert item.application_date == "2030-08-02"
         assert "No significant change in design is asserted" in item.requirement
-        assert "by 2 August 2030 in any case" in item.requirement
+        # Art. 111(2), second sentence: "In any case ... shall take the necessary steps to
+        # comply ... by 2 August 2030".
+        assert "in any case take the necessary steps to comply" in item.requirement
+        assert "by 2 August 2030" in item.requirement
 
 
 def test_art_111_2_significant_change_keeps_the_chapter_iii_date_for_public_authorities() -> None:
@@ -611,7 +620,8 @@ def test_art_111_2_significant_change_keeps_the_chapter_iii_date_for_public_auth
 
     assert item.application_date == "2027-12-02"
     assert "the Regulation applies to the changed system" in item.requirement
-    assert "by 2 August 2030 in any case" in item.requirement
+    assert "in any case take the necessary steps to comply" in item.requirement
+    assert "by 2 August 2030" in item.requirement
 
 
 @pytest.mark.parametrize(
@@ -645,16 +655,19 @@ def test_art_111_2_requirement_follows_the_significant_change_fact(
 def test_art_111_2_cut_off_is_flagged_where_the_reading_decides(
     placed: str, contested: bool
 ) -> None:
-    # Art. 113 gives Chapter III no single date: between the general date and the
-    # point (c) date the result turns on which date Art. 111(2) means.
+    # Art. 113 gives Chapter III no single date. Between the general date and the
+    # point (c) date the legacy status turns on which date Art. 111(2) means; before the
+    # general date the status does not, but the change window ("as from that date") does.
+    # Either way the note is flagged.
     (item,) = _legacy_items(annex_iii_area=AnnexIII.CREDITWORTHINESS, placing_on_market_date=placed)
     note = item.application_date_note
     assert note is not None
 
-    assert note.startswith("Literal reading, confirm with counsel") is contested
-    if contested:
-        assert "the date of application of Chapter III referred to in Article 113" in note
-        assert "2027-12-02" in note and "2026-08-02" in note
+    assert note.startswith("Literal reading, confirm with counsel")
+    assert "the date of application of Chapter III referred to in Article 113" in note
+    assert "2027-12-02" in note and "2026-08-02" in note
+    assert ("is not a legacy system" in note) is contested
+    assert ("made on or after that date already counts" in note) is not contested
 
 
 def test_art_111_2_names_the_operator_when_neither_provider_nor_deployer() -> None:
@@ -731,8 +744,10 @@ def test_art_49_3_public_authority_deployer_registers_its_use(
     ],
 )
 def test_no_art_49_3_item_without_a_public_authority_deployer(facts: dict[str, object]) -> None:
+    # Point 4(a), not 5(a): point 5(a) describes use by or on behalf of public authorities,
+    # the deployers Art. 49(3) names, so an unknown status there counts.
     report = classify(
-        SystemProfile(name="x", annex_iii_area=AnnexIII.ESSENTIAL_PUBLIC_BENEFITS, **facts)
+        SystemProfile(name="x", annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION, **facts)
     )
 
     assert "Art. 49(3) AIA" not in {item.article for item in report.obligation_graph}
@@ -862,11 +877,13 @@ def test_annex_i_section_rejects_other_values() -> None:
 def test_art_49_3_turns_on_the_deployers_own_status(
     status: bool | None, public_authority_use: bool, trigger: str | None
 ) -> None:
+    # Point 4(a): its wording says nothing about who deploys it, so the deployer's own
+    # status, or the system's intended use, decides.
     report = classify(
         SystemProfile(
             name="x",
             roles=[Role.DEPLOYER],
-            annex_iii_area=AnnexIII.ESSENTIAL_PUBLIC_BENEFITS,
+            annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
             deployer_public_authority=status,
             public_authority_use=public_authority_use,
         )
@@ -892,7 +909,11 @@ def test_art_49_3_obligation_also_names_the_secure_section() -> None:
     )
     (obligation,) = [ob for ob in report.obligations if ob.article == "Art. 49(3) AIA"]
 
-    assert "secure non-public section (Art. 49(4) AIA)" in obligation.requirement
+    assert "secure non-public section of the EU database" in obligation.requirement
+    # Art. 49(4): only the listed Annex VIII and IX data, seen only by the Commission and
+    # the Art. 74(8) authorities.
+    assert "Annex VIII and Annex IX information" in obligation.requirement
+    assert "Art. 74(8)" in obligation.requirement
 
 
 def test_art_111_2_public_authority_deadline_binds_only_providers_and_deployers() -> None:
@@ -948,7 +969,10 @@ def test_chapter_iii_items_of_a_legacy_system_say_they_are_conditional(
         )
     )
     graph = {item.article: item for item in report.obligation_graph}
-    condition = "attaches only once its design changes significantly, and by 2 August 2030"
+    condition = (
+        "Whatever date this item gives, the duty attaches only once the system's design "
+        "changes significantly as from 2027-12-02, and by 2 August 2030"
+    )
 
     # Sections 1 to 3 keep their date but say it is conditional.
     assert condition in graph["Art. 16 AIA"].application_date_note
@@ -1046,3 +1070,484 @@ def test_section_b_appears_in_the_text_report_and_dossier() -> None:
     assert "high-risk.section-b.2.2: Art. 2(2) AIA (provider)" in render_report(report)
     dossier = render_review_dossier_markdown(build_review_dossier(report))
     assert "high-risk.section-b.2.2: Art. 2(2) AIA (provider)" in dossier
+
+
+# --- Review of PR #30 -----------------------------------------------------------------
+LEGACY_2025 = {
+    "annex_iii_area": AnnexIII.EMPLOYMENT_SELECTION,
+    "placing_on_market_date": "2025-06-01",
+}
+CHANGE_WINDOW = "a significant change in design made on or after that date already counts"
+
+
+@pytest.mark.parametrize("change", [None, False, True])
+def test_change_window_is_flagged_for_a_system_placed_before_the_general_date(
+    change: bool | None,
+) -> None:
+    # Art. 111(2): "before the date of application of Chapter III ... only if, as from that
+    # date". Both halves name one contested date, so for a system placed on 2025-06-01 the
+    # change window opens on 2026-08-02 on the general-date reading.
+    report = classify(
+        SystemProfile(
+            name="legacy",
+            roles=[Role.PROVIDER, Role.DEPLOYER],
+            significant_change_after_application_date=change,
+            **LEGACY_2025,
+        )
+    )
+    graph = report.obligation_graph
+    art_111_2 = [item for item in graph if item.article == "Art. 111(2) AIA"]
+
+    assert len(art_111_2) == 2
+    for item in art_111_2:
+        assert item.application_date_note.startswith("Literal reading, confirm with counsel")
+        assert CHANGE_WINDOW in item.application_date_note
+    assert "Literal reading, confirm with counsel" in report.scope.transitional_status
+    assert CHANGE_WINDOW in report.scope.transitional_status
+    chapter_iii = [
+        item
+        for item in graph
+        if item.obligation_id.startswith("high-risk.") and item.article != "Art. 111(2) AIA"
+    ]
+    if change is True:
+        # The asserted change is not dated: which date it must follow is the flagged point.
+        for item in art_111_2:
+            assert "as from 2027-12-02" not in item.requirement
+            assert "A significant change in design is asserted" in item.requirement
+        assert all(
+            "Art. 111(2) AIA: the system was" not in (i.application_date_note or "")
+            for i in chapter_iii
+        )
+        return
+    for item in chapter_iii:
+        assert item.review_status is ReviewStatus.REVIEW_REQUIRED
+        assert CHANGE_WINDOW in item.application_date_note
+    questions = [q for q in report.open_questions if q.startswith("Art. 111(2) AIA")]
+    if change is None:
+        (question,) = questions
+        assert question.endswith(f"{CHANGE_WINDOW} (see the Art. 111(2) item).")
+        assert "Literal reading, confirm with counsel" in question
+    else:
+        assert questions == []
+
+
+def test_art_111_2_question_names_the_2030_duty_for_public_authority_systems() -> None:
+    # Art. 111(2), second sentence: the 2030 duty binds "in any case", whatever the answer.
+    report = classify(
+        SystemProfile(
+            name="benefits triage",
+            roles=[Role.PROVIDER],
+            annex_iii_area=AnnexIII.ESSENTIAL_PUBLIC_BENEFITS,
+            placing_on_market_date="2025-06-01",
+            public_authority_use=True,
+        )
+    )
+    (question,) = [q for q in report.open_questions if q.startswith("Art. 111(2) AIA")]
+
+    assert "applies to it only then. As the system is intended to be used by public" in question
+    assert "by 2 August 2030" in question
+
+
+def test_profile_field_says_which_dates_the_change_may_follow() -> None:
+    description = SystemProfile.model_fields[
+        "significant_change_after_application_date"
+    ].description
+
+    assert "2027-12-02" in description and "2026-08-02" in description
+
+
+SECTION_B_ANNEX_III = {**SECTION_B, "annex_iii_area": AnnexIII.EMPLOYMENT_SELECTION}
+
+
+def test_section_b_product_in_an_annex_iii_area_flags_art_5_and_art_50_alike() -> None:
+    # Art. 2(2) lists neither Art. 5 nor Art. 50 for an Art. 6(1) Section B system, Annex III
+    # area or not, so both are kept with the same flag.
+    transparency = classify(
+        SystemProfile(name="x", interacts_with_natural_persons=True, **SECTION_B_ANNEX_III)
+    )
+    prohibited = classify(
+        SystemProfile(name="x", prohibited_practices=["5.1.f"], **SECTION_B_ANNEX_III)
+    )
+
+    (item,) = [i for i in transparency.obligation_graph if i.article == "Art. 50(1) AIA"]
+    assert item.application_date_note.startswith("Literal reading, confirm with counsel")
+    assert "Art. 50 does not apply" in item.application_date_note
+    assert item.review_status is ReviewStatus.REVIEW_REQUIRED
+    (finding,) = [f for f in transparency.findings if f.rule_id == "TRANSPARENCY.50"]
+    assert "Literal reading, confirm with counsel" in finding.detail
+    (finding,) = [f for f in prohibited.findings if f.rule_id.startswith("PROHIBITED.")]
+    assert "Art. 5 does not apply" in finding.detail
+
+
+def test_art_5_section_b_flag_is_also_an_open_question() -> None:
+    # The dossier and the cockpit render open questions, not finding details.
+    report = classify(SystemProfile(name="x", prohibited_practices=["5.1.f"], **SECTION_B))
+
+    assert "Art. 5 does not apply" in report.findings[0].detail
+    assert any(
+        q.startswith("Art. 2(2) AIA and Art. 5 AIA: Literal reading, confirm with counsel")
+        for q in report.open_questions
+    )
+    plain = classify(SystemProfile(name="x", prohibited_practices=["5.1.f"]))
+    assert not any("Art. 2(2)" in q for q in plain.open_questions)
+
+
+def test_legacy_art_50_items_go_to_review_and_the_finding_carries_the_flag() -> None:
+    report = classify(
+        SystemProfile(name="legacy chatbot", interacts_with_natural_persons=True, **LEGACY_2025)
+    )
+
+    (item,) = [i for i in report.obligation_graph if i.article == "Art. 50(1) AIA"]
+    assert item.review_status is ReviewStatus.REVIEW_REQUIRED
+    assert "Art. 50 would apply to it only then" in item.application_date_note
+    (finding,) = [f for f in report.findings if f.rule_id == "TRANSPARENCY.50"]
+    assert "Art. 50 would apply to it only then" in finding.detail
+    unflagged = classify(SystemProfile(name="chatbot", interacts_with_natural_persons=True))
+    (item,) = [i for i in unflagged.obligation_graph if i.article == "Art. 50(1) AIA"]
+    assert item.review_status is ReviewStatus.DETERMINED
+
+
+@pytest.mark.parametrize(
+    "artifact",
+    ["fria", "annex-iv-checklist", "post-market-monitoring-plan", "serious-incident-register"],
+)
+def test_art_2_2_work_product_sentence_only_without_an_annex_iii_area(artifact: str) -> None:
+    sentence = "Art. 2(2) AIA does not require this work product"
+    section_b_only = classify(SystemProfile(name="x", roles=[Role.DEPLOYER], **SECTION_B))
+    dual = classify(SystemProfile(name="x", roles=[Role.DEPLOYER], **SECTION_B_ANNEX_III))
+
+    assert sentence in render_artifact(artifact, section_b_only)
+    # With an Annex III area the report keeps the Annex III duties (a flagged reading).
+    assert sentence not in render_artifact(artifact, dual)
+
+
+@pytest.mark.parametrize(
+    ("area", "users"),
+    [
+        (AnnexIII.ESSENTIAL_PUBLIC_BENEFITS, "by or on behalf of public authorities"),
+        # Point 6: Union bodies "by", in support of law enforcement authorities, and for
+        # point 6(a) also "or on their behalf".
+        (
+            AnnexIII.LAW_ENFORCEMENT_POLYGRAPH,
+            "by or on behalf of law enforcement authorities, or by Union institutions, "
+            "bodies, offices or agencies in support of law enforcement authorities",
+        ),
+        (
+            AnnexIII.LAW_ENFORCEMENT_VICTIM_RISK,
+            "by or on behalf of law enforcement authorities, or by Union institutions, "
+            "bodies, offices or agencies in support of law enforcement authorities or on "
+            "their behalf",
+        ),
+        (
+            AnnexIII.MIGRATION_RISK_ASSESSMENT,
+            "by or on behalf of competent public authorities, or by Union institutions, "
+            "bodies, offices or agencies",
+        ),
+    ],
+)
+def test_art_49_3_follows_annex_iii_points_that_describe_public_authority_use(
+    area: AnnexIII, users: str
+) -> None:
+    # Annex III, points 5(a), 6 and 7 describe use by the deployers Art. 49(3) names
+    # (Annex III, points 5(a), 6 and 7 in the consolidated text): an unknown status counts.
+    report = classify(SystemProfile(name="x", roles=[Role.DEPLOYER], annex_iii_area=area))
+
+    (item,) = [i for i in report.obligation_graph if i.article == "Art. 49(3) AIA"]
+    assert f"describes as used {users}." in item.trigger
+    assert item.requirement.startswith("Where the deployer is, or acts on behalf of")
+    # The question uses the same words as the item.
+    assert any(
+        q.startswith("Art. 49(3) AIA:") and f"describes use {users}," in q
+        for q in report.open_questions
+    )
+    assert "Art. 49(3) AIA" in {ob.article for ob in report.obligations}
+
+
+def test_art_49_3_public_law_body_answer_raises_the_question() -> None:
+    # A deployer that answers the Art. 27 question as a body governed by public law may be
+    # a public authority: the registration question is asked, not dropped.
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.DEPLOYER],
+            annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
+            deployer_public_law_body=True,
+        )
+    )
+
+    assert report.disposition.value == "requires_review"
+    assert any(
+        "body governed by public law" in q and "Art. 49(3)" in q for q in report.open_questions
+    )
+
+
+def test_art_49_3_point_8a_asks_but_does_not_infer() -> None:
+    # Point 8(a) also covers alternative dispute resolution, which may be private.
+    report = classify(
+        SystemProfile(name="x", roles=[Role.DEPLOYER], annex_iii_area=AnnexIII.JUSTICE)
+    )
+
+    assert "Art. 49(3) AIA" not in {i.article for i in report.obligation_graph}
+    (question,) = [q for q in report.open_questions if q.startswith("Art. 49(3) AIA:")]
+    assert question.startswith("Art. 49(3) AIA: Annex III(8)(a)")
+    assert "public authority or Union institution, body, office or agency" in question
+
+
+def test_art_26_8_inform_limb_sits_with_the_art_26_item() -> None:
+    # Art. 26(8), second sentence, is a Chapter III, Section 3 duty of deployers that are
+    # public authorities themselves: the Art. 26 date (2027-12-02), not the Art. 49(3) one.
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.DEPLOYER],
+            annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
+            deployer_public_authority=True,
+        )
+    )
+    graph = {item.article: item for item in report.obligation_graph}
+
+    assert (
+        "inform the provider or the distributor (Art. 26(8) AIA)"
+        in graph["Art. 26 AIA"].requirement
+    )
+    assert "is itself a public authority" in graph["Art. 26 AIA"].requirement
+    assert graph["Art. 26 AIA"].application_date == "2027-12-02"
+    assert "inform the provider" not in graph["Art. 49(3) AIA"].requirement
+    assert "Selecting the system presupposes that it is registered there, so do not use" in (
+        graph["Art. 49(3) AIA"].requirement
+    )
+    (obligation,) = [ob for ob in report.obligations if ob.article == "Art. 26 AIA"]
+    assert "Art. 26(8) AIA" in obligation.requirement
+    private = classify(
+        SystemProfile(name="x", roles=[Role.DEPLOYER], annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION)
+    )
+    (item,) = [i for i in private.obligation_graph if i.article == "Art. 26 AIA"]
+    assert "Art. 26(8)" not in item.requirement
+
+
+@pytest.mark.parametrize(
+    ("facts", "emitted"),
+    [
+        pytest.param({"deployer_public_authority": True}, True, id="public-authority"),
+        pytest.param({"public_authority_use": True}, True, id="intended-for-authorities"),
+        pytest.param({"deployer_public_authority": False}, False, id="private"),
+    ],
+)
+def test_point_2_public_authority_deployer_gets_the_art_49_5_pointer(
+    facts: dict[str, object], emitted: bool
+) -> None:
+    # Art. 49(3) excepts point 2; Art. 49(5) registers it at national level.
+    report = classify(
+        SystemProfile(
+            name="grid",
+            roles=[Role.DEPLOYER],
+            annex_iii_area=AnnexIII.CRITICAL_INFRASTRUCTURE,
+            **facts,
+        )
+    )
+    items = [i for i in report.obligation_graph if i.obligation_id == "high-risk.deployer.49.5"]
+
+    assert "Art. 49(3) AIA" not in {i.article for i in report.obligation_graph}
+    assert bool(items) is emitted
+    if emitted:
+        (item,) = items
+        assert item.article == "Art. 49(5) AIA"
+        assert "registered at national level" in item.requirement
+        assert item.review_status is ReviewStatus.REVIEW_REQUIRED
+        if facts.get("deployer_public_authority"):
+            assert item.trigger.startswith("Deployer that is, or acts on behalf of")
+        else:
+            assert item.trigger.endswith("the deployer's own status is not given.")
+
+
+def test_legacy_notes_use_a_public_authority_deployer_for_the_2030_caveat() -> None:
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.DEPLOYER],
+            deployer_public_authority=True,
+            interacts_with_natural_persons=True,
+            **LEGACY_2025,
+        )
+    )
+    graph = {item.article: item for item in report.obligation_graph}
+
+    assert (
+        "if, as the public-authority deployer suggests"
+        in graph["Art. 49(3) AIA"].application_date_note
+    )
+    assert (
+        "A public-authority deployer is asserted" in graph["Art. 50(1) AIA"].application_date_note
+    )
+
+
+def test_no_art_111_2_cross_reference_without_the_item() -> None:
+    # A GPAI provider of a non-EU provider's system holds no operator role, so no
+    # Art. 111(2) item is emitted, though the Art. 22 item carries a legacy note.
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.GPAI_PROVIDER],
+            provider_established_outside_eu=True,
+            interacts_with_natural_persons=True,
+            **LEGACY_2025,
+        )
+    )
+    graph = report.obligation_graph
+
+    assert "Art. 111(2) AIA" not in {item.article for item in graph}
+    notes = " ".join(item.application_date_note or "" for item in graph)
+    assert "Art. 111(2) AIA: the system was" in notes
+    assert "see the Art. 111(2) item" not in notes
+    with_item = classify(SystemProfile(name="x", roles=[Role.PROVIDER], **LEGACY_2025))
+    assert "see the Art. 111(2) item" in " ".join(
+        item.application_date_note or "" for item in with_item.obligation_graph
+    )
+
+
+def test_repeated_roles_do_not_repeat_graph_ids() -> None:
+    for facts in (LEGACY_2025, SECTION_B):
+        report = classify(
+            SystemProfile(name="x", roles=[Role.PROVIDER, Role.PROVIDER, Role.DEPLOYER], **facts)
+        )
+        ids = [item.obligation_id for item in report.obligation_graph]
+        assert len(ids) == len(set(ids)), ids
+
+
+def test_gpai_fallback_dating_goes_to_review_with_a_question() -> None:
+    report = classify(
+        SystemProfile(
+            name="model",
+            roles=[Role.GPAI_PROVIDER],
+            is_gpai_model=True,
+            gpai_systemic_risk_designated=True,
+            placing_on_market_date="2025-03-01",
+        )
+    )
+    gpai = [i for i in report.obligation_graph if i.actor is Role.GPAI_PROVIDER]
+
+    assert gpai and all(i.review_status is ReviewStatus.REVIEW_REQUIRED for i in gpai)
+    # One "Art. 111(3) AIA:" lead and no Art. 111(4) citation in the fallback note.
+    assert gpai[0].application_date_note.count("Art. 111(3) AIA:") == 1
+    assert "111(4)" not in gpai[0].application_date_note
+    assert any(q.startswith("Art. 111(3) AIA: no gpai_model") for q in report.open_questions)
+    own_date = classify(
+        SystemProfile(
+            name="model",
+            roles=[Role.GPAI_PROVIDER],
+            is_gpai_model=True,
+            gpai_systemic_risk_designated=True,
+            gpai_model_placing_on_market_date="2025-03-01",
+        )
+    )
+    (item,) = [i for i in own_date.obligation_graph if i.obligation_id == "gpai.provider.53.a"]
+    assert item.review_status is ReviewStatus.DETERMINED
+    assert not any(q.startswith("Art. 111(3)") for q in own_date.open_questions)
+
+
+def test_gpai_model_date_later_than_the_system_date_is_questioned() -> None:
+    report = classify(
+        SystemProfile(
+            name="model",
+            roles=[Role.PROVIDER, Role.GPAI_PROVIDER],
+            is_gpai_model=True,
+            gpai_systemic_risk_designated=True,
+            gpai_model_placing_on_market_date="2026-01-01",
+            placing_on_market_date="2025-06-01",
+        )
+    )
+
+    assert any(
+        "is later than the AI system's placing_on_market_date" in q for q in report.open_questions
+    )
+
+
+@pytest.mark.parametrize(
+    ("facts", "wording"),
+    [
+        pytest.param(
+            {"annex_iii_area": AnnexIII.CRITICAL_INFRASTRUCTURE, "deployer_public_authority": True},
+            None,
+            id="point-2",
+        ),
+        pytest.param(
+            {**SECTION_B_ANNEX_III, "deployer_public_authority": True},
+            "Deployer that is, or acts on behalf of",
+            id="section-b-and-annex-iii",
+        ),
+        pytest.param(
+            {
+                "annex_iii_area": AnnexIII.EMPLOYMENT_SELECTION,
+                "deployer_public_authority": True,
+                "derogation": {"preparatory_task": True},
+            },
+            "Deployer that is, or acts on behalf of",
+            id="derogation",
+        ),
+        pytest.param(
+            {"annex_iii_area": AnnexIII.UNSURE, "deployer_public_authority": True},
+            "If the Annex III point is 6 or 7",
+            id="unsure-secure-section",
+        ),
+    ],
+)
+def test_art_49_3_edge_cases(facts: dict[str, object], wording: str | None) -> None:
+    report = classify(SystemProfile(name="x", roles=[Role.DEPLOYER], **facts))
+    items = [i for i in report.obligation_graph if i.article == "Art. 49(3) AIA"]
+
+    if wording is None:
+        assert items == []
+        return
+    (item,) = items
+    assert wording in item.trigger + item.requirement
+
+
+def test_art_2_13_note_states_both_conditions() -> None:
+    (finding,) = [
+        f
+        for f in classify(
+            SystemProfile(
+                name="x",
+                annex_i_safety_component=True,
+                annex_i_third_party_assessment=True,
+                annex_i_section="A",
+            )
+        ).findings
+        if f.rule_id == "HIGHRISK.6.1"
+    ]
+
+    assert "equivalent or higher level of protection" in finding.detail
+    assert "does not reduce the overall level of protection" in finding.detail
+
+
+def test_annex_i_section_without_the_art_6_1_route_is_said_to_be_unused() -> None:
+    report = classify(SystemProfile(name="x", annex_i_section="B"))
+
+    (finding,) = [f for f in report.findings if f.rule_id == "HIGHRISK.6.1.section_unused"]
+    assert "not used" in finding.detail
+    assert report.risk_tier is not RiskTier.HIGH
+
+
+def test_legacy_note_on_an_undeferred_item_does_not_bind_from_its_own_date() -> None:
+    # A Section 5 item dated 2026-08-02 on a legacy system: on the report's reading the
+    # duty does not bind the unchanged system from that date either (Art. 111(2)).
+    report = classify(SystemProfile(name="x", roles=[Role.PROVIDER], **LEGACY_2025))
+    (item,) = [i for i in report.obligation_graph if i.article == "Art. 43 AIA"]
+
+    assert item.application_date == "2026-08-02"
+    assert (
+        "Whatever date this item gives, the duty attaches only once the system's design "
+        "changes significantly as from 2027-12-02"
+    ) in item.application_date_note
+
+
+def test_asserted_change_flag_says_which_changes_count_on_each_reading() -> None:
+    (item,) = _legacy_items(
+        significant_change_after_application_date=True, roles=[Role.PROVIDER], **LEGACY_2025
+    )
+
+    assert CHANGE_WINDOW in item.application_date_note
+    assert (
+        "On the date used here, the asserted change counts only if it was made on or after "
+        "2027-12-02"
+    ) in item.application_date_note

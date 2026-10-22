@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+from datetime import date
+
 from .catalog import LATER_PROHIBITIONS
 from .citations import (
+    ADVISORY_SOURCE_RETRIEVED_ON,
     AI_SYSTEM_DEFINITION_GUIDELINES_URL,
     GPAI_CODE_URL,
     GPAI_PROVIDER_GUIDELINES_URL,
@@ -12,6 +15,28 @@ from .citations import (
     TRANSPARENCY_GUIDANCE_URL,
 )
 from .models import AdvisoryNote, SystemProfile
+
+# Regulation (EU) 2026/1744, which inserted Art. 5(1)(ba) and (bb), was published in the
+# Official Journal on 24 July 2026 (OJ L, 2026/1744, 24.7.2026).
+_AMENDMENT_PUBLISHED_ON = "2026-07-24"
+
+
+def _later_prohibitions_sentence() -> str:
+    """Whether the guidance predates the new bans follows from its retrieval date, which
+    `verify_sources --update` may move, so the sentence is worked out from it."""
+
+    if date.fromisoformat(ADVISORY_SOURCE_RETRIEVED_ON) < date.fromisoformat(
+        _AMENDMENT_PUBLISHED_ON
+    ):
+        return (
+            f" The linked guidance, retrieved on {ADVISORY_SOURCE_RETRIEVED_ON}, predates "
+            "Art. 5(1)(ba) and (bb), inserted by Regulation (EU) 2026/1744, so confirm whether "
+            "a later version covers them."
+        )
+    return (
+        f" Confirm whether the linked guidance, retrieved on {ADVISORY_SOURCE_RETRIEVED_ON}, "
+        "covers Art. 5(1)(ba) and (bb), inserted by Regulation (EU) 2026/1744."
+    )
 
 
 def build_advisory_notes(profile: SystemProfile) -> list[AdvisoryNote]:
@@ -37,9 +62,7 @@ def build_advisory_notes(profile: SystemProfile) -> list[AdvisoryNote]:
                     "Commission prohibited-practices guidance may help review the asserted "
                     "Art. 5 trigger and examples."
                     + (
-                        " The linked guidance predates Art. 5(1)(ba) and (bb), inserted by "
-                        "Regulation (EU) 2026/1744, so confirm whether a later version covers "
-                        "them."
+                        _later_prohibitions_sentence()
                         if set(profile.prohibited_practices) & set(LATER_PROHIBITIONS)
                         else ""
                     )

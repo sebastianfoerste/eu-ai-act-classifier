@@ -48,7 +48,8 @@ def test_prohibited_dominates_high_risk() -> None:
         (
             ProhibitedPractice.CHILD_SEXUAL_ABUSE_MATERIAL,
             "Art. 5(1)(bb) AIA",
-            "Generating or manipulating child sexual abuse material under Directive 2011/93/EU",
+            "Generating or manipulating child sexual abuse material under Directive 2011/93/EU, "
+            "save a 'without right' defence under national law",
             "material or performance within the meaning of Article 2, points (c) and (e), of "
             "Directive 2011/93/EU, except where a 'without right' defence applies under "
             "national law",

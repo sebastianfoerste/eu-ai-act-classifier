@@ -418,7 +418,12 @@ def _inventory_timestamp(now: datetime | None) -> str | None:
 def apply_workspace_action(
     payload: dict[str, object], runtime_path: Path, *, now: datetime | None = None
 ) -> dict[str, object]:
-    """Apply one local mutation against the fixed ignored runtime workspace."""
+    """Apply one local mutation against the fixed ignored runtime workspace.
+
+    The inventory, and so its digest, is stamped with ``now``. Every action on one
+    runtime file must therefore pass the same ``now`` (or none): a different one builds
+    a different inventory digest than the one the stored workspace was built from.
+    """
 
     inventory = build_example_inventory(generated_at=_inventory_timestamp(now))
     current = (

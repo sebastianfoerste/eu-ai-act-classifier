@@ -187,19 +187,28 @@ def _review_status(report: ClassificationReport) -> str:
 
 def _section_b_status(report: ClassificationReport, title: str) -> str:
     """A Chapter III work product for an Annex I, Section B product with no Annex III
-    duty behind it: Art. 2(2) AIA does not require it."""
+    area: Art. 2(2) AIA does not require it. With an Annex III area the report keeps the
+    Annex III duties (a flagged reading), so the sentence would overstate it."""
 
     if not any(word in title.lower() for word in _HIGH_RISK_ARTIFACTS):
         return ""
-    if _matching_graph(report, title) or not any(
-        item.article == ART_2_2 for item in report.obligation_graph
-    ):
+    if _matching_graph(report, title) or not _section_b_only(report):
         return ""
     return (
         " Annex I, Section B product: Art. 2(2) AIA does not require this work product under "
         "the AI Act. Use it only as far as the sectoral legislation integrates the high-risk "
         "requirements."
     )
+
+
+def _section_b_only(report: ClassificationReport) -> bool:
+    """Art. 2(2) items and no Chapter III item: a Section B product with no Annex III area.
+    With an Annex III area the deployer, importer and other Chapter III items stay."""
+
+    high_risk = [
+        item for item in report.obligation_graph if item.obligation_id.startswith("high-risk.")
+    ]
+    return bool(high_risk) and all(item.article == ART_2_2 for item in high_risk)
 
 
 def _relevant_graph(report: ClassificationReport, title: str) -> list[ObligationGraphItem]:

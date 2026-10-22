@@ -3,15 +3,19 @@
 from __future__ import annotations
 
 from .catalog import (
+    ANNEX_III,
     ART_2_2,
+    ART_26_8,
     ART_49,
     ART_49_2,
     ART_49_3,
     ART_50_2,
     ART_111_2,
     eu_database_registration_applies,
+    national_registration_for_public_authority_deployer,
     public_authority_registration_applies,
     public_authority_registration_requirement,
+    public_authority_users,
     section_b_annex_iii_flag,
     section_b_kept_flag,
     section_b_requirement,
@@ -39,18 +43,21 @@ from .models import (
     SystemProfile,
 )
 from .transitions import (
-    DEADLINE_2030,
-    PUBLIC_AUTHORITY_DUTY,
+    ANNEX_X_CARVE_OUT,
     before,
     chapter_iii_date,
-    cut_off_contested,
     cut_off_flag,
     derogation_asserted,
+    derogation_note,
     describe_dates,
+    gpai_model_date,
     legacy_dates,
     legacy_note_flag,
+    legacy_transparency_flag,
     operator_roles,
     operators,
+    public_authority_clause,
+    public_authority_sentence,
     section_b_only,
     section_b_product,
 )
@@ -59,18 +66,19 @@ _SECTION_5 = "Chapter III, Section 5"
 _CHAPTER_IX = "Chapter IX"
 _ART_111_3_NOTE = (
     "Art. 111(3) AIA: providers of general-purpose AI models placed on the market before "
-    f"{POINT_B_DATE} comply with this Regulation by {ART_111_3_DEADLINE}."
+    f"{POINT_B_DATE} take the necessary steps to comply with the obligations laid down in "
+    f"this Regulation by {ART_111_3_DEADLINE}."
 )
 _ART_111_4_NOTE = (
     f"Art. 111(4) AIA: providers of systems placed on the market before "
-    f"{GENERAL_APPLICATION_DATE} comply with Art. 50(2) by {ART_111_4_DEADLINE}."
+    f"{GENERAL_APPLICATION_DATE} take the necessary steps to comply with Art. 50(2) by "
+    f"{ART_111_4_DEADLINE}."
 )
 # Backwards compatibility: a GPAI profile without the model's own date is dated by the
-# AI system's placing_on_market_date, as before, and says so.
-_GPAI_DATE_FALLBACK_NOTE = (
-    "Art. 111(3) AIA: no gpai_model_placing_on_market_date is given, so the model is dated "
-    "by placing_on_market_date, which is the AI system's date (Art. 111(4) AIA). Review it "
-    "and give the model's own date."
+# AI system's placing_on_market_date, as before, says so and goes to review.
+_GPAI_DATE_FALLBACK = (
+    "no gpai_model_placing_on_market_date is given, the model is dated by "
+    "placing_on_market_date, the AI system's date. Review it and give the model's own date."
 )
 # Art. 2(2) AIA lists neither Art. 5 nor Art. 50 for a Section B product. The report keeps
 # the Art. 50 duties (and, in rules/prohibited.py, Art. 5) as the conservative reading.
@@ -97,6 +105,14 @@ def build_obligation_graph(
         if profile.is_provider:
             items.extend(_high_risk_provider_graph(application_date, profile))
         if profile.is_deployer:
+            public_authority_registration = public_authority_registration_applies(
+                profile.annex_iii_area,
+                profile.deployer_public_authority,
+                profile.public_authority_use,
+            )
+            # Art. 26(8), second sentence, is a Section 3 duty: the Art. 26 date, not the
+            # Art. 49(3) one.
+            art_26_8 = f" {ART_26_8}" if public_authority_registration else ""
             items.append(
                 _item(
                     "high-risk.deployer.26",
@@ -105,7 +121,7 @@ def build_obligation_graph(
                     "Deployer of a high-risk AI system.",
                     (
                         "Use the system per instructions, assign oversight, monitor operation "
-                        "and keep logs."
+                        f"and keep logs.{art_26_8}"
                     ),
                     "Deployer operating procedure and monitoring log.",
                     application_date,
@@ -127,12 +143,37 @@ def build_obligation_graph(
                         ReviewStatus.REVIEW_REQUIRED,
                     )
                 )
-            if public_authority_registration_applies(
+            if public_authority_registration:
+                items.append(_public_authority_registration_item(profile))
+            elif national_registration_for_public_authority_deployer(
                 profile.annex_iii_area,
                 profile.deployer_public_authority,
                 profile.public_authority_use,
             ):
-                items.append(_public_authority_registration_item(profile))
+                system = "an Annex III point 2 high-risk AI system (critical infrastructure)"
+                trigger = (
+                    "Deployer that is, or acts on behalf of, a public authority or Union "
+                    f"institution, body, office or agency, using {system}."
+                    if profile.deployer_public_authority
+                    else f"{system[0].upper()}{system[1:]}, intended to be used by public "
+                    "authorities; the deployer's own status is not given."
+                )
+                items.append(
+                    _undeferred_item(
+                        "high-risk.deployer.49.5",
+                        "Art. 49(5) AIA",
+                        trigger,
+                        (
+                            "Art. 49(3) AIA excepts point 2, so there is no registration of use "
+                            "in the EU database; the system is registered at national level. "
+                            "Confirm what the national procedure asks of the deployer."
+                        ),
+                        "National registration record.",
+                        _SECTION_5,
+                        POINT_C_ANNEX_III,
+                        actor=Role.DEPLOYER,
+                    )
+                )
         if profile.is_importer:
             items.append(
                 _item(
@@ -206,9 +247,9 @@ def build_obligation_graph(
             items.extend(_section_b_items(profile))
 
     if is_gpai and final_tier is not RiskTier.PROHIBITED:
-        items.extend(_gpai_graph(gpai_systemic, *_gpai_dating(profile)))
+        items.extend(_gpai_graph(gpai_systemic, profile))
 
-    legacy_flag = _legacy_transparency_flag(profile) if final_tier is RiskTier.HIGH else None
+    legacy_flag = legacy_transparency_flag(profile) if final_tier is RiskTier.HIGH else None
     for index, obligation in enumerate(transparency_obligations, start=1):
         applies_from, note = GENERAL_APPLICATION_DATE, None
         if obligation.article == ART_50_2:
@@ -218,12 +259,10 @@ def build_obligation_graph(
                 ART_111_4_DEADLINE,
                 _ART_111_4_NOTE,
             )
-        if section_b_only(profile):
-            note = (
-                f"{_SECTION_B_TRANSPARENCY_FLAG} {note}" if note else _SECTION_B_TRANSPARENCY_FLAG
-            )
-        elif legacy_flag:
-            note = f"{note} {legacy_flag}" if note else legacy_flag
+        # Art. 2(2) lists Art. 50 for no Section B product, Annex III area or not.
+        section_b_flag = _SECTION_B_TRANSPARENCY_FLAG if section_b_product(profile) else None
+        flagged = bool(section_b_flag or legacy_flag)
+        note = " ".join(part for part in (section_b_flag, note, legacy_flag) if part) or None
         items.append(
             _item(
                 f"transparency.{index}",
@@ -233,7 +272,9 @@ def build_obligation_graph(
                 obligation.requirement,
                 "Transparency notice, label or disclosure record.",
                 applies_from,
-                application_date_note=note,
+                # A counsel flag sends the item to review, like every other flagged item.
+                ReviewStatus.REVIEW_REQUIRED if flagged else ReviewStatus.DETERMINED,
+                note,
             )
         )
 
@@ -476,10 +517,15 @@ def _public_authority_registration_item(profile: SystemProfile) -> ObligationGra
             f"body, office or agency, using {system}."
         )
     else:
+        use = "intended to be used by public authorities"
+        if not profile.public_authority_use and (
+            users := public_authority_users(profile.annex_iii_area)
+        ):
+            # Annex III, points 5(a), 6 and 7 describe use by the deployers Art. 49(3) names.
+            use = f"which {ANNEX_III[profile.annex_iii_area][0].ref} describes as used {users}"
         trigger = (
-            f"{system[0].upper()}{system[1:]}, intended to be used by public authorities. "
-            "Confirm that the deployer is, or acts on behalf of, a public authority or Union "
-            "institution, body, office or agency."
+            f"{system[0].upper()}{system[1:]}, {use}. Confirm that the deployer is, or acts on "
+            "behalf of, a public authority or Union institution, body, office or agency."
         )
     return _undeferred_item(
         "high-risk.deployer.49.3",
@@ -506,9 +552,11 @@ def _art_111_2_items(profile: SystemProfile, cut_off: str) -> list[ObligationGra
         return []
     change = profile.significant_change_after_application_date
     if change is True:
+        # Which date the change must follow is the contested point the note flags, so the
+        # requirement does not restate it.
         requirement = (
-            f"A significant change in design as from {cut_off} is asserted: the Regulation "
-            "applies to the changed system."
+            "A significant change in design is asserted: the Regulation applies to the "
+            "changed system. Keep the design-change log with the date of the change."
         )
     elif change is False:
         requirement = (
@@ -523,36 +571,20 @@ def _art_111_2_items(profile: SystemProfile, cut_off: str) -> list[ObligationGra
             "design-change log."
         )
     note = (
-        "Art. 111(2) AIA: covers high-risk systems placed on the market or put into service "
-        f"before {cut_off}, other than components of the Annex X large-scale IT systems "
-        "placed on the market or put into service before 2 August 2027, which are brought "
-        "into compliance by 31 December 2030 (Art. 111(1) AIA). The date the first unit of "
-        "the type and model was lawfully placed on the market or put into service decides "
-        "(Regulation (EU) 2026/1744, recital 39)."
+        f"{cut_off_flag(profile, cut_off)} Art. 111(2) AIA: covers high-risk systems placed on "
+        f"the market or put into service before {cut_off}, other than {ANNEX_X_CARVE_OUT}. "
+        "The date the first unit of the type and model was lawfully placed on the market or "
+        "put into service decides (Regulation (EU) 2026/1744, recital 39)."
     )
-    if cut_off_contested(profile, cut_off):
-        note = f"{cut_off_flag(cut_off)} {note}"
-    if profile.public_authority_use:
-        deadline = (
-            "The system is intended to be used by public authorities: its providers and "
-            f"deployers {PUBLIC_AUTHORITY_DUTY}."
-        )
-    elif profile.deployer_public_authority:
-        # Art. 111(2) turns on intended use, not on who deploys; a public-authority
-        # deployer is evidence of it, for the reviewer to confirm.
-        deadline = (
-            "A public-authority deployer is asserted: confirm whether the system is intended "
-            "to be used by public authorities. If it is, its providers and deployers "
-            f"{PUBLIC_AUTHORITY_DUTY}."
-        )
-    else:
-        deadline = ""
+    if derogation := derogation_note(profile, cut_off):
+        note = f"{note} {derogation}"
+    deadline = public_authority_sentence(profile).lstrip()
     items = []
     for actor in operator_roles(profile):
         actor_requirement, actor_note, application_date = requirement, note, cut_off
         if deadline and actor in _PROVIDER_OR_DEPLOYER:
             # Also in the note, which the text report and the dossier print.
-            actor_requirement, actor_note = f"{requirement} {deadline}", f"{deadline} {note}"
+            actor_requirement, actor_note = f"{requirement} {deadline}", f"{note} {deadline}"
             if profile.public_authority_use and change is not True:
                 application_date = ART_111_2_PUBLIC_AUTHORITY_DEADLINE
         items.append(
@@ -576,66 +608,41 @@ def _with_legacy_notes(
 ) -> list[ObligationGraphItem]:
     """Under Art. 111(2) AIA an unchanged legacy system is outside the Regulation (Art. 5
     apart) until its design changes, so its Chapter III dates are conditional; each item
-    says so next to any note it already has. Where the result turns on the contested
-    cut-off, the note carries the flag and the item goes to review."""
+    says so next to any note it already has. The condition rests on the contested
+    Chapter III date (the legacy status, or the date from which a change counts), so the
+    note carries the flag and the item goes to review."""
 
     legacy = legacy_dates(profile, cut_off)
     if not legacy or profile.significant_change_after_application_date is True:
         return items
+    # Also for an item dated 2026-08-02 (Section 5, Chapter IX): the duty does not bind
+    # the unchanged system from that date either.
     condition = (
-        f"Art. 111(2) AIA: the system was {describe_dates(legacy)}, before {cut_off}. As from "
-        "that date this duty attaches only once its design changes significantly"
+        f"Art. 111(2) AIA: the system was {describe_dates(legacy)}, before {cut_off}. "
+        "Whatever date this item gives, the duty attaches only once the system's design "
+        f"changes significantly as from {cut_off}"
     )
-    public_authority = (
-        f", and by {DEADLINE_2030} in any case, as the system is intended to be used by "
-        "public authorities"
-    )
-    contested = cut_off_contested(profile, cut_off)
+    flag = legacy_note_flag(profile, cut_off)
     out = []
     for item in items:
         text = condition
         # Art. 111(2), second sentence, binds providers and deployers only.
-        if profile.public_authority_use and item.actor in _PROVIDER_OR_DEPLOYER:
-            text += public_authority
-        text += "."
-        if contested:
-            text += f" {legacy_note_flag(cut_off)}"
-        update: dict[str, object] = {
-            "application_date_note": (
-                f"{item.application_date_note} {text}" if item.application_date_note else text
+        if item.actor in _PROVIDER_OR_DEPLOYER:
+            text += public_authority_clause(profile)
+        text += f". {flag}"
+        out.append(
+            item.model_copy(
+                update={
+                    "application_date_note": (
+                        f"{item.application_date_note} {text}"
+                        if item.application_date_note
+                        else text
+                    ),
+                    "review_status": ReviewStatus.REVIEW_REQUIRED,
+                }
             )
-        }
-        if contested:
-            update["review_status"] = ReviewStatus.REVIEW_REQUIRED
-        out.append(item.model_copy(update=update))
-    return out
-
-
-def _legacy_transparency_flag(profile: SystemProfile) -> str | None:
-    """Art. 111(2) AIA applies "this Regulation", not only Chapter III, to a legacy
-    high-risk system only after a significant change in design, so on its wording that
-    reaches Art. 50 too. The report keeps the Art. 50 dating as the conservative reading."""
-
-    if section_b_only(profile) or profile.significant_change_after_application_date is True:
-        return None
-    cut_off = chapter_iii_date(profile)
-    legacy = legacy_dates(profile, cut_off) if cut_off else []
-    if not legacy:
-        return None
-    flag = (
-        "Literal reading, confirm with counsel: Art. 111(2) AIA applies this Regulation to a "
-        f"high-risk system {describe_dates(legacy)}, before {cut_off}, only if its design "
-        "changes significantly as from that date, so on its wording Art. 50 would apply to it "
-        "only then. This report keeps the Art. 50 dating as the conservative reading."
-    )
-    if profile.public_authority_use:
-        flag += (
-            " As the system is intended to be used by public authorities, its providers and "
-            f"deployers {PUBLIC_AUTHORITY_DUTY}."
         )
-    if cut_off_contested(profile, cut_off):
-        flag += " The cut-off is itself contested (see the Art. 111(2) item)."
-    return flag
+    return out
 
 
 def _section_b_items(profile: SystemProfile) -> list[ObligationGraphItem]:
@@ -675,25 +682,29 @@ def _actor_slug(actor: Role) -> str:
     return actor.value.replace("_", "-")
 
 
-def _gpai_dating(profile: SystemProfile) -> tuple[str, str | None]:
+def _gpai_dating(profile: SystemProfile) -> tuple[str, str | None, bool]:
     """Art. 111(3) AIA dating from the model's own date, or from the AI system's
-    placing_on_market_date when only that is given (with a review note)."""
+    placing_on_market_date when only that is given, with a note, and whether it is that
+    fallback, which sends every item to review."""
 
-    model_date = profile.gpai_model_placing_on_market_date
+    model_date, fallback = gpai_model_date(profile)
     applies_from, note = _art_111_dating(
-        model_date or profile.placing_on_market_date,
-        POINT_B_DATE,
-        ART_111_3_DEADLINE,
-        _ART_111_3_NOTE,
+        model_date, POINT_B_DATE, ART_111_3_DEADLINE, _ART_111_3_NOTE
     )
-    if model_date is None and profile.placing_on_market_date is not None:
-        note = f"{note} {_GPAI_DATE_FALLBACK_NOTE}" if note else _GPAI_DATE_FALLBACK_NOTE
-    return applies_from, note
+    if fallback:
+        # One "Art. 111(3) AIA:" lead, whether or not the transition note is there.
+        note = (
+            f"{note} As {_GPAI_DATE_FALLBACK}"
+            if note
+            else f"Art. 111(3) AIA: as {_GPAI_DATE_FALLBACK}"
+        )
+    return applies_from, note, fallback
 
 
-def _gpai_graph(
-    systemic: bool, application_date: str, note: str | None
-) -> list[ObligationGraphItem]:
+def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphItem]:
+    application_date, note, fallback = _gpai_dating(profile)
+    # The fallback date is not the model's own: nothing dated by it is determined.
+    status = ReviewStatus.REVIEW_REQUIRED if fallback else ReviewStatus.DETERMINED
     # Every Chapter V item takes the same date and Art. 111(3) AIA note (_art_111_dating).
     items = [
         _item(
@@ -704,7 +715,7 @@ def _gpai_graph(
             "Keep model technical documentation per Annex XI.",
             "GPAI model documentation checklist.",
             application_date,
-            ReviewStatus.DETERMINED,
+            status,
             note,
         ),
         _item(
@@ -715,7 +726,7 @@ def _gpai_graph(
             "Provide downstream providers with information per Annex XII.",
             "Downstream provider information pack.",
             application_date,
-            ReviewStatus.DETERMINED,
+            status,
             note,
         ),
         _item(

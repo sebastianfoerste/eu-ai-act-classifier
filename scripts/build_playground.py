@@ -104,16 +104,23 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
                 "model without its own date, also Art. 111(3).",
             ),
             ("putting_into_service_date", "YYYY-MM-DD. Drives Art. 111(2) AIA."),
-            ("significant_change_after_application_date", "Art. 111(2) AIA."),
+            (
+                "significant_change_after_application_date",
+                "Art. 111(2) AIA: a significant design change as from the Chapter III date. "
+                "Which date is contested: 2027-12-02 (Annex III) or 2028-08-02 (Annex I), or "
+                "the general date 2026-08-02.",
+            ),
             (
                 "public_authority_use",
                 "Intended to be used by public authorities: the 2 August 2030 deadline in "
-                "Art. 111(2) AIA.",
+                "Art. 111(2) AIA and, while the deployer's status is unset, the Art. 49(3) "
+                "registration of use for review.",
             ),
             (
                 "deployer_public_authority",
-                "The deployer is, or acts for, a public authority or Union institution, body, "
-                "office or agency: Art. 49(3) AIA registration of use.",
+                "The deployer is, or acts on behalf of, a public authority or Union institution, "
+                "body, office or agency: Art. 49(3) AIA registration of use. Unset: inferred for "
+                "review from public-authority use or Annex III points 5(a), 6 and 7.",
             ),
             ("deployer_public_law_body", "Art. 27 AIA: fundamental rights impact assessment."),
             (

@@ -29,7 +29,8 @@ _ANNEX_I_SECTION_NOTE: dict[AnnexISection | None, str] = {
     AnnexISection.SECTION_A: (
         "Annex I, Section A: the Chapter III duties apply. Delegated acts under Art. 2(13) "
         "AIA, due by 2 August 2027, may limit Arts. 9 to 15 and 17 to 25 where the Section A "
-        "legislation gives an equivalent or higher level of protection."
+        "legislation gives an equivalent or higher level of protection and the limitation "
+        "does not reduce the overall level of protection provided for by the AI Act."
     ),
     AnnexISection.SECTION_B: (
         f"Annex I, Section B: {SECTION_B_PROVISIONS} (Art. 2(2) AIA), so no Chapter III "
@@ -64,6 +65,22 @@ def evaluate(profile) -> GateOutput:
                 detail=detail,
                 severity=Severity.HIGH,
                 tier=RiskTier.HIGH,
+            )
+        )
+
+    elif profile.annex_i_section is not None:
+        # The section only sorts an Art. 6(1) product; say so rather than drop it silently.
+        out.findings.append(
+            Finding(
+                rule_id="HIGHRISK.6.1.section_unused",
+                citation="Art. 6(1) AIA",
+                title="Annex I section given without the Art. 6(1) route",
+                detail=(
+                    f"annex_i_section is {profile.annex_i_section.value}, but the profile does "
+                    "not assert both an Annex I product or safety component and a third-party "
+                    "conformity assessment, so the Art. 6(1) route and the section are not used."
+                ),
+                severity=Severity.INFO,
             )
         )
 

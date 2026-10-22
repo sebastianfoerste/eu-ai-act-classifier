@@ -187,6 +187,7 @@
       "anyOf": [
         {
           "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
           "type": "string"
         },
         {
@@ -200,6 +201,7 @@
       "anyOf": [
         {
           "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
           "type": "string"
         },
         {
@@ -219,6 +221,7 @@
         }
       ],
       "default": null,
+      "description": "Art. 111(2) AIA: whether the design of a system placed on the market or put into service before its Chapter III date has changed significantly as from that date. That date is contested: the report uses the Art. 113, third paragraph, point (c) date for the route (2027-12-02 for Annex III, 2028-08-02 for Annex I), but the general date of 2026-08-02 may be meant. Null: not established.",
       "title": "Significant Change After Application Date"
     },
     "public_authority_use": {
@@ -236,6 +239,7 @@
         }
       ],
       "default": null,
+      "description": "Art. 49(3) AIA: the deployer is a public authority, Union institution, body, office or agency, or acts on behalf of one. Null: not established, so the registration of use is inferred, for review, where the system is intended to be used by public authorities or its Annex III point (5(a), 6 or 7) describes such use.",
       "title": "Deployer Public Authority"
     },
     "deployer_public_law_body": {
@@ -316,6 +320,7 @@
       "anyOf": [
         {
           "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
           "type": "string"
         },
         {
@@ -323,6 +328,7 @@
         }
       ],
       "default": null,
+      "description": "Art. 111(3) AIA: the date the general-purpose AI model itself was placed on the market. Null: the model is dated by placing_on_market_date, for review.",
       "title": "Gpai Model Placing On Market Date"
     },
     "prohibited_practices": {
@@ -351,7 +357,8 @@
           "type": "null"
         }
       ],
-      "default": null
+      "default": null,
+      "description": "Annex I section of the Art. 6(1) AIA product. For Section B only the Art. 2(2) provisions apply. Null: treated as Section A."
     },
     "annex_iii_area": {
       "anyOf": [

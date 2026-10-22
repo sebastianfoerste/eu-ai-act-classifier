@@ -291,8 +291,8 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
         "Regulation (EU) 2026/1744: Art. 5(1)(ba) and (bb), Art. 5(1a) and (1b) AIA",
         POINT_A_EXCEPTION_DATE,
         (
-            "Prohibitions on non-consensual intimate imagery and child sexual abuse "
-            "material apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA "
+            "Prohibitions on non-consensual realistic intimate material and child sexual "
+            "abuse material apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA "
             "as replaced by Art. 1, point (40) of Regulation (EU) 2026/1744)."
         ),
         SourceStatus.BINDING_LEVEL_1,
@@ -304,7 +304,8 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
         ART_111_4_DEADLINE,
         (
             "Providers of AI systems generating synthetic audio, image, video or text "
-            "content placed on the market before 2 August 2026 comply with Art. 50(2) by "
+            "content placed on the market before 2 August 2026 take the necessary steps to "
+            "comply with Art. 50(2) by "
             "2 December 2026 (Art. 111(4) AIA, added by Art. 1, point (39) of Regulation "
             "(EU) 2026/1744)."
         ),
@@ -347,7 +348,8 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
             "steps to comply with the requirements and obligations laid down in the Regulation "
             "by 2 August 2030 in any case (Art. 111(2) AIA as replaced by Art. 1, point (39)(a) "
             "of Regulation (EU) 2026/1744). Components of the Annex X large-scale IT systems "
-            "follow Art. 111(1) instead."
+            "placed on the market or put into service before 2 August 2027 follow Art. 111(1) "
+            "instead."
         ),
         SourceStatus.BINDING_LEVEL_1,
         "ai-act-amendment-2026-1744",

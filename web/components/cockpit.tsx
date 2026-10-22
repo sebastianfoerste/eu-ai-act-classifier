@@ -341,7 +341,7 @@ export function Cockpit() {
                 onToggle={(value) => toggleArray("roles", value)}
               />
               <TriStateControl
-                label="Public-authority deployer"
+                label="Public-authority deployer (or acting on its behalf)"
                 value={profile.deployer_public_authority}
                 onChange={(value) => updateProfile("deployer_public_authority", value)}
               />

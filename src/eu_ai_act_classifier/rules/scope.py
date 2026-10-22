@@ -8,17 +8,28 @@ can now make scope uncertainty explicit.
 from __future__ import annotations
 
 from ..catalog import SECTION_B_PROVISIONS
+from ..citations import (
+    ART_111_3_DEADLINE,
+    ART_111_4_DEADLINE,
+    GENERAL_APPLICATION_DATE,
+    POINT_B_DATE,
+)
 from ..models import Finding, RiskTier, ScopeAssessment, ScopeStatus, Severity, SystemProfile
 from ..transitions import (
+    ANNEX_X_CARVE_OUT,
     PUBLIC_AUTHORITY_DUTY,
+    before,
     chapter_iii_date,
     chapter_iii_point,
-    cut_off_contested,
     cut_off_flag,
+    derogation_note,
     describe_dates,
+    gpai_model_date,
     legacy_dates,
     market_dates,
+    public_authority_sentence,
     section_b_only,
+    undated_public_authority_sentence,
 )
 
 
@@ -132,6 +143,14 @@ def evaluate(profile: SystemProfile) -> tuple[ScopeAssessment, list[Finding], li
 
 
 def _transitional_status(profile: SystemProfile) -> str:
+    """The Art. 111 AIA transitions the submitted facts touch: Art. 111(2) for a high-risk
+    system, Art. 111(3) for a general-purpose AI model and Art. 111(4) for Art. 50(2)."""
+
+    parts = [_art_111_2_status(profile), _art_111_3_status(profile), _art_111_4_status(profile)]
+    return " ".join(part for part in parts if part)
+
+
+def _art_111_2_status(profile: SystemProfile) -> str:
     """Art. 111(2) AIA check: the given dates against the Chapter III date for the
     system's high-risk route (Art. 113, third paragraph, point (c) AIA)."""
 
@@ -164,38 +183,47 @@ def _transitional_status(profile: SystemProfile) -> str:
         f"{cut_off}, when Chapter III, Sections 1 to 3 apply to this system (Art. 113, "
         f"third paragraph, {chapter_iii_point(cut_off)} AIA)"
     )
+    # Which Chapter III date Art. 111(2) means is contested, so every result that rests
+    # on it carries the flag.
+    flag = f" {cut_off_flag(profile, cut_off)}"
     if not dates:
         return (
             "Article 111(2) check: no placing-on-market or putting-into-service date is "
             f"given to compare with {applies}. {_undated_change_sentence(profile)}"
-            f"{_public_authority_sentence(profile)}"
+            f"{undated_public_authority_sentence(profile)}{flag}"
         )
     legacy = legacy_dates(profile, cut_off)
+    derogation = derogation_note(profile, cut_off)
     if not legacy:
-        return (
+        text = (
             f"Article 111(2) check: the system was {describe_dates(dates)}, not before "
             f"{applies}, so the Art. 111(2) transition does not apply."
         )
+        return f"{text} {derogation}" if derogation else text
     # Either date before the cut-off makes it a legacy system; a later one is stated as given.
     later = [date for date in dates if date not in legacy]
     text = f"Article 111(2) check: the system was {describe_dates(legacy)}, before {applies}"
     if later:
         text += f", and {describe_dates(later)}"
-    text += f": {_change_clause(profile)}.{_public_authority_sentence(profile)}"
-    if cut_off_contested(profile, cut_off):
-        text += f" {cut_off_flag(cut_off)}"
-    return text
+    text += (
+        f": {_change_clause(profile)}.{public_authority_sentence(profile)} Art. 111(2) "
+        f"excludes {ANNEX_X_CARVE_OUT}."
+    )
+    if derogation:
+        text += f" {derogation}"
+    return f"{text}{flag}"
 
 
 def _change_clause(profile: SystemProfile) -> str:
     """The clause after "before <cut-off>, when Chapter III ... applies", so "that date"
-    is the cut-off."""
+    is the cut-off. An asserted change is not dated: which date it must follow is the
+    contested point the flag states."""
 
     change = profile.significant_change_after_application_date
     if change is True:
         return (
-            "a significant change in design as from that date is asserted, so the Regulation "
-            "applies to the changed system"
+            "a significant change in design is asserted, so the Regulation applies to the "
+            "changed system"
         )
     if change is False:
         return (
@@ -208,23 +236,58 @@ def _change_clause(profile: SystemProfile) -> str:
     )
 
 
-def _public_authority_sentence(profile: SystemProfile) -> str:
-    """Art. 111(2), second sentence, which applies "in any case", so also after an
-    asserted change. It turns on intended use; a public-authority deployer is evidence
-    of that use, for the reviewer to confirm."""
+def _art_111_3_status(profile: SystemProfile) -> str:
+    """Art. 111(3) AIA: a general-purpose AI model placed on the market before
+    2 August 2025 has until 2 August 2027. Not for a prohibited practice, which gets no
+    Chapter V items."""
 
-    if profile.public_authority_use:
+    if not profile.is_gpai_model:
+        if profile.gpai_model_placing_on_market_date is None:
+            return ""
         return (
-            " As the system is intended to be used by public authorities, its providers and "
-            f"deployers {PUBLIC_AUTHORITY_DUTY}."
+            "Article 111(3) check: gpai_model_placing_on_market_date is given, but no "
+            "general-purpose AI model is screened (is_gpai_model is false), so the date is "
+            "not used."
         )
-    if profile.deployer_public_authority:
+    model_date, fallback = gpai_model_date(profile)
+    if model_date is None or profile.prohibited_practices:
+        return ""
+    if fallback:
+        dated = (
+            "with no gpai_model_placing_on_market_date given, the general-purpose AI model is "
+            f"dated by the AI system's placing_on_market_date, {model_date}"
+        )
+    else:
+        dated = f"the general-purpose AI model was placed on the market on {model_date}"
+    if before(model_date, POINT_B_DATE):
         return (
-            " A public-authority deployer is asserted: confirm whether the system is intended "
-            "to be used by public authorities. If it is, its providers and deployers "
-            f"{PUBLIC_AUTHORITY_DUTY}."
+            f"Article 111(3) check: {dated}, before {POINT_B_DATE}, so its provider takes the "
+            "necessary steps to comply with the obligations laid down in this Regulation by "
+            f"{ART_111_3_DEADLINE}."
         )
-    return ""
+    return (
+        f"Article 111(3) check: {dated}, not before {POINT_B_DATE}, so the Art. 111(3) "
+        "transition does not apply."
+    )
+
+
+def _art_111_4_status(profile: SystemProfile) -> str:
+    """Art. 111(4) AIA: Art. 50(2) for a system placed on the market before
+    2 August 2026 applies from 2 December 2026."""
+
+    placed = profile.placing_on_market_date
+    if not profile.generates_synthetic_content or placed is None:
+        return ""
+    if before(placed, GENERAL_APPLICATION_DATE):
+        return (
+            f"Article 111(4) check: the system was placed on the market on {placed}, before "
+            f"{GENERAL_APPLICATION_DATE}, so its provider takes the necessary steps to comply "
+            f"with Art. 50(2) by {ART_111_4_DEADLINE}."
+        )
+    return (
+        f"Article 111(4) check: the system was placed on the market on {placed}, not before "
+        f"{GENERAL_APPLICATION_DATE}, so the Art. 111(4) transition does not apply."
+    )
 
 
 def _undated_change_sentence(profile: SystemProfile) -> str:

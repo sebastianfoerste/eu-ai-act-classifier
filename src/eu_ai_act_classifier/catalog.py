@@ -147,7 +147,8 @@ PROHIBITED: dict[ProhibitedPractice, tuple[Citation, str]] = {
     ),
     ProhibitedPractice.CHILD_SEXUAL_ABUSE_MATERIAL: (
         cite("Art. 5(1)(bb) AIA"),
-        "Generating or manipulating child sexual abuse material under Directive 2011/93/EU",
+        "Generating or manipulating child sexual abuse material under Directive 2011/93/EU, "
+        "save a 'without right' defence under national law",
     ),
     ProhibitedPractice.SOCIAL_SCORING: (
         cite("Art. 5(1)(c) AIA"),
@@ -221,23 +222,28 @@ ART_5_1B = (
 
 
 # Arts. 102 to 109 have the high-risk requirements taken into account in sectoral
-# delegated and implementing acts; Art. 2(2) adds no duty of its own.
+# delegated and implementing acts. Machinery is reached through Regulation (EU) 2026/1744,
+# Art. 3, point (1): delegated acts adding them to Annex III to Regulation (EU) 2023/1230,
+# which apply by 2 August 2028. Art. 2(2) adds no duty of its own.
 SECTION_B_ROUTE = (
     "The high-risk requirements reach the product only through the sectoral legislation, as "
     "far as its delegated or implementing acts integrate them."
 )
 
 
-# Contested Section B points. As in PR #26 the text opens with "Literal reading, confirm
-# with counsel", states the reading the report departs from, then what the report does.
+# Contested Section B points. As in PR #26 the text opens with the counsel flag
+# ("Literal reading, confirm with counsel"), states the reading the report departs
+# from, then what the report does.
 def section_b_kept_flag(provision: str, kept: str) -> str:
     """Art. 2(2) AIA does not list ``provision`` for a Section B product; the report
     keeps ``kept`` as the conservative reading."""
 
     return (
         "Literal reading, confirm with counsel: for an Annex I, Section B product Art. 2(2) "
-        "AIA lists only Art. 6(1), Art. 60a and Arts. 102 to 112, so on its wording "
-        f"{provision} does not apply. This report keeps {kept} as the conservative reading."
+        "AIA lists only Art. 6(1), Art. 60a and Arts. 102 to 112 (and Arts. 57 to 59 in so "
+        "far as the sectoral legislation integrates the high-risk requirements), so on its "
+        f"wording {provision} does not apply. This report keeps {kept} as the conservative "
+        "reading."
     )
 
 
@@ -269,6 +275,36 @@ def eu_database_registration_applies(annex_iii_area: AnnexIII | None) -> bool:
     return annex_iii_area is not None and annex_iii_area is not AnnexIII.CRITICAL_INFRASTRUCTURE
 
 
+def public_authority_users(annex_iii_area: AnnexIII | None) -> str | None:
+    """Who Annex III, points 5(a), 6 and 7 describe as using the system, in the words of
+    each point, as a phrase after "used" or "use": public authorities or Union bodies,
+    the deployers Art. 49(3) AIA names. None for every other point; point 8(a) is not
+    here, as its alternative dispute resolution limb may be private."""
+
+    area = annex_iii_area.value if annex_iii_area else ""
+    if area == AnnexIII.ESSENTIAL_PUBLIC_BENEFITS.value:
+        return "by or on behalf of public authorities"
+    if area.startswith("III.6."):
+        users = (
+            "by or on behalf of law enforcement authorities, or by Union institutions, "
+            "bodies, offices or agencies in support of law enforcement authorities"
+        )
+        # Point 6(a) alone adds "or on their behalf" for the Union bodies.
+        return f"{users} or on their behalf" if area == "III.6.a" else users
+    if area.startswith("III.7."):
+        return (
+            "by or on behalf of competent public authorities, or by Union institutions, "
+            "bodies, offices or agencies"
+        )
+    return None
+
+
+def public_authority_area(annex_iii_area: AnnexIII | None) -> bool:
+    """Whether the Annex III point itself describes use by public authorities."""
+
+    return public_authority_users(annex_iii_area) is not None
+
+
 def public_authority_registration_applies(
     annex_iii_area: AnnexIII | None,
     deployer_public_authority: bool | None,
@@ -277,13 +313,37 @@ def public_authority_registration_applies(
     """Art. 49(3) AIA: deployers that are public authorities, Union institutions, bodies,
     offices or agencies, or persons acting on their behalf, register their use of an
     Annex III system other than point 2. An unknown deployer status counts where the
-    system is intended to be used by public authorities, for the reviewer to confirm."""
+    system is intended to be used by public authorities, or its Annex III point describes
+    such use, for the reviewer to confirm."""
 
     if not eu_database_registration_applies(annex_iii_area):
         return False
     if deployer_public_authority is None:
+        return public_authority_use or public_authority_area(annex_iii_area)
+    return deployer_public_authority
+
+
+def national_registration_for_public_authority_deployer(
+    annex_iii_area: AnnexIII | None,
+    deployer_public_authority: bool | None,
+    public_authority_use: bool,
+) -> bool:
+    """Art. 49(3) AIA excepts Annex III point 2, which Art. 49(5) registers at national
+    level: a deployer Art. 49(3) would otherwise cover gets that pointer instead."""
+
+    if annex_iii_area is not AnnexIII.CRITICAL_INFRASTRUCTURE:
+        return False
+    if deployer_public_authority is None:
         return public_authority_use
     return deployer_public_authority
+
+
+# Art. 49(4) AIA: what the restricted section holds and who can see it.
+_SECURE_SECTION = (
+    "register in the secure non-public section of the EU database, with only the Annex VIII "
+    "and Annex IX information Art. 49(4) lists; only the Commission and the national "
+    "authorities referred to in Art. 74(8) have access to it (Art. 49(4) AIA)."
+)
 
 
 def secure_section_note(annex_iii_area: AnnexIII | None) -> str:
@@ -294,32 +354,42 @@ def secure_section_note(annex_iii_area: AnnexIII | None) -> str:
 
     area = annex_iii_area.value if annex_iii_area else ""
     if area.startswith(("III.6.", "III.7.")):
-        return " Register in the secure non-public section (Art. 49(4) AIA)."
+        return f" {_SECURE_SECTION[0].upper()}{_SECURE_SECTION[1:]}"
     if area.startswith("III.1."):
         return (
             " Where used in law enforcement, migration, asylum or border control management, "
-            "register in the secure non-public section (Art. 49(4) AIA)."
+            f"{_SECURE_SECTION}"
         )
     if annex_iii_area is AnnexIII.UNSURE:
         return (
             " If the Annex III point is 6 or 7, or 1 where used in law enforcement, migration, "
-            "asylum or border control management, register in the secure non-public section "
-            "(Art. 49(4) AIA)."
+            f"asylum or border control management, {_SECURE_SECTION}"
         )
     return ""
+
+
+# Art. 26(8), second sentence, AIA binds deployers that are public authorities or Union
+# institutions, bodies, offices or agencies themselves, not persons acting on their
+# behalf. It is a Chapter III, Section 3 duty, so it goes with the Art. 26 item and its
+# date, not with Art. 49(3).
+ART_26_8 = (
+    "Where the deployer is itself a public authority or Union institution, body, office or "
+    "agency and finds that the system has not been registered in the EU database, do not "
+    "use it and inform the provider or the distributor (Art. 26(8) AIA)."
+)
 
 
 def public_authority_registration_requirement(
     annex_iii_area: AnnexIII | None, deployer_public_authority: bool | None
 ) -> str:
-    """Art. 49(3) AIA, with the Art. 26(8) check that goes with it and any Art. 49(4)
-    note. Conditional where the deployer's status is inferred, not given."""
+    """Art. 49(3) AIA with any Art. 49(4) note. Conditional where the deployer's status
+    is inferred, not given."""
 
     requirement = (
         "Register as deployer, select the system and register its use in the EU database "
-        "before putting it into service or using it. If the system is not registered in the "
-        "EU database, do not use it and inform the provider or the distributor (Art. 26(8) "
-        f"AIA).{secure_section_note(annex_iii_area)}"
+        "before putting it into service or using it. Selecting the system presupposes that "
+        "it is registered there, so do not use a system that is not."
+        f"{secure_section_note(annex_iii_area)}"
     )
     if deployer_public_authority is None:
         return (
@@ -438,14 +508,18 @@ def high_risk_deployer_obligations(
     deployer_public_authority: bool | None = None,
 ) -> list[Obligation]:
     """Deployer duties for a high-risk system (Art. 26, Art. 27 FRIA, and Art. 49(3)
-    registration where ``public_authority_registration`` is true)."""
+    registration, with the Art. 26(8) check, where ``public_authority_registration`` is
+    true)."""
     d = Role.DEPLOYER
+    art_26_8 = f" {ART_26_8}" if public_authority_registration else ""
     out = [
         Obligation(
             article="Art. 26 AIA",
             title="Deployer obligations",
             applies_to=d,
-            requirement="Use per instructions, assign human oversight, monitor use, keep logs.",
+            requirement=(
+                f"Use per instructions, assign human oversight, monitor use, keep logs.{art_26_8}"
+            ),
         ),
     ]
     if fria_required:

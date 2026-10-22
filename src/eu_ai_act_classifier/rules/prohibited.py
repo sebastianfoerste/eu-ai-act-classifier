@@ -20,6 +20,7 @@ from ..transitions import section_b_product
 from .base import GateOutput
 
 _LATER_FROM = long_date(POINT_A_EXCEPTION_DATE)  # "2 December 2026"
+_SECTION_B_FLAG = section_b_kept_flag("Art. 5", "the prohibition")
 
 
 def evaluate(profile) -> GateOutput:
@@ -37,7 +38,7 @@ def evaluate(profile) -> GateOutput:
             title, detail = _later_prohibition(practice, citation.ref, label)
         if section_b_product(profile):
             # Art. 2(2) AIA does not list Art. 5 for a Section B product.
-            detail += f" {section_b_kept_flag('Art. 5', 'the prohibition')}"
+            detail += f" {_SECTION_B_FLAG}"
         out.findings.append(
             Finding(
                 rule_id=f"PROHIBITED.{practice.value}",
@@ -51,6 +52,9 @@ def evaluate(profile) -> GateOutput:
         )
     if out.findings:
         out.tier_vote = RiskTier.PROHIBITED
+        if section_b_product(profile):
+            # The dossier and the cockpit list open questions, not finding details.
+            out.open_questions.append(f"Art. 2(2) AIA and Art. 5 AIA: {_SECTION_B_FLAG}")
     return out
 
 

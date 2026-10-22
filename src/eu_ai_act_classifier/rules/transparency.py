@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from ..catalog import TRANSPARENCY, section_b_kept_flag
 from ..models import Finding, RiskTier, Severity
-from ..transitions import section_b_only
+from ..transitions import section_b_product
 from .base import GateOutput
 
 
@@ -29,7 +29,8 @@ def evaluate(profile) -> GateOutput:
         out.tier_vote = RiskTier.LIMITED
         articles = ", ".join(ob.article for ob in out.transparency)
         detail = "Art. 50 AIA transparency duties are triggered."
-        if section_b_only(profile):
+        # Art. 2(2) AIA lists Art. 50 for no Section B product, Annex III area or not.
+        if section_b_product(profile):
             detail += f" {section_b_kept_flag('Art. 50', 'the Art. 50 duties')}"
         out.findings.append(
             Finding(
