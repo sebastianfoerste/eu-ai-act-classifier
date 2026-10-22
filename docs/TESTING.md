@@ -54,12 +54,16 @@ its Status column and notes.
 cd web && npm ci && CLASSIFIER_REPO_ROOT=.. npx next build
 CLASSIFIER_REPO_ROOT=.. timeout 600 npx next start -p 3917 &
 SERVER=$!
-timeout 120 google-chrome --headless=new --no-sandbox --hide-scrollbars --force-device-scale-factor=1 \
-  --virtual-time-budget=20000 --window-size=1180,16000 --screenshot=cockpit.png http://127.0.0.1:3917/
+timeout 120 google-chrome --headless=new --no-sandbox --force-device-scale-factor=1 \
+  --virtual-time-budget=20000 --window-size=1180,16000 --screenshot=../docs/cockpit.png http://127.0.0.1:3917/
 kill "$SERVER"
 ```
 
-Crop the empty space below the page before committing it.
+The scroll bars stay visible, so the roles, Art. 5 and source lists show that
+they scroll rather than looking cut off. Crop the empty space below the page to
+a 24 px margin, then reduce the image to 256 colours (for example with Pillow:
+`quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)`,
+saved with `optimize=True`), which keeps it near 0.65 MB instead of 1.9 MB.
 
 ## Quality Expectations
 
