@@ -246,7 +246,7 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
     if (skipped.length) {
       const details = node("details", "defaults");
       details.append(node("summary", "", `Not asked: ${skipped.length} question${skipped.length > 1 ? "s" : ""} keep the default value`));
-      details.append(node("p", "question-hint", "Earlier answers settle these. Python tests try every answer to them over a grid of earlier answers and find no change in the result."));
+      details.append(node("p", "question-hint", "Earlier answers settle these. Python tests try every answer to them over grids of earlier answers and find no change in the classification, apart from the engine noting that a value given there is not used."));
       const defaults = node("ul");
       for (const question of skipped) {
         const fields = question.kind === "flags" ? question.options.map(o => o.field) : question.kind === "details" ? question.fields.map(f => f.field) : [question.field];

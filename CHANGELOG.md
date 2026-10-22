@@ -12,7 +12,7 @@ Chapter IX high-risk items (#26), a shorter README with the detail moved into
 `docs/` (#27), absolute GitHub links in the README for PyPI (#28) and the
 playground screenshot (#29).
 
-The entries below follow up the Regulation (EU) 2026/1744 dating work (#26),
+The Added, Changed and Fixed entries below follow up the Regulation (EU) 2026/1744 dating work (#26),
 checked against the consolidated AI Act of 27 July 2026 and Regulation (EU)
 2026/1744. Items whose dating or scope is contested carry
 "Literal reading, confirm with counsel".
@@ -159,6 +159,7 @@ checked against the consolidated AI Act of 27 July 2026 and Regulation (EU)
 #### Added
 
 - Guided intake in the browser playground: one question per page, an "I don't know" answer that routes to review or pauses the run for counsel, and a check-answers page listing every defaulted value. Questions, order and skip conditions come from `src/eu_ai_act_classifier/intake.py`; the JSON editor remains as a second mode.
+- The guided intake also asks the fields the entries above add: the Annex I section on the Art. 6(1) route, the general-purpose AI model's own date, and the deployer's public-authority status (Art. 49(3)) on a high-risk route. "I don't know" pauses the run on all three.
 - `labels.py`: one display-label catalog for the playground field guide and the cockpit, using the pinpoints and titles in `catalog.py`.
 - Competitive research, a feature matrix, a design teardown and an adaptation plan in `docs/research/`, and architecture decision records in `docs/adr/`.
 

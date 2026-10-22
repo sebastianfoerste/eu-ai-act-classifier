@@ -277,6 +277,33 @@ def build_intake_fixtures() -> dict:
     for question_id in ("roles", "annex_iii_area", "transparency", "training_flops"):
         partial.pop(question_id, None)
     cases["edge+partly-answered"] = {"answers": partial}
+    # The Annex I route asks annex_i_section, a single question with no "none" option.
+    route = profile_to_answers(
+        {
+            "name": "x",
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_i_section": "B",
+        }
+    )
+    for answer in ("A", "B", "none", "unknown"):
+        cases[f"edge+annex-i-section:{answer}"] = {"answers": {**route, "annex_i_section": answer}}
+    cases["edge+annex-i-section:missing"] = {
+        "answers": {k: v for k, v in route.items() if k != "annex_i_section"}
+    }
+    model = profile_to_answers(
+        {
+            "name": "x",
+            "roles": ["gpai_provider"],
+            "is_gpai_model": True,
+            "training_flops": 1e24,
+            "placing_on_market_date": "2026-01-01",
+            "gpai_model_placing_on_market_date": "2025-03-01",
+        }
+    )
+    cases["edge+gpai-date"] = {"answers": model}
+    for flops in ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", ""):
+        cases[f"edge+training-flops:{flops!r}"] = {"answers": {**model, "training_flops": flops}}
     for case in cases.values():
         profile, asked, blocked, missing = answers_to_profile(case["answers"])
         case.update(profile=profile, asked=asked, blocked=blocked, missing=missing)

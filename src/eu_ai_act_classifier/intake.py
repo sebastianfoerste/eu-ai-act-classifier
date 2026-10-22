@@ -14,13 +14,17 @@ handled per question and never becomes ``false`` or an omitted field:
 * ``"block"`` stops the run: counsel must characterise the fact before the
   profile can be classified.
 
-A question is skipped only where ``tests/test_intake.py`` shows that, given
-the earlier answers, no answer to it can change the report.
+A question is skipped only where ``tests/test_intake.py`` checks, over grids of
+states the intake can reach, that no answer to it changes the classification
+report, apart from the engine's own statement that a value given there is not
+used. Nonbinding advisory notes are outside that check: they may still reflect a
+screen the intake skips for a profile outside the AI Act's scope.
 """
 
 from __future__ import annotations
 
 import math
+import re
 from typing import Any
 
 from .labels import DEROGATION_LABELS, option_label
@@ -84,25 +88,6 @@ FRIA_OPEN = {
                     AnnexIII.INSURANCE_LIFE_HEALTH.value,
                 ],
             }
-        },
-    ]
-}
-
-# Art. 49(3) and Art. 111(2) AIA read the deployer's public-authority status only where
-# the profile screens a prohibited practice, has a high-risk route, states public-authority
-# use or gives a market date.
-DEPLOYER_AUTHORITY_RELEVANT = {
-    "all": [
-        IN_SCOPE,
-        {
-            "any": [
-                {"field": "prohibited_practices", "empty": False},
-                {"not": {"field": "annex_iii_area", "is": None}},
-                ANNEX_I_ROUTE,
-                {"field": "public_authority_use", "is": True},
-                {"not": {"field": "placing_on_market_date", "is": None}},
-                {"not": {"field": "putting_into_service_date", "is": None}},
-            ]
         },
     ]
 }
@@ -348,24 +333,6 @@ QUESTIONS: list[dict[str, Any]] = [
         "unknown": BLOCK,
     },
     {
-        "id": "gpai_date",
-        "kind": "details",
-        "title": "General-purpose AI model date",
-        "hint": "YYYY-MM-DD. Leave blank if not given; the model is then dated by the AI "
-        "system's placing-on-market date, which is flagged for review.",
-        "article": "Art. 111(3) AIA",
-        "fields": [
-            {
-                "field": "gpai_model_placing_on_market_date",
-                "label": "Model placed on the market",
-                "type": "date",
-            }
-        ],
-        # For a profile that screens no general-purpose AI model the engine reports the
-        # date as not used.
-        "show_if": {"all": [IN_SCOPE, {"field": "is_gpai_model", "is": True}]},
-    },
-    {
         "id": "transparency",
         "kind": "flags",
         "title": "Does the system do any of these?",
@@ -403,12 +370,31 @@ QUESTIONS: list[dict[str, Any]] = [
         "id": "dates",
         "kind": "details",
         "title": "Market dates",
-        "hint": "YYYY-MM-DD. Leave blank if not yet placed on the market or put into service. "
-        "For a GPAI model, give the model's date.",
+        "hint": "YYYY-MM-DD, the AI system's dates. Leave blank if not yet placed on the "
+        "market or put into service. A general-purpose AI model's own date is asked next.",
         "fields": [
             {"field": "placing_on_market_date", "label": "Placed on the market", "type": "date"},
             {"field": "putting_into_service_date", "label": "Put into service", "type": "date"},
         ],
+    },
+    {
+        "id": "gpai_date",
+        "kind": "details",
+        "title": "General-purpose AI model date",
+        "hint": "YYYY-MM-DD. Leave blank if not given: the model is then dated by the AI "
+        "system's placing-on-market date, for review, or, if none is given, its obligations "
+        "note the Art. 111(3) transition.",
+        "article": "Art. 111(3) AIA",
+        "fields": [
+            {
+                "field": "gpai_model_placing_on_market_date",
+                "label": "Model placed on the market",
+                "type": "date",
+            }
+        ],
+        # For a profile that screens no general-purpose AI model the engine reports the
+        # date as not used.
+        "show_if": {"all": [IN_SCOPE, {"field": "is_gpai_model", "is": True}]},
     },
     {
         "id": "significant_change",
@@ -416,8 +402,9 @@ QUESTIONS: list[dict[str, Any]] = [
         "field": "significant_change_after_application_date",
         "title": "Has the system changed significantly after the relevant application date?",
         # The model default (null) routes the result to review only for a high-risk system
-        # placed on the market before its Chapter III date (Art. 111(2) AIA), so it is not
-        # fail-closed everywhere: "I don't know" blocks.
+        # placed on the market or put into service before its Chapter III date (Art. 111(2)
+        # AIA; not a Section B product without an Annex III area), so it is not fail-closed
+        # everywhere: "I don't know" blocks.
         "unknown": BLOCK,
     },
     {
@@ -427,7 +414,9 @@ QUESTIONS: list[dict[str, Any]] = [
         "title": "Is the deployer a public authority or a Union institution, body, office or "
         "agency, or does it act on behalf of one?",
         "article": "Art. 49(3) AIA",
-        "show_if": DEPLOYER_AUTHORITY_RELEVANT,
+        # Art. 49(3) and the Art. 111(2) deployer items read it only for a high-risk
+        # route; elsewhere the answered significant-change question settles the rest.
+        "show_if": HIGH_RISK_ROUTE,
         # A missing status is inferred for review only in some contexts, so it blocks.
         "unknown": BLOCK,
     },
@@ -498,11 +487,21 @@ def _base_profile() -> dict[str, Any]:
     }
 
 
+# One grammar for both interpreters (NUMBER in intake.mjs): a decimal with an
+# optional exponent, so "2e25" passes and "0x10" or "1_000" do not, in either.
+_NUMBER = re.compile(r"^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$")
+
+
 def _is_number(value: Any) -> bool:
-    try:
-        return math.isfinite(float(value))
-    except (TypeError, ValueError):
+    if isinstance(value, bool):
         return False
+    if isinstance(value, int | float):
+        return math.isfinite(value)
+    return (
+        isinstance(value, str)
+        and bool(_NUMBER.match(value.strip()))
+        and (math.isfinite(float(value)))
+    )
 
 
 def is_answered(question: dict[str, Any], answers: dict[str, Any]) -> bool:

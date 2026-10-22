@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { UNKNOWN, answerError, answersToProfile, askedQuestions, compactProfile, describeAnswer, droppedFields, isIsoDate, profileToAnswers, readField } from "../../docs/playground/intake.mjs";
+import { UNKNOWN, answerError, answersToProfile, askedQuestions, compactProfile, describeAnswer, droppedFields, isAnswered, isIsoDate, isNumber, profileToAnswers, readField } from "../../docs/playground/intake.mjs";
 
 const read = path => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
 const definition = read("../../docs/playground/intake.json");
@@ -114,3 +114,20 @@ test("opening a profile reports values the questions would drop", () => {
   assert.deepEqual(droppedFields(definition, { name: "x", roles: [] }), { skipped: [], unsupported: ["roles"] });
   assert.deepEqual(droppedFields(definition, { name: "x", annex_iii_area: "III.9" }), { skipped: [], unsupported: ["annex_iii_area"] });
 });
+
+test("a single question without a none option does not accept none", () => {
+  const section = definition.questions.find(q => q.id === "annex_i_section");
+  assert.equal(section.none_label, undefined);
+  assert.equal(isAnswered(section, "none"), false);
+  assert.equal(isAnswered(section, "B"), true);
+  const route = { name: "x", annex_i_safety_component: true, annex_i_third_party_assessment: true };
+  assert.equal(profileToAnswers(definition, route).annex_i_section, undefined);
+  const answers = { ...profileToAnswers(definition, route), annex_i_section: "none" };
+  assert.ok(answersToProfile(definition, answers).missing.includes("annex_i_section"));
+});
+
+test("numbers use the same grammar as the Python interpreter", () => {
+  for (const ok of ["2e25", " 2e25 ", ".5e3", "10", 2e25]) assert.equal(isNumber(ok), true, String(ok));
+  for (const bad of ["0x10", "1_000", "1e", "", " ", "Infinity", NaN]) assert.equal(isNumber(bad), false, String(bad));
+});
+

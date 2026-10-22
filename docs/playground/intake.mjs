@@ -6,6 +6,15 @@
 
 export const UNKNOWN = "unknown";
 
+// One grammar for both interpreters (_NUMBER in intake.py): a decimal with an
+// optional exponent, so "2e25" passes and "0x10" or "1_000" do not, in either.
+const NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/;
+
+export function isNumber(value) {
+  if (typeof value === "number") return Number.isFinite(value);
+  return typeof value === "string" && NUMBER.test(value.trim()) && Number.isFinite(Number(value));
+}
+
 export function readField(profile, field) {
   let value = profile;
   for (const part of field.split(".")) value = value && typeof value === "object" ? value[part] : undefined;
@@ -84,7 +93,7 @@ export function isAnswered(question, answer) {
       return Array.isArray(answer) && (!question.required || answer.length > 0)
         && answer.every(value => question.options.some(option => option.value === value));
     case "flags": return Array.isArray(answer);
-    case "number": return answer === "" || answer === null || (answer !== undefined && Number.isFinite(Number(answer)));
+    case "number": return answer === "" || answer === null || isNumber(answer);
     default: return false;
   }
 }
@@ -100,7 +109,7 @@ export function answerError(question, answer) {
     }
     return "";
   }
-  if (question.kind === "number" && answer !== "" && answer !== null && answer !== undefined && !Number.isFinite(Number(answer))) {
+  if (question.kind === "number" && answer !== "" && answer !== null && answer !== undefined && !isNumber(answer)) {
     return "Enter a number, for example 2e25, or leave it blank.";
   }
   if (question.kind === "multi" && question.required && Array.isArray(answer) && !answer.length) return "Select at least one option.";

@@ -978,44 +978,6 @@
       "unknown": "block"
     },
     {
-      "id": "gpai_date",
-      "kind": "details",
-      "title": "General-purpose AI model date",
-      "hint": "YYYY-MM-DD. Leave blank if not given; the model is then dated by the AI system's placing-on-market date, which is flagged for review.",
-      "article": "Art. 111(3) AIA",
-      "fields": [
-        {
-          "field": "gpai_model_placing_on_market_date",
-          "label": "Model placed on the market",
-          "type": "date"
-        }
-      ],
-      "show_if": {
-        "all": [
-          {
-            "all": [
-              {
-                "not": {
-                  "field": "is_ai_system",
-                  "is": false
-                }
-              },
-              {
-                "not": {
-                  "field": "eu_nexus",
-                  "is": false
-                }
-              }
-            ]
-          },
-          {
-            "field": "is_gpai_model",
-            "is": true
-          }
-        ]
-      }
-    },
-    {
       "id": "transparency",
       "kind": "flags",
       "title": "Does the system do any of these?",
@@ -1068,7 +1030,7 @@
       "id": "dates",
       "kind": "details",
       "title": "Market dates",
-      "hint": "YYYY-MM-DD. Leave blank if not yet placed on the market or put into service. For a GPAI model, give the model's date.",
+      "hint": "YYYY-MM-DD, the AI system's dates. Leave blank if not yet placed on the market or put into service. A general-purpose AI model's own date is asked next.",
       "fields": [
         {
           "field": "placing_on_market_date",
@@ -1081,6 +1043,44 @@
           "type": "date"
         }
       ]
+    },
+    {
+      "id": "gpai_date",
+      "kind": "details",
+      "title": "General-purpose AI model date",
+      "hint": "YYYY-MM-DD. Leave blank if not given: the model is then dated by the AI system's placing-on-market date, for review, or, if none is given, its obligations note the Art. 111(3) transition.",
+      "article": "Art. 111(3) AIA",
+      "fields": [
+        {
+          "field": "gpai_model_placing_on_market_date",
+          "label": "Model placed on the market",
+          "type": "date"
+        }
+      ],
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "is_gpai_model",
+            "is": true
+          }
+        ]
+      }
     },
     {
       "id": "significant_change",
@@ -1114,11 +1114,11 @@
             ]
           },
           {
+            "field": "prohibited_practices",
+            "empty": true
+          },
+          {
             "any": [
-              {
-                "field": "prohibited_practices",
-                "empty": false
-              },
               {
                 "not": {
                   "field": "annex_iii_area",
@@ -1136,22 +1136,6 @@
                     "is": true
                   }
                 ]
-              },
-              {
-                "field": "public_authority_use",
-                "is": true
-              },
-              {
-                "not": {
-                  "field": "placing_on_market_date",
-                  "is": null
-                }
-              },
-              {
-                "not": {
-                  "field": "putting_into_service_date",
-                  "is": null
-                }
               }
             ]
           }

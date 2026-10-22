@@ -5,8 +5,11 @@ Three guarantees back the playground's guided mode:
 1. Every bundled example survives profile -> answers -> profile unchanged.
 2. Every "I don't know" either blocks the run or writes a value that yields
    ``requires_review`` wherever the question is asked.
-3. A question is skipped only where no answer to it can change the report,
-   checked over a grid of earlier answers.
+3. A question is skipped only where no answer to it changes the classification
+   report, checked over grids of states the intake can reach. The one allowed
+   difference is the engine's own statement that a value given there is not
+   used. Advisory notes must match too, except for a profile outside the AI
+   Act's scope, where they may still reflect a screen the intake skips.
 """
 
 from __future__ import annotations
@@ -22,6 +25,7 @@ import pytest
 from eu_ai_act_classifier import SystemProfile, classify
 from eu_ai_act_classifier.intake import (
     BLOCK,
+    IN_SCOPE,
     QUESTIONS,
     answers_to_profile,
     holds,
@@ -31,7 +35,7 @@ from eu_ai_act_classifier.intake import (
     read_field,
     write_field,
 )
-from eu_ai_act_classifier.models import Derogation, ProhibitedPractice
+from eu_ai_act_classifier.models import AnnexIII, Derogation, ProhibitedPractice
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = {
@@ -47,7 +51,8 @@ _REPORTS: dict[str, dict] = {}
 def _report(profile: dict) -> dict:
     key = json.dumps(profile, sort_keys=True)
     if key not in _REPORTS:
-        _REPORTS[key] = classify(SystemProfile.model_validate(profile)).model_dump(mode="json")
+        report = classify(SystemProfile.model_validate(profile), include_advisory=True)
+        _REPORTS[key] = report.model_dump(mode="json")
     return _REPORTS[key]
 
 
@@ -141,18 +146,41 @@ def _grid() -> list[dict]:
                 "deployer_public_law_body": False,
                 "deployer_private_public_service": False,
                 "has_authorised_representative": True,
-                # Answered, as the intake requires wherever it asks; where it skips the
-                # question, its own skip check shows the value does not matter.
+                # Answered, as the intake requires wherever it asks; _reachable resets
+                # it to its default where the intake skips it.
                 "deployer_public_authority": False,
+                "significant_change_after_application_date": False,
             }
         )
     return profiles
 
 
-GRID = _grid()
+def _reachable(profile: dict) -> dict:
+    """The state the intake would produce: a question it skips keeps its default."""
+
+    state = _normalised(profile)
+    defaults = intake_definition()["defaults"]
+    for question in QUESTIONS:
+        if not holds(question.get("show_if"), state):
+            for field in question_fields(question):
+                if field != "name":
+                    write_field(state, field, copy.deepcopy(read_field(defaults, field)))
+    return state
+
+
+def _distinct(profiles: list[dict]) -> list[dict]:
+    seen: dict[str, dict] = {}
+    for profile in profiles:
+        seen.setdefault(json.dumps(profile, sort_keys=True), profile)
+    return list(seen.values())
+
+
+GRID = _distinct([_reachable(p) for p in _grid()])
 
 # The Art. 111 transitions, the Annex I section and Art. 49(3) read facts the grid
-# above holds fixed, so a second grid varies them.
+# above holds fixed, so a second grid varies them. The transparency flags stay fixed:
+# the transparency question is skipped only outside scope, where its own check varies
+# them.
 _TRANSITION_AXES = {
     "roles": [["provider"], ["deployer"]],
     "scope": [(True, True), (False, True)],
@@ -161,15 +189,16 @@ _TRANSITION_AXES = {
     "annex_iii_area": [None, "III.2", "III.6.a"],
     "public_authority_use": [False, True],
     "dates": [(None, None), ("2025-01-01", None), (None, "2028-01-01")],
-    "significant_change": [None, True],
+    "significant_change": [False, True],
     "gpai": [(False, None), (True, "2025-01-01")],
+    "deployer_public_authority": [False, True],
 }
 
 
 def _transition_grid() -> list[dict]:
     profiles = []
     for combo in itertools.product(*_TRANSITION_AXES.values()):
-        roles, scope, prohibited, annex_i, annex_iii, authority, dates, change, gpai = combo
+        roles, scope, prohibited, annex_i, annex_iii, authority, dates, change, gpai, dpa = combo
         profiles.append(
             {
                 "name": "Grid system",
@@ -189,13 +218,13 @@ def _transition_grid() -> list[dict]:
                 "gpai_model_placing_on_market_date": gpai[1],
                 "deployer_public_law_body": False,
                 "deployer_private_public_service": False,
-                "deployer_public_authority": False,
+                "deployer_public_authority": dpa,
             }
         )
     return profiles
 
 
-TRANSITION_GRID = _transition_grid()
+TRANSITION_GRID = _distinct([_reachable(p) for p in _transition_grid()])
 
 # A skipped question may change the report only by the engine's own statement that the
 # value is not used: a section without the Art. 6(1) route, a model date without a
@@ -217,6 +246,11 @@ def _without_unused_statements(report: dict) -> dict:
     scope["transitional_status"] = status or _NO_TRANSITION
     findings = [f for f in report["findings"] if f["rule_id"] != _SECTION_UNUSED]
     return {**report, "findings": findings, "scope": scope}
+
+
+def _comparable(report: dict, *, advisory: bool) -> dict:
+    report = _without_unused_statements(report)
+    return report if advisory else {**report, "advisory_notes": None}
 
 
 def _alternatives(question: dict) -> list[dict[str, object]]:
@@ -258,14 +292,15 @@ def _with(profile: dict, assignment: dict[str, object]) -> dict:
     "question", [q for q in QUESTIONS if q.get("show_if")], ids=lambda q: q["id"]
 )
 def test_a_skipped_question_cannot_change_the_report(question: dict) -> None:
-    hidden = [p for p in GRID + TRANSITION_GRID if not holds(question["show_if"], _normalised(p))]
+    hidden = [p for p in GRID + TRANSITION_GRID if not holds(question["show_if"], p)]
     assert hidden, "the condition never hides the question on the grid"
     for profile in hidden:
-        baseline = _without_unused_statements(_report(profile))
+        in_scope = holds(IN_SCOPE, profile)
+        baseline = _comparable(_report(profile), advisory=in_scope)
         for assignment in _alternatives(question):
             changed = _with(profile, assignment)
             assert not holds(question["show_if"], _normalised(changed))
-            report = _without_unused_statements(_report(changed))
+            report = _comparable(_report(changed), advisory=in_scope)
             assert report == baseline, (question["id"], profile, assignment)
 
 
@@ -275,7 +310,7 @@ def test_a_skipped_question_cannot_change_the_report(question: dict) -> None:
     ids=lambda q: q["id"],
 )
 def test_a_fail_closed_unknown_always_yields_requires_review(question: dict) -> None:
-    visible = [p for p in GRID + TRANSITION_GRID if holds(question.get("show_if"), _normalised(p))]
+    visible = [p for p in GRID + TRANSITION_GRID if holds(question.get("show_if"), p)]
     assert visible
     for profile in visible:
         changed = _with(profile, {question["field"]: question["unknown"]["value"]})
@@ -368,15 +403,29 @@ def test_question_articles_are_citations_the_engine_already_makes() -> None:
         },
         {"name": "x", "prohibited_practices": [p.value for p in ProhibitedPractice]},
         {"name": "x", "roles": ["deployer"], "annex_iii_area": "III.6.a"},
+        {"name": "x", "is_ai_system": None, "eu_nexus": None},
+        {
+            "name": "x",
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_i_section": "B",
+        },
+        *({"name": "x", "annex_iii_area": area.value} for area in AnnexIII),
     ]
     corpus = "\n".join(
         classify(SystemProfile.model_validate(p), include_advisory=True).model_dump_json()
         for p in profiles
     )
-    pinpoints = re.compile(r"Art\. \d+(?:\(\w+\))*(?: AIA)?")
+    pinpoints = re.compile(
+        r"Arts?\. \d+(?:\(\w+\))*(?: to \d+)?(?: AIA)?"
+        r"|Article \d+(?:\(\w+\))*"
+        r"|Annex [IVX]+(?:\(\w+\))*(?:, Section [AB])?"
+    )
     for question in QUESTIONS:
         texts = [question.get("article") or "", question.get("hint") or "", question["title"]]
         texts += [o.get("label", "") for o in question.get("options", [])]
         for text in texts:
             for pinpoint in pinpoints.findall(text):
-                assert pinpoint in corpus, (question["id"], pinpoint)
+                # A whole pinpoint, not the prefix of a longer one ("Art. 5" in "Art. 50").
+                made = re.search(re.escape(pinpoint) + r"(?![\w(])", corpus)
+                assert made, (question["id"], pinpoint)

@@ -26,14 +26,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -132,14 +132,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -238,14 +238,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -344,14 +344,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -452,14 +452,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "annex_i_section": "unknown"
       },
@@ -559,14 +559,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -665,14 +665,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -775,14 +775,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "deployer_private_public_service": "unknown"
       },
@@ -882,14 +882,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "deployer_public_authority": "unknown"
       },
@@ -990,14 +990,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "deployer_public_law_body": "unknown"
       },
@@ -1097,14 +1097,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -1205,14 +1205,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -1311,14 +1311,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -1419,14 +1419,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "unknown",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -1525,14 +1525,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "has_authorised_representative": "unknown"
       },
@@ -1632,14 +1632,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -1738,14 +1738,14 @@
         "is_gpai_model": "unknown",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -1846,14 +1846,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -1954,14 +1954,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -2062,14 +2062,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -2170,14 +2170,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "unknown",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -2276,14 +2276,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -2384,14 +2384,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "significant_change": "unknown"
       },
@@ -2492,14 +2492,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": "unknown",
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -2600,14 +2600,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -2708,14 +2708,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -2814,9 +2814,6 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [
           "generates_deepfakes"
         ],
@@ -2824,6 +2821,9 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -2883,6 +2883,647 @@
         "transparency",
         "public_authority_use",
         "dates",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
+    },
+    "edge+annex-i-section:A": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "yes",
+        "annex_i_third_party_assessment": "yes",
+        "annex_i_section": "A",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "no",
+        "training_flops": "",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": null,
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": false,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": null,
+        "prohibited_practices": [],
+        "annex_i_safety_component": true,
+        "annex_i_third_party_assessment": true,
+        "annex_i_section": "A",
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_i_third_party_assessment",
+        "annex_i_section",
+        "annex_iii_area",
+        "provider_established_outside_eu",
+        "value_chain",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "significant_change",
+        "deployer_public_authority"
+      ],
+      "blocked": [],
+      "missing": [
+        "significant_change",
+        "deployer_public_authority"
+      ]
+    },
+    "edge+annex-i-section:B": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "yes",
+        "annex_i_third_party_assessment": "yes",
+        "annex_i_section": "B",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "no",
+        "training_flops": "",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": null,
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": false,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": null,
+        "prohibited_practices": [],
+        "annex_i_safety_component": true,
+        "annex_i_third_party_assessment": true,
+        "annex_i_section": "B",
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_i_third_party_assessment",
+        "annex_i_section",
+        "annex_iii_area",
+        "provider_established_outside_eu",
+        "value_chain",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "significant_change",
+        "deployer_public_authority"
+      ],
+      "blocked": [],
+      "missing": [
+        "significant_change",
+        "deployer_public_authority"
+      ]
+    },
+    "edge+annex-i-section:missing": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "yes",
+        "annex_i_third_party_assessment": "yes",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "no",
+        "training_flops": "",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": null,
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": false,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": null,
+        "prohibited_practices": [],
+        "annex_i_safety_component": true,
+        "annex_i_third_party_assessment": true,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_i_third_party_assessment",
+        "annex_i_section",
+        "annex_iii_area",
+        "provider_established_outside_eu",
+        "value_chain",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "significant_change",
+        "deployer_public_authority"
+      ],
+      "blocked": [],
+      "missing": [
+        "annex_i_section",
+        "significant_change",
+        "deployer_public_authority"
+      ]
+    },
+    "edge+annex-i-section:none": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "yes",
+        "annex_i_third_party_assessment": "yes",
+        "annex_i_section": "none",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "no",
+        "training_flops": "",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": null,
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": false,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": null,
+        "prohibited_practices": [],
+        "annex_i_safety_component": true,
+        "annex_i_third_party_assessment": true,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_i_third_party_assessment",
+        "annex_i_section",
+        "annex_iii_area",
+        "provider_established_outside_eu",
+        "value_chain",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "significant_change",
+        "deployer_public_authority"
+      ],
+      "blocked": [],
+      "missing": [
+        "annex_i_section",
+        "significant_change",
+        "deployer_public_authority"
+      ]
+    },
+    "edge+annex-i-section:unknown": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "yes",
+        "annex_i_third_party_assessment": "yes",
+        "annex_i_section": "unknown",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "no",
+        "training_flops": "",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": null,
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": false,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": null,
+        "prohibited_practices": [],
+        "annex_i_safety_component": true,
+        "annex_i_third_party_assessment": true,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_i_third_party_assessment",
+        "annex_i_section",
+        "annex_iii_area",
+        "provider_established_outside_eu",
+        "value_chain",
+        "is_gpai_model",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "significant_change",
+        "deployer_public_authority"
+      ],
+      "blocked": [
+        "annex_i_section"
+      ],
+      "missing": [
+        "significant_change",
+        "deployer_public_authority"
+      ]
+    },
+    "edge+gpai-date": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "gpai_provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "yes",
+        "training_flops": 1e+24,
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "2026-01-01",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": "2025-03-01"
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "gpai_provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": "2026-01-01",
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": true,
+        "training_flops": 1e+24,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": "2025-03-01",
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "training_flops",
+        "gpai_systemic_risk_designated",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "gpai_date",
         "significant_change"
       ],
       "blocked": [],
@@ -2990,13 +3631,13 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": " 2026-03-01 "
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -3056,13 +3697,11 @@
         "transparency",
         "public_authority_use",
         "dates",
-        "significant_change",
-        "deployer_public_authority"
+        "significant_change"
       ],
       "blocked": [],
       "missing": [
-        "significant_change",
-        "deployer_public_authority"
+        "significant_change"
       ]
     },
     "edge+partly-answered": {
@@ -3086,13 +3725,13 @@
         "value_chain": [],
         "is_gpai_model": "no",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -3162,6 +3801,730 @@
         "significant_change"
       ]
     },
+    "edge+training-flops:' 2e25 '": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "gpai_provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "yes",
+        "training_flops": " 2e25 ",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "2026-01-01",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": "2025-03-01"
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "gpai_provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": "2026-01-01",
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": true,
+        "training_flops": 2e+25,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": "2025-03-01",
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "training_flops",
+        "gpai_systemic_risk_designated",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "gpai_date",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
+    },
+    "edge+training-flops:''": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "gpai_provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "yes",
+        "training_flops": "",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "2026-01-01",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": "2025-03-01"
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "gpai_provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": "2026-01-01",
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": true,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": "2025-03-01",
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "training_flops",
+        "gpai_systemic_risk_designated",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "gpai_date",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
+    },
+    "edge+training-flops:'.5e3'": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "gpai_provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "yes",
+        "training_flops": ".5e3",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "2026-01-01",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": "2025-03-01"
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "gpai_provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": "2026-01-01",
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": true,
+        "training_flops": 500.0,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": "2025-03-01",
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "training_flops",
+        "gpai_systemic_risk_designated",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "gpai_date",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
+    },
+    "edge+training-flops:'0x10'": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "gpai_provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "yes",
+        "training_flops": "0x10",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "2026-01-01",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": "2025-03-01"
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "gpai_provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": "2026-01-01",
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": true,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": "2025-03-01",
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "training_flops",
+        "gpai_systemic_risk_designated",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "gpai_date",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "training_flops",
+        "significant_change"
+      ]
+    },
+    "edge+training-flops:'1_000'": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "gpai_provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "yes",
+        "training_flops": "1_000",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "2026-01-01",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": "2025-03-01"
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "gpai_provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": "2026-01-01",
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": true,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": "2025-03-01",
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "training_flops",
+        "gpai_systemic_risk_designated",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "gpai_date",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "training_flops",
+        "significant_change"
+      ]
+    },
+    "edge+training-flops:'1e'": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "gpai_provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "yes",
+        "training_flops": "1e",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "2026-01-01",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": "2025-03-01"
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "gpai_provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": "2026-01-01",
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": true,
+        "training_flops": null,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": "2025-03-01",
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "training_flops",
+        "gpai_systemic_risk_designated",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "gpai_date",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "training_flops",
+        "significant_change"
+      ]
+    },
+    "edge+training-flops:'2e25'": {
+      "answers": {
+        "system": {
+          "name": "x",
+          "description": "",
+          "purpose": "",
+          "sector": "",
+          "intended_purpose_source": ""
+        },
+        "roles": [
+          "gpai_provider"
+        ],
+        "is_ai_system": "yes",
+        "eu_nexus": "yes",
+        "excluded_use_flags": [],
+        "prohibited_practices": [],
+        "annex_i_safety_component": "no",
+        "annex_i_third_party_assessment": "no",
+        "annex_iii_area": "none",
+        "performs_profiling": "no",
+        "derogation": [],
+        "provider_established_outside_eu": "no",
+        "value_chain": [],
+        "is_gpai_model": "yes",
+        "training_flops": "2e25",
+        "gpai_systemic_risk_designated": "no",
+        "transparency": [],
+        "public_authority_use": "no",
+        "dates": {
+          "placing_on_market_date": "2026-01-01",
+          "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": "2025-03-01"
+        }
+      },
+      "profile": {
+        "name": "x",
+        "description": "",
+        "roles": [
+          "gpai_provider"
+        ],
+        "purpose": "",
+        "sector": "",
+        "is_ai_system": true,
+        "intended_purpose_source": "",
+        "eu_nexus": true,
+        "excluded_use_flags": [],
+        "placing_on_market_date": "2026-01-01",
+        "putting_into_service_date": null,
+        "significant_change_after_application_date": null,
+        "public_authority_use": false,
+        "deployer_public_authority": null,
+        "deployer_public_law_body": null,
+        "deployer_private_public_service": null,
+        "provider_established_outside_eu": false,
+        "has_authorised_representative": null,
+        "substantially_modifies_system": false,
+        "puts_name_or_trademark_on_system": false,
+        "is_gpai_model": true,
+        "training_flops": 2e+25,
+        "gpai_systemic_risk_designated": false,
+        "gpai_model_placing_on_market_date": "2025-03-01",
+        "prohibited_practices": [],
+        "annex_i_safety_component": false,
+        "annex_i_third_party_assessment": false,
+        "annex_i_section": null,
+        "annex_iii_area": null,
+        "derogation": {
+          "narrow_procedural_task": false,
+          "improves_prior_human_activity": false,
+          "detects_patterns_without_replacing_human": false,
+          "preparatory_task": false,
+          "performs_profiling": false
+        },
+        "interacts_with_natural_persons": false,
+        "generates_synthetic_content": false,
+        "deploys_emotion_or_biometric_categorisation": false,
+        "generates_deepfakes": false
+      },
+      "asked": [
+        "system",
+        "roles",
+        "is_ai_system",
+        "eu_nexus",
+        "excluded_use_flags",
+        "prohibited_practices",
+        "annex_i_safety_component",
+        "annex_iii_area",
+        "is_gpai_model",
+        "training_flops",
+        "gpai_systemic_risk_designated",
+        "transparency",
+        "public_authority_use",
+        "dates",
+        "gpai_date",
+        "significant_change"
+      ],
+      "blocked": [],
+      "missing": [
+        "significant_change"
+      ]
+    },
     "emotion_hiring": {
       "answers": {
         "system": {
@@ -3190,14 +4553,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -3259,13 +4622,11 @@
         "transparency",
         "public_authority_use",
         "dates",
-        "significant_change",
-        "deployer_public_authority"
+        "significant_change"
       ],
       "blocked": [],
       "missing": [
-        "significant_change",
-        "deployer_public_authority"
+        "significant_change"
       ]
     },
     "employment_derogation": {
@@ -3296,14 +4657,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -3403,14 +4764,14 @@
         "is_gpai_model": "yes",
         "training_flops": 5e+25,
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -3470,10 +4831,10 @@
         "is_gpai_model",
         "training_flops",
         "gpai_systemic_risk_designated",
-        "gpai_date",
         "transparency",
         "public_authority_use",
         "dates",
+        "gpai_date",
         "significant_change"
       ],
       "blocked": [],
@@ -3507,14 +4868,14 @@
         "is_gpai_model": "yes",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -3573,10 +4934,10 @@
         "is_gpai_model",
         "training_flops",
         "gpai_systemic_risk_designated",
-        "gpai_date",
         "transparency",
         "public_authority_use",
         "dates",
+        "gpai_date",
         "significant_change"
       ],
       "blocked": [],
@@ -3611,14 +4972,14 @@
         "is_gpai_model": "yes",
         "training_flops": 1e+24,
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -3678,10 +5039,10 @@
         "is_gpai_model",
         "training_flops",
         "gpai_systemic_risk_designated",
-        "gpai_date",
         "transparency",
         "public_authority_use",
         "dates",
+        "gpai_date",
         "significant_change"
       ],
       "blocked": [],
@@ -3716,14 +5077,14 @@
         "is_gpai_model": "yes",
         "training_flops": 2e+25,
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -3783,10 +5144,10 @@
         "is_gpai_model",
         "training_flops",
         "gpai_systemic_risk_designated",
-        "gpai_date",
         "transparency",
         "public_authority_use",
         "dates",
+        "gpai_date",
         "significant_change"
       ],
       "blocked": [],
@@ -3821,14 +5182,14 @@
         "is_gpai_model": "yes",
         "training_flops": 1e+24,
         "gpai_systemic_risk_designated": "yes",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -3888,10 +5249,10 @@
         "is_gpai_model",
         "training_flops",
         "gpai_systemic_risk_designated",
-        "gpai_date",
         "transparency",
         "public_authority_use",
         "dates",
+        "gpai_date",
         "significant_change"
       ],
       "blocked": [],
@@ -3927,9 +5288,6 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [
           "generates_synthetic_content"
         ],
@@ -3937,6 +5295,9 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -3998,13 +5359,11 @@
         "transparency",
         "public_authority_use",
         "dates",
-        "significant_change",
-        "deployer_public_authority"
+        "significant_change"
       ],
       "blocked": [],
       "missing": [
-        "significant_change",
-        "deployer_public_authority"
+        "significant_change"
       ]
     },
     "law_enforcement": {
@@ -4033,14 +5392,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -4139,14 +5498,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -4247,14 +5606,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -4316,13 +5675,11 @@
         "transparency",
         "public_authority_use",
         "dates",
-        "significant_change",
-        "deployer_public_authority"
+        "significant_change"
       ],
       "blocked": [],
       "missing": [
-        "significant_change",
-        "deployer_public_authority"
+        "significant_change"
       ]
     },
     "spam_filter": {
@@ -4351,14 +5708,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -4451,14 +5808,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -4553,14 +5910,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "annex_i_section": "unknown"
       },
@@ -4654,14 +6011,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -4754,14 +6111,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -4860,14 +6217,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "deployer_private_public_service": "unknown"
       },
@@ -4961,14 +6318,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "deployer_public_authority": "unknown"
       },
@@ -5062,14 +6419,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "deployer_public_law_body": "unknown"
       },
@@ -5163,14 +6520,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -5263,14 +6620,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -5363,14 +6720,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -5465,14 +6822,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "unknown",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -5565,14 +6922,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "has_authorised_representative": "unknown"
       },
@@ -5666,14 +7023,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -5766,14 +7123,14 @@
         "is_gpai_model": "unknown",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -5868,14 +7225,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -5968,14 +7325,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -6070,14 +7427,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -6170,14 +7527,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "unknown",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -6270,14 +7627,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -6372,14 +7729,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         },
         "significant_change": "unknown"
       },
@@ -6473,14 +7830,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": "unknown",
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -6575,14 +7932,14 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [],
         "public_authority_use": "no",
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
@@ -6675,9 +8032,6 @@
         "is_gpai_model": "no",
         "training_flops": "",
         "gpai_systemic_risk_designated": "no",
-        "gpai_date": {
-          "gpai_model_placing_on_market_date": ""
-        },
         "transparency": [
           "interacts_with_natural_persons"
         ],
@@ -6685,6 +8039,9 @@
         "dates": {
           "placing_on_market_date": "",
           "putting_into_service_date": ""
+        },
+        "gpai_date": {
+          "gpai_model_placing_on_market_date": ""
         }
       },
       "profile": {
