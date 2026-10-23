@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "eu-ai-act-classifier"
-version = "0.2.1"
+version = "0.2.2"
 description = "Deterministic EU AI Act (Reg (EU) 2024/1689) risk-tier and obligation classifier with pinpoint citations and a lawyer review gate."
 readme = "README.md"
 requires-python = ">=3.13"

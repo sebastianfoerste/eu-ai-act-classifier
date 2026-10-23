@@ -39,7 +39,7 @@ Every guide in `docs/` and the main project files. The [README](../README.md) co
 - [docs/research/design-teardown.md](research/design-teardown.md): interface patterns and a comparison per surface
 - [docs/research/adaptation-plan.md](research/adaptation-plan.md): baseline, scored candidates, specs and open owner decisions
 - [docs/adr/](adr/README.md): architecture decision records
-- [CHANGELOG.md](../CHANGELOG.md): unreleased changes
+- [CHANGELOG.md](../CHANGELOG.md): changes by release
 
 ## Docs and links
 
