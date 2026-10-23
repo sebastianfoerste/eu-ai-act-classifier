@@ -43,6 +43,7 @@ eu-ai-act-local-api = "eu_ai_act_classifier.local_api:main"
 Homepage = "https://github.com/sebastianfoerste/eu-ai-act-classifier"
 Source = "https://github.com/sebastianfoerste/eu-ai-act-classifier"
 Issues = "https://github.com/sebastianfoerste/eu-ai-act-classifier/issues"
+Changelog = "https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/eu_ai_act_classifier"]

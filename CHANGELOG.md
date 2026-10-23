@@ -5,6 +5,37 @@ pull requests.
 
 ## 0.2.2 (2026-10-23)
 
+#### Upgrade notes
+
+Profiles and CI jobs that pass on 0.2.1 can fail on 0.2.2. Pinning
+`eu-ai-act-classifier==0.2.1` keeps the 0.2.1 behaviour while you update them.
+
+- Dates must be ISO dates (YYYY-MM-DD). A `placing_on_market_date` or
+  `putting_into_service_date` such as "March 2026" is now rejected: the CLI
+  exits 2, and `SystemProfile` and the MCP tools raise a pydantic
+  `ValidationError`. 0.2.1 accepted any string.
+- `--strict` now exits 1 for three kinds of profile that 0.2.1 reported as
+  `DETERMINED` (exit 0). Each now has an open question, so the disposition is
+  `REQUIRES_REVIEW`:
+  - a high-risk system whose `placing_on_market_date` or
+    `putting_into_service_date` is before its Chapter III date (2 December 2027
+    with an Annex III area, 2 August 2028 for an Annex I product without one).
+    Answering `significant_change_after_application_date` closes the question.
+  - a deployer of an Annex III system other than point 2 that sets
+    `public_authority_use` or `deployer_public_law_body: true`, or that deploys
+    a point 5(a), 6, 7 or 8(a) system (Art. 49(3)). Setting the new
+    `deployer_public_authority` field closes the question.
+  - a general-purpose AI model dated only by `placing_on_market_date`. Giving
+    the new `gpai_model_placing_on_market_date` closes the question.
+- The high-risk graph items for Arts. 40 to 44, 47 and 48, Art. 49 where it
+  applies, and Arts. 72 and 73 now carry `application_date` 2026-08-02 instead
+  of 2027-12-02 (Annex III) or 2028-08-02 (Annex I), and all of them are
+  `review_required`.
+- Art. 49 registration, as an obligation and a graph item, is no longer listed
+  for a system that is high-risk only as an Annex I product, or for an
+  Annex III point 2 (critical infrastructure) system. 0.2.1 listed it for every
+  high-risk provider.
+
 Changes since 0.2.1. The release also carries #25 and #27 to #29, described
 in their pull requests: the Annex III coverage matrix, JSON Schemas (printed by
 `eu-ai-act-classify --schema profile` or `--schema report`; the classifier
@@ -36,11 +67,15 @@ Act of 27 July 2026 and Art. 1, points (39) and (40) of Regulation (EU)
   classified under Art. 6(2) and Annex III, so its Sections 1 to 3 items take
   2 December 2027 (point (c)(i)) instead of 2 August 2028.
 - Art. 49(1) registration, as an obligation and a graph item, covers only
-  Annex III systems other than point 2; 0.2.1 listed it for every high-risk
-  provider. A point 2 system gets a `review_required` Art. 49(5) item
-  (registration at national level) instead, and a provider of an Annex III
-  system asserting an Art. 6(3) derogation condition without profiling gets a
-  `review_required` Art. 49(2) item.
+  Annex III systems other than point 2 (and where the Annex III point is not
+  settled); 0.2.1 listed it for every high-risk provider. A point 2 system gets
+  a `review_required` Art. 49(5) item (registration at national level)
+  instead, and a provider of an Annex III system asserting an Art. 6(3)
+  derogation condition without profiling gets a `review_required` Art. 49(2)
+  item.
+- The Art. 6(4) assessment work product (`art-6-4-assessment`) draws on the
+  Art. 49(2) graph items instead of the Art. 49 item: under Art. 6(4), a
+  provider relying on Art. 6(3) registers under Art. 49(2).
 - The binding timeline is sorted by date and cites Art. 113 by paragraph and
   point ("Art. 113, third paragraph, point (a) AIA" instead of
   "Art. 113(a) AIA"). The 2 December 2027 and 2 August 2028 entries name
@@ -48,6 +83,8 @@ Act of 27 July 2026 and Art. 1, points (39) and (40) of Regulation (EU)
   relevant" high-risk provisions, and the general-date entry names the
   contested Section 5 and Chapter IX reading. The binding sources record
   `retrieved_on` 2026-10-18 instead of 2026-08-26.
+- The proof contract (`contracts/eu-ai-act-classifier.proof.v1.json`) records
+  `sourceCurrencyDate` 2026-10-18 instead of 2026-08-26.
 
 #### Added
 
@@ -68,12 +105,20 @@ Act of 27 July 2026 and Art. 1, points (39) and (40) of Regulation (EU)
   where `placing_on_market_date` precedes 2 August 2026, each with a note.
 - `application_date_note` on obligation graph items, also in the report JSON
   Schema.
+- The text report and the review dossier print an item's
+  `application_date_note` on the line under the graph item, and the draft work
+  products add it to the item's line, so text output and goldens made with
+  0.2.1 differ.
 
 #### Fixed
 
 - `placing_on_market_date` and `putting_into_service_date` must be ISO dates
   (YYYY-MM-DD). 0.2.1 accepted any string, such as "March 2026", which the
   Art. 111 checks cannot compare with a cut-off date.
+- The example inventory (`eu-ai-act-local-api inventory`) warns about an
+  example profile that fails validation, such as one with a non-ISO date,
+  naming the file and the invalid fields. 0.2.1 dropped such a profile
+  silently.
 
 ### Digital Omnibus follow-ups to #26 (#30)
 
@@ -118,6 +163,9 @@ checked against the consolidated AI Act of 27 July 2026 and Regulation (EU)
   require them.
   Machinery (Regulation (EU) 2023/1230) is now a Section B product. A section
   given without the Art. 6(1) route is reported as unused.
+- `AnnexISection` is exported from the package root.
+- The local API `schema` payload (`eu-ai-act-local-api schema`) lists the
+  Annex I sections as `annex_i_sections`.
 - Art. 2(2) lists neither Art. 5 nor Art. 50, so for every Section B product,
   Annex III area or not, the report keeps both as the conservative reading,
   flagged "Literal reading, confirm with counsel": Art. 5 in the finding and an

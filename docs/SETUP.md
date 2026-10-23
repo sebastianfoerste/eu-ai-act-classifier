@@ -42,7 +42,7 @@ uv run eu-ai-act-classify examples/credit_scoring.json
 
 Runs end to end, offline and deterministically. [Example output](sample-output.md#example-output) shows the output, and [Local verification](surfaces.md#local-verification) has more commands, starting with the test suite.
 
-JSON Schemas for the input profile and the report are in [schemas/](../schemas/) (also `eu-ai-act-classify --schema profile` or `--schema report`). Add `"$schema": "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier/main/schemas/system-profile.v1.schema.json"` to a profile for editor autocomplete; the classifier ignores that key. The flag and the key need 0.2.2 or later: 0.2.1 rejects both.
+JSON Schemas for the input profile and the report are in [schemas/](../schemas/) (also `eu-ai-act-classify --schema profile` or `--schema report`). Add `"$schema": "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier/main/schemas/system-profile.v1.schema.json"` to a profile for editor autocomplete; the classifier ignores that key. The flag and the key need 0.2.2 or later: 0.2.1 rejects both. The URL follows `main`, which may accept fields your installed version rejects; for a schema that matches your version, run `eu-ai-act-classify --schema profile > profile.schema.json` and point `"$schema"` at that file.
 
 ## Python Package
 
