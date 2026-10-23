@@ -64,6 +64,8 @@ test("search ignores case and surrounding space and skips empty values", () => {
 
 test("cites screen values the way the engine cites them", () => {
   assert.equal(practiceCitation("5.1.c"), "Art. 5(1)(c)");
+  assert.equal(practiceCitation("5.1.ba"), "Art. 5(1)(ba)");
+  assert.equal(practiceCitation("5.1.bb"), "Art. 5(1)(bb)");
   assert.equal(annexCitation("III.5.b"), "Annex III(5)(b)");
   assert.equal(annexCitation("III.2"), "Annex III(2)");
   assert.equal(annexCitation("III.unsure"), "Annex III, point unsettled");

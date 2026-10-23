@@ -36,19 +36,23 @@
 
   <div class="workspace" id="workspace">
     <section class="panel draft-panel" aria-labelledby="draft-heading">
-      <div class="panel-heading"><div><span class="eyebrow">INPUT</span><h2 id="draft-heading">System profile</h2></div><span class="file-badge">JSON</span></div>
+      <div class="panel-heading"><div><span class="eyebrow">INPUT</span><h2 id="draft-heading">System profile</h2></div><span class="file-badge" id="mode-badge">GUIDED</span></div>
       <div class="draft-controls">
         <label for="example">Start with a synthetic example</label>
         <div class="example-row"><select id="example"></select><button id="load-example" disabled>Load</button></div>
         <div class="import-row"><button id="import" class="text-button">↑ Import JSON</button><span>Local file · up to 1 MB</span><input type="file" id="file" accept=".json,application/json" hidden></div>
         <p id="sample-error" class="error" role="alert" hidden></p>
       </div>
+      <div class="mode-switch" role="group" aria-label="How to describe the system"><button type="button" id="mode-guided" aria-pressed="true">Guided questions</button><button type="button" id="mode-json" aria-pressed="false">JSON editor</button></div>
+      <div id="guided" class="guided" aria-live="off"><p class="question-hint">Loading questions…</p></div>
+      <div id="json-mode" hidden>
       <div class="editor-heading"><label for="input">Profile JSON</label><button class="text-button" id="format">Format JSON</button></div>
       <textarea id="input" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="draft-help input-error" placeholder='{"name": "My system", "roles": ["provider"], "annex_iii_area": "III.4.a"}'></textarea>
       <div class="editor-meta"><span id="summary">Describe the system</span><span id="size">0 KB</span></div>
       <p id="input-error" class="error" role="alert" hidden></p>
+      </div>
       <label class="advisory-toggle"><input type="checkbox" id="advisory"> Include nonbinding Commission guidance notes</label>
-      <div class="run-area"><button class="primary" id="classify" disabled>Classify <span aria-hidden="true">↗</span></button><span class="shortcut">⌘ / Ctrl + Enter</span></div>
+      <div class="run-area" id="run-area" hidden><button class="primary" id="classify" disabled>Classify <span aria-hidden="true">↗</span></button><span class="shortcut">⌘ / Ctrl + Enter</span></div>
       <div class="runtime"><span class="status-dot" id="status-dot" aria-hidden="true"></span><span id="status" role="status">Preparing the rule engine…</span><button id="retry" class="text-button" hidden>Retry</button></div>
       <p class="draft-help" id="draft-help">Your profile stays in this tab and is cleared when you close it. The runtime downloads on first use. Use synthetic or public facts in this demo.</p>
       <button id="download-draft" class="text-button save-draft">↓ Save profile JSON</button>

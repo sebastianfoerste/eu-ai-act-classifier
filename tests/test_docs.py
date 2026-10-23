@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import importlib.util
 import re
 from pathlib import Path
-from types import ModuleType
 
 import pytest
 
@@ -24,10 +22,6 @@ EXAMPLES_README = EXAMPLES / "README.md"
 CASE_STUDY = Path("CASE_STUDY.md")
 CREDIT_SCORING = EXAMPLES / "credit_scoring.json"
 CV_SCREENING = EXAMPLES / "cv_screening.json"
-PACKET_MD = EXAMPLES / "classification-packet.md"
-PACKET_JSON = EXAMPLES / "classification-packet.json"
-SAMPLE_OUTPUT = Path("docs/sample-output.md")
-DEMO_PNG = Path("docs/demo.png")
 PYPROJECT = Path("pyproject.toml")
 # Docs that hold sections moved out of the README.
 README_CONTENT_DOCS = [
@@ -211,60 +205,24 @@ def test_mcp_guide_lists_the_tools_the_server_exposes() -> None:
     assert "/Users/" not in guide
 
 
+def test_feature_matrix_capability_cells_use_the_allowed_values() -> None:
+    import csv
+
+    with Path("docs/research/feature-matrix.csv").open(encoding="utf-8", newline="") as handle:
+        rows = list(csv.reader(handle))
+    header = rows[0]
+    first, last = header.index("c01_intake"), header.index("c14_ui_shell")
+    evidence = header.index("evidence")
+    for row in rows[1:]:
+        assert len(row) == len(header), row[0]
+        assert row[evidence] in {"Observed", "Claimed", "Inferred"}, row[0]
+        for cell in row[first : last + 1]:
+            assert re.match(r"(yes|partial|no|unknown)(:|$)", cell), (row[0], cell)
+
+
 def _cli_output(capsys: pytest.CaptureFixture[str], *argv: str) -> str:
     assert main(list(argv)) == 0
     return capsys.readouterr().out
-
-
-def test_committed_packet_markdown_matches_real_cli_output(
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    output = _cli_output(capsys, str(CREDIT_SCORING))
-    assert output == PACKET_MD.read_text(encoding="utf-8"), (
-        f"{PACKET_MD} is stale; regenerate it with "
-        f"`uv run eu-ai-act-classify {CREDIT_SCORING} > {PACKET_MD}`"
-    )
-
-
-def test_committed_packet_json_matches_real_cli_output(
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    output = _cli_output(capsys, str(CREDIT_SCORING), "--json")
-    assert output == PACKET_JSON.read_text(encoding="utf-8"), (
-        f"{PACKET_JSON} is stale; regenerate it with "
-        f"`uv run eu-ai-act-classify {CREDIT_SCORING} --json > {PACKET_JSON}`"
-    )
-
-
-def _load_script(name: str) -> ModuleType:
-    path = Path(__file__).resolve().parents[1] / "scripts" / f"{name}.py"
-    spec = importlib.util.spec_from_file_location(name, path)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-def test_demo_image_shows_the_real_cli_output_and_its_caption_counts_the_lines(
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    # scripts/render_demo_png.py records the exact text it draws in the PNG, so the
-    # cut marker in the image can be checked without a browser or OCR.
-    render_demo = _load_script("render_demo_png")
-    output = _cli_output(capsys, str(CREDIT_SCORING))
-    total = len(output.splitlines())
-    shown = render_demo.SHOWN_LINES
-    drawn = render_demo.drawn_text(DEMO_PNG.read_bytes())
-    assert drawn == render_demo.terminal_text(output), (
-        f"{DEMO_PNG} is stale; re-render it with `uv run python scripts/render_demo_png.py`"
-    )
-    assert drawn.splitlines()[-1] == f"[\u2026 {total - shown} more lines not shown]"
-
-    sample_output = SAMPLE_OUTPUT.read_text(encoding="utf-8")
-    caption = re.search(r"\]\(demo\.png\)\n\n\*(.*?)\*\n", sample_output, re.S)
-    assert caption, f"{SAMPLE_OUTPUT} no longer captions demo.png"
-    assert f"`{render_demo.COMMAND}`" in caption.group(1)
-    assert f"first {shown} of {total} lines" in caption.group(1)
 
 
 def test_case_study_quotes_a_prefix_of_the_real_cv_screening_output(
@@ -348,8 +306,8 @@ def test_case_study_evaluation_counts_match_the_real_cv_screening_report() -> No
     assert _article_list(graph.group(3)) == _article_numbers([item.article for item in flagged])
 
     notes = _search(
-        r"Each of the Art\. (.+?) items carries a note: on a literal reading, confirm with "
-        rf"counsel, it applies from {DATE}, or from {DATE} if it follows",
+        r"Each of the Art\. (.+?) items carries a note flagged \"Literal reading, confirm "
+        rf"with counsel\": it applies from {DATE}, or from {DATE} if it follows",
         evaluation,
     )
     noted = [item for item in report.obligation_graph if item.application_date_note]

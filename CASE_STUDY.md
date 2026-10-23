@@ -1,9 +1,9 @@
-# Case study — eu-ai-act-classifier
+# Case study: eu-ai-act-classifier
 
-> EU AI Act classification should be cited and reviewable, with open questions raised where an encoded rule cannot settle the answer from the submitted facts — not a confident one-word answer. Synthetic data only; not legal advice.
+> EU AI Act classification should be cited and reviewable, with open questions raised where an encoded rule cannot settle the answer from the submitted facts, not a confident one-word answer. Synthetic data only; not legal advice.
 
 ## Problem
-"Is our AI system high-risk under the EU AI Act?" is asked constantly and answered badly — either with hand-waving or with an over-confident label that hides the parts that actually carry exposure (does an Art. 6(3) derogation hold? is a fundamental-rights impact assessment owed?). Teams need a structured first pass that is honest about what needs a lawyer.
+"Is our AI system high-risk under the EU AI Act?" is asked constantly and answered badly: either with hand-waving or with an over-confident label that hides the parts that actually carry exposure (does an Art. 6(3) derogation hold? is a fundamental-rights impact assessment owed?). Teams need a structured first pass that is honest about what needs a lawyer.
 
 ## Users
 A GC, AI governance lead, or product counsel doing a first-pass classification of an AI system before deeper legal review.
@@ -14,7 +14,7 @@ A GC, AI governance lead, or product counsel doing a first-pass classification o
 3. It outputs the **risk tier**, the **obligations triggered** (each cited to an Article), the **application timeline** (printed under `Binding application timeline:`), a **disposition** for the whole report and a **review status** for each obligation-graph item.
 
 ## Controls
-Every obligation is cited to a specific Article or Annex point, and so are the prohibited, high-risk and limited-risk tiers. The minimal-risk and out-of-scope labels (`MINIMAL RISK`, `OUTSIDE AI ACT SCOPE`) carry no citation. Every report states a disposition. The disposition is `DETERMINED` unless a rule raises an open question. Then it is `REQUIRES_REVIEW`: the report prints `This classification requires lawyer review before it is relied upon.`, lists the questions under `Open questions for review:`, and `--strict` exits 1. Three of the 17 bundled examples take that path: `ambiguous_use_case.json`, `employment_derogation.json` and `foundation_model_unknown_compute.json`. Rules raise such questions for, among other things, an unconfirmed Annex III point, an asserted Art. 6(3) derogation, unknown GPAI training compute and, for deployers, whether an Art. 27 fundamental-rights impact assessment is owed. `--strict` also exits 1 for a prohibited tier, even when the disposition is `DETERMINED`.
+Every obligation is cited to a specific Article or Annex point, and so are the prohibited, high-risk and limited-risk tiers. The minimal-risk and out-of-scope labels (`MINIMAL RISK`, `OUTSIDE AI ACT SCOPE`) carry no citation. Every report states a disposition. The disposition is `DETERMINED` unless a rule raises an open question. Then it is `REQUIRES_REVIEW`: the report prints `This classification requires lawyer review before it is relied upon.`, lists the questions under `Open questions for review:`, and `--strict` exits 1. Three of the 18 bundled examples take that path: `ambiguous_use_case.json`, `employment_derogation.json` and `foundation_model_unknown_compute.json`. Rules raise such questions for, among other things, an unconfirmed Annex III point, an asserted Art. 6(3) derogation, unknown GPAI training compute and, for deployers, whether an Art. 27 fundamental-rights impact assessment is owed. `--strict` also exits 1 for a prohibited tier, even when the disposition is `DETERMINED`.
 
 The obligation graph also gives each item its own review status, `review: determined` or `review: review_required`.
 
@@ -40,12 +40,15 @@ Findings:
       Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.
 ```
 
-The report then lists 14 provider obligations (Art. 9 to 15, 17, 43, 47, 48, 49, 72 and 73 AIA) and five documentation items. It raises no open questions, so it has no `Open questions for review:` block. It is not prohibited either, so `--strict` exits 0. Its obligation graph marks 12 of 16 items `review: review_required` (Art. 20, 21, 40 to 44, 47 to 49, 72 and 73 AIA). Each of the Art. 40 to 44, 47 to 49, 72 and 73 items carries a note: on a literal reading, confirm with counsel, it applies from 2026-08-02, or from 2027-12-02 if it follows the Chapter III, Sections 1 to 3 deferral. No deployer obligations, such as Art. 26 AIA, are listed because the profile names only the provider role.
+The report then lists 14 provider obligations (Art. 9 to 15, 17, 43, 47, 48, 49, 72 and 73 AIA) and five documentation items. It raises no open questions, so it has no `Open questions for review:` block. It is not prohibited either, so `--strict` exits 0. Its obligation graph marks 12 of 16 items `review: review_required` (Art. 20, 21, 40 to 44, 47 to 49, 72 and 73 AIA). Each of the Art. 40 to 44, 47 to 49, 72 and 73 items carries a note flagged "Literal reading, confirm with counsel": it applies from 2026-08-02, or from 2027-12-02 if it follows the Chapter III, Sections 1 to 3 deferral. No deployer obligations, such as Art. 26 AIA, are listed because the profile names only the provider role.
 
-The committed sample packet, `examples/classification-packet.md`, is a different system: CreditSightScore, classified high-risk under Annex III(5)(b), with the same 14 provider obligations and the same dating notes. The expected tier and disposition of all 17 bundled examples are asserted in `tests/test_examples.py`.
+The committed sample packet, `examples/classification-packet.md`, is a different system: CreditSightScore, classified high-risk under Annex III(5)(b), with the same 14 provider obligations and the same dating notes. The expected tier and disposition of all 18 bundled examples are asserted in `tests/test_examples.py`.
 
 ## Limitations
 A first-pass classifier over a structured description. It does not read product documentation and does not resolve the open questions it raises. It encodes Regulation (EU) 2026/1744 only in part; see the [claim ledger](docs/REGULATORY_CLAIM_LEDGER.md). The Annex/Article mapping is illustrative and must be confirmed against the current text and guidance.
+
+## Guided intake and competitive research
+A research pass across 39 other classifiers and governance tools and 19 design pattern sources ([docs/research/](docs/research/adaptation-plan.md)) found that wizards often keep a separate question tree per surface and map "I don't know" to "no" or to a lower tier. The playground now opens on guided questions defined once in Python: unknown facts route the result to review or pause the run for counsel, and tests check, over grids of states the intake can reach, that no answer to a skipped question changes the classification. Labels for Annex III points and Art. 5 practices come from one catalog, and the cockpit's portfolio and self-assessment pages are styled.
 
 ## Next steps
 Add a conformity-assessment checklist for confirmed high-risk systems; link obligations to evidence/templates; track the system through to a documented governance decision.

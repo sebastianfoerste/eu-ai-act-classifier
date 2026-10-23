@@ -1,0 +1,1147 @@
+{
+  "schema": "eu-ai-act-classifier.intake.v1",
+  "answers": {
+    "yes": "Yes",
+    "no": "No",
+    "unknown": "I don't know"
+  },
+  "defaults": {
+    "name": "",
+    "description": "",
+    "roles": [
+      "provider"
+    ],
+    "purpose": "",
+    "sector": "",
+    "is_ai_system": true,
+    "intended_purpose_source": "",
+    "eu_nexus": true,
+    "excluded_use_flags": [],
+    "placing_on_market_date": null,
+    "putting_into_service_date": null,
+    "significant_change_after_application_date": null,
+    "public_authority_use": false,
+    "deployer_public_authority": null,
+    "deployer_public_law_body": null,
+    "deployer_private_public_service": null,
+    "provider_established_outside_eu": false,
+    "has_authorised_representative": null,
+    "substantially_modifies_system": false,
+    "puts_name_or_trademark_on_system": false,
+    "is_gpai_model": false,
+    "training_flops": null,
+    "gpai_systemic_risk_designated": false,
+    "gpai_model_placing_on_market_date": null,
+    "prohibited_practices": [],
+    "annex_i_safety_component": false,
+    "annex_i_third_party_assessment": false,
+    "annex_i_section": null,
+    "annex_iii_area": null,
+    "derogation": {
+      "narrow_procedural_task": false,
+      "improves_prior_human_activity": false,
+      "detects_patterns_without_replacing_human": false,
+      "preparatory_task": false,
+      "performs_profiling": false
+    },
+    "interacts_with_natural_persons": false,
+    "generates_synthetic_content": false,
+    "deploys_emotion_or_biometric_categorisation": false,
+    "generates_deepfakes": false
+  },
+  "questions": [
+    {
+      "id": "system",
+      "kind": "details",
+      "title": "About the system",
+      "hint": "Plain facts for the report heading. Use synthetic or public facts in this demo.",
+      "fields": [
+        {
+          "field": "name",
+          "label": "System name",
+          "required": true
+        },
+        {
+          "field": "description",
+          "label": "Short description"
+        },
+        {
+          "field": "purpose",
+          "label": "Intended purpose"
+        },
+        {
+          "field": "sector",
+          "label": "Sector"
+        },
+        {
+          "field": "intended_purpose_source",
+          "label": "Where the intended purpose is stated"
+        }
+      ]
+    },
+    {
+      "id": "roles",
+      "kind": "multi",
+      "field": "roles",
+      "title": "Which roles does your organisation hold for this system?",
+      "hint": "Select every role that applies. A single company often holds several.",
+      "options": [
+        {
+          "value": "provider",
+          "label": "Provider"
+        },
+        {
+          "value": "deployer",
+          "label": "Deployer"
+        },
+        {
+          "value": "importer",
+          "label": "Importer"
+        },
+        {
+          "value": "distributor",
+          "label": "Distributor"
+        },
+        {
+          "value": "authorized_representative",
+          "label": "Authorised representative"
+        },
+        {
+          "value": "gpai_provider",
+          "label": "GPAI model provider"
+        }
+      ],
+      "required": true,
+      "unknown": "block"
+    },
+    {
+      "id": "is_ai_system",
+      "kind": "boolean",
+      "field": "is_ai_system",
+      "title": "Is the software an AI system?",
+      "hint": "As defined in the AI Act. Choose I don't know if this is not yet settled.",
+      "article": "Art. 3(1) AIA",
+      "unknown": {
+        "value": null
+      }
+    },
+    {
+      "id": "eu_nexus",
+      "kind": "boolean",
+      "field": "eu_nexus",
+      "title": "Is the system placed on the market, put into service or used in the EU?",
+      "hint": "Including output used in the EU.",
+      "article": "Art. 2 AIA",
+      "unknown": {
+        "value": null
+      }
+    },
+    {
+      "id": "excluded_use_flags",
+      "kind": "multi",
+      "field": "excluded_use_flags",
+      "title": "Does any scope exclusion or carve-out possibly apply?",
+      "hint": "A selection does not exclude the system. It routes the scope question to review.",
+      "article": "Art. 2 AIA",
+      "options": [
+        {
+          "value": "military_defence_national_security",
+          "label": "Military, defence or national security"
+        },
+        {
+          "value": "research_development_testing",
+          "label": "Research, development or testing"
+        },
+        {
+          "value": "personal_non_professional",
+          "label": "Personal, non-professional use"
+        },
+        {
+          "value": "free_open_source",
+          "label": "Free and open-source licence"
+        }
+      ],
+      "none_label": "None of these",
+      "unknown": "block"
+    },
+    {
+      "id": "prohibited_practices",
+      "kind": "multi",
+      "field": "prohibited_practices",
+      "title": "Does the system involve any of these practices?",
+      "hint": "Each is a prohibited practice under Art. 5 AIA.",
+      "article": "Art. 5 AIA",
+      "options": [
+        {
+          "value": "5.1.a",
+          "label": "Art. 5(1)(a): Subliminal, manipulative or deceptive techniques causing significant harm"
+        },
+        {
+          "value": "5.1.b",
+          "label": "Art. 5(1)(b): Exploiting vulnerabilities of age, disability or socio-economic situation"
+        },
+        {
+          "value": "5.1.ba",
+          "label": "Art. 5(1)(ba): Generating or manipulating realistic intimate material of an identifiable person without consent"
+        },
+        {
+          "value": "5.1.bb",
+          "label": "Art. 5(1)(bb): Generating or manipulating child sexual abuse material under Directive 2011/93/EU, save a 'without right' defence under national law"
+        },
+        {
+          "value": "5.1.c",
+          "label": "Art. 5(1)(c): Social scoring leading to detrimental or unfavourable treatment"
+        },
+        {
+          "value": "5.1.d",
+          "label": "Art. 5(1)(d): Predicting criminal offending based solely on profiling or personality"
+        },
+        {
+          "value": "5.1.e",
+          "label": "Art. 5(1)(e): Untargeted scraping of facial images to build recognition databases"
+        },
+        {
+          "value": "5.1.f",
+          "label": "Art. 5(1)(f): Emotion recognition in the workplace or education (no medical/safety exception)"
+        },
+        {
+          "value": "5.1.g",
+          "label": "Art. 5(1)(g): Biometric categorisation inferring sensitive attributes"
+        },
+        {
+          "value": "5.1.h",
+          "label": "Art. 5(1)(h): Real-time remote biometric identification in public spaces for law enforcement"
+        }
+      ],
+      "none_label": "None of these",
+      "show_if": {
+        "all": [
+          {
+            "not": {
+              "field": "is_ai_system",
+              "is": false
+            }
+          },
+          {
+            "not": {
+              "field": "eu_nexus",
+              "is": false
+            }
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "annex_i_safety_component",
+      "kind": "boolean",
+      "field": "annex_i_safety_component",
+      "title": "Is the system a product, or a safety component of a product, covered by the Union harmonisation legislation in Annex I?",
+      "article": "Art. 6(1) AIA",
+      "show_if": {
+        "all": [
+          {
+            "not": {
+              "field": "is_ai_system",
+              "is": false
+            }
+          },
+          {
+            "not": {
+              "field": "eu_nexus",
+              "is": false
+            }
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "annex_i_third_party_assessment",
+      "kind": "boolean",
+      "field": "annex_i_third_party_assessment",
+      "title": "Does that product need a third-party conformity assessment under that legislation?",
+      "article": "Art. 6(1) AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "annex_i_safety_component",
+            "is": true
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "annex_i_section",
+      "kind": "single",
+      "field": "annex_i_section",
+      "title": "Which section of Annex I lists that legislation?",
+      "hint": "For a Section B product only the provisions in Art. 2(2) AIA apply.",
+      "article": "Art. 6(1) AIA",
+      "options": [
+        {
+          "value": "A",
+          "label": "Section A"
+        },
+        {
+          "value": "B",
+          "label": "Section B"
+        }
+      ],
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "field": "annex_i_safety_component",
+                "is": true
+              },
+              {
+                "field": "annex_i_third_party_assessment",
+                "is": true
+              }
+            ]
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "annex_iii_area",
+      "kind": "single",
+      "field": "annex_iii_area",
+      "title": "Is the system intended for a use listed in Annex III?",
+      "hint": "Choose the point that applies. If an area applies but not which point, choose the unsettled option; it is treated as high-risk and routed to review.",
+      "article": "Art. 6(2) AIA",
+      "options": [
+        {
+          "value": "III.1.a",
+          "label": "Annex III(1)(a): Remote biometric identification"
+        },
+        {
+          "value": "III.1.b",
+          "label": "Annex III(1)(b): Biometric categorisation by sensitive/protected attributes"
+        },
+        {
+          "value": "III.1.c",
+          "label": "Annex III(1)(c): Emotion recognition"
+        },
+        {
+          "value": "III.2",
+          "label": "Annex III(2): Safety component of critical infrastructure"
+        },
+        {
+          "value": "III.3.a",
+          "label": "Annex III(3)(a): Education: access and admission"
+        },
+        {
+          "value": "III.3.b",
+          "label": "Annex III(3)(b): Education: evaluating learning outcomes"
+        },
+        {
+          "value": "III.3.c",
+          "label": "Annex III(3)(c): Education: assessing appropriate level"
+        },
+        {
+          "value": "III.3.d",
+          "label": "Annex III(3)(d): Education: monitoring prohibited behaviour during tests"
+        },
+        {
+          "value": "III.4.a",
+          "label": "Annex III(4)(a): Employment selection and worker management"
+        },
+        {
+          "value": "III.4.b",
+          "label": "Annex III(4)(b): Employment: decisions on terms, promotion, termination, task allocation"
+        },
+        {
+          "value": "III.5.a",
+          "label": "Annex III(5)(a): Eligibility for essential public assistance benefits and services"
+        },
+        {
+          "value": "III.5.b",
+          "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring"
+        },
+        {
+          "value": "III.5.c",
+          "label": "Annex III(5)(c): Risk assessment and pricing in life and health insurance"
+        },
+        {
+          "value": "III.5.d",
+          "label": "Annex III(5)(d): Emergency call dispatch and triage"
+        },
+        {
+          "value": "III.6.a",
+          "label": "Annex III(6)(a): Law enforcement: risk of a person becoming a victim of crime"
+        },
+        {
+          "value": "III.6.b",
+          "label": "Annex III(6)(b): Law enforcement: polygraphs and similar tools"
+        },
+        {
+          "value": "III.6.c",
+          "label": "Annex III(6)(c): Law enforcement: evaluating the reliability of evidence"
+        },
+        {
+          "value": "III.6.d",
+          "label": "Annex III(6)(d): Law enforcement: assessing the risk of offending or re-offending"
+        },
+        {
+          "value": "III.6.e",
+          "label": "Annex III(6)(e): Law enforcement: profiling during detection, investigation or prosecution"
+        },
+        {
+          "value": "III.7.a",
+          "label": "Annex III(7)(a): Migration: polygraphs and similar tools"
+        },
+        {
+          "value": "III.7.b",
+          "label": "Annex III(7)(b): Migration: risk assessment for persons entering a Member State"
+        },
+        {
+          "value": "III.7.c",
+          "label": "Annex III(7)(c): Migration: examining asylum, visa and residence-permit applications"
+        },
+        {
+          "value": "III.7.d",
+          "label": "Annex III(7)(d): Migration: detecting, recognising or identifying natural persons"
+        },
+        {
+          "value": "III.8.a",
+          "label": "Annex III(8)(a): Administration of justice: assisting a judicial authority"
+        },
+        {
+          "value": "III.8.b",
+          "label": "Annex III(8)(b): Influencing elections, referenda or voting behaviour"
+        },
+        {
+          "value": "III.unsure",
+          "label": "Annex III, point unsettled: An Annex III area is implicated but the specific point is unsettled"
+        }
+      ],
+      "none_label": "None of these",
+      "show_if": {
+        "all": [
+          {
+            "not": {
+              "field": "is_ai_system",
+              "is": false
+            }
+          },
+          {
+            "not": {
+              "field": "eu_nexus",
+              "is": false
+            }
+          }
+        ]
+      },
+      "unknown": {
+        "value": "III.unsure"
+      }
+    },
+    {
+      "id": "performs_profiling",
+      "kind": "boolean",
+      "field": "derogation.performs_profiling",
+      "title": "Does the system perform profiling of natural persons?",
+      "hint": "Profiling keeps an Annex III system high-risk.",
+      "article": "Art. 6(3) AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "not": {
+              "field": "annex_iii_area",
+              "is": null
+            }
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "derogation",
+      "kind": "flags",
+      "title": "Does any of these Art. 6(3) conditions apply?",
+      "hint": "An asserted condition never lowers the tier here. It keeps the system high-risk and routes the derogation to review.",
+      "article": "Art. 6(3) AIA",
+      "options": [
+        {
+          "field": "derogation.narrow_procedural_task",
+          "label": "Performs a narrow procedural task"
+        },
+        {
+          "field": "derogation.improves_prior_human_activity",
+          "label": "Improves the result of a completed human activity"
+        },
+        {
+          "field": "derogation.detects_patterns_without_replacing_human",
+          "label": "Detects decision patterns without replacing human assessment"
+        },
+        {
+          "field": "derogation.preparatory_task",
+          "label": "Performs a preparatory task to an assessment"
+        }
+      ],
+      "none_label": "None of these",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "not": {
+              "field": "annex_iii_area",
+              "is": null
+            }
+          },
+          {
+            "field": "derogation.performs_profiling",
+            "is": false
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "deployer_public_law_body",
+      "kind": "boolean",
+      "field": "deployer_public_law_body",
+      "title": "Is the deployer a body governed by public law?",
+      "article": "Art. 27 AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "all": [
+                  {
+                    "not": {
+                      "field": "is_ai_system",
+                      "is": false
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "eu_nexus",
+                      "is": false
+                    }
+                  }
+                ]
+              },
+              {
+                "field": "prohibited_practices",
+                "empty": true
+              },
+              {
+                "any": [
+                  {
+                    "not": {
+                      "field": "annex_iii_area",
+                      "is": null
+                    }
+                  },
+                  {
+                    "all": [
+                      {
+                        "field": "annex_i_safety_component",
+                        "is": true
+                      },
+                      {
+                        "field": "annex_i_third_party_assessment",
+                        "is": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "field": "roles",
+            "has": "deployer"
+          },
+          {
+            "not": {
+              "field": "annex_iii_area",
+              "in": [
+                "III.2",
+                "III.5.b",
+                "III.5.c"
+              ]
+            }
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "deployer_private_public_service",
+      "kind": "boolean",
+      "field": "deployer_private_public_service",
+      "title": "Is the deployer a private entity providing public services?",
+      "article": "Art. 27 AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "all": [
+                  {
+                    "not": {
+                      "field": "is_ai_system",
+                      "is": false
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "eu_nexus",
+                      "is": false
+                    }
+                  }
+                ]
+              },
+              {
+                "field": "prohibited_practices",
+                "empty": true
+              },
+              {
+                "any": [
+                  {
+                    "not": {
+                      "field": "annex_iii_area",
+                      "is": null
+                    }
+                  },
+                  {
+                    "all": [
+                      {
+                        "field": "annex_i_safety_component",
+                        "is": true
+                      },
+                      {
+                        "field": "annex_i_third_party_assessment",
+                        "is": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "field": "roles",
+            "has": "deployer"
+          },
+          {
+            "not": {
+              "field": "annex_iii_area",
+              "in": [
+                "III.2",
+                "III.5.b",
+                "III.5.c"
+              ]
+            }
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "provider_established_outside_eu",
+      "kind": "boolean",
+      "field": "provider_established_outside_eu",
+      "title": "Is the provider established outside the EU?",
+      "article": "Art. 22 AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "prohibited_practices",
+            "empty": true
+          },
+          {
+            "any": [
+              {
+                "not": {
+                  "field": "annex_iii_area",
+                  "is": null
+                }
+              },
+              {
+                "all": [
+                  {
+                    "field": "annex_i_safety_component",
+                    "is": true
+                  },
+                  {
+                    "field": "annex_i_third_party_assessment",
+                    "is": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "has_authorised_representative",
+      "kind": "boolean",
+      "field": "has_authorised_representative",
+      "title": "Has the provider appointed an authorised representative in the EU?",
+      "article": "Art. 22 AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "all": [
+                  {
+                    "not": {
+                      "field": "is_ai_system",
+                      "is": false
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "eu_nexus",
+                      "is": false
+                    }
+                  }
+                ]
+              },
+              {
+                "field": "prohibited_practices",
+                "empty": true
+              },
+              {
+                "any": [
+                  {
+                    "not": {
+                      "field": "annex_iii_area",
+                      "is": null
+                    }
+                  },
+                  {
+                    "all": [
+                      {
+                        "field": "annex_i_safety_component",
+                        "is": true
+                      },
+                      {
+                        "field": "annex_i_third_party_assessment",
+                        "is": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "field": "provider_established_outside_eu",
+            "is": true
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "value_chain",
+      "kind": "flags",
+      "title": "Does your organisation do either of these to the system?",
+      "hint": "Either can make a distributor, importer or deployer a provider.",
+      "article": "Art. 25 AIA",
+      "options": [
+        {
+          "field": "puts_name_or_trademark_on_system",
+          "label": "Puts its name or trademark on it"
+        },
+        {
+          "field": "substantially_modifies_system",
+          "label": "Substantially modifies it"
+        }
+      ],
+      "none_label": "Neither",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "prohibited_practices",
+            "empty": true
+          },
+          {
+            "any": [
+              {
+                "not": {
+                  "field": "annex_iii_area",
+                  "is": null
+                }
+              },
+              {
+                "all": [
+                  {
+                    "field": "annex_i_safety_component",
+                    "is": true
+                  },
+                  {
+                    "field": "annex_i_third_party_assessment",
+                    "is": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "is_gpai_model",
+      "kind": "boolean",
+      "field": "is_gpai_model",
+      "title": "Is this a general-purpose AI model?",
+      "show_if": {
+        "all": [
+          {
+            "not": {
+              "field": "is_ai_system",
+              "is": false
+            }
+          },
+          {
+            "not": {
+              "field": "eu_nexus",
+              "is": false
+            }
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "training_flops",
+      "kind": "number",
+      "field": "training_flops",
+      "title": "What was the cumulative training compute, in FLOP?",
+      "hint": "For example 2e25. Leave blank if not disclosed; the systemic-risk status then goes to review unless the model is designated.",
+      "article": "Art. 51(2) AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "is_gpai_model",
+            "is": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "gpai_systemic_risk_designated",
+      "kind": "boolean",
+      "field": "gpai_systemic_risk_designated",
+      "title": "Has the Commission designated the model as having systemic risk?",
+      "article": "Art. 51(1)(b) AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "is_gpai_model",
+            "is": true
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "transparency",
+      "kind": "flags",
+      "title": "Does the system do any of these?",
+      "article": "Art. 50 AIA",
+      "options": [
+        {
+          "field": "interacts_with_natural_persons",
+          "label": "Interacts directly with natural persons (Art. 50(1))"
+        },
+        {
+          "field": "generates_synthetic_content",
+          "label": "Generates synthetic audio, image, video or text (Art. 50(2))"
+        },
+        {
+          "field": "deploys_emotion_or_biometric_categorisation",
+          "label": "Emotion recognition or biometric categorisation (Art. 50(3))"
+        },
+        {
+          "field": "generates_deepfakes",
+          "label": "Generates or manipulates deep fakes (Art. 50(4))"
+        }
+      ],
+      "none_label": "None of these",
+      "show_if": {
+        "all": [
+          {
+            "not": {
+              "field": "is_ai_system",
+              "is": false
+            }
+          },
+          {
+            "not": {
+              "field": "eu_nexus",
+              "is": false
+            }
+          }
+        ]
+      },
+      "unknown": "block"
+    },
+    {
+      "id": "public_authority_use",
+      "kind": "boolean",
+      "field": "public_authority_use",
+      "title": "Is the system intended to be used by public authorities?",
+      "unknown": "block"
+    },
+    {
+      "id": "dates",
+      "kind": "details",
+      "title": "Market dates",
+      "hint": "YYYY-MM-DD, the AI system's dates. Leave blank if not yet placed on the market or put into service. A general-purpose AI model's own date is asked next.",
+      "fields": [
+        {
+          "field": "placing_on_market_date",
+          "label": "Placed on the market",
+          "type": "date"
+        },
+        {
+          "field": "putting_into_service_date",
+          "label": "Put into service",
+          "type": "date"
+        }
+      ]
+    },
+    {
+      "id": "gpai_date",
+      "kind": "details",
+      "title": "General-purpose AI model date",
+      "hint": "YYYY-MM-DD. Leave blank if not given: the model is then dated by the AI system's placing-on-market date, for review, or, if none is given, its obligations note the Art. 111(3) transition.",
+      "article": "Art. 111(3) AIA",
+      "fields": [
+        {
+          "field": "gpai_model_placing_on_market_date",
+          "label": "Model placed on the market",
+          "type": "date"
+        }
+      ],
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "is_gpai_model",
+            "is": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "significant_change",
+      "kind": "boolean",
+      "field": "significant_change_after_application_date",
+      "title": "Has the system changed significantly after the relevant application date?",
+      "unknown": "block"
+    },
+    {
+      "id": "deployer_public_authority",
+      "kind": "boolean",
+      "field": "deployer_public_authority",
+      "title": "Is the deployer a public authority or a Union institution, body, office or agency, or does it act on behalf of one?",
+      "article": "Art. 49(3) AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "prohibited_practices",
+            "empty": true
+          },
+          {
+            "any": [
+              {
+                "not": {
+                  "field": "annex_iii_area",
+                  "is": null
+                }
+              },
+              {
+                "all": [
+                  {
+                    "field": "annex_i_safety_component",
+                    "is": true
+                  },
+                  {
+                    "field": "annex_i_third_party_assessment",
+                    "is": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "unknown": "block"
+    }
+  ]
+}

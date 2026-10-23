@@ -7,7 +7,7 @@
 
 Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm; see [who it's for](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/overview.md#who-its-for).
 
-**Status:** beta, on PyPI. It encodes Regulation (EU) 2024/1689 and, in part, the amending Regulation (EU) 2026/1744: its application dates, not its new Art. 5 prohibitions. Source versions are in the [methodology](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/methodology.md), and legal claims, including what is encoded, in the [regulatory claim ledger](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/REGULATORY_CLAIM_LEDGER.md).
+**Status:** beta, on PyPI. It encodes Regulation (EU) 2024/1689 and, in part, the amending Regulation (EU) 2026/1744, including its application dates and new Art. 5 prohibitions. Source versions are in the [methodology](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/methodology.md), and legal claims, including what is encoded, in the [regulatory claim ledger](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/REGULATORY_CLAIM_LEDGER.md).
 
 **Not legal advice.** Output is a first pass for supervised legal review, and a qualified human must review every result before reliance. Example data is synthetic. The engine applies rules to characterised facts and does not decide disputed intended purpose, operator role or factual deployment scope ([honest limits](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/overview.md#honest-limits)).
 

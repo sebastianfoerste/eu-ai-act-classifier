@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { formatLabel, labelFor, type LabelNamespace } from "../lib/labels";
 import { baseProfile, emptyDerogation, inventory } from "../lib/samples";
 import type {
   ArtifactPreview,
@@ -28,6 +29,7 @@ import type {
 const fallbackSchema: SchemaPayload = {
   roles: ["provider", "deployer", "importer", "distributor", "authorized_representative"],
   annex_iii_areas: ["III.2", "III.4.a", "III.5.b", "III.5.c"],
+  annex_i_sections: ["A", "B"],
   prohibited_practices: [],
   excluded_use_flags: [],
   artifacts: [
@@ -313,8 +315,19 @@ export function Cockpit() {
                 checked={profile.public_authority_use}
                 onChange={(checked) => updateProfile("public_authority_use", checked)}
               />
+              <TextField
+                label="Placed on market (YYYY-MM-DD)"
+                value={profile.placing_on_market_date ?? ""}
+                onChange={(value) => updateProfile("placing_on_market_date", value)}
+              />
+              <TextField
+                label="Put into service (YYYY-MM-DD)"
+                value={profile.putting_into_service_date ?? ""}
+                onChange={(value) => updateProfile("putting_into_service_date", value)}
+              />
               <MultiCheck
                 label="Excluded-use flags"
+                namespace="excluded_use_flags"
                 options={schema.excluded_use_flags}
                 selected={profile.excluded_use_flags}
                 onToggle={(value) => toggleArray("excluded_use_flags", value)}
@@ -325,9 +338,15 @@ export function Cockpit() {
               <h3>Actors</h3>
               <MultiCheck
                 label="Roles"
+                namespace="roles"
                 options={schema.roles}
                 selected={profile.roles}
                 onToggle={(value) => toggleArray("roles", value)}
+              />
+              <TriStateControl
+                label="Public-authority deployer (or acting on its behalf)"
+                value={profile.deployer_public_authority}
+                onChange={(value) => updateProfile("deployer_public_authority", value)}
               />
               <TriStateControl
                 label="Public-law deployer"
@@ -362,7 +381,7 @@ export function Cockpit() {
                   <option value="">None</option>
                   {schema.annex_iii_areas.map((area) => (
                     <option key={area} value={area}>
-                      {formatLabel(area)}
+                      {labelFor("annex_iii_area", area)}
                     </option>
                   ))}
                 </select>
@@ -377,6 +396,20 @@ export function Cockpit() {
                 checked={profile.annex_i_third_party_assessment}
                 onChange={(checked) => updateProfile("annex_i_third_party_assessment", checked)}
               />
+              <label className="field">
+                <span>Annex I section</span>
+                <select
+                  value={profile.annex_i_section ?? ""}
+                  onChange={(event) => updateProfile("annex_i_section", event.target.value || null)}
+                >
+                  <option value="">Not given (Section A)</option>
+                  {schema.annex_i_sections.map((section) => (
+                    <option key={section} value={section}>
+                      Section {section}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <Toggle
                 label="Substantial modification"
                 checked={profile.substantially_modifies_system}
@@ -406,6 +439,11 @@ export function Cockpit() {
                 checked={profile.gpai_systemic_risk_designated}
                 onChange={(checked) => updateProfile("gpai_systemic_risk_designated", checked)}
               />
+              <TextField
+                label="Model placed on market (YYYY-MM-DD)"
+                value={profile.gpai_model_placing_on_market_date ?? ""}
+                onChange={(value) => updateProfile("gpai_model_placing_on_market_date", value)}
+              />
               <Toggle
                 label="Natural-person interaction"
                 checked={profile.interacts_with_natural_persons}
@@ -425,7 +463,7 @@ export function Cockpit() {
               {(Object.keys(profile.derogation) as Array<keyof SystemProfile["derogation"]>).map((key) => (
                 <Toggle
                   key={key}
-                  label={formatLabel(key)}
+                  label={labelFor("derogation", key)}
                   checked={profile.derogation[key]}
                   onChange={(checked) => updateDerogation(key, checked)}
                 />
@@ -435,6 +473,7 @@ export function Cockpit() {
               <h3>Prohibited Practices</h3>
               <MultiCheck
                 label="Art. 5 flags"
+                namespace="prohibited_practices"
                 options={schema.prohibited_practices}
                 selected={profile.prohibited_practices}
                 onToggle={(value) => toggleArray("prohibited_practices", value)}
@@ -532,10 +571,10 @@ export function Cockpit() {
                     <Fragment key={item.obligation_id}>
                       <tr>
                         <td>{item.article}</td>
-                        <td>{item.actor}</td>
+                        <td>{labelFor("roles", item.actor)}</td>
                         <td>{item.evidence_artifact}</td>
                         <td>{item.application_date}</td>
-                        <td>{formatLabel(item.review_status)}</td>
+                        <td>{labelFor("review_status", item.review_status)}</td>
                       </tr>
                       {item.application_date_note ? (
                         <tr>
@@ -568,7 +607,7 @@ export function Cockpit() {
             {sourceRows.map((source) => (
               <a href={source.url} key={source.source_id} rel="noreferrer" target="_blank">
                 <strong>{source.citation_label}</strong>
-                <span>{formatLabel(source.legal_status)}</span>
+                <span>{labelFor("source_status", source.legal_status)}</span>
                 <small>Retrieved {source.retrieved_on}</small>
               </a>
             ))}
@@ -618,7 +657,7 @@ export function Cockpit() {
                 >
                   {artifacts.artifacts.map((artifact) => (
                     <option key={artifact.name} value={artifact.name}>
-                      {formatLabel(artifact.name)}
+                      {labelFor("artifacts", artifact.name)}
                     </option>
                   ))}
                 </select>
@@ -685,7 +724,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
                 </td>
                 <td>{formatLabel(system.role)}</td>
                 <td>{riskLabel(system.risk_tier)}</td>
-                <td>{formatLabel(system.disposition)}</td>
+                <td>{labelFor("disposition", system.disposition)}</td>
                 <td>{formatLabel(system.source_manifest_status)}</td>
                 <td>{system.open_facts.length ? system.open_facts.length : "none"}</td>
                 <td>{system.obligations.length}</td>
@@ -1082,11 +1121,13 @@ function TriStateControl({
 
 function MultiCheck({
   label,
+  namespace,
   options,
   selected,
   onToggle,
 }: {
   label: string;
+  namespace: LabelNamespace;
   options: string[];
   selected: string[];
   onToggle: (value: string) => void;
@@ -1103,7 +1144,7 @@ function MultiCheck({
                 checked={selected.includes(option)}
                 onChange={() => onToggle(option)}
               />
-              <span>{formatLabel(option)}</span>
+              <span>{labelFor(namespace, option)}</span>
             </label>
           ))
         ) : (
@@ -1145,8 +1186,10 @@ function cleanProfile(profile: SystemProfile): SystemProfile {
     ...profile,
     roles: profile.roles.length ? profile.roles : ["provider"],
     annex_iii_area: profile.annex_iii_area || null,
+    annex_i_section: profile.annex_i_section || null,
     placing_on_market_date: normalizeOptional(profile.placing_on_market_date),
     putting_into_service_date: normalizeOptional(profile.putting_into_service_date),
+    gpai_model_placing_on_market_date: normalizeOptional(profile.gpai_model_placing_on_market_date),
     derogation: { ...profile.derogation },
   };
 }
@@ -1160,14 +1203,6 @@ function normalizeOptional(value: string | null): string | null {
 
 function cloneProfile(profile: SystemProfile): SystemProfile {
   return JSON.parse(JSON.stringify(profile)) as SystemProfile;
-}
-
-function formatLabel(value: string) {
-  return value
-    .replaceAll("_", " ")
-    .replaceAll("-", " ")
-    .replaceAll(".", " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function safeFilename(value: string) {
@@ -1188,14 +1223,7 @@ function artifactResponseFromDossier(dossier: ReviewDossier): ArtifactResponse {
 }
 
 function riskLabel(value: string) {
-  const labels: Record<string, string> = {
-    outside_scope: "Outside scope",
-    prohibited: "Prohibited",
-    high_risk: "High risk",
-    limited_risk: "Limited risk",
-    minimal_risk: "Minimal risk",
-  };
-  return labels[value] ?? value;
+  return labelFor("risk_tier", value);
 }
 
 function riskTone(value?: string) {

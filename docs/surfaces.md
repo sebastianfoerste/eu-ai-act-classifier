@@ -26,11 +26,13 @@ Then inspect `/tmp/eu-ai-act-draft-pack`. The generated files are draft review a
 
 ## Source statuses
 
-Reports and draft artifacts use a versioned source manifest. The current binding layer includes Regulation (EU) 2024/1689 as consolidated on 27 July 2026 and Regulation (EU) 2026/1744. The rules encode the amending regulation only in part; the [claim ledger](REGULATORY_CLAIM_LEDGER.md) lists what is and is not encoded. Any future provisional material and nonbinding guidance remain separately labelled. Guidance overlays are advisory notes and do not override the binding classification logic.
+Reports and draft artifacts use a versioned source manifest. The current binding layer includes Regulation (EU) 2024/1689 as consolidated on 27 July 2026 and Regulation (EU) 2026/1744. The rules encode the amending regulation only in part; the [claim ledger](REGULATORY_CLAIM_LEDGER.md) lists the amendments that are encoded and the limits of that encoding. Any future provisional material and nonbinding guidance remain separately labelled. Guidance overlays are advisory notes and do not override the binding classification logic.
 
 ## Browser playground
 
-The [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) runs the classifier client-side with Pyodide. Pick a synthetic example or paste a `SystemProfile`, classify it, then export the JSON or text report. A field guide lists every input field and its allowed values.
+The [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) runs the classifier client-side with Pyodide. It opens on guided questions: one question per page with the article under it, an "I don't know" answer where the fact may be open, and a check-answers page that also lists every value left at its default. "I don't know" never becomes "no": it records an unconfirmed value that routes the result to review, marks the Annex III point as unsettled, or pauses the run until counsel answers. The JSON editor stays available as a second mode: pick a synthetic example or paste a `SystemProfile`, classify it, then export the JSON or text report. A field guide lists every input field and its allowed values.
+
+The questions, their order and when each is asked come from `src/eu_ai_act_classifier/intake.py`; the browser only interprets the generated `intake.json`. `tests/test_intake.py` checks that every example round-trips through the questions, that every "I don't know" either pauses the run or yields `requires_review`, and, over grids of states the intake can reach, that no answer to a skipped question changes the classification, apart from the engine's own note that a value given there is not used. Nonbinding advisory notes are outside that check for a profile outside the AI Act's scope. The pinpoint shown under a question is always one the engine already cites; the intake adds no citation of its own.
 
 The page installs a wheel of this package, so it applies the same rules as the CLI. `tests/test_playground.py` fails if the wheel, the bundled examples or the field guide drift from the source. Rebuild after a rule change:
 
@@ -70,9 +72,9 @@ The inventory payload includes a system review table with classifier-backed rows
 
 ## Optional web cockpit
 
-![Full-page screenshot of the local web cockpit with the CreditSightScore sample: sample inventory, guided intake, review panel showing determined with 0 open questions, reviewer notes, the AI systems inventory and system review tables, an obligation tracker with 16 graph items from Art. 16 AIA in which the Art. 40 to 44, 47 to 49, 72 and 73 items are due 2026-08-02 with a literal-reading note, source provenance and a draft export pack](cockpit.png)
+![Full-page screenshot of the web cockpit in its single-column layout with the CreditSightScore sample: the sample inventory, a guided intake, the review panel (requires_review, high risk, one Art. 111(2) open question), reviewer notes, the AI systems inventory and system review tables, the obligation tracker with 17 graph items, source provenance and a draft export pack](cockpit.png)
 
-*Full-page screenshot of the local web cockpit (`web/`, production build, 1440 px wide) with the CreditSightScore sample loaded. The obligation tracker cuts off wide cells; each item's full `application_date` and `application_date_note` are in [`examples/classification-packet.json`](../examples/classification-packet.json).*
+*Full-page capture of the local web cockpit (`web/`, production build, 1180 px wide) with its CreditSightScore sample loaded, reduced to 256 colours; the steps are in [TESTING.md](TESTING.md#generated-files). The cockpit's sample gives a placing-on-market date of 2026-10-01 and `examples/credit_scoring.json` gives none, so only the cockpit raises the Art. 111(2) question.*
 
 The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
 

@@ -6,7 +6,7 @@ The longer introduction to the classifier. The [README](../README.md) has instal
 
 Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm.
 
-Built on Regulation (EU) 2024/1689 as consolidated on 27 July 2026. From the amending Regulation (EU) 2026/1744 it encodes the application dates, including the deferral of Chapter III, Sections 1 to 3 (Annex III 2027-12-02, Annex I 2028-08-02), but not the new Art. 5 prohibitions themselves: the timeline lists their date, and the prohibited-practice screen does not test for them. See the [claim ledger](REGULATORY_CLAIM_LEDGER.md). Not legal advice; the bundled example data is synthetic.
+Built on Regulation (EU) 2024/1689 as consolidated on 27 July 2026. From the amending Regulation (EU) 2026/1744 it encodes the application dates, including the deferral of Chapter III, Sections 1 to 3 (Annex III 2027-12-02, Annex I 2028-08-02), and the new Art. 5(1)(ba) and (bb) prohibitions, which apply from 2026-12-02: the prohibited-practice screen returns a prohibited finding when a profile asserts one of them and quotes the Art. 5(1a) limits (and, for point (ba), Art. 5(1b)) without testing them. The [claim ledger](REGULATORY_CLAIM_LEDGER.md) lists the other amendments that are encoded; the rest have not been mapped. Not legal advice; the bundled example data is synthetic.
 
 ## Who it's for
 
@@ -21,7 +21,7 @@ Built on Regulation (EU) 2024/1689 as consolidated on 27 July 2026. From the ame
 
 [![Live playground: the synthetic CreditSightScore credit scoring profile classified high-risk under Art. 6 AIA, with its Annex III(5)(b) finding and the cited provider obligations from Article 9 onwards](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
-> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 17 synthetic examples, or see [Example output](sample-output.md#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 18 synthetic examples, or see [Example output](sample-output.md#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
 ## Human-authored legal judgment
 
