@@ -7,6 +7,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+import eu_ai_act_classifier.collaboration_workspace as collaboration_workspace_module
 import eu_ai_act_classifier.inventory as inventory_module
 from eu_ai_act_classifier.local_api import (
     artifacts_payload,
@@ -95,6 +96,10 @@ def _run_local_api(
     return json.loads(out)
 
 
+def _cell(result: dict[str, Any], target_id: str) -> dict[str, Any]:
+    return next(cell for cell in result["collaboration"]["cells"] if cell["target_id"] == target_id)
+
+
 def test_local_api_collaboration_survives_a_clock_tick_between_actions(
     tmp_path, monkeypatch, capsys
 ) -> None:
@@ -108,12 +113,19 @@ def test_local_api_collaboration_survives_a_clock_tick_between_actions(
     class SteppedClock(datetime):
         @classmethod
         def now(cls, tz=None):
-            return clock[0]
+            # Same contract as datetime.now: aware in tz, or naive local time without one.
+            current = clock[0].astimezone(tz)
+            return current if tz is not None else current.replace(tzinfo=None)
 
-    # inventory._now() stamps generatedAt from this module-level datetime.
+    # inventory._now() stamps generatedAt and apply_workspace_action stamps the
+    # actions from these module-level datetime names. Swapping the class rather
+    # than _now keeps _now's own formatting in the path.
     monkeypatch.setattr(inventory_module, "datetime", SteppedClock)
+    monkeypatch.setattr(collaboration_workspace_module, "datetime", SteppedClock)
 
-    target = _run_local_api(monkeypatch, capsys, "collaboration")["collaboration"]["cells"][0]
+    cells = _run_local_api(monkeypatch, capsys, "collaboration")["collaboration"]["cells"]
+    assert cells, "the copied examples/ produced no collaboration cells"
+    target = cells[0]
     locked = _run_local_api(
         monkeypatch,
         capsys,
@@ -125,11 +137,12 @@ def test_local_api_collaboration_survives_a_clock_tick_between_actions(
             "actor": "Local reviewer",
         },
     )
-    locked_cell = next(
-        cell
-        for cell in locked["collaboration"]["cells"]
-        if cell["target_id"] == target["target_id"]
+    locked_cell = _cell(locked, target["target_id"])
+    assert (locked_cell["revision"], locked_cell["locked_by"]) == (
+        target["revision"] + 1,
+        "Local reviewer",
     )
+    assert locked_cell["lock_expires_at"] == "2026-07-13T09:15:00+00:00"
     assert _run_local_api(monkeypatch, capsys, "inventory")["generatedAt"] == (
         "2026-07-13T09:00:00+00:00"
     )
@@ -151,12 +164,17 @@ def test_local_api_collaboration_survives_a_clock_tick_between_actions(
         },
     )
 
-    workspace = commented["collaboration"]
-    cell = next(cell for cell in workspace["cells"] if cell["target_id"] == target["target_id"])
-    assert (cell["revision"], cell["locked_by"]) == (3, "Local reviewer")
-    assert [comment["body"] for comment in cell["comments"]] == [
-        "Confirm the factor evidence against approved sources."
+    cell = _cell(commented, target["target_id"])
+    assert (cell["revision"], cell["locked_by"]) == (
+        locked_cell["revision"] + 1,
+        "Local reviewer",
+    )
+    assert [(comment["body"], comment["created_at"]) for comment in cell["comments"]] == [
+        ("Confirm the factor evidence against approved sources.", "2026-07-13T09:00:01+00:00")
     ]
-    assert workspace["inventory_digest"] == locked["collaboration"]["inventory_digest"]
     stored = Path("runtime-data/collaboration-workspace.json").read_text(encoding="utf-8")
-    assert json.loads(stored) == workspace
+    assert json.loads(stored) == commented["collaboration"]
+
+    # A page load after the tick reads the stored workspace back with the comment.
+    snapshot = _run_local_api(monkeypatch, capsys, "collaboration")
+    assert _cell(snapshot, target["target_id"]) == cell

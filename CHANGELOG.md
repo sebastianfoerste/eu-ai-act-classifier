@@ -172,8 +172,8 @@ checked against the consolidated AI Act of 27 July 2026 and Regulation (EU)
 
 - Classification rules, citations, application dates, examples and goldens. No new legal claim was added: the article shown under each guided question is one the engine already cites, and `tests/test_intake.py` enforces that.
 
-### Collaboration workspace digest (#33)
+### Collaboration workspace digest (#33, #36)
 
 #### Fixed
 
-- The cockpit's collaboration workspace no longer reads as stale when the next action comes in a later second: the inventory digest leaves out the `generatedAt` stamps the inventory takes from the clock on every rebuild, and `tests/test_local_api.py` now covers two `eu-ai-act-local-api collaboration` actions across a clock tick end to end.
+- The cockpit's collaboration workspace no longer reads as stale when the next action comes in a later second: the inventory digest leaves out the `generatedAt` stamps the inventory takes from the clock on every rebuild (#33). `tests/test_collaboration_workspace.py` checks that a saved workspace still loads against the same inventory rebuilt a second later (#33), and `tests/test_local_api.py` runs two collaboration actions through `local_api.main` across a clock tick (#36).
