@@ -29,6 +29,10 @@ CV_SCREENING = EXAMPLES / "cv_screening.json"
 SAMPLE_OUTPUT = Path("docs/sample-output.md")
 DEMO_PNG = Path("docs/demo.png")
 PYPROJECT = Path("pyproject.toml")
+CLAIM_LEDGER = Path("docs/REGULATORY_CLAIM_LEDGER.md")
+SOURCE = Path("src/eu_ai_act_classifier")
+# How the code and the claim ledger cite the amending points of Regulation (EU) 2026/1744.
+AMENDING_POINT = re.compile(r"Art\. 1, point \((\d+)\)")
 # Docs that hold sections moved out of the README.
 README_CONTENT_DOCS = [
     Path("docs/README.md"),
@@ -167,6 +171,21 @@ def test_readme_links_docs_index_overview_and_claim_ledger() -> None:
     readme = README.read_text(encoding="utf-8")
     for target in ("docs/README.md", "docs/overview.md", "docs/REGULATORY_CLAIM_LEDGER.md"):
         assert f"]({GITHUB_REPO}/blob/main/{target})" in readme
+
+
+def test_claim_ledger_names_every_amending_point_the_code_cites() -> None:
+    # The README, docs/overview.md and docs/surfaces.md send readers to the claim ledger
+    # for what the classifier encodes from Regulation (EU) 2026/1744, so the ledger names
+    # every point of that regulation's Art. 1 that the code cites.
+    cited = {
+        point
+        for path in SOURCE.rglob("*.py")
+        for point in AMENDING_POINT.findall(path.read_text(encoding="utf-8"))
+    }
+    named = set(AMENDING_POINT.findall(CLAIM_LEDGER.read_text(encoding="utf-8")))
+    assert cited, f"no 'Art. 1, point (n)' citation found under {SOURCE}"
+    missing = sorted(cited - named, key=int)
+    assert not missing, f"{CLAIM_LEDGER} names no Art. 1, point {missing} cited in {SOURCE}"
 
 
 def test_launch_readiness_is_discoverable_from_readme() -> None:
