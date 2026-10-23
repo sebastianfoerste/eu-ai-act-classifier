@@ -7,6 +7,19 @@ pull requests.
 
 Changes since 0.2.2.
 
+### eu-reg-mcp recommendation (#13)
+
+#### Changed
+
+- When `mcp.server.fastmcp` does not import, the MCP server's exit message
+  still gives the pip, uvx and clone commands, and now ends by recommending
+  eu-reg-mcp for Claude Code and Claude Desktop:
+  `uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp`.
+- The README, `docs/surfaces.md` and `docs/mcp-configuration-guide.md`
+  recommend eu-reg-mcp ahead of this package's own server. The guide and
+  `docs/surfaces.md` also give the clone command
+  `uv run --extra mcp eu-ai-act-classifier-mcp`.
+
 ### Legal mapping corrections (#14)
 
 These entries come from #14. The provisions were checked against the
