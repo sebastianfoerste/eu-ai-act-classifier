@@ -23,3 +23,8 @@ web/*.tsbuildinfo
 !.env.example
 research/_captures/
 research/_tools/
+
+# Files docs/SETUP.md creates in a clone. They may hold real system details and
+# must not reach the sdist, which takes every file git does not ignore.
+profile.json
+draft-artifacts/
