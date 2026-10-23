@@ -171,3 +171,9 @@ checked against the consolidated AI Act of 27 July 2026 and Regulation (EU)
 #### Unchanged
 
 - Classification rules, citations, application dates, examples and goldens. No new legal claim was added: the article shown under each guided question is one the engine already cites, and `tests/test_intake.py` enforces that.
+
+### Collaboration workspace digest (#33)
+
+#### Fixed
+
+- The cockpit's collaboration workspace no longer reads as stale when the next action comes in a later second: the inventory digest leaves out the `generatedAt` stamps the inventory takes from the clock on every rebuild, and `tests/test_local_api.py` now covers two `eu-ai-act-local-api collaboration` actions across a clock tick end to end.

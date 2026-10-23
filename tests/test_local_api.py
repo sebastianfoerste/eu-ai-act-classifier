@@ -1,12 +1,23 @@
 from __future__ import annotations
 
+import io
+import json
+import shutil
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
+from typing import Any
+
+import eu_ai_act_classifier.inventory as inventory_module
 from eu_ai_act_classifier.local_api import (
     artifacts_payload,
     classify_payload,
     dossier_payload,
+    main,
     schema_payload,
     sources_payload,
 )
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_local_api_schema_exposes_cockpit_contract() -> None:
@@ -71,3 +82,81 @@ def test_local_api_dossier_all_is_a_single_authoritative_cockpit_snapshot() -> N
         "fria",
         "annex-iv-checklist",
     }
+
+
+def _run_local_api(
+    monkeypatch, capsys, command: str, payload: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    # Pipe the payload through stdin and read stdout, as web/lib/python.ts does.
+    monkeypatch.setattr("sys.stdin", io.StringIO("" if payload is None else json.dumps(payload)))
+    code = main([command])
+    out, err = capsys.readouterr()
+    assert (code, err) == (0, ""), err
+    return json.loads(out)
+
+
+def test_local_api_collaboration_survives_a_clock_tick_between_actions(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    # The cockpit runs the bridge from the repository root and injects no clock, so
+    # every action rebuilds the inventory stamped with the current second. A tick
+    # between two actions used to make the saved workspace stale.
+    shutil.copytree(ROOT / "examples", tmp_path / "examples")
+    monkeypatch.chdir(tmp_path)
+    clock = [datetime(2026, 7, 13, 9, 0, 0, tzinfo=UTC)]
+
+    class SteppedClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return clock[0]
+
+    # inventory._now() stamps generatedAt from this module-level datetime.
+    monkeypatch.setattr(inventory_module, "datetime", SteppedClock)
+
+    target = _run_local_api(monkeypatch, capsys, "collaboration")["collaboration"]["cells"][0]
+    locked = _run_local_api(
+        monkeypatch,
+        capsys,
+        "collaboration",
+        {
+            "action": "lock",
+            "targetId": target["target_id"],
+            "expectedRevision": target["revision"],
+            "actor": "Local reviewer",
+        },
+    )
+    locked_cell = next(
+        cell
+        for cell in locked["collaboration"]["cells"]
+        if cell["target_id"] == target["target_id"]
+    )
+    assert _run_local_api(monkeypatch, capsys, "inventory")["generatedAt"] == (
+        "2026-07-13T09:00:00+00:00"
+    )
+
+    clock[0] += timedelta(seconds=1)
+    assert _run_local_api(monkeypatch, capsys, "inventory")["generatedAt"] == (
+        "2026-07-13T09:00:01+00:00"
+    )
+    commented = _run_local_api(
+        monkeypatch,
+        capsys,
+        "collaboration",
+        {
+            "action": "comment",
+            "targetId": target["target_id"],
+            "expectedRevision": locked_cell["revision"],
+            "actor": "Local reviewer",
+            "body": "Confirm the factor evidence against approved sources.",
+        },
+    )
+
+    workspace = commented["collaboration"]
+    cell = next(cell for cell in workspace["cells"] if cell["target_id"] == target["target_id"])
+    assert (cell["revision"], cell["locked_by"]) == (3, "Local reviewer")
+    assert [comment["body"] for comment in cell["comments"]] == [
+        "Confirm the factor evidence against approved sources."
+    ]
+    assert workspace["inventory_digest"] == locked["collaboration"]["inventory_digest"]
+    stored = Path("runtime-data/collaboration-workspace.json").read_text(encoding="utf-8")
+    assert json.loads(stored) == workspace
