@@ -10,6 +10,7 @@ import pytest
 
 from eu_ai_act_classifier import (
     ClassificationReport,
+    Disposition,
     ReviewStatus,
     Role,
     SystemProfile,
@@ -382,3 +383,23 @@ def test_case_study_packet_sentence_matches_the_real_credit_scoring_report() -> 
         ]
 
     assert dating(credit) and dating(credit) == dating(cv)
+
+
+def test_case_study_example_counts_match_the_bundled_examples() -> None:
+    case_study = " ".join(CASE_STUDY.read_text(encoding="utf-8").split())
+    examples = sorted(p for p in EXAMPLES.glob("*.json") if p.name != "classification-packet.json")
+    review = [p.name for p in examples if _report(p).disposition is Disposition.REQUIRES_REVIEW]
+
+    path = _search(
+        r"(\w+) of the (\d+) bundled examples take that path: "
+        r"((?:`[\w-]+\.json`(?:, | and )?)+)\.",
+        case_study,
+    )
+    assert _count(path.group(1)) == len(review)
+    assert int(path.group(2)) == len(examples)
+    assert re.findall(r"`([\w-]+\.json)`", path.group(3)) == review
+
+    asserted = _search(
+        r"all (\d+) bundled examples are asserted in `tests/test_examples\.py`", case_study
+    )
+    assert int(asserted.group(1)) == len(examples)
