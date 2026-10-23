@@ -38,6 +38,7 @@ export const baseProfile: SystemProfile = {
   annex_i_third_party_assessment: false,
   annex_i_section: null,
   annex_iii_area: null,
+  used_for_financial_fraud_detection: false,
   derogation: { ...emptyDerogation },
   interacts_with_natural_persons: false,
   generates_synthetic_content: false,

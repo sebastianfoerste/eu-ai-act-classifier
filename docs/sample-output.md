@@ -1,7 +1,9 @@
 # Sample Output
 
-This page shows the shape of the v0.2 output. The exact obligation list may grow
-as the source registry and obligation graph are extended.
+This page shows the shape of the output on `main`, run from a clone. Release 0.2.2,
+the current release on PyPI, prints different output in places; see the note after
+the example output. The exact obligation list may grow as the source registry and
+obligation graph are extended.
 
 Each output block below is real output of the command or example file named before
 it, run on this repo. "..." marks lines or text left out. `tests/test_sample_output.py`
@@ -38,7 +40,7 @@ Source manifest:
   ...
 ```
 
-A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring`, and 14 cited obligations, for example:
+A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons`, and 14 cited obligations, for example:
 
 ```text
 ...
@@ -53,6 +55,8 @@ When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `exampl
 ![CLI output of eu-ai-act-classify examples/credit_scoring.json: CreditSightScore classified high-risk, with its obligations, obligation graph and binding application timeline](demo.png)
 
 `docs/demo.png` is rendered from this real output by `scripts/render_demo.py`.
+
+This output, the worked examples and the playground reflect this repository. Release 0.2.2, the current release on PyPI, which `pip`, `uvx` and eu-reg-mcp's `classify` extra install, does not include the changes listed under Unreleased in [`CHANGELOG.md`](../CHANGELOG.md), among them the changes of 14 October 2026 listed under [Honest limits](overview.md#honest-limits), so its output differs in places. For example, it prints `High-risk: Creditworthiness evaluation and credit scoring` without `of natural persons`, lists the Art. 44 certificate item instead of `high-risk.provider.43.2` for an Annex III point 5(b) provider, and cites the profiling rule as `Art. 6(3) subpara. 2 AIA`. It rejects the `used_for_financial_fraud_detection` field, lists the placeholder `Transparency guidance tracker` instead of the two Art. 50 sources, and names the regulation without `as amended by Regulation (EU) 2026/1744`. Until a release includes these changes, the git form under [Quick start](SETUP.md#quick-start), which installs `main`, runs this version.
 
 ## CLI Report
 
@@ -77,7 +81,7 @@ Scope and intake:
   Transitional status: No transitional limitation identified from the submitted facts.
 
 Findings:
-  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring
+  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons
       Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.
 
 ...
@@ -86,6 +90,8 @@ Obligation graph:
   - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
   ...
   - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+  - high-risk.provider.43.2: Art. 43(2) AIA (provider), evidence: Annex VI internal-control assessment record., review: review_required
       Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
   ...
   - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan., review: review_required

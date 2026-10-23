@@ -68,13 +68,15 @@ ANNEX_III: dict[AnnexIII, tuple[Citation, str]] = {
         cite("Annex III(5)(a) AIA"),
         "Eligibility for essential public assistance benefits and services",
     ),
+    # Point 5(b) excepts AI systems used for the purpose of detecting financial fraud;
+    # rules/high_risk.py raises that exception as a review question.
     AnnexIII.CREDITWORTHINESS: (
         cite("Annex III(5)(b) AIA"),
-        "Creditworthiness evaluation and credit scoring",
+        "Creditworthiness evaluation and credit scoring of natural persons",
     ),
     AnnexIII.INSURANCE_LIFE_HEALTH: (
         cite("Annex III(5)(c) AIA"),
-        "Risk assessment and pricing in life and health insurance",
+        "Risk assessment and pricing for natural persons in life and health insurance",
     ),
     AnnexIII.EMERGENCY_DISPATCH: (
         cite("Annex III(5)(d) AIA"),

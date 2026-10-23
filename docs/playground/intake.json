@@ -37,6 +37,7 @@
     "annex_i_third_party_assessment": false,
     "annex_i_section": null,
     "annex_iii_area": null,
+    "used_for_financial_fraud_detection": false,
     "derogation": {
       "narrow_procedural_task": false,
       "improves_prior_human_activity": false,
@@ -393,11 +394,11 @@
         },
         {
           "value": "III.5.b",
-          "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring"
+          "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons"
         },
         {
           "value": "III.5.c",
-          "label": "Annex III(5)(c): Risk assessment and pricing in life and health insurance"
+          "label": "Annex III(5)(c): Risk assessment and pricing for natural persons in life and health insurance"
         },
         {
           "value": "III.5.d",
@@ -471,6 +472,41 @@
       },
       "unknown": {
         "value": "III.unsure"
+      }
+    },
+    {
+      "id": "used_for_financial_fraud_detection",
+      "kind": "boolean",
+      "field": "used_for_financial_fraud_detection",
+      "title": "Is the system used for the purpose of detecting financial fraud?",
+      "hint": "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting financial fraud. Yes or I don't know raises a review question; the system stays high-risk until it is answered.",
+      "article": "Annex III(5)(b) AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "annex_iii_area",
+            "is": "III.5.b"
+          }
+        ]
+      },
+      "unknown": {
+        "value": null
       }
     },
     {

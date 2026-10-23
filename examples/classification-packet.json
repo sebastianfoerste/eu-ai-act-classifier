@@ -1,6 +1,6 @@
 {
   "system": "CreditSightScore",
-  "regulation": "Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024",
+  "regulation": "Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744",
   "risk_tier": "high_risk",
   "disposition": "determined",
   "scope": {
@@ -22,7 +22,7 @@
       "rule_id": "HIGHRISK.III.5.b",
       "citation": "Annex III(5)(b) AIA",
       "citation_verified": true,
-      "title": "High-risk: Creditworthiness evaluation and credit scoring",
+      "title": "High-risk: Creditworthiness evaluation and credit scoring of natural persons",
       "detail": "Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.",
       "severity": "high",
       "tier": "high_risk"
@@ -298,12 +298,12 @@
       "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
     },
     {
-      "obligation_id": "high-risk.provider.44",
-      "article": "Art. 44 AIA",
+      "obligation_id": "high-risk.provider.43.2",
+      "article": "Art. 43(2) AIA",
       "actor": "provider",
-      "trigger": "Certificate issued by notified body where applicable.",
-      "requirement": "Track certificate validity, changes and renewal obligations.",
-      "evidence_artifact": "Certificate register.",
+      "trigger": "High-risk AI system referred to in points 2 to 8 of Annex III.",
+      "requirement": "Follow the conformity assessment procedure based on internal control (Annex VI), which does not involve a notified body.",
+      "evidence_artifact": "Annex VI internal-control assessment record.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
@@ -540,13 +540,22 @@
       "implementation_note": "Nonbinding scope and compliance support for GPAI model providers."
     },
     {
-      "source_id": "transparency-guidance",
-      "title": "Transparency guidance status tracker",
+      "source_id": "art-50-code-of-practice",
+      "title": "Code of Practice on marking and labelling of AI-generated content",
       "legal_status": "nonbinding_guidance",
-      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
-      "retrieved_on": "2026-06-18",
-      "citation_label": "Transparency guidance tracker",
-      "implementation_note": "Placeholder advisory source until final Art. 50 guidance is published."
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content",
+      "retrieved_on": "2026-10-14 (search results only)",
+      "citation_label": "Art. 50 marking and labelling Code of Practice [noch zu verifizieren]",
+      "implementation_note": "Voluntary code of practice under Art. 50(7) AIA for the marking and labelling duties in Art. 50(2) and (4) AIA, reported as final on 10 June 2026. The Commission policy page is indexed as 'Code of Practice on Transparency of AI-generated Content'. Not primary-verified: the title, date and URL come from search results and secondary reports, because the Commission page was unreachable from the checking environment on 14 October 2026. Recheck on the official page before reliance."
+    },
+    {
+      "source_id": "art-50-guidelines",
+      "title": "Commission guidelines on transparency obligations for providers and deployers of certain AI systems (Art. 50 AIA)",
+      "legal_status": "nonbinding_guidance",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/guidelines-ai-transparency-obligations",
+      "retrieved_on": "2026-10-14 (search results only)",
+      "citation_label": "Commission Art. 50 transparency guidelines [noch zu verifizieren]",
+      "implementation_note": "Nonbinding Commission guidelines under Art. 96(1)(d) AIA on the practical implementation of Art. 50, reported as published on 20 July 2026. A separate instrument from the code of practice. Not primary-verified: the title, date and URL come from search results and secondary reports, because the Commission page was unreachable from the checking environment on 14 October 2026. Recheck on the official page before reliance."
     }
   ],
   "advisory_notes": [],

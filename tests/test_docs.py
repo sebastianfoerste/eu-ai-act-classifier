@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
+
+import pytest
 
 from eu_ai_act_classifier import SystemProfile, classify, render_report
 from eu_ai_act_classifier.artifacts import render_artifact
@@ -26,8 +29,20 @@ PUBLIC_MARKDOWN = [
     Path("docs/launch-readiness.md"),
     Path("docs/methodology.md"),
     Path("docs/reviewer-notes.md"),
+    Path("docs/mcp-configuration-guide.md"),
+    Path("docs/worked-examples/bank-credit-scoring.md"),
+    Path("docs/worked-examples/life-insurer-pricing.md"),
     *README_CONTENT_DOCS,
 ]
+WORKED_EXAMPLES = {
+    Path("docs/worked-examples/bank-credit-scoring.md"): Path(
+        "examples/credit_scoring_deployer.json"
+    ),
+    Path("docs/worked-examples/life-insurer-pricing.md"): Path(
+        "examples/life_insurer_pricing.json"
+    ),
+}
+OMITTED = re.compile(r"^\[\.\.\. (\d+) lines omitted\]$")
 EM_DASH = "\u2014"
 EN_DASH = "\u2013"
 README_MAX_WORDS = 350
@@ -190,6 +205,86 @@ def test_mcp_guide_lists_the_tools_the_server_exposes() -> None:
     listed = set(re.findall(r"^\d+\. `(\w+)`", verification, re.M))
     assert exposed and listed == exposed
     assert "/Users/" not in guide
+
+
+def _fenced(text: str, language: str) -> list[str]:
+    return re.findall(rf"```{language}\n(.*?)\n```", text, re.S)
+
+
+@pytest.mark.parametrize(("doc", "example"), WORKED_EXAMPLES.items())
+def test_worked_example_quotes_the_real_profile_and_cli_output(doc: Path, example: Path) -> None:
+    text = doc.read_text(encoding="utf-8")
+    profile_text = example.read_text(encoding="utf-8")
+    assert f"uv run eu-ai-act-classify {example.as_posix()}" in text
+    assert json.loads(_fenced(text, "json")[0]) == json.loads(profile_text)
+
+    actual = render_report(classify(SystemProfile.model_validate_json(profile_text))).split("\n")
+    assert f"Output ({len(actual)} lines" in text
+    position = 0
+    for line in _fenced(text, "text")[0].split("\n"):
+        omitted = OMITTED.match(line)
+        if omitted:
+            position += int(omitted.group(1))
+            continue
+        assert position < len(actual) and actual[position] == line, (
+            f"{doc} no longer matches the CLI output at line {position + 1}: rerun the command"
+        )
+        position += 1
+    assert position == len(actual), f"{doc} does not quote the CLI output to its end"
+
+
+# The example output that the README quoted until main's README trim (#27) moved it here.
+# tests/test_sample_output.py checks each output block on the page against the CLI; this
+# test checks the sentence that introduces the high-risk excerpt.
+SAMPLE_OUTPUT = Path("docs/sample-output.md")
+HIGH_RISK_SUMMARY = re.compile(
+    r"A high-risk case \(`(examples/\w+\.json)`\) returns `([^`]+)`, the finding `([^`]+)`, "
+    r"and (\d+) cited obligations, for example:\n\n```text\n(.*?)\n```",
+    re.S,
+)
+CUT = "..."
+
+
+def _cli_lines(example: str) -> list[str]:
+    profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
+    return render_report(classify(profile)).split("\n")
+
+
+def test_sample_output_high_risk_summary_matches_the_cli() -> None:
+    match = HIGH_RISK_SUMMARY.search(SAMPLE_OUTPUT.read_text(encoding="utf-8"))
+    assert match, f"{SAMPLE_OUTPUT} no longer summarises the high-risk case"
+    example, tier, finding, count, quoted = match.groups()
+    profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
+    report = classify(profile)
+    actual = _cli_lines(example)
+    assert tier in actual
+    assert any(line.strip().endswith(finding) for line in actual), finding
+    assert int(count) == len(report.obligations)
+    for line in quoted.split("\n"):
+        assert line.strip() == CUT or line in actual, line
+
+
+# tests/test_sample_output.py checks each dossier block against the CLI. This test checks
+# that the summary table and the blocks name the same profiles in the same order, so a
+# block cannot go missing, and that the table's scope, roles and obligation counts match.
+SAMPLE_DOSSIER = Path("docs/sample-review-dossier.md")
+DOSSIER_SOURCE = re.compile(r"^\*\*Source File:\*\* `(examples/\w+\.json)`$", re.M)
+DOSSIER_ROW = re.compile(r"^\| \*\*([^*|]+)\*\* \| [^|]+ \| (\w+) \| ([^|]+) \| (\d+) \|", re.M)
+
+
+def test_sample_review_dossier_table_and_blocks_cover_the_same_profiles() -> None:
+    text = SAMPLE_DOSSIER.read_text(encoding="utf-8")
+    reports = [
+        classify(SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8")))
+        for example in DOSSIER_SOURCE.findall(text)
+    ]
+    rows = DOSSIER_ROW.findall(text)
+    assert rows, f"{SAMPLE_DOSSIER} has no summary table rows"
+    assert [name for name, *_ in rows] == [report.system for report in reports]
+    for (name, scope, roles, count), report in zip(rows, reports, strict=True):
+        assert scope == report.scope.status.value, name
+        assert roles.strip() == ", ".join(role.value for role in report.roles), name
+        assert int(count) == len(report.obligations), name
 
 
 def test_feature_matrix_capability_cells_use_the_allowed_values() -> None:
