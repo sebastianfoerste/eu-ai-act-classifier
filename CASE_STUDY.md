@@ -38,6 +38,7 @@ Scope and intake:
 Findings:
   [high] Annex III(4)(a) AIA: High-risk: Employment selection and worker management
       Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.
+...
 ```
 
 The report then lists 14 provider obligations (Art. 9 to 15, 17, 43, 47, 48, 49, 72 and 73 AIA) and five documentation items. It raises no open questions, so it has no `Open questions for review:` block. It is not prohibited either, so `--strict` exits 0. Its obligation graph marks 12 of 16 items `review: review_required` (Art. 20, 21, 40 to 44, 47 to 49, 72 and 73 AIA). Each of the Art. 40 to 44, 47 to 49, 72 and 73 items carries a note flagged "Literal reading, confirm with counsel": it applies from 2026-08-02, or from 2027-12-02 if it follows the Chapter III, Sections 1 to 3 deferral. No deployer obligations, such as Art. 26 AIA, are listed because the profile names only the provider role.

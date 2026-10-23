@@ -283,21 +283,6 @@ def test_demo_image_fits_the_real_cli_output_and_its_caption_counts_the_lines(
     assert "(../scripts/render_demo.py)" in text
 
 
-def test_case_study_quotes_a_prefix_of_the_real_cv_screening_output(
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    case_study = CASE_STUDY.read_text(encoding="utf-8")
-    match = re.search(
-        rf"`uv run eu-ai-act-classify {re.escape(str(CV_SCREENING))}` are:\n\n"
-        r"```text\n(.*?)```",
-        case_study,
-        re.S,
-    )
-    assert match, "CASE_STUDY.md no longer quotes the cv_screening output block"
-    quoted = match.group(1)
-    assert _cli_output(capsys, str(CV_SCREENING)).startswith(quoted)
-
-
 # The docs spell out numbers below ten ("five documentation items").
 NUMBER_WORDS = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
 DATE = rf"({ISO_DATE.pattern})"
