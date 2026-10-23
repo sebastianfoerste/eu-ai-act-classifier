@@ -63,7 +63,7 @@ The scroll bars stay visible, so the roles, Art. 5 and source lists show that
 they scroll rather than looking cut off. Crop the empty space below the page to
 a 24 px margin, then reduce the image to 256 colours (for example with Pillow:
 `quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)`,
-saved with `optimize=True`), which keeps it near 0.65 MB instead of 1.9 MB.
+saved with `optimize=True`), which keeps it near 0.75 MB instead of 1.9 MB.
 
 ## Quality Expectations
 

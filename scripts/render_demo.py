@@ -5,8 +5,10 @@
 Runs the CLI on examples/credit_scoring.json, lays the text out as a terminal
 window that wraps at a fixed column like a terminal does, and screenshots it.
 Needs Google Chrome or Chromium; set CHROME to its path if it is not on PATH.
-The output is not committed byte for byte by any test, so rerun this whenever
-the CLI text changes.
+No test compares the drawn text with the CLI output, so rerun this whenever the
+CLI text changes. tests/test_docs.py only checks that the image has the size
+window_size gives for the current output, which catches a change in the number
+of wrapped lines but not a change of text within a line.
 """
 
 from __future__ import annotations
@@ -57,6 +59,20 @@ def _wrap(text: str) -> list[str]:
     return lines
 
 
+def terminal_lines(output: str) -> list[str]:
+    """The lines drawn below the prompt: the CLI output, hard-wrapped at COLUMNS."""
+
+    return _wrap(output.rstrip("\n"))
+
+
+def window_size(lines: list[str]) -> tuple[int, int]:
+    """Width and height in pixels of the screenshot that shows the prompt and ``lines``."""
+
+    width = round(COLUMNS * CHAR_PX) + 2 * PAD_PX + 2
+    height = TITLE_PX + (len(lines) + 1) * LINE_PX + 2 * PAD_PX + 2
+    return width, height
+
+
 def _chrome() -> str:
     for name in (os.environ.get("CHROME"), "google-chrome", "chromium", "chromium-browser"):
         if name and (path := shutil.which(name)):
@@ -73,7 +89,7 @@ def main() -> int:
         text=True,
         timeout=TIMEOUT_S,
     ).stdout
-    lines = _wrap(output.rstrip("\n"))
+    lines = terminal_lines(output)
     command = " ".join(COMMAND)
     page = PAGE.format(
         title=TITLE_PX,
@@ -84,8 +100,7 @@ def main() -> int:
         command=html.escape(command),
         body=html.escape("\n".join(lines)),
     )
-    width = round(COLUMNS * CHAR_PX) + 2 * PAD_PX + 2
-    height = TITLE_PX + (len(lines) + 1) * LINE_PX + 2 * PAD_PX + 2
+    width, height = window_size(lines)
     with tempfile.TemporaryDirectory() as tmp:
         source = Path(tmp) / "demo.html"
         source.write_text(page, encoding="utf-8")
