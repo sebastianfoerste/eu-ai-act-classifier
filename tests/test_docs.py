@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import importlib.util
 import re
+import struct
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 
@@ -22,6 +25,8 @@ EXAMPLES_README = EXAMPLES / "README.md"
 CASE_STUDY = Path("CASE_STUDY.md")
 CREDIT_SCORING = EXAMPLES / "credit_scoring.json"
 CV_SCREENING = EXAMPLES / "cv_screening.json"
+SAMPLE_OUTPUT = Path("docs/sample-output.md")
+DEMO_PNG = Path("docs/demo.png")
 PYPROJECT = Path("pyproject.toml")
 # Docs that hold sections moved out of the README.
 README_CONTENT_DOCS = [
@@ -223,6 +228,39 @@ def test_feature_matrix_capability_cells_use_the_allowed_values() -> None:
 def _cli_output(capsys: pytest.CaptureFixture[str], *argv: str) -> str:
     assert main(list(argv)) == 0
     return capsys.readouterr().out
+
+
+def _load_script(name: str) -> ModuleType:
+    path = Path(__file__).resolve().parents[1] / "scripts" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_demo_image_fits_the_real_cli_output_and_its_caption_counts_the_lines(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    # scripts/render_demo.py sizes the screenshot from the number of wrapped output
+    # lines, so the image size shows, without a browser, whether demo.png was
+    # rendered from output of the current length. It cannot see a change within a line.
+    render_demo = _load_script("render_demo")
+    command, *argv = render_demo.COMMAND
+    output = _cli_output(capsys, *argv)
+    png = DEMO_PNG.read_bytes()
+    assert png[12:16] == b"IHDR", f"{DEMO_PNG} is not a PNG file"
+    assert struct.unpack(">II", png[16:24]) == render_demo.window_size(
+        render_demo.terminal_lines(output)
+    ), f"{DEMO_PNG} is stale; re-render it with `uv run python scripts/render_demo.py`"
+
+    sample_output = SAMPLE_OUTPUT.read_text(encoding="utf-8")
+    caption = re.search(r"\]\(demo\.png\)\n\n\*(.*?)\*\n", sample_output, re.S)
+    assert caption, f"{SAMPLE_OUTPUT} no longer captions demo.png"
+    text = " ".join(caption.group(1).split())
+    assert f"All {len(output.splitlines())} lines of `{command} {' '.join(argv)}`" in text
+    assert f"hard-wrapped at {render_demo.COLUMNS} columns" in text
+    assert "(../scripts/render_demo.py)" in text
 
 
 def test_case_study_quotes_a_prefix_of_the_real_cv_screening_output(
