@@ -44,14 +44,22 @@ uv run python scripts/build_playground.py
 
 ## MCP and local API
 
-The MCP server ships in the [PyPI package](https://pypi.org/project/eu-ai-act-classifier/) behind the `[mcp]` extra. Install it and start the server:
+For Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp), which serves this classifier as an MCP tool next to its MiCAR tools:
+
+```bash
+uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
+```
+
+To register it with Claude Code, put `claude mcp add eu-reg --` in front of that command. The Claude Desktop configuration is in the [MCP configuration guide](mcp-configuration-guide.md#recommended-for-claude-eu-reg-mcp).
+
+This package's own MCP server ships in the [PyPI package](https://pypi.org/project/eu-ai-act-classifier/) behind the `[mcp]` extra. Install it and start the server:
 
 ```bash
 pip install "eu-ai-act-classifier[mcp]" "mcp<2"
 eu-ai-act-classifier-mcp
 ```
 
-Or let uv fetch and run it: `uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp`. Client configuration (Claude Desktop, Cursor) and the reason for the `mcp<2` constraint are in [mcp-configuration-guide.md](mcp-configuration-guide.md).
+Or let uv fetch and run it: `uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp`. Client configuration (Claude Desktop, Cursor) and the reason for the `mcp<2` constraint are in [mcp-configuration-guide.md](mcp-configuration-guide.md). From a clone, `uv run --extra mcp eu-ai-act-classifier-mcp` runs your working copy with the pinned extra.
 
 Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1; the 0.2.0 extra does not.
 

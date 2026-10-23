@@ -46,7 +46,7 @@ More: the [full quick start](https://github.com/sebastianfoerste/eu-ai-act-class
 
 ## MCP server
 
-Lets an AI agent call the classifier (tools: `classify_ai_system`, `classify_ai_system_text`). An MCP client starts the server with:
+Lets an AI agent call the classifier. For Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp): `uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp`. The package's own server (tools: `classify_ai_system`, `classify_ai_system_text`) starts with:
 
 ```bash
 uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
