@@ -7,7 +7,7 @@ pull requests.
 
 Changes since 0.2.2.
 
-### Share links in the playground
+### Share links in the playground (#39)
 
 #### Added
 
