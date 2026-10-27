@@ -476,13 +476,6 @@ function sectionDefinitions() {
       })),
     },
     {
-      title: "Advisory notes · nonbinding guidance", open: true,
-      items: r.advisory_notes.map(a => ({
-        search: [a.title, a.detail, a.source_id],
-        render: () => itemCard(badge("tone-blue", SOURCE_LABEL[a.source_status] ?? a.source_status), a.title, null, [a.detail, link(a.source_url, "Source ↗")], REVIEW_LABEL[a.review_status] ?? a.review_status),
-      })),
-    },
-    {
       title: "Scope and intake",
       items: [{
         search: [r.scope.status, r.scope.transitional_status, r.scope.intended_purpose_source, ...r.scope.notes, ...r.scope.excluded_use_flags],
@@ -499,7 +492,7 @@ function sectionDefinitions() {
       title: "Source manifest",
       items: r.source_manifest.map(s => ({
         search: [s.citation_label, s.title, s.legal_status, s.implementation_note],
-        render: () => itemCard(badge(s.legal_status === "binding_level_1" ? "tone-green" : "tone-blue", SOURCE_LABEL[s.legal_status] ?? s.legal_status), s.title, link(s.url, `${s.citation_label} ↗`), [s.implementation_note], `Retrieved ${s.retrieved_on}`),
+        render: () => itemCard(badge(s.legal_status === "binding_level_1" ? "tone-green" : "tone-grey", SOURCE_LABEL[s.legal_status] ?? s.legal_status), s.title, link(s.url, `${s.citation_label} ↗`), [s.implementation_note], `Retrieved ${s.retrieved_on}`),
       })),
     },
     {
@@ -509,12 +502,26 @@ function sectionDefinitions() {
   ];
 }
 
+// Nonbinding guidance is kept out of the binding sections and rendered after
+// them, so it is never read as part of the classification.
+function advisoryItems() {
+  return report.advisory_notes.map(a => ({
+    search: [a.title, a.detail, a.source_id],
+    render: () => itemCard(badge("tone-grey", SOURCE_LABEL[a.source_status] ?? a.source_status), a.title, null, [a.detail, link(a.source_url, "Source ↗")], REVIEW_LABEL[a.review_status] ?? a.review_status),
+  }));
+}
+
 function renderSections() {
   if (!report) return;
   const query = $("search").value;
   const container = $("sections");
   container.replaceChildren();
   let total = 0, visible = 0;
+  const binding = node("section", "result-group");
+  binding.setAttribute("aria-labelledby", "binding-heading");
+  const bindingHeading = node("h4", "result-group-heading", "Binding result");
+  bindingHeading.id = "binding-heading";
+  binding.append(bindingHeading);
   for (const section of sectionDefinitions()) {
     total += section.items.length;
     const items = section.items.filter(item => matchesQuery(item.search, query));
@@ -529,7 +536,25 @@ function renderSections() {
     const body = node("div", "finding-body");
     body.append(...items.map(item => item.render()));
     details.append(summary, body);
-    container.append(details);
+    binding.append(details);
+  }
+  if (binding.childElementCount > 1) container.append(binding);
+  // Only a report run with the guidance toggle on has an advisory box.
+  if (checked?.advisory) {
+    const all = advisoryItems();
+    const items = all.filter(item => matchesQuery(item.search, query));
+    total += all.length;
+    visible += items.length;
+    if (items.length || !query.trim()) {
+      const box = node("section", "advisory-box");
+      box.setAttribute("aria-labelledby", "advisory-heading");
+      const heading = node("h4", "result-group-heading", "Nonbinding guidance notes");
+      heading.id = "advisory-heading";
+      box.append(heading, node("p", "advisory-intro", "Commission guidance, shown because you asked for it. It does not change the tier, the disposition or any obligation above."));
+      if (items.length) box.append(...items.map(item => item.render()));
+      else box.append(node("p", "advisory-intro", "No guidance note applies to this profile."));
+      container.append(box);
+    }
   }
   $("visible-count").textContent = query.trim() ? `${visible} of ${total} items match` : `${total} items · findings and open questions first`;
   if (!visible) container.append(node("p", "no-findings", "Nothing matches this search. Try an article number such as Art. 9."));
