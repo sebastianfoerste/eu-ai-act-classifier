@@ -1,5 +1,5 @@
 {
-  "version": "0.2.1",
+  "version": "0.2.2",
   "groups": [
     {
       "label": "System",
@@ -42,11 +42,11 @@
             },
             {
               "value": "authorized_representative",
-              "label": "Authorized representative"
+              "label": "Authorised representative"
             },
             {
               "value": "gpai_provider",
-              "label": "Gpai provider"
+              "label": "GPAI model provider"
             }
           ]
         },
@@ -93,19 +93,19 @@
           "options": [
             {
               "value": "military_defence_national_security",
-              "label": "Military defence national security"
+              "label": "Military, defence or national security"
             },
             {
               "value": "research_development_testing",
-              "label": "Research development testing"
+              "label": "Research, development or testing"
             },
             {
               "value": "personal_non_professional",
-              "label": "Personal non professional"
+              "label": "Personal, non-professional use"
             },
             {
               "value": "free_open_source",
-              "label": "Free open source"
+              "label": "Free and open-source licence"
             }
           ]
         },
@@ -113,25 +113,31 @@
           "name": "placing_on_market_date",
           "type": "string or null",
           "default": null,
-          "hint": "YYYY-MM-DD; for a GPAI model, the model's date. Drives the Art. 111 AIA transitions."
+          "hint": "YYYY-MM-DD, the AI system's date. Drives Art. 111(2) and (4) AIA; for a GPAI model without its own date, also Art. 111(3)."
         },
         {
           "name": "putting_into_service_date",
           "type": "string or null",
           "default": null,
-          "hint": "YYYY-MM-DD, for transitional status."
+          "hint": "YYYY-MM-DD. Drives Art. 111(2) AIA."
         },
         {
           "name": "significant_change_after_application_date",
           "type": "boolean or null",
           "default": null,
-          "hint": ""
+          "hint": "Art. 111(2) AIA: a significant design change as from the Chapter III date. Which date is contested: 2027-12-02 (Annex III) or 2028-08-02 (Annex I), or the general date 2026-08-02."
         },
         {
           "name": "public_authority_use",
           "type": "boolean",
           "default": false,
-          "hint": ""
+          "hint": "Intended to be used by public authorities: the 2 August 2030 deadline in Art. 111(2) AIA and, while the deployer's status is unset, the Art. 49(3) registration of use for review."
+        },
+        {
+          "name": "deployer_public_authority",
+          "type": "boolean or null",
+          "default": null,
+          "hint": "The deployer is, or acts on behalf of, a public authority or Union institution, body, office or agency: Art. 49(3) AIA registration of use. Unset: inferred for review from public-authority use or Annex III points 5(a), 6 and 7."
         },
         {
           "name": "deployer_public_law_body",
@@ -191,6 +197,12 @@
           "type": "boolean",
           "default": false,
           "hint": "Commission designation under Art. 51(1)(b) AIA."
+        },
+        {
+          "name": "gpai_model_placing_on_market_date",
+          "type": "string or null",
+          "default": null,
+          "hint": "YYYY-MM-DD, the model's own date. Drives Art. 111(3) AIA."
         }
       ]
     },
@@ -201,39 +213,47 @@
           "name": "prohibited_practices",
           "type": "list",
           "default": [],
-          "hint": "Keyed to the letters of Art. 5(1) AIA.",
+          "hint": "Keyed to the letters of Art. 5(1) AIA. 5.1.ba and 5.1.bb apply from 2 December 2026.",
           "options": [
             {
               "value": "5.1.a",
-              "label": "Subliminal manipulation"
+              "label": "Art. 5(1)(a): Subliminal, manipulative or deceptive techniques causing significant harm"
             },
             {
               "value": "5.1.b",
-              "label": "Exploits vulnerabilities"
+              "label": "Art. 5(1)(b): Exploiting vulnerabilities of age, disability or socio-economic situation"
+            },
+            {
+              "value": "5.1.ba",
+              "label": "Art. 5(1)(ba): Generating or manipulating realistic intimate material of an identifiable person without consent"
+            },
+            {
+              "value": "5.1.bb",
+              "label": "Art. 5(1)(bb): Generating or manipulating child sexual abuse material under Directive 2011/93/EU, save a 'without right' defence under national law"
             },
             {
               "value": "5.1.c",
-              "label": "Social scoring"
+              "label": "Art. 5(1)(c): Social scoring leading to detrimental or unfavourable treatment"
             },
             {
               "value": "5.1.d",
-              "label": "Predictive policing individual"
+              "label": "Art. 5(1)(d): Predicting criminal offending based solely on profiling or personality"
             },
             {
               "value": "5.1.e",
-              "label": "Facial scraping"
+              "label": "Art. 5(1)(e): Untargeted scraping of facial images to build recognition databases"
             },
             {
               "value": "5.1.f",
-              "label": "Emotion recognition work education"
+              "label": "Art. 5(1)(f): Emotion recognition in the workplace or education (no medical/safety exception)"
             },
             {
               "value": "5.1.g",
-              "label": "Biometric categorisation sensitive"
+              "label": "Art. 5(1)(g): Biometric categorisation inferring sensitive attributes"
             },
             {
               "value": "5.1.h",
-              "label": "Realtime remote biometric id"
+              "label": "Art. 5(1)(h): Real-time remote biometric identification in public spaces for law enforcement"
             }
           ]
         }
@@ -255,6 +275,22 @@
           "hint": "Art. 6(1)(b): third-party conformity assessment."
         },
         {
+          "name": "annex_i_section",
+          "type": "choice",
+          "default": null,
+          "hint": "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): only Art. 6(1), 60a and 102-112 apply, and 57-59 as far as integrated in the sectoral legislation (Art. 2(2) AIA). Unset: Section A.",
+          "options": [
+            {
+              "value": "A",
+              "label": "Section A"
+            },
+            {
+              "value": "B",
+              "label": "Section B"
+            }
+          ]
+        },
+        {
           "name": "annex_iii_area",
           "type": "choice",
           "default": null,
@@ -262,107 +298,107 @@
           "options": [
             {
               "value": "III.1.a",
-              "label": "Biometrics remote id"
+              "label": "Annex III(1)(a): Remote biometric identification"
             },
             {
               "value": "III.1.b",
-              "label": "Biometrics categorisation"
+              "label": "Annex III(1)(b): Biometric categorisation by sensitive/protected attributes"
             },
             {
               "value": "III.1.c",
-              "label": "Biometrics emotion"
+              "label": "Annex III(1)(c): Emotion recognition"
             },
             {
               "value": "III.2",
-              "label": "Critical infrastructure"
+              "label": "Annex III(2): Safety component of critical infrastructure"
             },
             {
               "value": "III.3.a",
-              "label": "Education access"
+              "label": "Annex III(3)(a): Education: access and admission"
             },
             {
               "value": "III.3.b",
-              "label": "Education evaluation"
+              "label": "Annex III(3)(b): Education: evaluating learning outcomes"
             },
             {
               "value": "III.3.c",
-              "label": "Education assessment level"
+              "label": "Annex III(3)(c): Education: assessing appropriate level"
             },
             {
               "value": "III.3.d",
-              "label": "Education proctoring"
+              "label": "Annex III(3)(d): Education: monitoring prohibited behaviour during tests"
             },
             {
               "value": "III.4.a",
-              "label": "Employment selection"
+              "label": "Annex III(4)(a): Employment selection and worker management"
             },
             {
               "value": "III.4.b",
-              "label": "Employment management"
+              "label": "Annex III(4)(b): Employment: decisions on terms, promotion, termination, task allocation"
             },
             {
               "value": "III.5.a",
-              "label": "Essential public benefits"
+              "label": "Annex III(5)(a): Eligibility for essential public assistance benefits and services"
             },
             {
               "value": "III.5.b",
-              "label": "Creditworthiness"
+              "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring"
             },
             {
               "value": "III.5.c",
-              "label": "Insurance life health"
+              "label": "Annex III(5)(c): Risk assessment and pricing in life and health insurance"
             },
             {
               "value": "III.5.d",
-              "label": "Emergency dispatch"
+              "label": "Annex III(5)(d): Emergency call dispatch and triage"
             },
             {
               "value": "III.6.a",
-              "label": "Law enforcement victim risk"
+              "label": "Annex III(6)(a): Law enforcement: risk of a person becoming a victim of crime"
             },
             {
               "value": "III.6.b",
-              "label": "Law enforcement polygraph"
+              "label": "Annex III(6)(b): Law enforcement: polygraphs and similar tools"
             },
             {
               "value": "III.6.c",
-              "label": "Law enforcement evidence reliability"
+              "label": "Annex III(6)(c): Law enforcement: evaluating the reliability of evidence"
             },
             {
               "value": "III.6.d",
-              "label": "Law enforcement reoffending risk"
+              "label": "Annex III(6)(d): Law enforcement: assessing the risk of offending or re-offending"
             },
             {
               "value": "III.6.e",
-              "label": "Law enforcement profiling"
+              "label": "Annex III(6)(e): Law enforcement: profiling during detection, investigation or prosecution"
             },
             {
               "value": "III.7.a",
-              "label": "Migration polygraph"
+              "label": "Annex III(7)(a): Migration: polygraphs and similar tools"
             },
             {
               "value": "III.7.b",
-              "label": "Migration risk assessment"
+              "label": "Annex III(7)(b): Migration: risk assessment for persons entering a Member State"
             },
             {
               "value": "III.7.c",
-              "label": "Migration application examination"
+              "label": "Annex III(7)(c): Migration: examining asylum, visa and residence-permit applications"
             },
             {
               "value": "III.7.d",
-              "label": "Migration identification"
+              "label": "Annex III(7)(d): Migration: detecting, recognising or identifying natural persons"
             },
             {
               "value": "III.8.a",
-              "label": "Justice"
+              "label": "Annex III(8)(a): Administration of justice: assisting a judicial authority"
             },
             {
               "value": "III.8.b",
-              "label": "Democratic processes"
+              "label": "Annex III(8)(b): Influencing elections, referenda or voting behaviour"
             },
             {
               "value": "III.unsure",
-              "label": "Unsure"
+              "label": "Annex III, point unsettled: An Annex III area is implicated but the specific point is unsettled"
             }
           ]
         },

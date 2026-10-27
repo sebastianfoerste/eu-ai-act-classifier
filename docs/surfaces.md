@@ -30,7 +30,9 @@ Reports and draft artifacts use a versioned source manifest. The current binding
 
 ## Browser playground
 
-The [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) runs the classifier client-side with Pyodide. Pick a synthetic example or paste a `SystemProfile`, classify it, then export the JSON or text report. A field guide lists every input field and its allowed values.
+The [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) runs the classifier client-side with Pyodide. It opens on guided questions: one question per page with the article under it, an "I don't know" answer where the fact may be open, and a check-answers page that also lists every value left at its default. "I don't know" never becomes "no": it records an unconfirmed value that routes the result to review, marks the Annex III point as unsettled, or pauses the run until counsel answers. The JSON editor stays available as a second mode: pick a synthetic example or paste a `SystemProfile`, classify it, then export the JSON or text report. A field guide lists every input field and its allowed values.
+
+The questions, their order and when each is asked come from `src/eu_ai_act_classifier/intake.py`; the browser only interprets the generated `intake.json`. `tests/test_intake.py` checks that every example round-trips through the questions, that every "I don't know" either pauses the run or yields `requires_review`, and, over grids of states the intake can reach, that no answer to a skipped question changes the classification, apart from the engine's own note that a value given there is not used. Nonbinding advisory notes are outside that check for a profile outside the AI Act's scope. The pinpoint shown under a question is always one the engine already cites; the intake adds no citation of its own.
 
 The page installs a wheel of this package, so it applies the same rules as the CLI. `tests/test_playground.py` fails if the wheel, the bundled examples or the field guide drift from the source. Rebuild after a rule change:
 
@@ -70,7 +72,7 @@ The inventory payload includes a system review table with classifier-backed rows
 
 ## Optional web cockpit
 
-![Web cockpit: a guided intake for CreditSightScore classified high-risk, with the system inventory, risk map, reviewer notes, source provenance, the Article 9-15 obligation tracker and a draft export pack](cockpit.png)
+![Web cockpit in its single-column layout: a guided intake for CreditSightScore, classified high-risk with an Art. 111(2) open question, with the system inventory, risk map, reviewer notes, the portfolio review tables, the obligation tracker, source provenance and a draft export pack](cockpit.png)
 
 The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
 

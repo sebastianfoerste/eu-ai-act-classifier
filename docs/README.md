@@ -32,6 +32,15 @@ Every guide in `docs/` and the main project files. The [README](../README.md) co
 - [schemas/](../schemas/): JSON Schemas for the input profile and the report
 - [examples/README.md](../examples/README.md): the synthetic eval set
 
+## Research and decisions
+
+- [docs/research/2026-10-competitive-landscape.md](research/2026-10-competitive-landscape.md): competitive research method, products, findings and sources
+- [docs/research/feature-matrix.csv](research/feature-matrix.csv): capability matrix with an evidence tag per product
+- [docs/research/design-teardown.md](research/design-teardown.md): interface patterns and a comparison per surface
+- [docs/research/adaptation-plan.md](research/adaptation-plan.md): baseline, scored candidates, specs and open owner decisions
+- [docs/adr/](adr/README.md): architecture decision records
+- [CHANGELOG.md](../CHANGELOG.md): changes by release
+
 ## Docs and links
 
 - [Playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) (hosted demo)

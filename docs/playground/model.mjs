@@ -24,9 +24,10 @@ export const ROLE_LABELS = {
   gpai_provider: "GPAI model provider",
 };
 
-// "5.1.c" -> "Art. 5(1)(c)" and "III.5.b" -> "Annex III(5)(b)", as the engine cites them.
+// "5.1.c" -> "Art. 5(1)(c)", "5.1.ba" -> "Art. 5(1)(ba)" and "III.5.b" -> "Annex III(5)(b)",
+// as the engine cites them.
 export function practiceCitation(value) {
-  const match = /^(\d+)\.(\d+)\.([a-z])$/.exec(value);
+  const match = /^(\d+)\.(\d+)\.([a-z]{1,2})$/.exec(value);
   return match ? `Art. ${match[1]}(${match[2]})(${match[3]})` : String(value);
 }
 

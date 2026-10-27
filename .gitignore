@@ -15,8 +15,16 @@ web/.next/
 web/node_modules/
 web/out/
 web/.vercel/
+web/*.tsbuildinfo
 
 # Environment files. Real values stay local; only example files are tracked.
 .env
 .env.*
 !.env.example
+research/_captures/
+research/_tools/
+
+# Files docs/SETUP.md creates in a clone. They may hold real system details and
+# must not reach the sdist, which takes every file git does not ignore.
+profile.json
+draft-artifacts/

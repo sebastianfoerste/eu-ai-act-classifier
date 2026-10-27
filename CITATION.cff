@@ -4,8 +4,8 @@ title: "eu-ai-act-classifier: deterministic EU AI Act risk-tier classification w
 authors:
   - family-names: Förste
     given-names: Sebastian
-version: 0.2.1
-date-released: 2026-10-15
+version: 0.2.2
+date-released: 2026-10-23
 license: MIT
 repository-code: https://github.com/sebastianfoerste/eu-ai-act-classifier
 url: https://pypi.org/project/eu-ai-act-classifier/
