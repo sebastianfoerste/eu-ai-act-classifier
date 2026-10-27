@@ -7,7 +7,7 @@ pull requests.
 
 Changes since 0.2.2.
 
-### Binding result apart from guidance notes in the playground
+### Binding result apart from guidance notes in the playground (#38)
 
 #### Changed
 
