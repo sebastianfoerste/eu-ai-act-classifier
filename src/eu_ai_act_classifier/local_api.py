@@ -22,6 +22,7 @@ from .engine import classify
 from .inventory import build_example_inventory
 from .models import (
     AnnexIII,
+    AnnexISection,
     ExcludedUse,
     ProhibitedPractice,
     Role,
@@ -34,6 +35,7 @@ def schema_payload() -> dict[str, Any]:
     return {
         "roles": [role.value for role in Role],
         "annex_iii_areas": [area.value for area in AnnexIII],
+        "annex_i_sections": [section.value for section in AnnexISection],
         "prohibited_practices": [practice.value for practice in ProhibitedPractice],
         "excluded_use_flags": [flag.value for flag in ExcludedUse],
         "artifacts": sorted(ARTIFACT_NAMES),

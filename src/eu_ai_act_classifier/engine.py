@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from .advisory import build_advisory_notes
 from .catalog import (
+    ANNEX_III,
+    eu_database_registration_applies,
     gpai_obligations,
     high_risk_authorized_representative_obligations,
     high_risk_deployer_obligations,
@@ -12,6 +14,10 @@ from .catalog import (
     high_risk_importer_obligations,
     high_risk_provider_obligations,
     high_risk_value_chain_obligations,
+    public_authority_registration_applies,
+    public_authority_users,
+    section_b_annex_iii_flag,
+    section_b_obligations,
 )
 from .citations import AMENDING_APPLICATION_DATES, APPLICATION_DATES, REGULATION, source_manifest
 from .models import (
@@ -21,12 +27,29 @@ from .models import (
     Disposition,
     Obligation,
     RiskTier,
+    Role,
     ScopeStatus,
     SystemProfile,
     TimelineItem,
 )
 from .obligation_graph import build_obligation_graph
 from .rules import gpai, high_risk, prohibited, scope, transparency
+from .transitions import (
+    before,
+    chapter_iii_date,
+    derogation_asserted,
+    derogation_note,
+    describe_dates,
+    gpai_model_date,
+    legacy_dates,
+    legacy_note_flag,
+    legacy_transparency_flag,
+    market_dates,
+    operators,
+    public_authority_sentence,
+    section_b_only,
+    section_b_product,
+)
 
 _FRIA_AREAS = {AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH}
 _FRIA_EXCLUDED_AREAS = {AnnexIII.CRITICAL_INFRASTRUCTURE}
@@ -63,13 +86,31 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
     documentation: list[Obligation] = []
     fria_required = False
 
-    if final_tier is RiskTier.HIGH:
+    if final_tier is RiskTier.HIGH and section_b_only(profile):
+        # Art. 2(2) AIA: none of the Chapter III duties below, only the listed provisions.
+        for role in operators(profile, (Role.PROVIDER,)):
+            obligations += section_b_obligations(role)
+    elif final_tier is RiskTier.HIGH:
         if profile.is_provider:
-            obligations += high_risk_provider_obligations()
+            obligations += high_risk_provider_obligations(
+                eu_database_registration=eu_database_registration_applies(profile.annex_iii_area),
+                annex_iii_area=profile.annex_iii_area,
+            )
             documentation += high_risk_documentation()
         if profile.is_deployer:
             fria_required = _fria_required(profile)
-            obligations += high_risk_deployer_obligations(fria_required=fria_required)
+            public_authority_registration = public_authority_registration_applies(
+                profile.annex_iii_area,
+                profile.deployer_public_authority,
+                profile.public_authority_use,
+            )
+            obligations += high_risk_deployer_obligations(
+                fria_required=fria_required,
+                public_authority_registration=public_authority_registration,
+                annex_iii_area=profile.annex_iii_area,
+                deployer_public_authority=profile.deployer_public_authority,
+            )
+            open_questions += _art_49_3_questions(profile, public_authority_registration)
             if _fria_needs_review(profile, fria_required):
                 open_questions.append(
                     "Art. 27 AIA: a fundamental rights impact assessment is also required "
@@ -92,9 +133,24 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
             )
         if profile.substantially_modifies_system or profile.puts_name_or_trademark_on_system:
             obligations += high_risk_value_chain_obligations()
+        if section_b_product(profile):
+            # Also in an Annex III area: the Annex III duties above stay, flagged here.
+            flag = section_b_annex_iii_flag(derogation_asserted(profile))
+            for role in operators(profile, (Role.PROVIDER,)):
+                obligations += section_b_obligations(role, flag)
+        open_questions += _art_111_2_questions(profile)
+        if legacy_flag := legacy_transparency_flag(profile):
+            # The Art. 50 graph items carry the same flag.
+            findings = [
+                finding.model_copy(update={"detail": f"{finding.detail} {legacy_flag}"})
+                if finding.rule_id == "TRANSPARENCY.50"
+                else finding
+                for finding in findings
+            ]
 
     if is_gpai and final_tier is not RiskTier.PROHIBITED:
         obligations += gpai_obligations(systemic_risk=gpai_systemic)
+        open_questions += _gpai_date_questions(profile)
 
     disposition = Disposition.REQUIRES_REVIEW if open_questions else Disposition.DETERMINED
 
@@ -116,7 +172,7 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
             source_id=a.source_id,
             source_url=a.source_url,
         )
-        for a in APPLICATION_DATES + AMENDING_APPLICATION_DATES
+        for a in sorted(APPLICATION_DATES + AMENDING_APPLICATION_DATES, key=lambda d: d.date)
     ]
 
     obligation_graph = build_obligation_graph(
@@ -169,3 +225,86 @@ def _fria_needs_review(profile: SystemProfile, fria_required: bool) -> bool:
             or profile.deployer_private_public_service is None
         )
     )
+
+
+def _art_111_2_questions(profile: SystemProfile) -> list[str]:
+    """Art. 111(2) AIA: whether the Regulation applies to a legacy high-risk system at all
+    turns on a significant change in design, so an unknown answer is an open question."""
+
+    cut_off = chapter_iii_date(profile)
+    if cut_off is None:
+        return []
+    legacy = legacy_dates(profile, cut_off)
+    questions = []
+    if legacy and profile.significant_change_after_application_date is None:
+        # The second sentence of Art. 111(2) binds "in any case", whatever the answer.
+        questions.append(
+            f"Art. 111(2) AIA: the system was {describe_dates(legacy)}, before {cut_off}. "
+            "Confirm whether its design changes significantly as from that date, and the date "
+            "of any such change (significant_change_after_application_date); apart from "
+            f"Art. 5, the Regulation applies to it only then.{public_authority_sentence(profile)} "
+            f"{legacy_note_flag(profile, cut_off)}"
+        )
+    if not legacy and (derogation := derogation_note(profile, cut_off)):
+        questions.append(
+            f"Art. 111(2) AIA: the system was {describe_dates(market_dates(profile))}, not "
+            f"before {cut_off}, so the transition does not apply to it as classified. "
+            f"{derogation} Confirm the derogation (Art. 6(4) AIA)."
+        )
+    return questions
+
+
+def _art_49_3_questions(profile: SystemProfile, registration: bool) -> list[str]:
+    """Art. 49(3) AIA turns on the deployer's own status. Where it is not given, ask for
+    it when the registration item is inferred, or when other facts point to it."""
+
+    if profile.deployer_public_authority is not None:
+        return []
+    confirm = (
+        "Confirm whether the deployer is, or acts on behalf of, a public authority or Union "
+        "institution, body, office or agency (deployer_public_authority)."
+    )
+    if registration:
+        if profile.public_authority_use:
+            reason = "the system is intended to be used by public authorities"
+        else:
+            # The same words as the item's trigger.
+            users = public_authority_users(profile.annex_iii_area)
+            reason = f"{ANNEX_III[profile.annex_iii_area][0].ref} describes use {users}"
+        return [f"Art. 49(3) AIA: {reason}, but the deployer's status is not given. {confirm}"]
+    if profile.annex_iii_area is AnnexIII.JUSTICE:
+        # Point 8(a) also covers alternative dispute resolution, which may be private.
+        return [
+            "Art. 49(3) AIA: Annex III(8)(a) AIA covers use by or on behalf of a judicial "
+            "authority, or in a similar way in alternative dispute resolution. If the deployer "
+            "is, or acts on behalf of, a public authority or Union institution, body, office "
+            f"or agency, it registers its use in the EU database. {confirm}"
+        ]
+    if profile.deployer_public_law_body and eu_database_registration_applies(
+        profile.annex_iii_area
+    ):
+        return [
+            "Art. 49(3) AIA: the deployer is a body governed by public law (Art. 27 AIA), "
+            "which may be a public authority. If it is, or acts on behalf of one, it registers "
+            f"its use in the EU database. {confirm}"
+        ]
+    return []
+
+
+def _gpai_date_questions(profile: SystemProfile) -> list[str]:
+    """Art. 111(3) AIA dates a general-purpose AI model by its own placing on the market."""
+
+    model_date, fallback = gpai_model_date(profile)
+    if fallback:
+        return [
+            "Art. 111(3) AIA: no gpai_model_placing_on_market_date is given, so the model is "
+            f"dated by the AI system's placing_on_market_date ({model_date}). Confirm the "
+            "model's own date (gpai_model_placing_on_market_date)."
+        ]
+    system_date = profile.placing_on_market_date
+    if model_date and system_date and before(system_date, model_date):
+        return [
+            f"Art. 111(3) AIA: the model's date ({model_date}) is later than the AI system's "
+            f"placing_on_market_date ({system_date}). Confirm both dates."
+        ]
+    return []

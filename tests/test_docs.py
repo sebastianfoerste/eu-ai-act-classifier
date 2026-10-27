@@ -10,6 +10,15 @@ EXAMPLES = Path("examples")
 README = Path("README.md")
 EXAMPLES_README = EXAMPLES / "README.md"
 PYPROJECT = Path("pyproject.toml")
+# Docs that hold sections moved out of the README.
+README_CONTENT_DOCS = [
+    Path("docs/README.md"),
+    Path("docs/overview.md"),
+    Path("docs/FEATURES.md"),
+    Path("docs/SETUP.md"),
+    Path("docs/sample-output.md"),
+    Path("docs/surfaces.md"),
+]
 PUBLIC_MARKDOWN = [
     README,
     EXAMPLES_README,
@@ -17,10 +26,67 @@ PUBLIC_MARKDOWN = [
     Path("docs/launch-readiness.md"),
     Path("docs/methodology.md"),
     Path("docs/reviewer-notes.md"),
-    Path("docs/sample-output.md"),
+    *README_CONTENT_DOCS,
 ]
 EM_DASH = "\u2014"
 EN_DASH = "\u2013"
+README_MAX_WORDS = 350
+# The README is the PyPI long description, so it links into the repository by absolute URL.
+GITHUB_REPO = "https://github.com/sebastianfoerste/eu-ai-act-classifier"
+RAW_REPO = "https://raw.githubusercontent.com/sebastianfoerste/eu-ai-act-classifier"
+REPO_LINK_PREFIXES = (f"{GITHUB_REPO}/blob/", f"{GITHUB_REPO}/tree/", f"{RAW_REPO}/")
+REPO_MAIN_LINK = re.compile(
+    rf"(?:{re.escape(GITHUB_REPO)}/(?P<kind>blob|tree)|{re.escape(RAW_REPO)})/main"
+    r"(?:/(?P<path>[^#]*))?(?:#(?P<anchor>.*))?"
+)
+URL_SCHEME = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*:")
+ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+DAY_MONTH_YEAR = re.compile(
+    r"\b\d{1,2}(?:st|nd|rd|th)?\s+"
+    r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?"
+    r"|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b\.?,?\s+\d{4}\b",
+    re.IGNORECASE,
+)
+
+
+def _github_slug(heading: str) -> str:
+    # Slug the rendered text: images render no text and links render only their label.
+    text = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", heading)
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
+    return re.sub(r"[^\w\- ]", "", text.lower()).replace(" ", "-")
+
+
+def _heading_anchors(path: Path) -> set[str]:
+    anchors: set[str] = set()
+    fence = ""
+    for line in path.read_text(encoding="utf-8").splitlines():
+        marker = re.match(r" {0,3}(`{3,}|~{3,})", line)
+        if fence:
+            if marker and marker.group(1).startswith(fence) and not line[marker.end() :].strip():
+                fence = ""
+            continue
+        if marker:
+            fence = marker.group(1)
+            continue
+        heading = re.match(r" {0,3}#{1,6}(?:\s+(.*?))?(?:\s+#+)?\s*$", line)
+        if not heading:
+            continue
+        slug = _github_slug(heading.group(1) or "")
+        anchor, suffix = slug, 0
+        while anchor in anchors:
+            suffix += 1
+            anchor = f"{slug}-{suffix}"
+        anchors.add(anchor)
+    return anchors
+
+
+def _link_targets(text: str) -> list[str]:
+    # Inline links and images, reference definitions, and HTML href or src attributes.
+    return [
+        *re.findall(r"\]\(\s*<?([^)\s>]+)", text),
+        *re.findall(r"^ {0,3}\[[^\]]+\]:\s*<?([^\s>]+)", text, re.M),
+        *re.findall(r"\b(?:href|src)\s*=\s*[\"']([^\"']+)", text),
+    ]
 
 
 def test_examples_readme_lists_every_json_example() -> None:
@@ -32,12 +98,56 @@ def test_examples_readme_lists_every_json_example() -> None:
         assert f"`{path.name}`" in example_docs
 
 
-def test_readme_local_markdown_links_exist() -> None:
+def test_readme_has_no_relative_links() -> None:
     readme = README.read_text(encoding="utf-8")
-    markdown_links = re.findall(r"\[[^\]]+\]\(([^)]+\.md)\)", readme)
+    relative = [target for target in _link_targets(readme) if not URL_SCHEME.match(target)]
+    assert not relative, f"README is the PyPI description, use absolute links: {relative}"
 
-    for link in markdown_links:
-        assert Path(link).exists(), f"README link target does not exist: {link}"
+
+def test_readme_repository_links_resolve_locally() -> None:
+    for target in _link_targets(README.read_text(encoding="utf-8")):
+        if not target.startswith(REPO_LINK_PREFIXES):
+            continue
+        link = REPO_MAIN_LINK.fullmatch(target)
+        assert link, f"README repository link does not point at main: {target}"
+        resolved, anchor = Path(link["path"] or "."), link["anchor"]
+        expected = "directory" if link["kind"] == "tree" else "file"
+        found = resolved.is_dir() if expected == "directory" else resolved.is_file()
+        assert found, f"README link target is not a {expected}: {target}"
+        if anchor and resolved.suffix == ".md":
+            assert anchor in _heading_anchors(resolved), f"README anchor not found: {target}"
+
+
+def test_moved_sections_have_working_relative_links() -> None:
+    for path in README_CONTENT_DOCS:
+        text = path.read_text(encoding="utf-8")
+        for target in re.findall(r"\]\(([^)\s]+)\)", text):
+            if target.startswith(("http://", "https://")):
+                continue
+            file_part, _, anchor = target.partition("#")
+            resolved = path.parent / file_part if file_part else path
+            assert resolved.exists(), f"{path} link target does not exist: {target}"
+            if anchor and resolved.suffix == ".md":
+                assert anchor in _heading_anchors(resolved), f"{path} anchor not found: {target}"
+
+
+def test_readme_stays_within_word_budget() -> None:
+    words = len(README.read_text(encoding="utf-8").split())
+    assert words <= README_MAX_WORDS, f"README has {words} words, budget is {README_MAX_WORDS}"
+
+
+def test_readme_states_no_dates() -> None:
+    readme = README.read_text(encoding="utf-8")
+    iso_dates = ISO_DATE.findall(readme)
+    assert not iso_dates, f"ISO date in README: {iso_dates}"
+    dates = DAY_MONTH_YEAR.findall(readme)
+    assert not dates, f"day month year date in README: {dates}"
+
+
+def test_readme_links_docs_index_overview_and_claim_ledger() -> None:
+    readme = README.read_text(encoding="utf-8")
+    for target in ("docs/README.md", "docs/overview.md", "docs/REGULATORY_CLAIM_LEDGER.md"):
+        assert f"]({GITHUB_REPO}/blob/main/{target})" in readme
 
 
 def test_launch_readiness_is_discoverable_from_readme() -> None:
@@ -80,3 +190,18 @@ def test_mcp_guide_lists_the_tools_the_server_exposes() -> None:
     listed = set(re.findall(r"^\d+\. `(\w+)`", verification, re.M))
     assert exposed and listed == exposed
     assert "/Users/" not in guide
+
+
+def test_feature_matrix_capability_cells_use_the_allowed_values() -> None:
+    import csv
+
+    with Path("docs/research/feature-matrix.csv").open(encoding="utf-8", newline="") as handle:
+        rows = list(csv.reader(handle))
+    header = rows[0]
+    first, last = header.index("c01_intake"), header.index("c14_ui_shell")
+    evidence = header.index("evidence")
+    for row in rows[1:]:
+        assert len(row) == len(header), row[0]
+        assert row[evidence] in {"Observed", "Claimed", "Inferred"}, row[0]
+        for cell in row[first : last + 1]:
+            assert re.match(r"(yes|partial|no|unknown)(:|$)", cell), (row[0], cell)

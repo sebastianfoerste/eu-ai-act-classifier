@@ -11,7 +11,7 @@
     "classify_ai_system_text"
   ],
   "outputContract": "ClassificationReport",
-  "sourceCurrencyDate": "2026-08-26",
+  "sourceCurrencyDate": "2026-10-18",
   "reviewBoundary": {
     "humanReviewRequired": true,
     "externalActionAllowed": false

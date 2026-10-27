@@ -3,8 +3,9 @@
     uv run python scripts/build_playground.py
 
 Writes samples.json and fields.json from the canonical examples and the
-SystemProfile model, then rebuilds the classifier wheel the page installs.
-tests/test_playground.py fails if any of the three drifts from the source.
+SystemProfile model, writes the label catalog the web cockpit reads
+(web/lib/labels.json), then rebuilds the classifier wheel the page installs.
+tests/test_playground.py fails if any of them drifts from the source.
 """
 
 from __future__ import annotations
@@ -20,23 +21,34 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAYGROUND = ROOT / "docs" / "playground"
+WEB_LABELS = ROOT / "web" / "lib" / "labels.json"
+INTAKE_FIXTURES = ROOT / "tests" / "playground" / "intake-fixtures.json"
 sys.path.insert(0, str(ROOT / "src"))
 
 from eu_ai_act_classifier import Derogation, SystemProfile, __version__  # noqa: E402
+from eu_ai_act_classifier.intake import (  # noqa: E402
+    QUESTIONS,
+    answers_to_profile,
+    intake_definition,
+    profile_to_answers,
+)
+from eu_ai_act_classifier.labels import label_catalog, option_label  # noqa: E402
 from eu_ai_act_classifier.models import (  # noqa: E402
     AnnexIII,
+    AnnexISection,
     ExcludedUse,
     ProhibitedPractice,
     Role,
 )
 
-# The 17 base examples, grouped by the outcome tests/test_examples.py asserts.
+# The 18 base examples, grouped by the outcome tests/test_examples.py asserts.
 SAMPLE_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
     (
         "Prohibited",
         [
             ("social_scoring", "Social scoring"),
             ("emotion_hiring", "Emotion recognition in hiring"),
+            ("intimate_imagery_generator", "Non-consensual intimate imagery"),
         ],
     ),
     (
@@ -96,10 +108,30 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             ("intended_purpose_source", ""),
             ("eu_nexus", ""),
             ("excluded_use_flags", "Scope exclusions or carve-outs that need visible review."),
-            ("placing_on_market_date", "ISO date, for transitional status."),
-            ("putting_into_service_date", "ISO date, for transitional status."),
-            ("significant_change_after_application_date", ""),
-            ("public_authority_use", ""),
+            (
+                "placing_on_market_date",
+                "YYYY-MM-DD, the AI system's date. Drives Art. 111(2) and (4) AIA; for a GPAI "
+                "model without its own date, also Art. 111(3).",
+            ),
+            ("putting_into_service_date", "YYYY-MM-DD. Drives Art. 111(2) AIA."),
+            (
+                "significant_change_after_application_date",
+                "Art. 111(2) AIA: a significant design change as from the Chapter III date. "
+                "Which date is contested: 2027-12-02 (Annex III) or 2028-08-02 (Annex I), or "
+                "the general date 2026-08-02.",
+            ),
+            (
+                "public_authority_use",
+                "Intended to be used by public authorities: the 2 August 2030 deadline in "
+                "Art. 111(2) AIA and, while the deployer's status is unset, the Art. 49(3) "
+                "registration of use for review.",
+            ),
+            (
+                "deployer_public_authority",
+                "The deployer is, or acts on behalf of, a public authority or Union institution, "
+                "body, office or agency: Art. 49(3) AIA registration of use. Unset: inferred for "
+                "review from public-authority use or Annex III points 5(a), 6 and 7.",
+            ),
             ("deployer_public_law_body", "Art. 27 AIA: fundamental rights impact assessment."),
             (
                 "deployer_private_public_service",
@@ -117,17 +149,33 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             ("is_gpai_model", ""),
             ("training_flops", "Cumulative training compute in FLOP; drives Art. 51(2) AIA."),
             ("gpai_systemic_risk_designated", "Commission designation under Art. 51(1)(b) AIA."),
+            (
+                "gpai_model_placing_on_market_date",
+                "YYYY-MM-DD, the model's own date. Drives Art. 111(3) AIA.",
+            ),
         ],
     ),
     (
         "Prohibited-practice screens (Art. 5(1) AIA)",
-        [("prohibited_practices", "Keyed to the letters of Art. 5(1) AIA.")],
+        [
+            (
+                "prohibited_practices",
+                "Keyed to the letters of Art. 5(1) AIA. 5.1.ba and 5.1.bb apply from "
+                "2 December 2026.",
+            )
+        ],
     ),
     (
         "High-risk screens (Art. 6 AIA)",
         [
             ("annex_i_safety_component", "Art. 6(1)(a): product or safety component."),
             ("annex_i_third_party_assessment", "Art. 6(1)(b): third-party conformity assessment."),
+            (
+                "annex_i_section",
+                "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): "
+                "only Art. 6(1), 60a and 102-112 apply, and 57-59 as far as integrated in the "
+                "sectoral legislation (Art. 2(2) AIA). Unset: Section A.",
+            ),
             (
                 "annex_iii_area",
                 "Art. 6(2) and Annex III. III.unsure: an area is implicated but the point is "
@@ -154,12 +202,9 @@ _ENUMS: dict[str, type[StrEnum]] = {
     "roles": Role,
     "excluded_use_flags": ExcludedUse,
     "prohibited_practices": ProhibitedPractice,
+    "annex_i_section": AnnexISection,
     "annex_iii_area": AnnexIII,
 }
-
-
-def _option_label(member: StrEnum) -> str:
-    return member.name.replace("_", " ").capitalize()
 
 
 def _field_type(name: str, schema: dict) -> str:
@@ -198,13 +243,71 @@ def build_fields() -> dict:
             }
             if name in _ENUMS:
                 field["options"] = [
-                    {"value": m.value, "label": _option_label(m)} for m in _ENUMS[name]
+                    {"value": m.value, "label": option_label(m)} for m in _ENUMS[name]
                 ]
             if name == "derogation":
                 field["keys"] = list(Derogation.model_fields)
             fields.append(field)
         groups.append({"label": group, "fields": fields})
     return {"version": __version__, "groups": groups}
+
+
+def build_intake_fixtures() -> dict:
+    """Python's answers for every example, so the browser interpreter can be held to them."""
+
+    cases = {}
+    for _group, entries in SAMPLE_GROUPS:
+        for key, _label in entries:
+            example = json.loads((ROOT / "examples" / f"{key}.json").read_text(encoding="utf-8"))
+            answers = profile_to_answers(example)
+            cases[key] = {"answers": answers}
+            if key not in ("credit_scoring_deployer", "spam_filter"):
+                continue
+            for question in QUESTIONS:
+                if question.get("unknown") is not None:
+                    unknown = {**answers, question["id"]: "unknown"}
+                    cases[f"{key}+unknown:{question['id']}"] = {"answers": unknown}
+    # Paths the examples never take: padded text and unanswered questions.
+    padded = profile_to_answers({"name": "x"})
+    padded["system"] = {"name": "  Padded name  ", "purpose": " Credit scoring "}
+    padded["dates"] = {"placing_on_market_date": " 2026-03-01 "}
+    cases["edge+padded-text"] = {"answers": padded}
+    cases["edge+no-answers"] = {"answers": {}}
+    partial = profile_to_answers(json.loads((ROOT / "examples" / "cv_screening.json").read_text()))
+    for question_id in ("roles", "annex_iii_area", "transparency", "training_flops"):
+        partial.pop(question_id, None)
+    cases["edge+partly-answered"] = {"answers": partial}
+    # The Annex I route asks annex_i_section, a single question with no "none" option.
+    route = profile_to_answers(
+        {
+            "name": "x",
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_i_section": "B",
+        }
+    )
+    for answer in ("A", "B", "none", "unknown"):
+        cases[f"edge+annex-i-section:{answer}"] = {"answers": {**route, "annex_i_section": answer}}
+    cases["edge+annex-i-section:missing"] = {
+        "answers": {k: v for k, v in route.items() if k != "annex_i_section"}
+    }
+    model = profile_to_answers(
+        {
+            "name": "x",
+            "roles": ["gpai_provider"],
+            "is_gpai_model": True,
+            "training_flops": 1e24,
+            "placing_on_market_date": "2026-01-01",
+            "gpai_model_placing_on_market_date": "2025-03-01",
+        }
+    )
+    cases["edge+gpai-date"] = {"answers": model}
+    for flops in ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", ""):
+        cases[f"edge+training-flops:{flops!r}"] = {"answers": {**model, "training_flops": flops}}
+    for case in cases.values():
+        profile, asked, blocked, missing = answers_to_profile(case["answers"])
+        case.update(profile=profile, asked=asked, blocked=blocked, missing=missing)
+    return {"cases": dict(sorted(cases.items()))}
 
 
 def render(data: dict) -> str:
@@ -231,6 +334,9 @@ def build_wheel() -> None:
 def main() -> int:
     (PLAYGROUND / "samples.json").write_text(render(build_samples()), encoding="utf-8")
     (PLAYGROUND / "fields.json").write_text(render(build_fields()), encoding="utf-8")
+    WEB_LABELS.write_text(render(label_catalog()), encoding="utf-8")
+    (PLAYGROUND / "intake.json").write_text(render(intake_definition()), encoding="utf-8")
+    INTAKE_FIXTURES.write_text(render(build_intake_fixtures()), encoding="utf-8")
     build_wheel()
     print(f"playground rebuilt for eu-ai-act-classifier {__version__}")
     return 0
