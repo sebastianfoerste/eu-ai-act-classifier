@@ -7,7 +7,7 @@
 
 Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm; see [who it's for](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/overview.md#who-its-for).
 
-**Status:** beta, on PyPI. It encodes Regulation (EU) 2024/1689 as amended by Regulation (EU) 2026/1744. Source versions are in the [methodology](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/methodology.md), and legal claims, including the amended high-risk application dates, in the [regulatory claim ledger](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/REGULATORY_CLAIM_LEDGER.md).
+**Status:** beta, on PyPI. It encodes Regulation (EU) 2024/1689 and, in part, the amending Regulation (EU) 2026/1744, including its application dates and new Art. 5 prohibitions. Source versions are in the [methodology](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/methodology.md), and legal claims, including what is encoded, in the [regulatory claim ledger](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/REGULATORY_CLAIM_LEDGER.md).
 
 **Not legal advice.** Output is a first pass for supervised legal review, and a qualified human must review every result before reliance. Example data is synthetic. The engine applies rules to characterised facts and does not decide disputed intended purpose, operator role or factual deployment scope ([honest limits](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/overview.md#honest-limits)).
 
@@ -46,7 +46,7 @@ More: the [full quick start](https://github.com/sebastianfoerste/eu-ai-act-class
 
 ## MCP server
 
-Lets an AI agent call the classifier. For Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp): `uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp`. The package's own server (tools: `classify_ai_system`, `classify_ai_system_text`) starts with:
+For Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp): `uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp`. This package's own MCP server starts with:
 
 ```bash
 uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp

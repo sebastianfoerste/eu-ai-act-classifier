@@ -1,4 +1,4 @@
-"""The output shown in the sample docs is real CLI output.
+"""The output shown in the sample docs and the case study is real CLI output.
 
 Each fenced output block is paired with the command shown before it (a ``bash`` block, an
 inline `eu-ai-act-classify ...` span or an inline `examples/*.json` path). The command is
@@ -21,7 +21,11 @@ import pytest
 from eu_ai_act_classifier.cli import main
 
 ROOT = Path(__file__).resolve().parent.parent
-SAMPLE_DOCS = [ROOT / "docs" / "sample-output.md", ROOT / "docs" / "sample-review-dossier.md"]
+SAMPLE_DOCS = [
+    ROOT / "docs" / "sample-output.md",
+    ROOT / "docs" / "sample-review-dossier.md",
+    ROOT / "CASE_STUDY.md",
+]
 CLI = "eu-ai-act-classify"
 CUT = "..."
 EXAMPLE = re.compile(r"examples/[\w-]+\.json")
