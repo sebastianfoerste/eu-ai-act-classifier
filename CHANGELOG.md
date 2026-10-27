@@ -3,6 +3,24 @@
 Notable changes to the classifier. Earlier releases are described in their
 pull requests.
 
+## Unreleased
+
+Changes since 0.2.2.
+
+### Share links in the playground
+
+#### Added
+
+- "Create share link" writes the profile, compressed with `deflate-raw` and
+  base64url-encoded, into the address after `#p1.` (`#j1.` without
+  compression). The fragment is not sent to a server. Opening a link
+  validates the profile, opens it on the check-answers page and never
+  classifies it on its own. Links above 8,000 characters are refused in favour
+  of the JSON download, and a decoded profile above 1 MB is refused. A note
+  next to the button says the link is not encrypted and that history sync
+  and chat services keep it. In guided mode the link carries the answers
+  once every question is answered.
+
 ## 0.2.2 (2026-10-23)
 
 #### Upgrade notes

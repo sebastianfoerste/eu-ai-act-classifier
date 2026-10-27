@@ -60,7 +60,12 @@ textarea:focus-visible { outline-offset: -3px; }
 .status-dot.ready { background: var(--green); }
 .status-dot.error { background: var(--red); padding: 0; margin: 0; border: 0; }
 .draft-help { margin: 15px 24px 7px; font-size: 11px; color: var(--muted); line-height: 1.7; }
-.save-draft { margin: 0 24px 20px; font-size: 11px; }
+.save-draft { margin: 0 24px 12px; font-size: 11px; }
+.share-area { margin: 0 24px 20px; }
+.share-area .text-button { font-size: 11px; }
+.share-note { font-size: 11px; color: var(--muted); line-height: 1.6; margin: 4px 0 0; }
+.share-note:empty { display: none; }
+.share-area .error { margin: 8px 0 0; }
 .empty-state { min-height: 647px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 35px 20px; }
 .document-icon { width: 52px; height: 64px; border: 1px solid #b7c7bd; border-radius: 5px; padding: 20px 11px; position: relative; background: #f6f9f4; margin-bottom: 22px; }
 .document-icon span { display: block; height: 2px; background: #ccd7cd; margin-bottom: 6px; }

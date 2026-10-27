@@ -1,6 +1,7 @@
-import { droppedFields, profileToAnswers } from "./intake.mjs";
+import { answersToProfile, compactProfile, droppedFields, profileToAnswers } from "./intake.mjs";
 import { createWizard } from "./wizard.mjs";
 import { DISPOSITIONS, MAX_BYTES, ROLE_LABELS, TIERS, annexCitation, describeDefault, formatProfile, groupByRole, matchesQuery, parseProfile, practiceCitation, reportIsCurrent } from "./model.mjs";
+import { ShareError, decodeShare, encodeShare, isShareFragment } from "./share.mjs";
 
 const $ = id => document.getElementById(id);
 const input = $("input");
@@ -192,7 +193,8 @@ async function loadSamples() {
     samples = await response.json();
     for (const key of Object.keys(samples.profiles)) parseProfile(JSON.stringify(samples.profiles[key]));
     fillExamples();
-    if (!input.value) replaceDraft(JSON.stringify(samples.profiles[samples.default], null, 2));
+    // A share link in the address opens its own profile instead of the default example.
+    if (!input.value && !isShareFragment(location.hash)) replaceDraft(JSON.stringify(samples.profiles[samples.default], null, 2));
     $("load-example").disabled = false;
     showError("sample-error");
   } catch {
@@ -548,6 +550,60 @@ function download(text, filename, type) {
 }
 const exportName = () => (report?.system || "system").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "system";
 $("download-draft").onclick = () => download(input.value, "system-profile.json", "application/json");
+
+// The profile a share link carries: the guided answers once they are complete,
+// else the profile in the JSON editor.
+function shareProfile() {
+  if (mode === "guided" && wizard) {
+    const { profile, blocked, missing } = answersToProfile(intake, wizard.answers);
+    if (blocked.length || missing.length) throw new ShareError("A share link carries a complete profile. Answer the remaining questions first; an answer that pauses the run for counsel cannot be shared.");
+    return compactProfile(intake, profile);
+  }
+  return parseProfile(input.value);
+}
+
+// Only this button writes the address. It never sends the profile anywhere.
+$("share").onclick = async () => {
+  showError("share-error");
+  $("share-status").textContent = "";
+  let fragment;
+  try { fragment = await encodeShare(shareProfile()); }
+  catch (error) { showError("share-error", error.message); return; }
+  history.replaceState(null, "", `#${fragment}`);
+  let copied = false;
+  try { await navigator.clipboard.writeText(location.href); copied = true; } catch { /* clipboard blocked: the address bar has the link */ }
+  $("share-status").textContent = copied
+    ? "Share link copied. It opens this profile without classifying it."
+    : "Share link created in the address bar. Copy it from there; it opens this profile without classifying it.";
+};
+
+// Opens the profile in a share link. It is validated like a pasted profile and
+// never classified automatically.
+async function openSharedProfile({ confirmReplace = false } = {}) {
+  if (!isShareFragment(location.hash)) return;
+  showError("share-error");
+  let text;
+  try {
+    text = formatProfile(await decodeShare(location.hash));
+    parseProfile(text);
+  } catch (error) {
+    showError("share-open-error", `This share link could not be opened. ${error.message} Nothing was loaded.`);
+    return;
+  }
+  if (confirmReplace && (modified || guidedEdited) && !window.confirm("Replace your profile with the one in this share link? Save the profile JSON first if you need to keep it.")) return;
+  input.value = text;
+  modified = false;
+  clearInputState();
+  showError("share-open-error");
+  syncDraft();
+  await intakeLoaded;
+  if (mode === "guided" && wizard) {
+    try { reviewInWizard(text); }
+    catch (error) { setMode("json"); showError("input-error", error.message); }
+  }
+  $("share-status").textContent = "Opened the profile from a share link. Check it, then classify; nothing runs until you do.";
+}
+window.addEventListener("hashchange", () => openSharedProfile({ confirmReplace: true }));
 $("export-json").onclick = () => {
   if (!busy && reportIsCurrent(report, checked, current())) download(JSON.stringify(report, null, 2), `ai-act-classification-${exportName()}.json`, "application/json");
 };
@@ -561,5 +617,6 @@ window.addEventListener("beforeunload", event => {
 setMode("guided");
 loadSamples();
 loadFields();
-loadIntake();
+const intakeLoaded = loadIntake();
+openSharedProfile();
 startRuntime();

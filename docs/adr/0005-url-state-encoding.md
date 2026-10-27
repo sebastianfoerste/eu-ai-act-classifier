@@ -1,6 +1,6 @@
 # 0005 URL state encoding
 
-Status: Proposed
+Status: Accepted (built in `docs/playground/share.mjs`)
 
 ## Context
 
