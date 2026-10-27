@@ -6,17 +6,19 @@ A rule change that moves any example is caught here. The expectations mirror
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
 
-from eu_ai_act_classifier import Disposition, RiskTier, SystemProfile, classify
+from eu_ai_act_classifier import Disposition, RiskTier, SystemProfile, classify, render_report
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
 
 EXPECTATIONS: dict[str, tuple[RiskTier, Disposition]] = {
     "social_scoring.json": (RiskTier.PROHIBITED, Disposition.DETERMINED),
     "emotion_hiring.json": (RiskTier.PROHIBITED, Disposition.DETERMINED),
+    "intimate_imagery_generator.json": (RiskTier.PROHIBITED, Disposition.DETERMINED),
     "cv_screening.json": (RiskTier.HIGH, Disposition.DETERMINED),
     "credit_scoring.json": (RiskTier.HIGH, Disposition.DETERMINED),
     "proctoring_education.json": (RiskTier.HIGH, Disposition.DETERMINED),
@@ -50,6 +52,24 @@ def test_example_classification(filename: str, expected: tuple[RiskTier, Disposi
 def test_every_example_has_an_expectation() -> None:
     on_disk = {p.name for p in EXAMPLES.glob("*.json") if p.name != "classification-packet.json"}
     assert on_disk == set(EXPECTATIONS), "add new example files to EXPECTATIONS"
+
+
+def test_intimate_imagery_example_uses_the_new_ban() -> None:
+    report = classify(_load("intimate_imagery_generator.json"))
+
+    assert [f.rule_id for f in report.findings if f.tier is RiskTier.PROHIBITED] == [
+        "PROHIBITED.5.1.ba"
+    ]
+
+
+def test_classification_packet_is_the_current_credit_scoring_output() -> None:
+    report = classify(_load("credit_scoring.json"))
+    packet = EXAMPLES / "classification-packet"
+
+    assert json.loads(packet.with_suffix(".json").read_text(encoding="utf-8")) == (
+        report.model_dump(mode="json")
+    ), "regenerate with the commands in docs/TESTING.md"
+    assert packet.with_suffix(".md").read_text(encoding="utf-8") == render_report(report) + "\n"
 
 
 def test_prohibited_lists_no_obligations() -> None:

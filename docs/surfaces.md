@@ -2,6 +2,15 @@
 
 Longer reference material moved out of the README. The CLI remains the authoritative product surface and the Python classifier is the legal source of truth for every other surface.
 
+## Surfaces
+
+| Surface | Use it for | Details |
+|---|---|---|
+| Browser playground | Zero-install trial, nothing leaves the page | [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) |
+| CLI (`eu-ai-act-classify`) | Authoritative surface; `--json`, `--strict`, `--sources`, draft artifacts | [Local verification](#local-verification) |
+| MCP server | Let an agent call the classifier | [docs/mcp-configuration-guide.md](mcp-configuration-guide.md) |
+| Local API and web cockpit | Local inventory, review and export workflow | [MCP and local API](#mcp-and-local-api), [Optional web cockpit](#optional-web-cockpit) |
+
 ## Local verification
 
 Use the CLI first. It does not require web dependencies:
@@ -21,13 +30,17 @@ Reports and draft artifacts use a versioned source manifest. The current binding
 
 ## Browser playground
 
-The [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) runs the classifier client-side with Pyodide. Pick a synthetic example or paste a `SystemProfile`, classify it, then export the JSON or text report. A field guide lists every input field and its allowed values.
+The [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) runs the classifier client-side with Pyodide. It opens on guided questions: one question per page with the article under it, an "I don't know" answer where the fact may be open, and a check-answers page that also lists every value left at its default. "I don't know" never becomes "no": it records an unconfirmed value that routes the result to review, marks the Annex III point as unsettled, or pauses the run until counsel answers. The JSON editor stays available as a second mode: pick a synthetic example or paste a `SystemProfile`, classify it, then export the JSON or text report. A field guide lists every input field and its allowed values.
+
+The questions, their order and when each is asked come from `src/eu_ai_act_classifier/intake.py`; the browser only interprets the generated `intake.json`. `tests/test_intake.py` checks that every example round-trips through the questions, that every "I don't know" either pauses the run or yields `requires_review`, and, over grids of states the intake can reach, that no answer to a skipped question changes the classification, apart from the engine's own note that a value given there is not used. Nonbinding advisory notes are outside that check for a profile outside the AI Act's scope. The pinpoint shown under a question is always one the engine already cites; the intake adds no citation of its own.
 
 The page installs a wheel of this package, so it applies the same rules as the CLI. `tests/test_playground.py` fails if the wheel, the bundled examples or the field guide drift from the source. Rebuild after a rule change:
 
 ```bash
 uv run python scripts/build_playground.py
 ```
+
+[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
 ## MCP and local API
 
@@ -39,6 +52,8 @@ eu-ai-act-classifier-mcp
 ```
 
 Or let uv fetch and run it: `uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp`. Client configuration (Claude Desktop, Cursor) and the reason for the `mcp<2` constraint are in [mcp-configuration-guide.md](mcp-configuration-guide.md).
+
+Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1; the 0.2.0 extra does not.
 
 The local JSON bridge is used by the optional web cockpit. Run it from the repository root, because `inventory` and `workspace` read the synthetic profiles in `examples/`:
 
@@ -57,7 +72,7 @@ The inventory payload includes a system review table with classifier-backed rows
 
 ## Optional web cockpit
 
-![Web cockpit: a guided intake for CreditSightScore classified high-risk, with the system inventory, risk map, reviewer notes, source provenance, the Article 9-15 obligation tracker and a draft export pack](cockpit.png)
+![Web cockpit in its single-column layout: a guided intake for CreditSightScore, classified high-risk with an Art. 111(2) open question, with the system inventory, risk map, reviewer notes, the portfolio review tables, the obligation tracker, source provenance and a draft export pack](cockpit.png)
 
 The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
 

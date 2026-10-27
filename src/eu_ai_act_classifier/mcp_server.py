@@ -75,8 +75,10 @@ def build_server() -> Any:
         """Classify an AI system under the EU AI Act (Reg (EU) 2024/1689).
 
         `profile` is a SystemProfile object (name, roles, annex_iii_area,
-        prohibited_practices, is_gpai_model, training_flops, transparency
-        screens, …). Returns a ClassificationReport: risk tier, disposition,
+        annex_i_section, prohibited_practices, is_gpai_model, training_flops,
+        transparency screens, …; dates YYYY-MM-DD, e.g. placing_on_market_date
+        "2026-03-01" for the AI system and gpai_model_placing_on_market_date
+        for the model). Returns a ClassificationReport: risk tier, disposition,
         obligations with article citations, required documentation, open
         questions for review, and any citations pending verification.
         """

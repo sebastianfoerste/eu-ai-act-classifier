@@ -1,3 +1,4 @@
+import { formatLabel, labelFor } from "../../lib/labels";
 import { runClassifierBridge } from "../../lib/python";
 
 type Workspace = {
@@ -28,46 +29,48 @@ type Workspace = {
 export default async function PortfolioWorkspacePage() {
   const workspace = (await runClassifierBridge("workspace")) as Workspace;
   return (
-    <main className="mx-auto max-w-6xl space-y-6 p-6">
-      <header>
-        <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">AI system portfolio</p>
-        <h1 className="mt-1 text-2xl font-semibold">System vault and fleet command center</h1>
-        <p className="mt-2 max-w-3xl text-sm text-zinc-600">Deterministic inventory analytics, guided assessment workflows and draft-only evidence packs for qualified review.</p>
+    <main className="pageShell">
+      <header className="pageHeader">
+        <p className="eyebrow">AI system portfolio</p>
+        <h1>System vault and fleet command center</h1>
+        <p className="pageLead">Deterministic inventory analytics, guided assessment workflows and draft-only evidence packs for qualified review.</p>
       </header>
 
-      <section className="grid gap-3 sm:grid-cols-4">
+      <section className="metricGrid" aria-label="Portfolio summary">
         {Object.entries(workspace.commandCenter.summary).map(([label, value]) => (
-          <article key={label} className="rounded-lg border border-zinc-200 bg-white p-4">
-            <p className="text-xs uppercase tracking-wide text-zinc-500">{label.replaceAll("_", " ")}</p>
-            <p className="mt-1 text-xl font-semibold">{value}</p>
+          <article key={label} className="metricCard">
+            <p>{formatLabel(label)}</p>
+            <strong>{value}</strong>
           </article>
         ))}
       </section>
 
-      <section className="overflow-x-auto rounded-lg border border-zinc-200 bg-white">
-        <div className="border-b border-zinc-200 p-4"><h2 className="font-semibold">Fleet command center</h2></div>
-        <table className="w-full min-w-[820px] text-left text-sm">
-          <thead className="bg-zinc-50 text-xs text-zinc-500"><tr><th className="p-3">System</th><th className="p-3">Risk</th><th className="p-3">Review</th><th className="p-3">Priority</th><th className="p-3">Next action</th></tr></thead>
-          <tbody className="divide-y divide-zinc-200">
-            {workspace.commandCenter.rows.map((row) => (
-              <tr key={row.system_id}><td className="p-3 font-medium">{row.name}</td><td className="p-3">{row.risk_tier}</td><td className="p-3">{row.review_status}</td><td className="p-3">{row.priority}</td><td className="p-3 text-zinc-600">{row.next_action}</td></tr>
-            ))}
-          </tbody>
-        </table>
+      <section className="card" aria-labelledby="fleet-heading">
+        <h2 id="fleet-heading">Fleet command center</h2>
+        <div className="scrollX" tabIndex={0} role="region" aria-labelledby="fleet-heading">
+          <table className="dataTable">
+            <thead><tr><th scope="col">System</th><th scope="col">Risk</th><th scope="col">Review</th><th scope="col">Priority</th><th scope="col">Next action</th></tr></thead>
+            <tbody>
+              {workspace.commandCenter.rows.map((row) => (
+                <tr key={row.system_id}><td><strong>{row.name}</strong></td><td>{labelFor("risk_tier", row.risk_tier)}</td><td>{labelFor("review_status", row.review_status)}</td><td>{formatLabel(row.priority)}</td><td>{row.next_action}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <article className="rounded-lg border border-zinc-200 bg-white p-4">
-          <h2 className="font-semibold">AI system vault</h2>
-          <p className="mt-1 text-sm text-zinc-600">{workspace.vault.records.length} systems, {workspace.vault.verified_source_count} complete source manifests, {workspace.vault.open_source_count} open.</p>
-          <ul className="mt-4 space-y-2 text-sm">{workspace.vault.records.map((record) => <li key={record.system_id} className="rounded bg-zinc-50 p-3"><strong>{record.name}</strong><div className="text-xs text-zinc-500">{record.role} · {record.artifact_refs.length} draft artifacts</div></li>)}</ul>
+      <section className="cardGrid">
+        <article className="card">
+          <h2>AI system vault</h2>
+          <p className="meta">{workspace.vault.records.length} systems, {workspace.vault.verified_source_count} complete source manifests, {workspace.vault.open_source_count} open.</p>
+          <ul className="plainList">{workspace.vault.records.map((record) => <li key={record.system_id}><strong>{record.name}</strong><p className="meta">{record.role.split(", ").map((role) => labelFor("roles", role)).join(", ")} · {record.artifact_refs.length} draft artifacts</p></li>)}</ul>
         </article>
-        <article className="rounded-lg border border-zinc-200 bg-white p-4">
-          <h2 className="font-semibold">Assessment workflows</h2>
-          <ul className="mt-4 space-y-2 text-sm">{workspace.workflows.map((workflow) => <li key={workflow.system_id} className="rounded bg-zinc-50 p-3"><strong>{workflow.system_id}</strong><div className="text-xs text-zinc-500">{workflow.status} · {workflow.steps.length} guided steps · deployment blocked</div></li>)}</ul>
+        <article className="card">
+          <h2>Assessment workflows</h2>
+          <ul className="plainList">{workspace.workflows.map((workflow) => <li key={workflow.system_id}><strong>{workflow.system_id}</strong><p className="meta">{formatLabel(workflow.status)} · {workflow.steps.length} guided steps · deployment blocked</p></li>)}</ul>
         </article>
       </section>
-      <p className="text-xs text-zinc-500">{workspace.commandCenter.reviewNotice}</p>
+      <p className="footnote">{workspace.commandCenter.reviewNotice}</p>
     </main>
   );
 }
