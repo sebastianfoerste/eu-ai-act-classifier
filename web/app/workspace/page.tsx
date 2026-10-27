@@ -32,7 +32,7 @@ export default async function PortfolioWorkspacePage() {
     <main className="pageShell">
       <header className="pageHeader">
         <p className="eyebrow">AI system portfolio</p>
-        <h1>System vault and fleet command center</h1>
+        <h1>System inventory and fleet command center</h1>
         <p className="pageLead">Deterministic inventory analytics, guided assessment workflows and draft-only evidence packs for qualified review.</p>
       </header>
 
@@ -61,7 +61,7 @@ export default async function PortfolioWorkspacePage() {
 
       <section className="cardGrid">
         <article className="card">
-          <h2>AI system vault</h2>
+          <h2>AI system inventory</h2>
           <p className="meta">{workspace.vault.records.length} systems, {workspace.vault.verified_source_count} complete source manifests, {workspace.vault.open_source_count} open.</p>
           <ul className="plainList">{workspace.vault.records.map((record) => <li key={record.system_id}><strong>{record.name}</strong><p className="meta">{record.role.split(", ").map((role) => labelFor("roles", role)).join(", ")} · {record.artifact_refs.length} draft artifacts</p></li>)}</ul>
         </article>
