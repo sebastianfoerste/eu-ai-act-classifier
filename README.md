@@ -46,13 +46,13 @@ More: the [full quick start](https://github.com/sebastianfoerste/eu-ai-act-class
 
 ## MCP server
 
-For Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp): `uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp`. This package's own MCP server starts with:
+For Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp): `uvx --python 3.13 --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp`. This package's own MCP server starts with:
 
 ```bash
 uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp
 ```
 
-Keep `mcp<2` ([why](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/mcp-configuration-guide.md#prerequisites)). Client configuration is in [docs/mcp-configuration-guide.md](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/mcp-configuration-guide.md).
+Keep `mcp<2` ([why](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/mcp-configuration-guide.md#prerequisites)). Client configuration: [docs/mcp-configuration-guide.md](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/mcp-configuration-guide.md).
 
 ## Documentation
 

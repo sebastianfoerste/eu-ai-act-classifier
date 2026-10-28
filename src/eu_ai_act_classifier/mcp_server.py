@@ -12,7 +12,7 @@ Run::
 
 or let uv fetch the package and start the server::
 
-    uvx --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp
+    uvx --python 3.13 --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp
 
 The server is built on ``mcp.server.fastmcp`` from the 1.x SDK, which mcp 2.0
 renamed, so the ``[mcp]`` extra pins ``mcp>=1.2,<2``.
@@ -33,7 +33,7 @@ from .report import render_report
 # The [mcp] extra in pyproject.toml; tests/test_mcp_server.py keeps the two in step.
 MCP_REQUIREMENT = "mcp>=1.2,<2"
 # The recommended Claude integration; README.md and the docs give the same command.
-EU_REG_MCP_COMMAND = "uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp"
+EU_REG_MCP_COMMAND = "uvx --python 3.13 --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp"
 
 
 def _installed_mcp_version() -> str | None:
@@ -58,7 +58,7 @@ def _missing_extra_message(installed_mcp: str | None, error: ImportError) -> str
             f"The server needs {MCP_REQUIREMENT}, which the [mcp] extra installs:",
             "  pip install 'eu-ai-act-classifier[mcp]'",
             "or let uv fetch the package and start the server:",
-            "  uvx --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp",
+            "  uvx --python 3.13 --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp",
             "In a clone of the repository:",
             "  uv run --extra mcp eu-ai-act-classifier-mcp",
             "For Claude Code or Claude Desktop, use eu-reg-mcp instead. It is the recommended",

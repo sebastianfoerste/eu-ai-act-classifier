@@ -6,19 +6,19 @@ This allows agentic workflows to perform compliance evaluations on system archit
 
 ## Recommended for Claude: eu-reg-mcp
 
-[eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp) serves this classifier as its `classify_eu_ai_act_system` tool, next to its MiCAR white paper linter and MiCAR register tools. It is on PyPI and pins a compatible `mcp` itself. The `lint` and `classify` extras install the linter and this classifier in the same environment:
+[eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp) serves this classifier as its `classify_eu_ai_act_system` tool, next to its MiCAR white paper linter and MiCAR register tools. It is on PyPI and pins a compatible `mcp` itself. The `lint` and `classify` extras install the linter and this classifier in the same environment. All three packages require Python 3.13 or later, so the command passes `--python 3.13`; without it, uvx fails with `No solution found` when the default Python is older:
 
 ```bash
-uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
+uvx --python 3.13 --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
 ```
 
 For Claude Code:
 
 ```bash
-claude mcp add eu-reg -- uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
+claude mcp add eu-reg -- uvx --python 3.13 --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
 ```
 
-For Claude Desktop, add `"eu-reg": {"command": "uvx", "args": ["--from", "eu-reg-mcp[lint,classify]", "eu-reg-mcp"]}` to the `mcpServers` object. The eu-reg-mcp README documents its tools and their review notices.
+For Claude Desktop, add `"eu-reg": {"command": "uvx", "args": ["--python", "3.13", "--from", "eu-reg-mcp[lint,classify]", "eu-reg-mcp"]}` to the `mcpServers` object. The eu-reg-mcp README documents its tools and their review notices.
 
 The rest of this guide covers this package's own two-tool server.
 
