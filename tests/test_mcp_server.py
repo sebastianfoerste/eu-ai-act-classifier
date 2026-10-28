@@ -14,9 +14,9 @@ from eu_ai_act_classifier import mcp_server
 
 ROOT = Path(__file__).resolve().parents[1]
 PIP_COMMAND = "pip install 'eu-ai-act-classifier[mcp]'"
-UVX_COMMAND = "uvx --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp"
+UVX_COMMAND = "uvx --python 3.13 --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp"
 CLONE_COMMAND = "uv run --extra mcp eu-ai-act-classifier-mcp"
-EU_REG_MCP_COMMAND = "uvx --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp"
+EU_REG_MCP_COMMAND = "uvx --python 3.13 --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp"
 PROFILE = {"name": "SpamShield"}
 
 
