@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import shlex
 import sys
 import tomllib
 import types
@@ -103,6 +104,14 @@ def test_docs_give_the_eu_reg_mcp_and_clone_commands_in_the_hint() -> None:
         assert EU_REG_MCP_COMMAND in (ROOT / doc).read_text(encoding="utf-8"), doc
     for doc in ("docs/mcp-configuration-guide.md", "docs/surfaces.md"):
         assert CLONE_COMMAND in (ROOT / doc).read_text(encoding="utf-8"), doc
+
+
+def test_guide_gives_the_eu_reg_mcp_command_on_its_own_and_as_claude_desktop_args() -> None:
+    guide = (ROOT / "docs/mcp-configuration-guide.md").read_text(encoding="utf-8")
+    program, *args = shlex.split(EU_REG_MCP_COMMAND)
+
+    assert EU_REG_MCP_COMMAND in guide.splitlines()
+    assert f'"command": "{program}", "args": {json.dumps(args)}' in guide
 
 
 def test_server_exposes_both_classification_tools() -> None:
