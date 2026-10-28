@@ -512,3 +512,12 @@ def test_case_study_example_counts_match_the_bundled_examples() -> None:
         r"all (\d+) bundled examples are asserted in `tests/test_examples\.py`", case_study
     )
     assert int(asserted.group(1)) == len(examples)
+
+
+def test_overview_example_count_matches_the_bundled_examples() -> None:
+    overview = " ".join(Path("docs/overview.md").read_text(encoding="utf-8").split())
+    examples = [p for p in EXAMPLES.glob("*.json") if p.name != "classification-packet.json"]
+
+    count = re.search(r"pick one of the (\d+) synthetic examples", overview)
+    assert count, "docs/overview.md no longer says how many synthetic examples there are"
+    assert int(count.group(1)) == len(examples)
