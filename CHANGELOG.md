@@ -7,6 +7,18 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Binding result apart from guidance notes in the playground (#38)
+
+#### Changed
+
+- The playground groups findings, open questions, obligations, the graph, the
+  timeline, scope and sources under "Binding result". Commission guidance
+  notes, when the toggle was on for the run, follow in a separate box headed
+  "Nonbinding guidance notes" that says they change no tier, disposition or
+  obligation.
+- Links and primary actions use their own accent colour (`#5a3e85`); the
+  limited-risk tier keeps `#2c4f7c`, and nonbinding source badges are grey.
+
 ### Share links in the playground (#39)
 
 #### Added
