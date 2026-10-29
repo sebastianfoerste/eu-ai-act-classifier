@@ -9,6 +9,8 @@ from typing import Any
 
 import eu_ai_act_classifier.collaboration_workspace as collaboration_workspace_module
 import eu_ai_act_classifier.inventory as inventory_module
+from eu_ai_act_classifier import SystemProfile, classify
+from eu_ai_act_classifier.artifacts import write_artifacts
 from eu_ai_act_classifier.local_api import (
     artifacts_payload,
     classify_payload,
@@ -62,6 +64,33 @@ def test_local_api_artifacts_all_returns_named_review_pack() -> None:
     artifact_names = {artifact["name"] for artifact in payload["artifacts"]}
     assert {"fria", "annex-iv-checklist"}.issubset(artifact_names)
     assert payload["review_status"] == "draft_only_human_review_required"
+
+
+def test_local_api_artifact_filenames_are_the_ones_the_cli_writes(tmp_path) -> None:
+    profile = {"name": "Provider A / CV screening (v2)"}
+
+    payload = artifacts_payload({"profile": profile, "artifact": "all"})
+    written = write_artifacts("all", tmp_path, classify(SystemProfile.model_validate(profile)))
+
+    filenames = [artifact["filename"] for artifact in payload["artifacts"]]
+    assert filenames == [path.name for path in written]
+    assert "provider-a-cv-screening-v2.fria.md" in filenames
+    assert not any("/" in name or " " in name for name in filenames)
+
+
+def test_local_api_rejects_invalid_input_with_exit_2_and_a_json_error_line(
+    monkeypatch, capsys
+) -> None:
+    # web/lib/bridge-error.ts answers HTTP 400 only for this exit code and stderr shape.
+    monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps({"profile": {"roles": "bogus"}})))
+
+    assert main(["classify"]) == 2
+
+    out, err = capsys.readouterr()
+    assert out == ""
+    lines = err.strip().splitlines()
+    assert len(lines) == 1
+    assert "roles" in json.loads(lines[0])["error"].splitlines()
 
 
 def test_local_api_dossier_returns_review_bundle() -> None:
