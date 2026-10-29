@@ -16,6 +16,7 @@ from datetime import UTC, date, datetime
 from pathlib import Path
 
 try:
+    from . import __version__
     from .citations import (
         AI_ACT_AMENDMENT_URL,
         AI_ACT_SERVICE_DESK_URL,
@@ -29,6 +30,7 @@ try:
     )
 except (ImportError, ValueError):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from eu_ai_act_classifier import __version__
     from eu_ai_act_classifier.citations import (
         AI_ACT_AMENDMENT_URL,
         AI_ACT_SERVICE_DESK_URL,
@@ -55,15 +57,14 @@ URLS = {
 
 
 PROJECT_NAME = "eu-ai-act-classifier"
+PROJECT_URL = "https://github.com/sebastianfoerste/eu-ai-act-classifier"
 # The repository root when the package runs from a clone. From an installed wheel this is
 # a directory above site-packages, which holds no pyproject.toml naming the project.
 CHECKOUT_ROOT = Path(__file__).resolve().parents[2]
 ATTEMPTS = 3
+# The checker names itself and its version instead of posing as a browser.
 HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
-    ),
+    "User-Agent": f"{PROJECT_NAME}/{__version__} (+{PROJECT_URL})",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
 }

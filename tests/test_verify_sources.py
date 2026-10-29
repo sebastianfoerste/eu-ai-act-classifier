@@ -8,7 +8,9 @@ from __future__ import annotations
 import json
 import re
 import shutil
+import tomllib
 import urllib.error
+import urllib.request
 from collections.abc import Callable
 from datetime import date
 from pathlib import Path
@@ -17,7 +19,12 @@ import pytest
 
 import eu_ai_act_classifier.verify_sources as verify_sources_module
 from eu_ai_act_classifier.cli import main
-from eu_ai_act_classifier.verify_sources import URLS, NotASourceCheckoutError, verify_sources
+from eu_ai_act_classifier.verify_sources import (
+    URLS,
+    NotASourceCheckoutError,
+    fetch_status,
+    verify_sources,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 REAL_CITATIONS = ROOT / "src" / "eu_ai_act_classifier" / "citations.py"
@@ -93,6 +100,26 @@ def _failed_names(stderr: str) -> set[str]:
     match = re.search(r"source URLs failed: (.+)$", stderr, re.MULTILINE)
     assert match, stderr
     return set(match[1].split(", "))
+
+
+def test_requests_name_the_checker_and_its_version(monkeypatch) -> None:
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    repository = "https://github.com/sebastianfoerste/eu-ai-act-classifier"
+    expected = f"eu-ai-act-classifier/{pyproject['project']['version']} (+{repository})"
+    sent = []
+
+    def status(request: urllib.request.Request) -> int:
+        sent.append(request)
+        return 200
+
+    monkeypatch.setattr(verify_sources_module, "_status", status)
+
+    # The fetch_status imported above, not the module's copy the autouse fixture replaced.
+    assert fetch_status(URLS["AI_ACT_URL"]) == 200
+
+    assert verify_sources_module.HEADERS["User-Agent"] == expected
+    # urllib stores header names capitalized: "User-agent".
+    assert [request.get_header("User-agent") for request in sent] == [expected]
 
 
 def test_all_sources_passing_updates_both_dates_and_nothing_else(checkout) -> None:
