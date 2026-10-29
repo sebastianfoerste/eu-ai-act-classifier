@@ -33,6 +33,25 @@ Changes since 0.2.2.
   and chat services keep it. In guided mode the link carries the answers
   once every question is answered.
 
+### Source retrieval dates move only after every URL passes
+
+#### Fixed
+
+- `--verify-sources --update` set both source retrieval dates in
+  `citations.py` to today even when source URLs failed, and those dates reach
+  every report's source manifest. It now changes nothing unless every URL
+  answers with a 2xx status; otherwise it names the failed URLs and exits 1.
+  A 4xx or 5xx answer and a network error both count as failures.
+- `--update` runs only in a source checkout: a `pyproject.toml` naming
+  `eu-ai-act-classifier` next to `src/eu_ai_act_classifier/citations.py`.
+  From an installed package it exits 2 before any request, where it used to
+  rewrite the installed `citations.py` and write `dist/verified_sources.json`
+  three directories above it.
+- `--update` without `--verify-sources` is a usage error (exit 2); it was
+  ignored.
+- `python -m eu_ai_act_classifier.verify_sources` exits 1 when a URL fails and
+  2 outside a source checkout; it always exited 0.
+
 ## 0.2.2 (2026-10-23)
 
 #### Upgrade notes
