@@ -383,6 +383,22 @@ def test_the_change_question_follows_the_engines_legacy_test() -> None:
     assert checked
 
 
+def test_the_change_answer_is_reported_as_not_used_exactly_where_it_is_not_used() -> None:
+    # The skip check strips the sentence before comparing, so pin where it appears:
+    # for a given answer outside the Art. 111(2) legacy case, never otherwise.
+    checked = 0
+    for profile in TRANSITION_GRID:
+        if not holds(IN_SCOPE, profile):
+            continue
+        used = change_used(SystemProfile.model_validate(profile))
+        for change in (True, False, None):
+            changed = {**profile, "significant_change_after_application_date": change}
+            status = _report(changed)["scope"]["transitional_status"]
+            assert (_CHANGE_UNUSED in status) is (change is not None and not used), changed
+            checked += 1
+    assert checked
+
+
 def test_an_unknown_change_answer_survives_a_compact_round_trip() -> None:
     legacy = {
         "name": "x",
