@@ -1,6 +1,7 @@
-import { droppedFields, profileToAnswers } from "./intake.mjs";
+import { answersToProfile, compactProfile, droppedFields, profileToAnswers } from "./intake.mjs";
 import { createWizard } from "./wizard.mjs";
 import { DISPOSITIONS, MAX_BYTES, ROLE_LABELS, TIERS, annexCitation, describeDefault, formatProfile, groupByRole, matchesQuery, parseProfile, practiceCitation, reportIsCurrent } from "./model.mjs";
+import { ShareError, decodeShare, encodeShare, isShareFragment } from "./share.mjs";
 
 const $ = id => document.getElementById(id);
 const input = $("input");
@@ -192,7 +193,8 @@ async function loadSamples() {
     samples = await response.json();
     for (const key of Object.keys(samples.profiles)) parseProfile(JSON.stringify(samples.profiles[key]));
     fillExamples();
-    if (!input.value) replaceDraft(JSON.stringify(samples.profiles[samples.default], null, 2));
+    // A share link in the address opens its own profile instead of the default example.
+    if (!input.value && !isShareFragment(location.hash)) replaceDraft(JSON.stringify(samples.profiles[samples.default], null, 2));
     $("load-example").disabled = false;
     showError("sample-error");
   } catch {
@@ -476,13 +478,6 @@ function sectionDefinitions() {
       })),
     },
     {
-      title: "Advisory notes · nonbinding guidance", open: true,
-      items: r.advisory_notes.map(a => ({
-        search: [a.title, a.detail, a.source_id],
-        render: () => itemCard(badge("tone-blue", SOURCE_LABEL[a.source_status] ?? a.source_status), a.title, null, [a.detail, link(a.source_url, "Source ↗")], REVIEW_LABEL[a.review_status] ?? a.review_status),
-      })),
-    },
-    {
       title: "Scope and intake",
       items: [{
         search: [r.scope.status, r.scope.transitional_status, r.scope.intended_purpose_source, ...r.scope.notes, ...r.scope.excluded_use_flags],
@@ -499,7 +494,7 @@ function sectionDefinitions() {
       title: "Source manifest",
       items: r.source_manifest.map(s => ({
         search: [s.citation_label, s.title, s.legal_status, s.implementation_note],
-        render: () => itemCard(badge(s.legal_status === "binding_level_1" ? "tone-green" : "tone-blue", SOURCE_LABEL[s.legal_status] ?? s.legal_status), s.title, link(s.url, `${s.citation_label} ↗`), [s.implementation_note], `Retrieved ${s.retrieved_on}`),
+        render: () => itemCard(badge(s.legal_status === "binding_level_1" ? "tone-green" : "tone-grey", SOURCE_LABEL[s.legal_status] ?? s.legal_status), s.title, link(s.url, `${s.citation_label} ↗`), [s.implementation_note], `Retrieved ${s.retrieved_on}`),
       })),
     },
     {
@@ -509,12 +504,26 @@ function sectionDefinitions() {
   ];
 }
 
+// Nonbinding guidance is kept out of the binding sections and rendered after
+// them, so it is never read as part of the classification.
+function advisoryItems() {
+  return report.advisory_notes.map(a => ({
+    search: [a.title, a.detail, a.source_id],
+    render: () => itemCard(badge("tone-grey", SOURCE_LABEL[a.source_status] ?? a.source_status), a.title, null, [a.detail, link(a.source_url, "Source ↗")], REVIEW_LABEL[a.review_status] ?? a.review_status),
+  }));
+}
+
 function renderSections() {
   if (!report) return;
   const query = $("search").value;
   const container = $("sections");
   container.replaceChildren();
   let total = 0, visible = 0;
+  const binding = node("section", "result-group");
+  binding.setAttribute("aria-labelledby", "binding-heading");
+  const bindingHeading = node("h4", "result-group-heading", "Binding result");
+  bindingHeading.id = "binding-heading";
+  binding.append(bindingHeading);
   for (const section of sectionDefinitions()) {
     total += section.items.length;
     const items = section.items.filter(item => matchesQuery(item.search, query));
@@ -529,7 +538,25 @@ function renderSections() {
     const body = node("div", "finding-body");
     body.append(...items.map(item => item.render()));
     details.append(summary, body);
-    container.append(details);
+    binding.append(details);
+  }
+  if (binding.childElementCount > 1) container.append(binding);
+  // Only a report run with the guidance toggle on has an advisory box.
+  if (checked?.advisory) {
+    const all = advisoryItems();
+    const items = all.filter(item => matchesQuery(item.search, query));
+    total += all.length;
+    visible += items.length;
+    if (items.length || !query.trim()) {
+      const box = node("section", "advisory-box");
+      box.setAttribute("aria-labelledby", "advisory-heading");
+      const heading = node("h4", "result-group-heading", "Nonbinding guidance notes");
+      heading.id = "advisory-heading";
+      box.append(heading, node("p", "advisory-intro", "Commission guidance, shown because you asked for it. It does not change the tier, the disposition or any obligation above."));
+      if (items.length) box.append(...items.map(item => item.render()));
+      else box.append(node("p", "advisory-intro", "No guidance note applies to this profile."));
+      container.append(box);
+    }
   }
   $("visible-count").textContent = query.trim() ? `${visible} of ${total} items match` : `${total} items · findings and open questions first`;
   if (!visible) container.append(node("p", "no-findings", "Nothing matches this search. Try an article number such as Art. 9."));
@@ -548,6 +575,60 @@ function download(text, filename, type) {
 }
 const exportName = () => (report?.system || "system").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "system";
 $("download-draft").onclick = () => download(input.value, "system-profile.json", "application/json");
+
+// The profile a share link carries: the guided answers once they are complete,
+// else the profile in the JSON editor.
+function shareProfile() {
+  if (mode === "guided" && wizard) {
+    const { profile, blocked, missing } = answersToProfile(intake, wizard.answers);
+    if (blocked.length || missing.length) throw new ShareError("A share link carries a complete profile. Answer the remaining questions first; an answer that pauses the run for counsel cannot be shared.");
+    return compactProfile(intake, profile);
+  }
+  return parseProfile(input.value);
+}
+
+// Only this button writes the address. It never sends the profile anywhere.
+$("share").onclick = async () => {
+  showError("share-error");
+  $("share-status").textContent = "";
+  let fragment;
+  try { fragment = await encodeShare(shareProfile()); }
+  catch (error) { showError("share-error", error.message); return; }
+  history.replaceState(null, "", `#${fragment}`);
+  let copied = false;
+  try { await navigator.clipboard.writeText(location.href); copied = true; } catch { /* clipboard blocked: the address bar has the link */ }
+  $("share-status").textContent = copied
+    ? "Share link copied. It opens this profile without classifying it."
+    : "Share link created in the address bar. Copy it from there; it opens this profile without classifying it.";
+};
+
+// Opens the profile in a share link. It is validated like a pasted profile and
+// never classified automatically.
+async function openSharedProfile({ confirmReplace = false } = {}) {
+  if (!isShareFragment(location.hash)) return;
+  showError("share-error");
+  let text;
+  try {
+    text = formatProfile(await decodeShare(location.hash));
+    parseProfile(text);
+  } catch (error) {
+    showError("share-open-error", `This share link could not be opened. ${error.message} Nothing was loaded.`);
+    return;
+  }
+  if (confirmReplace && (modified || guidedEdited) && !window.confirm("Replace your profile with the one in this share link? Save the profile JSON first if you need to keep it.")) return;
+  input.value = text;
+  modified = false;
+  clearInputState();
+  showError("share-open-error");
+  syncDraft();
+  await intakeLoaded;
+  if (mode === "guided" && wizard) {
+    try { reviewInWizard(text); }
+    catch (error) { setMode("json"); showError("input-error", error.message); }
+  }
+  $("share-status").textContent = "Opened the profile from a share link. Check it, then classify; nothing runs until you do.";
+}
+window.addEventListener("hashchange", () => openSharedProfile({ confirmReplace: true }));
 $("export-json").onclick = () => {
   if (!busy && reportIsCurrent(report, checked, current())) download(JSON.stringify(report, null, 2), `ai-act-classification-${exportName()}.json`, "application/json");
 };
@@ -561,5 +642,6 @@ window.addEventListener("beforeunload", event => {
 setMode("guided");
 loadSamples();
 loadFields();
-loadIntake();
+const intakeLoaded = loadIntake();
+openSharedProfile();
 startRuntime();

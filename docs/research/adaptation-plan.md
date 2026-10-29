@@ -125,7 +125,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Tests.** `tests/test_guidance_eval.py`: the file loads, every row has a lawyer-written `expected`, scoring separates tier from disposition, and a `requires_review` result never counts as a match for `determined`.
 - **Risk.** Rule 8: each expectation rests on the legal text, so drafting waits for EUR-Lex access and review; until then rows stay `PENDING`. No existing golden, expectation or example outcome changes.
 
-### S6. Share link in the URL hash (next)
+### S6. Share link in the URL hash (built)
 
 - **Story.** As a user I share a synthetic profile with a colleague without a server.
 - **References.** Svelte playground native compression; TypeScript playground hash (Observed); Ruff stores shares on a server (Observed), which this project rejects.
@@ -157,7 +157,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 
 ## Design upgrades
 
-Each is specified, not built in this change.
+D2 and D4 are built; the others are specified.
 
 ### D1. Dark mode on both surfaces
 
@@ -168,10 +168,10 @@ Each is specified, not built in this change.
 - **Files.** `docs/playground/styles.css`, `web/app/globals.css`, a small toggle in each header.
 - **Risk.** None to the non-negotiables; no web fonts or dependencies.
 
-### D2. Separate tier and link colours
+### D2. Separate tier and link colours (built)
 
 - **Story.** As a reader I do not mistake a link for a limited-risk badge.
-- **Spec.** Split `--blue` (limited tier) from `--accent` (links and primary actions); both are `#2c4f7c` today.
+- **Spec.** Split `--blue` (limited tier) from `--accent` (links and primary actions); both were `#2c4f7c`. Built: `--accent` is `#5a3e85` (8.5:1 on white), `--blue` stays `#2c4f7c`, and nonbinding source badges use the grey tone instead of the tier blue.
 - **Acceptance.** No element uses the tier token for interaction; badges keep their text labels.
 - **Files.** `docs/playground/styles.css`.
 - **Risk.** None.
@@ -185,7 +185,7 @@ Each is specified, not built in this change.
 - **Files.** `docs/playground/app.mjs`, `docs/playground/styles.css`.
 - **Risk.** Rule 4 and 8: no date is computed in the browser; the view only displays report data.
 
-### D4. Binding result apart from the advisory overlay
+### D4. Binding result apart from the advisory overlay (built)
 
 - **Story.** As a reviewer I never confuse nonbinding guidance notes with the binding classification.
 - **Spec.** Group findings, open questions and obligations under "Binding result"; show advisory notes in a separate, visibly nonbinding box after them.
@@ -203,7 +203,7 @@ Each is specified, not built in this change.
 
 ## Design direction
 
-- **Tokens.** Keep the playground palette and tier colours, always with a text label. Split `--blue` (limited tier) from `--accent` (links) in a follow-up; both are `#2c4f7c` today. The cockpit keeps its own tokens for now; convergence is an owner decision.
+- **Tokens.** Keep the playground palette and tier colours, always with a text label. `--blue` (limited tier) and `--accent` (links and primary actions) are separate colours since D2. The cockpit keeps its own tokens for now; convergence is an owner decision.
 - **Type and layout.** Georgia headings with system sans; tabular numerals for counts and dates (already on metric tiles and wizard progress); single-column wizard inside the existing two-panel layout and its 1050/800/520 breakpoints.
 - **Dark mode.** Replace the hard-coded `color-scheme: light` with tokens redefined under `prefers-color-scheme: dark`, text at least 4.5:1 and borders and focus rings at least 3:1, on both surfaces.
 - **States.** Empty, loading, runtime error and stale states exist; the guided mode adds blocked ("Counsel must answer before classification") and missing states on the check-answers page.

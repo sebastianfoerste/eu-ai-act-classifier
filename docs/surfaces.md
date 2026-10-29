@@ -34,6 +34,8 @@ The [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playgro
 
 The questions, their order and when each is asked come from `src/eu_ai_act_classifier/intake.py`; the browser only interprets the generated `intake.json`. `tests/test_intake.py` checks that every example round-trips through the questions, that every "I don't know" either pauses the run or yields `requires_review`, and, over grids of states the intake can reach, that no answer to a skipped question changes the classification, apart from the engine's own note that a value given there is not used. Nonbinding advisory notes are outside that check for a profile outside the AI Act's scope. The pinpoint shown under a question is always one the engine already cites; the intake adds no citation of its own.
 
+"Create share link" puts the profile, compressed, in the address after the `#`. Browsers do not send that part to a server. Opening such a link loads the profile for checking and never classifies it on its own. The link is encoded, not encrypted, and browser history sync and chat services keep it, so share synthetic or public facts only. Profiles that would need more than 8,000 characters are refused; save the JSON instead.
+
 The page installs a wheel of this package, so it applies the same rules as the CLI. `tests/test_playground.py` fails if the wheel, the bundled examples or the field guide drift from the source. Rebuild after a rule change:
 
 ```bash
