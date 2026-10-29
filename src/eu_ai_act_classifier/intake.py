@@ -438,7 +438,7 @@ QUESTIONS: list[dict[str, Any]] = [
         "title": "Has the system changed significantly after the relevant application date?",
         "hint": "Asked because a date before the system's Chapter III date is given: such a "
         "system comes under the Regulation, apart from Art. 5, only once its design changes "
-        "significantly.",
+        "significantly as from that date.",
         "article": "Art. 111(2) AIA",
         # Elsewhere the engine reports a given answer as not used.
         "show_if": CHANGE_OPEN,
@@ -453,7 +453,9 @@ QUESTIONS: list[dict[str, Any]] = [
         "agency, or does it act on behalf of one?",
         "article": "Art. 49(3) AIA",
         # Art. 49(3) and the Art. 111(2) deployer items read it only for a high-risk
-        # route; elsewhere the answered significant-change question settles the rest.
+        # route. Elsewhere it changes nothing: without a high-risk route the Art. 111(2)
+        # check ignores it, and for a prohibited practice that check turns on a date or
+        # on public-authority use instead.
         "show_if": HIGH_RISK_ROUTE,
         # A missing status is inferred for review only in some contexts, so it blocks.
         "unknown": BLOCK,

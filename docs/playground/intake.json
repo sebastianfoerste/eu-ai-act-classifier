@@ -1087,7 +1087,7 @@
       "kind": "boolean",
       "field": "significant_change_after_application_date",
       "title": "Has the system changed significantly after the relevant application date?",
-      "hint": "Asked because a date before the system's Chapter III date is given: such a system comes under the Regulation, apart from Art. 5, only once its design changes significantly.",
+      "hint": "Asked because a date before the system's Chapter III date is given: such a system comes under the Regulation, apart from Art. 5, only once its design changes significantly as from that date.",
       "article": "Art. 111(2) AIA",
       "show_if": {
         "all": [

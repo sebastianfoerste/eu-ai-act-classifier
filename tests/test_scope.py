@@ -234,6 +234,31 @@ def test_undated_transitional_status_reports_a_change_answer_as_not_used(
     assert "on or after that date is not a legacy system, and for an earlier system" in flag
 
 
+@pytest.mark.parametrize("change", [True, False, None])
+def test_a_legacy_system_never_reports_its_change_answer_as_not_used(change: bool | None) -> None:
+    report = classify(
+        SystemProfile(
+            name="x",
+            annex_iii_area=AnnexIII.CREDITWORTHINESS,
+            placing_on_market_date="2026-01-01",
+            significant_change_after_application_date=change,
+        )
+    )
+    unused = "significant_change_after_application_date is given, but it is not used"
+    assert unused not in report.scope.transitional_status
+    assert not any(unused in note for note in report.scope.notes)
+    # The same answer for a system first placed on the market after the cut-off is unused.
+    later = classify(
+        SystemProfile(
+            name="x",
+            annex_iii_area=AnnexIII.CREDITWORTHINESS,
+            placing_on_market_date="2028-01-01",
+            significant_change_after_application_date=change,
+        )
+    )
+    assert (unused in later.scope.transitional_status) is (change is not None)
+
+
 def test_dated_transitional_status_with_an_asserted_change() -> None:
     status = classify(
         SystemProfile(

@@ -7,7 +7,7 @@ pull requests.
 
 Changes since 0.2.2.
 
-### Art. 111(2) change answer asked only where it is used
+### Art. 111(2) change answer asked only where it is used (#43)
 
 #### Changed
 
@@ -24,6 +24,10 @@ Changes since 0.2.2.
   answer is not used instead of echoing it. For a prohibited practice, the
   Art. 111(2) "not applied" sentence now appears only when a date or
   public-authority use is given.
+- A profile that gives a change answer without such a date, as share links
+  and drafts saved from the guided mode before this change do, now opens
+  only in the JSON editor: the guided mode would drop the answer. It
+  classifies the same there.
 
 ### Binding result apart from guidance notes in the playground (#38)
 
