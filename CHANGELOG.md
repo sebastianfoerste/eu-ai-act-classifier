@@ -33,6 +33,50 @@ Changes since 0.2.2.
   and chat services keep it. In guided mode the link carries the answers
   once every question is answered.
 
+### Source retrieval dates move only after every URL passes
+
+#### Fixed
+
+- `--verify-sources --update` set both source retrieval dates in
+  `citations.py` to today even when source URLs failed, and those dates reach
+  every report's source manifest. It now changes nothing unless every URL
+  answers with a 2xx status; otherwise it names the failed URLs and exits 1.
+  A 4xx or 5xx answer and a network error both count as failures.
+- `--update` runs only in a source checkout: a `pyproject.toml` naming
+  `eu-ai-act-classifier` next to `src/eu_ai_act_classifier/citations.py`.
+  From an installed package it exits 2 before any request, where it used to
+  rewrite the installed `citations.py` and write `dist/verified_sources.json`
+  three directories above it.
+- `--update` without `--verify-sources` is a usage error (exit 2); it was
+  ignored.
+- `python -m eu_ai_act_classifier.verify_sources` exits 1 when a URL fails and
+  2 outside a source checkout; it always exited 0.
+
+### Web cockpit dependencies pinned
+
+#### Changed
+
+- `web/package.json` names the versions `web/package-lock.json` already
+  resolved (for example `next` 16.2.7 and `react` 19.2.7) instead of
+  `"latest"`, so `npm install` outside the lockfile cannot pull a new major
+  version. Dependabot proposes weekly npm updates for `web/`, minor and patch
+  grouped.
+
+### Web cockpit errors and artifact filenames
+
+#### Fixed
+
+- The cockpit's classify, artifacts, dossier and collaboration routes answered
+  HTTP 400 for every failure of the Python bridge, including timeouts and
+  crashes. They now answer 400 only when `local_api` rejects the input (exit 2
+  with a JSON error line) and 500 otherwise; a stale write to the
+  collaboration workspace still answers 409, and a request body that is not
+  JSON still answers 400.
+- The local API named artifact files after the raw system name, so a name such
+  as "Provider A / CV screening" went into the download name unchanged. It
+  now uses the slug the CLI's `--artifacts-dir` files use, for example
+  `provider-a-cv-screening.fria.md`.
+
 ### eu-reg-mcp recommendation (#13)
 
 #### Changed
