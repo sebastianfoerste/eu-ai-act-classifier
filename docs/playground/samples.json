@@ -163,7 +163,7 @@
     },
     "life_insurer_pricing": {
       "name": "Musterversicherung term-life pricing model",
-      "description": "A synthetic German life insurer's in-house gradient-boosted model that sets term-life premiums from applicant health questionnaires. The insurer builds the model and uses it in its own underwriting.",
+      "description": "A synthetic German life insurer's gradient-boosted model that sets term-life premiums from applicant health questionnaires. The insurer builds the model and uses it in its own underwriting.",
       "roles": [
         "provider",
         "deployer"
