@@ -52,6 +52,16 @@ Changes since 0.2.2.
 - `python -m eu_ai_act_classifier.verify_sources` exits 1 when a URL fails and
   2 outside a source checkout; it always exited 0.
 
+### Web cockpit dependencies pinned
+
+#### Changed
+
+- `web/package.json` names the versions `web/package-lock.json` already
+  resolved (for example `next` 16.2.7 and `react` 19.2.7) instead of
+  `"latest"`, so `npm install` outside the lockfile cannot pull a new major
+  version. Dependabot proposes weekly npm updates for `web/`, minor and patch
+  grouped.
+
 ## 0.2.2 (2026-10-23)
 
 #### Upgrade notes
