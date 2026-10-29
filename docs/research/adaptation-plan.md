@@ -125,7 +125,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Tests.** `tests/test_guidance_eval.py`: the file loads, every row has a lawyer-written `expected`, scoring separates tier from disposition, and a `requires_review` result never counts as a match for `determined`.
 - **Risk.** Rule 8: each expectation rests on the legal text, so drafting waits for EUR-Lex access and review; until then rows stay `PENDING`. No existing golden, expectation or example outcome changes.
 
-### S6. Share link in the URL hash (next)
+### S6. Share link in the URL hash (built)
 
 - **Story.** As a user I share a synthetic profile with a colleague without a server.
 - **References.** Svelte playground native compression; TypeScript playground hash (Observed); Ruff stores shares on a server (Observed), which this project rejects.

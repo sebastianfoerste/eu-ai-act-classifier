@@ -42,6 +42,7 @@
         <div class="example-row"><select id="example"></select><button id="load-example" disabled>Load</button></div>
         <div class="import-row"><button id="import" class="text-button">↑ Import JSON</button><span>Local file · up to 1 MB</span><input type="file" id="file" accept=".json,application/json" hidden></div>
         <p id="sample-error" class="error" role="alert" hidden></p>
+        <p id="share-open-error" class="error" role="alert" hidden></p>
       </div>
       <div class="mode-switch" role="group" aria-label="How to describe the system"><button type="button" id="mode-guided" aria-pressed="true">Guided questions</button><button type="button" id="mode-json" aria-pressed="false">JSON editor</button></div>
       <div id="guided" class="guided" aria-live="off"><p class="question-hint">Loading questions…</p></div>
@@ -56,6 +57,12 @@
       <div class="runtime"><span class="status-dot" id="status-dot" aria-hidden="true"></span><span id="status" role="status">Preparing the rule engine…</span><button id="retry" class="text-button" hidden>Retry</button></div>
       <p class="draft-help" id="draft-help">Your profile stays in this tab and is cleared when you close it. The runtime downloads on first use. Use synthetic or public facts in this demo.</p>
       <button id="download-draft" class="text-button save-draft">↓ Save profile JSON</button>
+      <div class="share-area">
+        <button id="share" class="text-button">Create share link</button>
+        <p class="share-note" id="share-note">The link holds the profile after the # in the address. It is encoded, not encrypted, and browser history sync and chat services keep links, so share synthetic or public facts only.</p>
+        <p id="share-status" class="share-note" role="status"></p>
+        <p id="share-error" class="error" role="alert" hidden></p>
+      </div>
       <details class="field-guide" id="field-guide-panel">
         <summary>Field guide <span>Every field the classifier reads</span></summary>
         <p class="field-guide-intro">Omitted fields take the defaults shown. Unknown fields are rejected, so a typo cannot pass silently.</p>
