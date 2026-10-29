@@ -7,6 +7,32 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Binding result apart from guidance notes in the playground (#38)
+
+#### Changed
+
+- The playground groups findings, open questions, obligations, the graph, the
+  timeline, scope and sources under "Binding result". Commission guidance
+  notes, when the toggle was on for the run, follow in a separate box headed
+  "Nonbinding guidance notes" that says they change no tier, disposition or
+  obligation.
+- Links and primary actions use their own accent colour (`#5a3e85`); the
+  limited-risk tier keeps `#2c4f7c`, and nonbinding source badges are grey.
+
+### Share links in the playground (#39)
+
+#### Added
+
+- "Create share link" writes the profile, compressed with `deflate-raw` and
+  base64url-encoded, into the address after `#p1.` (`#j1.` without
+  compression). The fragment is not sent to a server. Opening a link
+  validates the profile, opens it on the check-answers page and never
+  classifies it on its own. Links above 8,000 characters are refused in favour
+  of the JSON download, and a decoded profile above 1 MB is refused. A note
+  next to the button says the link is not encrypted and that history sync
+  and chat services keep it. In guided mode the link carries the answers
+  once every question is answered.
+
 ### eu-reg-mcp recommendation (#13)
 
 #### Changed
