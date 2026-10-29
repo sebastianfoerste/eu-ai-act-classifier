@@ -52,6 +52,15 @@ Changes since 0.2.2.
 - `python -m eu_ai_act_classifier.verify_sources` exits 1 when a URL fails and
   2 outside a source checkout; it always exited 0.
 
+### Source URL check names itself
+
+#### Changed
+
+- `--verify-sources` and `python -m eu_ai_act_classifier.verify_sources` sent
+  the User-Agent of desktop Chrome. They now send
+  `eu-ai-act-classifier/<version> (+https://github.com/sebastianfoerste/eu-ai-act-classifier)`,
+  with the version of the installed package.
+
 ### Web cockpit dependencies pinned
 
 #### Changed
@@ -61,6 +70,18 @@ Changes since 0.2.2.
   `"latest"`, so `npm install` outside the lockfile cannot pull a new major
   version. Dependabot proposes weekly npm updates for `web/`, minor and patch
   grouped.
+
+### Web cockpit audit fixes within the pinned versions
+
+#### Fixed
+
+- `npm audit fix`, without `--force`, updated `web/package-lock.json` only:
+  `vitest` 4.1.12 (within `^4.1.7`) and, as dependencies of other packages,
+  `vite` 8.3.5, `nanoid` 3.3.20, `source-map-js` 1.2.2 and
+  `baseline-browser-mapping` 2.11.34. `npm audit` reports 4 vulnerabilities
+  instead of 9. The advisories for `next`, `sharp` and `postcss` remain: they
+  need `next` 16.4.3 instead of the exact 16.2.7 pin and a `postcss` override
+  above 8.5.22, and `vite` is listed only because it uses that `postcss`.
 
 ### Web cockpit errors and artifact filenames
 
