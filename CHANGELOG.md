@@ -62,6 +62,21 @@ Changes since 0.2.2.
   version. Dependabot proposes weekly npm updates for `web/`, minor and patch
   grouped.
 
+### Web cockpit errors and artifact filenames
+
+#### Fixed
+
+- The cockpit's classify, artifacts, dossier and collaboration routes answered
+  HTTP 400 for every failure of the Python bridge, including timeouts and
+  crashes. They now answer 400 only when `local_api` rejects the input (exit 2
+  with a JSON error line) and 500 otherwise; a stale write to the
+  collaboration workspace still answers 409, and a request body that is not
+  JSON still answers 400.
+- The local API named artifact files after the raw system name, so a name such
+  as "Provider A / CV screening" went into the download name unchanged. It
+  now uses the slug the CLI's `--artifacts-dir` files use, for example
+  `provider-a-cv-screening.fria.md`.
+
 ## 0.2.2 (2026-10-23)
 
 #### Upgrade notes
