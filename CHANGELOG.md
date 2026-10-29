@@ -75,13 +75,13 @@ Changes since 0.2.2.
 
 #### Fixed
 
-- `npm audit fix`, without `--force`, updated `web/package-lock.json` only:
-  `vitest` 4.1.12 (within `^4.1.7`) and, as dependencies of other packages,
-  `vite` 8.3.5, `nanoid` 3.3.20, `source-map-js` 1.2.2 and
-  `baseline-browser-mapping` 2.11.34. `npm audit` reports 4 vulnerabilities
-  instead of 9. The advisories for `next`, `sharp` and `postcss` remain: they
-  need `next` 16.4.3 instead of the exact 16.2.7 pin and a `postcss` override
-  above 8.5.22, and `vite` is listed only because it uses that `postcss`.
+- `npm audit fix`, without `--force`, updated `web/package-lock.json` only,
+  on top of the Dependabot updates to `next` 16.4.3 and `vitest` 5.0.5: as
+  dependencies of other packages, `nanoid` 3.3.20, `source-map-js` 1.2.2 and
+  `baseline-browser-mapping` 2.11.34. `npm audit` reports 3 vulnerabilities
+  instead of 6. The `postcss` advisories remain: they need a `postcss`
+  override above 8.5.22, and `next` and `vite` are listed only because they
+  use that `postcss`.
 
 ### Web cockpit errors and artifact filenames
 
