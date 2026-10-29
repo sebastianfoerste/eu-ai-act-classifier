@@ -19,6 +19,7 @@ from ..transitions import (
     ANNEX_X_CARVE_OUT,
     PUBLIC_AUTHORITY_DUTY,
     before,
+    change_used,
     chapter_iii_date,
     chapter_iii_point,
     cut_off_flag,
@@ -150,18 +151,41 @@ def _transitional_status(profile: SystemProfile) -> str:
     return " ".join(part for part in parts if part)
 
 
+# A change answer given where Art. 111(2) cannot use it is reported, not echoed, so it
+# never alters the rest of the check (the guided intake skips the question there).
+_CHANGE_UNUSED = (
+    "Article 111(2) check: significant_change_after_application_date is given, but it is not "
+    "used: it matters only for a high-risk system, with no prohibited practice screened, "
+    "placed on the market or put into service before its Chapter III date."
+)
+
+
 def _art_111_2_status(profile: SystemProfile) -> str:
+    """Art. 111(2) AIA check, followed by a note where a change answer is given that the
+    check does not use."""
+
+    status = _art_111_2_check(profile)
+    if profile.significant_change_after_application_date is None or change_used(profile):
+        return status
+    return f"{status} {_CHANGE_UNUSED}" if status else _CHANGE_UNUSED
+
+
+def _art_111_2_check(profile: SystemProfile) -> str:
     """Art. 111(2) AIA check: the given dates against the Chapter III date for the
     system's high-risk route (Art. 113, third paragraph, point (c) AIA)."""
 
-    facts = bool(market_dates(profile)) or (
-        profile.significant_change_after_application_date is not None
+    facts = (
+        bool(market_dates(profile))
         or profile.public_authority_use
         or bool(profile.deployer_public_authority)
     )
     if not facts:
         return ""
     if profile.prohibited_practices:
+        # A public-authority deployer status alone gives the check nothing to compare: the
+        # prohibition applies whatever it is.
+        if not (market_dates(profile) or profile.public_authority_use):
+            return ""
         return (
             "Article 111(2) check: not applied, as an Art. 5 prohibited practice is screened. "
             "Art. 111(2) is without prejudice to Art. 5, so the transition does not defer the "
@@ -189,7 +213,7 @@ def _art_111_2_status(profile: SystemProfile) -> str:
     if not dates:
         return (
             "Article 111(2) check: no placing-on-market or putting-into-service date is "
-            f"given to compare with {applies}. {_undated_change_sentence(profile)}"
+            f"given to compare with {applies}. {_UNDATED_CHANGE}"
             f"{undated_public_authority_sentence(profile)}{flag}"
         )
     legacy = legacy_dates(profile, cut_off)
@@ -290,27 +314,13 @@ def _art_111_4_status(profile: SystemProfile) -> str:
     )
 
 
-def _undated_change_sentence(profile: SystemProfile) -> str:
-    change = profile.significant_change_after_application_date
-    if change is True:
-        # Art. 111(2): for a system already on the market the change counts only "as from
-        # that date"; the undated profile cannot show which case it is.
-        return (
-            "A significant change in design is asserted, so the Regulation applies to the "
-            "changed system even if it was placed on the market or put into service before "
-            "that date, provided the change was made as from that date."
-        )
-    if_legacy = "If the system was placed on the market or put into service before that date"
-    if change is False:
-        return (
-            f"No significant change in design is asserted. {if_legacy}, apart from Art. 5 "
-            "the Regulation applies to it only if its design changes significantly as from "
-            "that date."
-        )
-    return (
-        f"{if_legacy}, apart from Art. 5 the Regulation applies to it only if its design "
-        "changes significantly as from that date."
-    )
+# With no date given the profile cannot show whether the system is a legacy system, so
+# the check states the condition and any change answer is reported as not used.
+_UNDATED_CHANGE = (
+    "If the system was placed on the market or put into service before that date, apart "
+    "from Art. 5 the Regulation applies to it only if its design changes significantly as "
+    "from that date."
+)
 
 
 def _no_high_risk_route(profile: SystemProfile) -> str:
@@ -319,12 +329,6 @@ def _no_high_risk_route(profile: SystemProfile) -> str:
         return (
             f"Article 111(2) check: the system was {describe_dates(dates)}, but no high-risk "
             "route is screened, so there is no Chapter III date to compare with."
-        )
-    if profile.significant_change_after_application_date is True:
-        return (
-            "Article 111(2) check: a significant change in design is asserted, which matters "
-            "only for a high-risk system placed on the market or put into service before its "
-            "Chapter III date."
         )
     if profile.public_authority_use:
         return (

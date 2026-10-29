@@ -207,28 +207,27 @@ def test_transitional_status_names_only_the_earlier_date_as_before() -> None:
     assert "put into service on 2029-01-01, before" not in status
 
 
-@pytest.mark.parametrize(
-    ("change", "wording"),
-    [
-        (True, "A significant change in design is asserted, so the Regulation applies"),
-        (False, "No significant change in design is asserted. If the system was placed"),
-        (None, "If the system was placed on the market or put into service before that date"),
-    ],
-)
-def test_undated_transitional_status_follows_the_significant_change_fact(
-    change: bool | None, wording: str
+@pytest.mark.parametrize("change", [True, False, None])
+def test_undated_transitional_status_reports_a_change_answer_as_not_used(
+    change: bool | None,
 ) -> None:
+    # Without a date the profile cannot show a legacy system, so the check states the
+    # condition and does not use a change answer (the guided intake does not ask it).
     status = classify(
         SystemProfile(
             name="x",
             annex_iii_area=AnnexIII.CREDITWORTHINESS,
             significant_change_after_application_date=change,
-            public_authority_use=change is None,
+            public_authority_use=True,
         )
     ).scope.transitional_status
 
     assert status.startswith("Article 111(2) check: no placing-on-market")
-    assert wording in status
+    assert "If the system was placed on the market or put into service before that date" in status
+    assert "design is asserted" not in status
+    assert "the asserted change counts" not in status
+    unused = "significant_change_after_application_date is given, but it is not used"
+    assert (unused in status) is (change is not None)
     # Undated, both uses of the contested date are open: the legacy status and the window.
     flag = status[status.index("Literal reading") :]
     assert flag.startswith("Literal reading, confirm with counsel: Art. 111(2) AIA refers to")
@@ -256,7 +255,10 @@ def test_dated_transitional_status_with_an_asserted_change() -> None:
 @pytest.mark.parametrize(
     ("facts", "wording"),
     [
-        ({"significant_change_after_application_date": True}, "a significant change in design"),
+        (
+            {"significant_change_after_application_date": True},
+            "significant_change_after_application_date is given, but it is not used",
+        ),
         ({"public_authority_use": True}, "public-authority use is asserted"),
         ({}, None),
     ],
@@ -271,6 +273,25 @@ def test_transitional_status_without_dates_or_a_high_risk_route(
     else:
         assert status.startswith("Article 111(2) check:")
         assert wording in status
+
+
+@pytest.mark.parametrize(
+    ("facts", "applied"),
+    [
+        ({"deployer_public_authority": True}, False),
+        ({"significant_change_after_application_date": False}, False),
+        ({"placing_on_market_date": "2025-01-01"}, True),
+        ({"public_authority_use": True}, True),
+    ],
+)
+def test_prohibited_transitional_status_needs_a_fact_the_check_compares(
+    facts: dict[str, object], applied: bool
+) -> None:
+    status = classify(
+        SystemProfile(name="x", prohibited_practices=["5.1.c"], **facts)
+    ).scope.transitional_status
+
+    assert ("not applied, as an Art. 5 prohibited practice is screened" in status) is applied
 
 
 def test_transitional_status_for_a_system_only_put_into_service_before_the_date() -> None:

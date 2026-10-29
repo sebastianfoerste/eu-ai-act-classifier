@@ -1087,7 +1087,117 @@
       "kind": "boolean",
       "field": "significant_change_after_application_date",
       "title": "Has the system changed significantly after the relevant application date?",
-      "unknown": "block"
+      "hint": "Asked because a date before the system's Chapter III date is given: such a system comes under the Regulation, apart from Art. 5, only once its design changes significantly.",
+      "article": "Art. 111(2) AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "all": [
+                  {
+                    "not": {
+                      "field": "is_ai_system",
+                      "is": false
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "eu_nexus",
+                      "is": false
+                    }
+                  }
+                ]
+              },
+              {
+                "field": "prohibited_practices",
+                "empty": true
+              },
+              {
+                "any": [
+                  {
+                    "not": {
+                      "field": "annex_iii_area",
+                      "is": null
+                    }
+                  },
+                  {
+                    "all": [
+                      {
+                        "field": "annex_i_safety_component",
+                        "is": true
+                      },
+                      {
+                        "field": "annex_i_third_party_assessment",
+                        "is": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "not": {
+                      "field": "annex_iii_area",
+                      "is": null
+                    }
+                  },
+                  {
+                    "any": [
+                      {
+                        "field": "placing_on_market_date",
+                        "before": "2027-12-02"
+                      },
+                      {
+                        "field": "putting_into_service_date",
+                        "before": "2027-12-02"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "not": {
+                      "not": {
+                        "field": "annex_iii_area",
+                        "is": null
+                      }
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "annex_i_section",
+                      "is": "B"
+                    }
+                  },
+                  {
+                    "any": [
+                      {
+                        "field": "placing_on_market_date",
+                        "before": "2028-08-02"
+                      },
+                      {
+                        "field": "putting_into_service_date",
+                        "before": "2028-08-02"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "unknown": {
+        "value": null
+      }
     },
     {
       "id": "deployer_public_authority",

@@ -25,6 +25,7 @@ import pytest
 from eu_ai_act_classifier import SystemProfile, classify
 from eu_ai_act_classifier.intake import (
     BLOCK,
+    CHANGE_OPEN,
     IN_SCOPE,
     QUESTIONS,
     answers_to_profile,
@@ -36,6 +37,7 @@ from eu_ai_act_classifier.intake import (
     write_field,
 )
 from eu_ai_act_classifier.models import AnnexIII, Derogation, ProhibitedPractice
+from eu_ai_act_classifier.transitions import change_used
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = {
@@ -228,22 +230,33 @@ TRANSITION_GRID = _distinct([_reachable(p) for p in _transition_grid()])
 
 # A skipped question may change the report only by the engine's own statement that the
 # value is not used: a section without the Art. 6(1) route, a model date without a
-# general-purpose AI model. Everything else, the disposition included, must match.
+# general-purpose AI model, a change answer without an Art. 111(2) legacy system.
+# Everything else, the disposition included, must match.
 _SECTION_UNUSED = "HIGHRISK.6.1.section_unused"
 _GPAI_DATE_UNUSED = (
     "Article 111(3) check: gpai_model_placing_on_market_date is given, but no general-purpose "
     "AI model is screened (is_gpai_model is false), so the date is not used."
 )
+_CHANGE_UNUSED = (
+    "Article 111(2) check: significant_change_after_application_date is given, but it is not "
+    "used: it matters only for a high-risk system, with no prohibited practice screened, "
+    "placed on the market or put into service before its Chapter III date."
+)
+_UNUSED_SENTENCES = (_GPAI_DATE_UNUSED, _CHANGE_UNUSED)
 _NO_TRANSITION = "No transitional limitation identified from the submitted facts."
+
+
+def _drop_unused(text: str) -> str:
+    for sentence in _UNUSED_SENTENCES:
+        text = text.replace(sentence, "")
+    return " ".join(text.split())
 
 
 def _without_unused_statements(report: dict) -> dict:
     # Shallow copies: only "findings" and "scope" are replaced, never mutated in place.
     scope = dict(report["scope"])
-    notes = (" ".join(note.replace(_GPAI_DATE_UNUSED, "").split()) for note in scope["notes"])
-    scope["notes"] = [note for note in notes if note]
-    status = " ".join(scope["transitional_status"].replace(_GPAI_DATE_UNUSED, "").split())
-    scope["transitional_status"] = status or _NO_TRANSITION
+    scope["notes"] = [note for note in map(_drop_unused, scope["notes"]) if note]
+    scope["transitional_status"] = _drop_unused(scope["transitional_status"]) or _NO_TRANSITION
     findings = [f for f in report["findings"] if f["rule_id"] != _SECTION_UNUSED]
     return {**report, "findings": findings, "scope": scope}
 
@@ -317,13 +330,78 @@ def test_a_fail_closed_unknown_always_yields_requires_review(question: dict) -> 
         assert _report(changed)["disposition"] == "requires_review", (question["id"], profile)
 
 
-def test_value_unknowns_are_never_a_model_default() -> None:
-    # Otherwise the compact profile would drop the value and "I don't know" would
-    # be indistinguishable from an omitted field.
+def test_value_unknowns_equal_a_model_default_only_where_it_fails_closed() -> None:
+    # A compact profile drops a default value, so "I don't know" reads back as an
+    # omitted field. That is safe only for a conditional question whose default is the
+    # null that the fail-closed test above checks yields requires_review wherever the
+    # question is asked (the Art. 111(2) change answer); any other default would be
+    # read as an answer.
     defaults = intake_definition()["defaults"]
     for question in QUESTIONS:
         if isinstance(question.get("unknown"), dict):
-            assert question["unknown"]["value"] != read_field(defaults, question["field"])
+            value = question["unknown"]["value"]
+            if value == read_field(defaults, question["field"]):
+                assert value is None and question.get("show_if"), question["id"]
+
+
+def test_the_change_question_follows_the_engines_legacy_test() -> None:
+    # The intake asks the Art. 111(2) change question exactly where the engine uses the
+    # answer, with dates on both sides of both Chapter III dates.
+    dates = [None, "2025-01-01", "2027-12-01", "2027-12-02", "2028-08-01", "2028-08-02"]
+    routes = [
+        {"annex_iii_area": None},
+        {"annex_iii_area": "III.4.a"},
+        {"annex_iii_area": "III.unsure"},
+        *(
+            {
+                "annex_i_safety_component": True,
+                "annex_i_third_party_assessment": True,
+                "annex_i_section": section,
+                "annex_iii_area": area,
+            }
+            for section in (None, "A", "B")
+            for area in (None, "III.2")
+        ),
+    ]
+    checked = 0
+    for route, placed, served, prohibited, in_scope in itertools.product(
+        routes, dates, dates[:3], ([], ["5.1.c"]), (True, False)
+    ):
+        profile = _normalised(
+            {
+                "name": "x",
+                **route,
+                "placing_on_market_date": placed,
+                "putting_into_service_date": served,
+                "prohibited_practices": prohibited,
+                "is_ai_system": in_scope,
+            }
+        )
+        expected = in_scope and change_used(SystemProfile.model_validate(profile))
+        assert holds(CHANGE_OPEN, profile) is expected, profile
+        checked += expected
+    assert checked
+
+
+def test_an_unknown_change_answer_survives_a_compact_round_trip() -> None:
+    legacy = {
+        "name": "x",
+        "annex_iii_area": "III.4.a",
+        "placing_on_market_date": "2025-01-01",
+    }
+    answers = profile_to_answers(legacy)
+    assert answers["significant_change"] == "unknown"
+    profile, asked, blocked, missing = answers_to_profile(answers)
+    assert "significant_change" in asked and not blocked and "significant_change" not in missing
+    assert read_field(profile, "significant_change_after_application_date") is None
+    report = _report(profile)
+    assert report["disposition"] == "requires_review"
+    assert any(q.startswith("Art. 111(2) AIA") for q in report["open_questions"])
+    # Without a date before the Chapter III date the question is not asked at all.
+    _profile, asked, _blocked, missing = answers_to_profile(
+        profile_to_answers({**legacy, "placing_on_market_date": "2028-01-01"})
+    )
+    assert "significant_change" not in asked and "significant_change" not in missing
 
 
 def test_blocked_unknowns_stop_the_run() -> None:

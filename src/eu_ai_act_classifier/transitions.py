@@ -135,6 +135,19 @@ def legacy_dates(profile: SystemProfile, cut_off: str) -> list[tuple[str, str]]:
     return [(label, value) for label, value in market_dates(profile) if before(value, cut_off)]
 
 
+def change_used(profile: SystemProfile) -> bool:
+    """Whether ``significant_change_after_application_date`` can change the result: only
+    for a high-risk system, with no prohibited practice screened, placed on the market or
+    put into service before its Chapter III date (Art. 111(2) AIA)."""
+
+    cut_off = chapter_iii_date(profile)
+    return (
+        not profile.prohibited_practices
+        and cut_off is not None
+        and bool(legacy_dates(profile, cut_off))
+    )
+
+
 def gpai_model_date(profile: SystemProfile) -> tuple[str | None, bool]:
     """The date Art. 111(3) AIA dates a general-purpose AI model by, and whether it is the
     AI system's placing_on_market_date standing in for the model's own date."""
@@ -254,7 +267,7 @@ def cut_off_flag(profile: SystemProfile, cut_off: str) -> str:
         effect = not_legacy
     else:
         effect = window
-    if profile.significant_change_after_application_date is True:
+    if profile.significant_change_after_application_date is True and change_used(profile):
         # The asserted change is not dated: say which changes count on each reading.
         effect += (
             f". On the date used here, the asserted change counts only if it was made on or "
