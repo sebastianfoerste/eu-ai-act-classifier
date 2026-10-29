@@ -1,0 +1,3 @@
+# Official Journal snapshots are records, not code: keep them out of the
+# language statistics and collapse them in diffs.
+sources/**/*.xhtml linguist-vendored linguist-generated

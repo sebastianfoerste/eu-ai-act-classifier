@@ -7,6 +7,18 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Pinned source texts
+
+#### Added
+
+- `sources/` holds byte-exact copies of Regulation (EU) 2026/1744, Regulation
+  (EU) 2024/1689 (original and the consolidated version of 27 July 2026),
+  Directive 2011/93/EU and Implementing Decision (EU) 2026/2274, with each
+  file's request URL, retrieval date and SHA-256 in `sources/manifest.json`.
+  `tests/test_sources.py` fails if a file no longer matches its digest. The
+  classifier does not read these files yet, and their digests still need a
+  fresh download to confirm them (see `sources/README.md`).
+
 ### Binding result apart from guidance notes in the playground (#38)
 
 #### Changed
