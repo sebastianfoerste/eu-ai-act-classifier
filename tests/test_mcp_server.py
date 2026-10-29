@@ -8,9 +8,10 @@ import types
 from pathlib import Path
 from typing import Any
 
+import pydantic
 import pytest
 
-from eu_ai_act_classifier import mcp_server
+from eu_ai_act_classifier import SystemProfile, classify, mcp_server, render_report
 
 ROOT = Path(__file__).resolve().parents[1]
 PIP_COMMAND = "pip install 'eu-ai-act-classifier[mcp]'"
@@ -100,22 +101,66 @@ def test_classify_tool_description_names_the_date_and_section_fields() -> None:
         assert field in description
 
 
-def test_classify_ai_system_returns_report_json() -> None:
-    result = asyncio.run(_server().call_tool("classify_ai_system", {"profile": PROFILE}))
-    blocks = result[0] if isinstance(result, tuple) else result
-    report = json.loads(blocks[0].text)
-
-    assert report["system"] == "SpamShield"
+def _example(name: str) -> dict[str, Any]:
+    return json.loads((ROOT / "examples" / f"{name}.json").read_text(encoding="utf-8"))
 
 
-def test_classify_ai_system_text_returns_report_text() -> None:
-    result = asyncio.run(_server().call_tool("classify_ai_system_text", {"profile": PROFILE}))
-    blocks = result[0] if isinstance(result, tuple) else result
+# One profile per outcome; the expected report always comes from the engine.
+TOOL_PROFILES = [
+    pytest.param(PROFILE, id="minimal"),
+    pytest.param(_example("social_scoring"), id="social_scoring"),
+    pytest.param(_example("cv_screening"), id="cv_screening"),
+    pytest.param(_example("ambiguous_use_case"), id="ambiguous_use_case"),
+    pytest.param(_example("support_chatbot"), id="support_chatbot"),
+    pytest.param(_example("spam_filter"), id="spam_filter"),
+]
 
-    assert "SpamShield" in blocks[0].text
+
+def _call(tool: str, arguments: dict[str, Any]) -> tuple[Any, Any]:
+    # mcp 1.30 returns (content blocks, structured output); earlier 1.x the blocks alone.
+    result = asyncio.run(_server().call_tool(tool, arguments))
+    return result if isinstance(result, tuple) else (result, None)
 
 
-def test_invalid_profile_is_rejected() -> None:
+@pytest.mark.parametrize("include_advisory", [False, True])
+@pytest.mark.parametrize("profile", TOOL_PROFILES)
+def test_classify_ai_system_returns_the_engine_report(
+    profile: dict[str, Any], include_advisory: bool
+) -> None:
+    expected = classify(
+        SystemProfile.model_validate(profile), include_advisory=include_advisory
+    ).model_dump(mode="json")
+
+    blocks, structured = _call(
+        "classify_ai_system", {"profile": profile, "include_advisory": include_advisory}
+    )
+
+    assert expected["system"] == profile["name"]
+    assert json.loads(blocks[0].text) == expected
+    if structured is not None:
+        assert structured == expected
+
+
+@pytest.mark.parametrize("profile", TOOL_PROFILES)
+def test_classify_ai_system_text_returns_the_rendered_report(profile: dict[str, Any]) -> None:
+    expected = render_report(classify(SystemProfile.model_validate(profile)))
+
+    blocks, _structured = _call("classify_ai_system_text", {"profile": profile})
+
+    assert profile["name"] in expected
+    assert blocks[0].text == expected
+
+
+@pytest.mark.parametrize("tool", ["classify_ai_system", "classify_ai_system_text"])
+def test_invalid_profile_is_rejected_with_a_tool_error_naming_the_field(tool: str) -> None:
     server = _server()
-    with pytest.raises(Exception):  # noqa: B017 - FastMCP wraps validation errors
-        asyncio.run(server.call_tool("classify_ai_system", {"profile": {"roles": "bogus"}}))
+    from mcp.server.fastmcp.exceptions import ToolError
+
+    with pytest.raises(ToolError, match=f"^Error executing tool {tool}: ") as excinfo:
+        asyncio.run(server.call_tool(tool, {"profile": {**PROFILE, "roles": "bogus"}}))
+
+    # pydantic puts each failing field on its own line of the message.
+    assert "roles" in str(excinfo.value).splitlines()
+    cause = excinfo.value.__cause__
+    assert isinstance(cause, pydantic.ValidationError)
+    assert [error["loc"] for error in cause.errors()] == [("roles",)]

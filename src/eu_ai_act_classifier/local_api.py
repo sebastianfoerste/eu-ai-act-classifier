@@ -14,7 +14,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from .artifacts import ARTIFACT_NAMES, render_artifact, selected_artifacts
+from .artifacts import ARTIFACT_NAMES, _slug, render_artifact, selected_artifacts
 from .citations import source_manifest
 from .collaboration_workspace import apply_workspace_action
 from .dossier import REVIEW_DOSSIER_SCHEMA, build_review_dossier
@@ -80,7 +80,8 @@ def artifacts_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "artifacts": [
             {
                 "name": artifact_name,
-                "filename": f"{report.system}.{artifact_name}.md",
+                # The name write_artifacts gives the file, so the CLI and cockpit agree.
+                "filename": f"{_slug(report.system)}.{artifact_name}.md",
                 "content": render_artifact(artifact_name, report),
             }
             for artifact_name in selected_artifacts(selection)
@@ -142,6 +143,8 @@ def main(argv: list[str] | None = None) -> int:
         else:
             result = dossier_payload(payload)
     except (ValidationError, ValueError) as exc:
+        # Exit 2 with one JSON line on stderr: web/lib/bridge-error.ts reads this as invalid
+        # input (HTTP 400); any other failure of the bridge becomes HTTP 500.
         print(json.dumps({"error": str(exc)}), file=sys.stderr)
         return 2
 
