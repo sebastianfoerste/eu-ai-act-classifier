@@ -233,8 +233,9 @@ counts only if it was made on or after that date. Only the provider and deployer
 2030-08-02, unless a significant change is asserted; with only a
 public-authority deployer they ask the reviewer to confirm the intended use.
 A public-authority deployer counts only where the profile holds the deployer
-role, as `deployer_public_authority` describes that role; for any other
-operator the intended use is `public_authority_use` alone.
+role, as `deployer_public_authority` describes that role; it then counts for
+the items of every operator role the profile holds. For a profile without the
+deployer role the intended use is `public_authority_use` alone.
 
 Art. 113 gives Chapter III no single date. Point (b) applies Section 4 from
 2 August 2025, but Section 4 ("Notifying authorities and notified bodies")
@@ -287,6 +288,8 @@ deployer role for a high-risk system with no prohibited practice screened. It
 also states the Art. 111(3)
 check for a general-purpose AI model and the Art. 111(4) check for a system
 generating synthetic content where the profile gives the date they turn on.
+Outside the AI Act's scope there is no transitional status, so none of these
+statements appears.
 
 Art. 50 items (Chapter IV) carry 2 August 2026, subject to the Art. 50(2) rule
 that follows. Under Art. 111(4), providers of generative systems placed on the

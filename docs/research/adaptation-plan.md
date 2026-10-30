@@ -230,7 +230,7 @@ D2 and D4 are built; the others are specified.
 6. **Positioning wording** for the overview (see above).
 7. **Token convergence** between playground and cockpit.
 8. **Optional natural-language intake.** Rejected for the core; acceptable only as an optional extra that drafts a profile a human confirms field by field.
-9. **Art. 49(3) public-authority status (#54).** The intake asks `deployer_public_authority` only of a deployer on a high-risk route, and the engine reads it only for the profile's own deployer role: for any other operator the Art. 111(2) public-authority caveat turns on `public_authority_use` alone. Merging #54 adopts that reading, so the provider examples no longer open with the question unanswered. "I don't know" still blocks, because a missing status reaches review only for some Annex III points; `credit_scoring_deployer.json` opens with it unanswered (item 2).
+9. **Art. 49(3) public-authority status (#54).** The intake asks `deployer_public_authority` only of a deployer on a high-risk route, and the engine reads it only for the profile's own deployer role: for a profile without that role the Art. 111(2) public-authority caveat turns on `public_authority_use` alone. Merging #54 adopts that reading, so the provider examples no longer open with the question unanswered. "I don't know" still blocks, because a missing status reaches review only in some contexts (some Annex III points, public-authority use or a body governed by public law); `credit_scoring_deployer.json` opens with it unanswered (item 2).
 
 ## Rejected
 

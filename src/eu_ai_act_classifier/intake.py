@@ -461,8 +461,8 @@ QUESTIONS: list[dict[str, Any]] = [
         "article": "Art. 49(3) AIA",
         "show_if": PUBLIC_AUTHORITY_STATUS_OPEN,
         # A missing status raises a review question only in some contexts
-        # (engine._art_49_3_questions); for a point 5(b) deployer, for one, null reads
-        # like false, so it blocks.
+        # (engine._art_49_3_questions); for a point 5(b) deployer without public-authority
+        # use or a public law body, for one, null reads like false, so it blocks.
         "unknown": BLOCK,
     },
 ]
