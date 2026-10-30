@@ -7,6 +7,28 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Art. 111(2) change answer asked only where it is used (#43)
+
+#### Changed
+
+- The guided intake asks whether the system changed significantly
+  (`significant_change_after_application_date`) only for a high-risk system,
+  with no prohibited practice, placed on the market or put into service
+  before its Chapter III date. There "I don't know" records `null`, which
+  raises the Art. 111(2) open question, so the run goes to review instead of
+  stopping. Profiles without such a date, the bundled examples among them, no
+  longer open with the question unanswered.
+- Where Art. 111(2) cannot use a given change answer (no date before the
+  Chapter III date, no high-risk route, a Section B product without an
+  Annex III area, or a prohibited practice), the scope check states that the
+  answer is not used instead of echoing it. For a prohibited practice, the
+  Art. 111(2) "not applied" sentence now appears only when a date or
+  public-authority use is given.
+- A profile that gives a change answer without such a date, as share links
+  and drafts saved from the guided mode before this change do, now opens
+  only in the JSON editor: the guided mode would drop the answer. It
+  classifies the same there.
+
 ### Binding result apart from guidance notes in the playground (#38)
 
 #### Changed

@@ -8,7 +8,7 @@ The guided intake never maps "I don't know" to false. Where a screen is a non-nu
 
 ## Proposal
 
-Make selected screens nullable, with the engine adding a review question when they are null: the Art. 5 practice screens as a separate "not yet screened" flag, `annex_i_safety_component`, `is_gpai_model`, and the Art. 50 screens. Decide whether a null `significant_change_after_application_date` should raise a review question.
+Make selected screens nullable, with the engine adding a review question when they are null: the Art. 5 practice screens as a separate "not yet screened" flag, `annex_i_safety_component`, `is_gpai_model`, and the Art. 50 screens. A null `significant_change_after_application_date` already raises an Art. 111(2) review question where the engine uses it; since 28 October 2026 the intake asks it only there, so it no longer blocks (owner decision).
 
 ## Consequences if accepted
 
