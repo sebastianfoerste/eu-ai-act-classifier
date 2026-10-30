@@ -98,6 +98,18 @@ Changes since 0.2.2.
   now uses the slug the CLI's `--artifacts-dir` files use, for example
   `provider-a-cv-screening.fria.md`.
 
+### MCP extra requires mcp 1.21.1
+
+#### Fixed
+
+- The `[mcp]` extra allowed `mcp>=1.2,<2`, but every `mcp` release from 1.2.0
+  to 1.21.0 imports `eval_type_backport` from pydantic's internals, which
+  pydantic 2.14 removed. With such an `mcp` and pydantic 2.14 or later,
+  `mcp.server.fastmcp` does not import and the server exits with the install
+  hint. The extra now requires `mcp>=1.21.1,<2`, and the hint names that
+  range. `tests/test_mcp_server.py` passes with `mcp` 1.21.1 and with 1.30.0,
+  the version `uv.lock` pins.
+
 ## 0.2.2 (2026-10-23)
 
 #### Upgrade notes
