@@ -61,6 +61,23 @@ Changes since 0.2.2.
   `eu-ai-act-classifier/<version> (+https://github.com/sebastianfoerste/eu-ai-act-classifier)`,
   with the version of the installed package.
 
+### Source check reports bot challenges as unverified
+
+#### Fixed
+
+- `--verify-sources` counted every 2xx answer as a pass. EUR-Lex, which
+  serves both binding sources, answers the check with 202 and an AWS WAF
+  challenge page (`x-amzn-waf-action: challenge`), so both URLs passed
+  although the document was never reached, and `--update` would have dated
+  both binding sources from that page. A 202 answer, or a 2xx answer with AWS
+  WAF's challenge header or script names, is now unverified: its line reads
+  `[202 unverified]` with the reason, a closing line counts the outcomes (for
+  example `7 verified, 2 unverified, 0 failed of 9 source URLs`), and a
+  `warning:` line on stderr names the unverified URLs. Unverified URLs alone
+  do not change the exit code: `--verify-sources` exits 0 unless a URL
+  failed. `--update` moves no date unless every URL is verified, and exits 1
+  otherwise. 4xx and 5xx answers and network errors still fail.
+
 ### Web cockpit dependencies pinned
 
 #### Changed

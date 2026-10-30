@@ -13,6 +13,7 @@ import urllib.error
 import urllib.request
 from collections.abc import Callable
 from datetime import date
+from email.message import Message
 from pathlib import Path
 
 import pytest
@@ -21,6 +22,7 @@ import eu_ai_act_classifier.verify_sources as verify_sources_module
 from eu_ai_act_classifier.cli import main
 from eu_ai_act_classifier.verify_sources import (
     URLS,
+    BotChallengeError,
     NotASourceCheckoutError,
     fetch_status,
     verify_sources,
@@ -319,3 +321,255 @@ def test_cli_update_without_verify_sources_is_a_usage_error(capsys, argv) -> Non
     out, err = capsys.readouterr()
     assert "--update requires --verify-sources" in err
     assert out == ""
+
+
+# Unverified: the server answered 202 or with a bot challenge, so the document was not seen.
+UNVERIFIED = "AI_ACT_AMENDMENT_URL"
+EUR_LEX = ("AI_ACT_URL", "AI_ACT_AMENDMENT_URL")
+# The AWS WAF challenge page EUR-Lex answers the checker with, shortened.
+WAF_CHALLENGE_PAGE = (
+    b'<!DOCTYPE html><html lang="en"><head><title></title><script type="text/javascript">'
+    b'window.awsWafCookieDomainList = []; window.gokuProps = {"key": "k", "iv": "i"};'
+    b"</script></head><body></body></html>"
+)
+WAF_HEADERS = {"Server": "CloudFront", "x-amzn-waf-action": "challenge"}
+
+
+def _unverified_names(stderr: str) -> set[str]:
+    match = re.search(r"source URLs unverified, [^:]*: (.+)$", stderr, re.MULTILINE)
+    assert match, stderr
+    return set(match[1].split(", "))
+
+
+def _summary(out: str) -> str:
+    match = re.search(r"^\d+ verified, \d+ unverified, \d+ failed of \d+ source URLs$", out, re.M)
+    assert match, out
+    return match[0]
+
+
+def _counts(verified: int, unverified: int, failed: int) -> str:
+    assert verified + unverified + failed == len(URLS)
+    return (
+        f"{verified} verified, {unverified} unverified, {failed} failed of {len(URLS)} source URLs"
+    )
+
+
+def test_every_url_answering_with_its_page_is_verified(checkout, capsys) -> None:
+    assert verify_sources(fetch=_fetch(), root=checkout) is True
+
+    out, err = capsys.readouterr()
+    assert _summary(out) == _counts(len(URLS), 0, 0)
+    assert err == ""
+
+
+@pytest.mark.parametrize(
+    ("outcome", "label"),
+    [
+        pytest.param(202, "202 unverified", id="status-202"),
+        pytest.param(
+            BotChallengeError(202, "x-amzn-waf-action: challenge"),
+            "202 unverified",
+            id="challenge-202",
+        ),
+        pytest.param(
+            BotChallengeError(200, "awsWafCookieDomainList"), "200 unverified", id="challenge-200"
+        ),
+    ],
+)
+def test_an_unverified_url_is_reported_but_does_not_fail_the_check(
+    checkout, capsys, outcome, label
+) -> None:
+    before = _citations(checkout).read_bytes()
+    fetch = _fetch({URLS[UNVERIFIED]: outcome})
+
+    assert verify_sources(fetch=fetch, root=checkout) is True
+
+    out, err = capsys.readouterr()
+    assert f"[{label}] {UNVERIFIED}: {URLS[UNVERIFIED]}" in out.splitlines()
+    assert _summary(out) == _counts(len(URLS) - 1, 1, 0)
+    assert _unverified_names(err) == {UNVERIFIED}
+    assert "failed" not in err
+    assert fetch.calls == list(URLS.values())
+    assert _citations(checkout).read_bytes() == before
+    assert not (checkout / "dist").exists()
+
+
+@pytest.mark.parametrize(
+    "outcome",
+    [
+        pytest.param(202, id="status-202"),
+        pytest.param(BotChallengeError(200, "gokuProps"), id="challenge-200"),
+    ],
+)
+def test_an_unverified_url_keeps_update_from_moving_the_dates(checkout, capsys, outcome) -> None:
+    before = _citations(checkout).read_bytes()
+    fetch = _fetch({URLS[UNVERIFIED]: outcome})
+
+    assert verify_sources(update=True, fetch=fetch, root=checkout) is False
+
+    assert _citations(checkout).read_bytes() == before
+    assert _dates(checkout) == {"BINDING": OLD_DATE, "ADVISORY": OLD_DATE}
+    assert not (checkout / "dist").exists()
+    err = capsys.readouterr().err
+    assert _unverified_names(err) == {UNVERIFIED}
+    assert "Nothing was updated" in err
+    assert "failed" not in err
+
+
+@pytest.mark.parametrize(
+    "outcome",
+    [
+        pytest.param(_http_error(404, "Not Found"), id="http-404"),
+        pytest.param(_http_error(503, "Service Unavailable"), id="http-503"),
+        pytest.param(500, id="status-500"),
+    ],
+)
+def test_4xx_and_5xx_answers_still_fail_and_are_not_unverified(checkout, capsys, outcome) -> None:
+    assert verify_sources(fetch=_fetch({URLS[FAILING]: outcome}), root=checkout) is False
+
+    out, err = capsys.readouterr()
+    assert _summary(out) == _counts(len(URLS) - 1, 0, 1)
+    assert _failed_names(err) == {FAILING}
+    assert "unverified" not in err
+
+
+def test_failed_and_unverified_urls_are_reported_apart(checkout, capsys) -> None:
+    fetch = _fetch({URLS[FAILING]: _http_error(404, "Not Found"), URLS[UNVERIFIED]: 202})
+
+    assert verify_sources(fetch=fetch, root=checkout) is False
+
+    out, err = capsys.readouterr()
+    assert _summary(out) == _counts(len(URLS) - 2, 1, 1)
+    assert _failed_names(err) == {FAILING}
+    assert _unverified_names(err) == {UNVERIFIED}
+
+
+class _Answer:
+    """What urllib.request.urlopen returns for a 2xx answer: status, headers and body."""
+
+    def __init__(self, status: int, body: bytes, headers: dict[str, str] | None = None) -> None:
+        self.status = status
+        self.headers = Message()
+        for key, value in (headers or {}).items():
+            self.headers[key] = value
+        self._body = body
+
+    def read(self, size: int = -1) -> bytes:
+        return self._body if size < 0 else self._body[:size]
+
+    def __enter__(self) -> _Answer:
+        return self
+
+    def __exit__(self, *exc_info: object) -> None:
+        return None
+
+
+def _serve(monkeypatch, answer_for: Callable[[str], _Answer]) -> tuple[list[str], list[float]]:
+    """Answer every request with ``answer_for(url)``; return the URLs opened and the sleeps."""
+
+    opened: list[str] = []
+    slept: list[float] = []
+
+    def urlopen(request: urllib.request.Request, timeout: float) -> _Answer:
+        opened.append(request.full_url)
+        return answer_for(request.full_url)
+
+    monkeypatch.setattr(verify_sources_module.urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(verify_sources_module.time, "sleep", slept.append)
+    return opened, slept
+
+
+@pytest.mark.parametrize(
+    ("answer", "marker"),
+    [
+        pytest.param(
+            _Answer(202, WAF_CHALLENGE_PAGE, WAF_HEADERS),
+            "x-amzn-waf-action: challenge",
+            id="eur-lex-202",
+        ),
+        pytest.param(_Answer(200, WAF_CHALLENGE_PAGE), "awsWafCookieDomainList", id="page-200"),
+        pytest.param(
+            _Answer(200, b"<html>...</html>", {"X-Amzn-Waf-Action": "captcha"}),
+            "x-amzn-waf-action: captcha",
+            id="header-200",
+        ),
+    ],
+)
+def test_a_challenge_answer_is_recognised_and_not_retried(monkeypatch, answer, marker) -> None:
+    url = URLS["AI_ACT_URL"]
+    opened, slept = _serve(monkeypatch, lambda _url: answer)
+
+    # The fetch_status imported above, not the module's copy the autouse fixture replaced.
+    with pytest.raises(BotChallengeError) as error:
+        fetch_status(url)
+
+    assert (error.value.status, error.value.marker) == (answer.status, marker)
+    assert opened == [url]
+    assert slept == []
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        pytest.param(
+            _Answer(200, b"<html><title>AI Act</title><p>The challenges of AI governance</p>"),
+            id="page-that-says-challenge",
+        ),
+        pytest.param(_Answer(200, b"%PDF-1.7\n%\xe2\xe3\xcf\xd3\n"), id="pdf"),
+        pytest.param(_Answer(202, b""), id="202-without-markers"),
+    ],
+)
+def test_any_other_answer_returns_its_status(monkeypatch, answer) -> None:
+    opened, _slept = _serve(monkeypatch, lambda _url: answer)
+
+    assert fetch_status(URLS["AI_ACT_URL"]) == answer.status
+    assert opened == [URLS["AI_ACT_URL"]]
+
+
+def test_eur_lex_answering_with_its_waf_challenge_leaves_both_acts_unverified(
+    monkeypatch, checkout, capsys
+) -> None:
+    challenged = {URLS[name] for name in EUR_LEX}
+
+    def answer_for(url: str) -> _Answer:
+        if url in challenged:
+            return _Answer(202, WAF_CHALLENGE_PAGE, WAF_HEADERS)
+        return _Answer(200, b"<!DOCTYPE html><html><title>Official page</title></html>")
+
+    _serve(monkeypatch, answer_for)
+
+    assert verify_sources(fetch=fetch_status, root=checkout) is True
+
+    out, err = capsys.readouterr()
+    assert _summary(out) == _counts(len(URLS) - 2, 2, 0)
+    assert _unverified_names(err) == set(EUR_LEX)
+    for name in EUR_LEX:
+        assert f"[202 unverified] {name}: {URLS[name]}" in out.splitlines()
+
+
+@pytest.mark.parametrize(
+    ("argv", "outcomes", "code"),
+    [
+        pytest.param(["--verify-sources"], {URLS[UNVERIFIED]: 202}, 0, id="verify-unverified"),
+        pytest.param(
+            ["--verify-sources"],
+            {URLS[UNVERIFIED]: 202, URLS[FAILING]: _http_error(404, "Not Found")},
+            1,
+            id="verify-unverified-and-failed",
+        ),
+        pytest.param(
+            ["--verify-sources", "--update"], {URLS[UNVERIFIED]: 202}, 1, id="update-unverified"
+        ),
+    ],
+)
+def test_cli_exit_codes_with_an_unverified_url(
+    monkeypatch, checkout, capsys, argv, outcomes, code
+) -> None:
+    monkeypatch.setattr(verify_sources_module, "fetch_status", _fetch(outcomes))
+    monkeypatch.setattr(verify_sources_module, "CHECKOUT_ROOT", checkout)
+
+    assert main(argv) == code
+
+    assert set(_dates(checkout).values()) == {OLD_DATE}
+    assert not (checkout / "dist").exists()
+    assert _unverified_names(capsys.readouterr().err) == {UNVERIFIED}
