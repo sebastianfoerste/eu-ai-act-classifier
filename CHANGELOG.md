@@ -83,6 +83,18 @@ Changes since 0.2.2.
   override above 8.5.22, and `next` and `vite` are listed only because they
   use that `postcss`.
 
+### Web cockpit postcss override removed
+
+#### Fixed
+
+- `web/package.json` forced every `postcss` in the cockpit to 8.5.10 through
+  `overrides`. The override dates from the first commit, when `next` 16.2.7
+  pinned `postcss` 8.4.31. `next` 16.4.3 pins `postcss` 8.5.23 and `vite`
+  8.3.5 asks for `^8.5.30`, so the override held both below their own
+  versions and inside the three `postcss` advisories up to 8.5.22. Without
+  it, `next` uses 8.5.23 and `vite` 8.5.32, and `npm audit` reports 0
+  vulnerabilities instead of 3.
+
 ### Web cockpit errors and artifact filenames
 
 #### Fixed

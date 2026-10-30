@@ -20,8 +20,5 @@
     "@types/react-dom": "19.3.0",
     "typescript": "7.0.2",
     "vitest": "^5.0.5"
-  },
-  "overrides": {
-    "postcss": "8.5.10"
   }
 }
