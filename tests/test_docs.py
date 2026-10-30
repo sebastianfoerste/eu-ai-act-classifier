@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import ast
+import asyncio
 import importlib.util
 import json
 import re
@@ -20,6 +22,7 @@ from eu_ai_act_classifier import (
 )
 from eu_ai_act_classifier.artifacts import render_artifact
 from eu_ai_act_classifier.cli import main
+from eu_ai_act_classifier.mcp_server import build_server
 
 EXAMPLES = Path("examples")
 README = Path("README.md")
@@ -233,9 +236,64 @@ def test_generated_public_text_avoids_em_and_en_dashes() -> None:
         assert EN_DASH not in text
 
 
+MCP_SERVER = Path("src/eu_ai_act_classifier/mcp_server.py")
+TOOL_DECORATORS = """
+@server.tool()
+def bare(): ...
+
+
+@server.tool(title="Titled", annotations=read_only)
+def titled(): ...
+
+
+@server.tool(
+    title="Wrapped (over lines)",
+    annotations=ToolAnnotations(readOnlyHint=True),
+)
+async def wrapped(): ...
+
+
+@other.tool()
+def other_object(): ...
+
+
+# @server.tool()
+def commented_out(): ...
+"""
+
+
+def _server_tools(source: str) -> list[str]:
+    # Functions decorated with @server.tool(...), whether or not the decorator takes arguments.
+    return [
+        node.name
+        for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
+        and any(
+            isinstance(decorator, ast.Call) and ast.unparse(decorator.func) == "server.tool"
+            for decorator in node.decorator_list
+        )
+    ]
+
+
+def test_tool_lookup_reads_decorators_with_and_without_arguments() -> None:
+    assert _server_tools(TOOL_DECORATORS) == ["bare", "titled", "wrapped"]
+
+
+def test_tool_lookup_finds_every_tool_the_server_registers() -> None:
+    pytest.importorskip("mcp.server.fastmcp")
+    source = MCP_SERVER.read_text(encoding="utf-8")
+    registered = [tool.name for tool in asyncio.run(build_server().list_tools())]
+    found = _server_tools(source)
+
+    assert len(found) == len(registered)
+    assert sorted(found) == sorted(registered)
+    # The lookup _server_tools replaced matched only `@server.tool()` without arguments.
+    assert set(re.findall(r"@server\.tool\(\)\s+def (\w+)\(", source)) <= set(found)
+
+
 def test_mcp_guide_lists_the_tools_the_server_exposes() -> None:
-    server = Path("src/eu_ai_act_classifier/mcp_server.py").read_text(encoding="utf-8")
-    exposed = set(re.findall(r"@server\.tool\(\)\s+def (\w+)\(", server))
+    server = MCP_SERVER.read_text(encoding="utf-8")
+    exposed = set(_server_tools(server))
     guide = Path("docs/mcp-configuration-guide.md").read_text(encoding="utf-8")
     verification = guide[guide.index("## Verification") :]
     listed = set(re.findall(r"^\d+\. `(\w+)`", verification, re.M))

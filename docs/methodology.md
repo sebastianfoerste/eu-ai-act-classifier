@@ -277,11 +277,13 @@ The scope gate's transitional status states the same comparison in words:
 which dates were given, the Chapter III date and its point, whether the system
 predates it, the significant-change position, for a legacy system the
 Art. 111(1) carve-out, and the 2030 deadline for public-authority use. Where
-the profile gives no date but another Art. 111(2) fact
-(`significant_change_after_application_date`, `public_authority_use` or
-`deployer_public_authority`), it names the date to compare with; where it
-gives such a fact or a date but no high-risk route, it says there is no
-Chapter III date to compare with. It also states the Art. 111(3)
+the profile gives no date but `public_authority_use` or
+`deployer_public_authority`, it names the date to compare with; where it
+gives a date but no high-risk route, it says there is no Chapter III date to
+compare with. A `significant_change_after_application_date` answer counts
+only for a high-risk system, with no prohibited practice screened, placed on
+the market or put into service before its Chapter III date; elsewhere the
+check states that the answer is not used. It also states the Art. 111(3)
 check for a general-purpose AI model and the Art. 111(4) check for a system
 generating synthetic content where the profile gives the date they turn on.
 

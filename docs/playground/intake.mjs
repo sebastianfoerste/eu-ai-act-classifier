@@ -39,6 +39,8 @@ export function holds(condition, profile) {
   if ("in" in condition) return condition.in.includes(value);
   if ("has" in condition) return Array.isArray(value) && value.includes(condition.has);
   if ("empty" in condition) return (!value || value.length === 0) === condition.empty;
+  // ISO dates compare as strings; answers are validated as dates before they apply.
+  if ("before" in condition) return typeof value === "string" && value < condition.before;
   throw new Error("Unknown intake condition");
 }
 

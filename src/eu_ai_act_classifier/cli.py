@@ -82,7 +82,7 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help=(
             "With --verify-sources, in a source checkout: set the source retrieval dates "
-            "to today, only if every URL passes."
+            "to today, only if every URL is verified."
         ),
     )
     args = parser.parse_args(argv)
