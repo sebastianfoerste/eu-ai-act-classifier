@@ -3,9 +3,23 @@
 Notable changes to the classifier. Earlier releases are described in their
 pull requests.
 
-## Unreleased
+## 0.2.3 (2026-10-30)
 
-Changes since 0.2.2.
+Changes since 0.2.2. The classification code, the profile and report models
+and the JSON Schemas are as in 0.2.2, so a profile gets the same tier,
+disposition and obligations. The dependency updates for CI, ruff and the web
+cockpit (#21, #22, #35, #41, #42, #45 to #48) are described in their pull
+requests.
+
+### Package description (#12)
+
+#### Changed
+
+- The package description on PyPI, which is the README, says that the
+  classifier encodes Regulation (EU) 2024/1689 and, in part, the amending
+  Regulation (EU) 2026/1744, and points to the regulatory claim ledger for
+  what is encoded. The 0.2.2 description did not say that the amending
+  regulation is encoded only in part.
 
 ### Binding result apart from guidance notes in the playground (#38)
 
