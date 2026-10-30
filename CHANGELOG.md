@@ -7,7 +7,7 @@ pull requests.
 
 Changes since 0.2.2.
 
-### Art. 49(3) public-authority status asked only of deployers
+### Art. 49(3) public-authority status asked only of deployers (#54)
 
 #### Changed
 
