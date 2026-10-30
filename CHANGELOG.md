@@ -109,6 +109,9 @@ Changes since 0.2.2.
   hint. The extra now requires `mcp>=1.21.1,<2`, and the hint names that
   range. `tests/test_mcp_server.py` passes with `mcp` 1.21.1 and with 1.30.0,
   the version `uv.lock` pins.
+- `tests/test_docs.py` finds the server's tools by their `@server.tool(...)`
+  decorator with or without arguments; it matched only `@server.tool()`. A new
+  test checks that it finds the same tools as the server registers.
 
 ## 0.2.2 (2026-10-23)
 
