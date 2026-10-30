@@ -302,6 +302,38 @@ def build_intake_fixtures() -> dict:
         }
     )
     cases["edge+gpai-date"] = {"answers": model}
+    # The Art. 111(2) change question turns on a date before the Chapter III date.
+    for label, extra in {
+        "annex-iii-day-before": {
+            "annex_iii_area": "III.4.a",
+            "placing_on_market_date": "2027-12-01",
+        },
+        "annex-iii-on-the-day": {
+            "annex_iii_area": "III.4.a",
+            "placing_on_market_date": "2027-12-02",
+        },
+        "annex-iii-service-date": {
+            "annex_iii_area": "III.4.a",
+            "putting_into_service_date": "2025-06-01",
+        },
+        "annex-i-section-a": {
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_i_section": "A",
+            "placing_on_market_date": "2028-01-01",
+        },
+        "annex-i-section-b": {
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_i_section": "B",
+            "placing_on_market_date": "2028-01-01",
+        },
+    }.items():
+        legacy = profile_to_answers({"name": "x", **extra})
+        for answer in ("yes", "no", "unknown"):
+            cases[f"edge+change:{label}:{answer}"] = {
+                "answers": {**legacy, "significant_change": answer}
+            }
     for flops in ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", ""):
         cases[f"edge+training-flops:{flops!r}"] = {"answers": {**model, "training_flops": flops}}
     for case in cases.values():

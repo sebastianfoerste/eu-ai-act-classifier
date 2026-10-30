@@ -27,6 +27,7 @@ import math
 import re
 from typing import Any
 
+from .citations import POINT_C_ANNEX_I, POINT_C_ANNEX_III
 from .labels import DEROGATION_LABELS, option_label
 from .models import (
     AnnexIII,
@@ -46,6 +47,7 @@ UNKNOWN = "unknown"
 #   {"field": f, "in": [..]}   the field equals one of the values
 #   {"field": f, "has": v}     the list field contains v
 #   {"field": f, "empty": b}   the list field is (not) empty
+#   {"field": f, "before": d}  the date field is given and earlier than ISO date d
 #   {"all": [..]}, {"any": [..]}, {"not": c}
 # Fields are profile fields; "derogation.x" reads a nested Derogation flag.
 
@@ -88,6 +90,39 @@ FRIA_OPEN = {
                     AnnexIII.INSURANCE_LIFE_HEALTH.value,
                 ],
             }
+        },
+    ]
+}
+
+
+def _dated_before(cut_off: str) -> dict[str, Any]:
+    return {
+        "any": [
+            {"field": "placing_on_market_date", "before": cut_off},
+            {"field": "putting_into_service_date", "before": cut_off},
+        ]
+    }
+
+
+# Art. 111(2) AIA reads a significant change only for a high-risk system placed on the
+# market or put into service before its Chapter III date (transitions.change_used): the
+# Annex III date for an Annex III area, else the Annex I date, never for a Section B
+# product without one. The dates come from the engine's constants; the browser only
+# compares them.
+CHANGE_OPEN = {
+    "all": [
+        HIGH_RISK_ROUTE,
+        {
+            "any": [
+                {"all": [ANNEX_III_ANY, _dated_before(POINT_C_ANNEX_III)]},
+                {
+                    "all": [
+                        {"not": ANNEX_III_ANY},
+                        {"not": {"field": "annex_i_section", "is": AnnexISection.SECTION_B.value}},
+                        _dated_before(POINT_C_ANNEX_I),
+                    ]
+                },
+            ]
         },
     ]
 }
@@ -401,11 +436,14 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "boolean",
         "field": "significant_change_after_application_date",
         "title": "Has the system changed significantly after the relevant application date?",
-        # The model default (null) routes the result to review only for a high-risk system
-        # placed on the market or put into service before its Chapter III date (Art. 111(2)
-        # AIA; not a Section B product without an Annex III area), so it is not fail-closed
-        # everywhere: "I don't know" blocks.
-        "unknown": BLOCK,
+        "hint": "Asked because a date before the system's Chapter III date is given: such a "
+        "system comes under the Regulation, apart from Art. 5, only once its design changes "
+        "significantly as from that date.",
+        "article": "Art. 111(2) AIA",
+        # Elsewhere the engine reports a given answer as not used.
+        "show_if": CHANGE_OPEN,
+        # Where it is asked, null always raises the Art. 111(2) open question.
+        "unknown": {"value": None},
     },
     {
         "id": "deployer_public_authority",
@@ -415,7 +453,9 @@ QUESTIONS: list[dict[str, Any]] = [
         "agency, or does it act on behalf of one?",
         "article": "Art. 49(3) AIA",
         # Art. 49(3) and the Art. 111(2) deployer items read it only for a high-risk
-        # route; elsewhere the answered significant-change question settles the rest.
+        # route. Elsewhere it changes nothing: without a high-risk route the Art. 111(2)
+        # check ignores it, and for a prohibited practice that check turns on a date or
+        # on public-authority use instead.
         "show_if": HIGH_RISK_ROUTE,
         # A missing status is inferred for review only in some contexts, so it blocks.
         "unknown": BLOCK,
@@ -470,6 +510,9 @@ def holds(condition: dict[str, Any] | None, profile: dict[str, Any]) -> bool:
         return isinstance(value, list) and condition["has"] in value
     if "empty" in condition:
         return (not value) == condition["empty"]
+    if "before" in condition:
+        # ISO dates compare as strings; answers are validated as dates before they apply.
+        return isinstance(value, str) and value < condition["before"]
     raise ValueError(f"unknown condition {condition!r}")
 
 

@@ -7,6 +7,28 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Art. 111(2) change answer asked only where it is used (#43)
+
+#### Changed
+
+- The guided intake asks whether the system changed significantly
+  (`significant_change_after_application_date`) only for a high-risk system,
+  with no prohibited practice, placed on the market or put into service
+  before its Chapter III date. There "I don't know" records `null`, which
+  raises the Art. 111(2) open question, so the run goes to review instead of
+  stopping. Profiles without such a date, the bundled examples among them, no
+  longer open with the question unanswered.
+- Where Art. 111(2) cannot use a given change answer (no date before the
+  Chapter III date, no high-risk route, a Section B product without an
+  Annex III area, or a prohibited practice), the scope check states that the
+  answer is not used instead of echoing it. For a prohibited practice, the
+  Art. 111(2) "not applied" sentence now appears only when a date or
+  public-authority use is given.
+- A profile that gives a change answer without such a date, as share links
+  and drafts saved from the guided mode before this change do, now opens
+  only in the JSON editor: the guided mode would drop the answer. It
+  classifies the same there.
+
 ### Binding result apart from guidance notes in the playground (#38)
 
 #### Changed
@@ -52,6 +74,32 @@ Changes since 0.2.2.
 - `python -m eu_ai_act_classifier.verify_sources` exits 1 when a URL fails and
   2 outside a source checkout; it always exited 0.
 
+### Source URL check names itself
+
+#### Changed
+
+- `--verify-sources` and `python -m eu_ai_act_classifier.verify_sources` sent
+  the User-Agent of desktop Chrome. They now send
+  `eu-ai-act-classifier/<version> (+https://github.com/sebastianfoerste/eu-ai-act-classifier)`,
+  with the version of the installed package.
+
+### Source check reports bot challenges as unverified
+
+#### Fixed
+
+- `--verify-sources` counted every 2xx answer as a pass. EUR-Lex, which
+  serves both binding sources, answers the check with 202 and an AWS WAF
+  challenge page (`x-amzn-waf-action: challenge`), so both URLs passed
+  although the document was never reached, and `--update` would have dated
+  both binding sources from that page. A 202 answer, or a 2xx answer with AWS
+  WAF's challenge header or script names, is now unverified: its line reads
+  `[202 unverified]` with the reason, a closing line counts the outcomes (for
+  example `7 verified, 2 unverified, 0 failed of 9 source URLs`), and a
+  `warning:` line on stderr names the unverified URLs. Unverified URLs alone
+  do not change the exit code: `--verify-sources` exits 0 unless a URL
+  failed. `--update` moves no date unless every URL is verified, and exits 1
+  otherwise. 4xx and 5xx answers and network errors still fail.
+
 ### Web cockpit dependencies pinned
 
 #### Changed
@@ -61,6 +109,42 @@ Changes since 0.2.2.
   `"latest"`, so `npm install` outside the lockfile cannot pull a new major
   version. Dependabot proposes weekly npm updates for `web/`, minor and patch
   grouped.
+
+### Web cockpit audit fixes within the pinned versions
+
+#### Fixed
+
+- `npm audit fix`, without `--force`, updated `web/package-lock.json` only,
+  on top of the Dependabot updates to `next` 16.4.3 and `vitest` 5.0.5: as
+  dependencies of other packages, `nanoid` 3.3.20, `source-map-js` 1.2.2 and
+  `baseline-browser-mapping` 2.11.34. `npm audit` reports 3 vulnerabilities
+  instead of 6. The `postcss` advisories remain: they need a `postcss`
+  override above 8.5.22, and `next` and `vite` are listed only because they
+  use that `postcss`.
+
+### Web cockpit postcss override removed
+
+#### Fixed
+
+- `web/package.json` forced every `postcss` in the cockpit to 8.5.10 through
+  `overrides`. The override dates from the first commit, when `next` 16.2.7
+  pinned `postcss` 8.4.31. `next` 16.4.3 pins `postcss` 8.5.23 and `vite`
+  8.3.5 asks for `^8.5.30`, so the override held both below their own
+  versions and inside the three `postcss` advisories up to 8.5.22. Without
+  it, `next` uses 8.5.23 and `vite` 8.5.32, and `npm audit` reports 0
+  vulnerabilities instead of 3.
+
+### Web cockpit stops tracking next-env.d.ts
+
+#### Changed
+
+- `web/next-env.d.ts` is no longer in Git, and `.gitignore` lists it. Next.js
+  writes the file on `next dev`, `next build` and `next typegen`; `next build`
+  with Next.js 16.4.3 added a line to the committed copy, so every build left
+  the working tree changed. The Next.js TypeScript docs say to add the file to
+  `.gitignore` and remove it from Git, and the `create-next-app` templates
+  ignore it. `npm run build` writes it before its type check, and `npm test`
+  does not need it.
 
 ### Web cockpit errors and artifact filenames
 
@@ -76,6 +160,21 @@ Changes since 0.2.2.
   as "Provider A / CV screening" went into the download name unchanged. It
   now uses the slug the CLI's `--artifacts-dir` files use, for example
   `provider-a-cv-screening.fria.md`.
+
+### MCP extra requires mcp 1.21.1
+
+#### Fixed
+
+- The `[mcp]` extra allowed `mcp>=1.2,<2`, but every `mcp` release from 1.2.0
+  to 1.21.0 imports `eval_type_backport` from pydantic's internals, which
+  pydantic 2.14 removed. With such an `mcp` and pydantic 2.14 or later,
+  `mcp.server.fastmcp` does not import and the server exits with the install
+  hint. The extra now requires `mcp>=1.21.1,<2`, and the hint names that
+  range. `tests/test_mcp_server.py` passes with `mcp` 1.21.1 and with 1.30.0,
+  the version `uv.lock` pins.
+- `tests/test_docs.py` finds the server's tools by their `@server.tool(...)`
+  decorator with or without arguments; it matched only `@server.tool()`. A new
+  test checks that it finds the same tools as the server registers.
 
 ### eu-reg-mcp recommendation (#13)
 
