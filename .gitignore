@@ -16,6 +16,8 @@ web/node_modules/
 web/out/
 web/.vercel/
 web/*.tsbuildinfo
+# Next.js writes it on next dev, next build and next typegen; its docs say not to track it.
+web/next-env.d.ts
 
 # Environment files. Real values stay local; only example files are tracked.
 .env
