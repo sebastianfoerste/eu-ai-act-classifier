@@ -7,6 +7,20 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Playground deploys after CI passes
+
+#### Changed
+
+- A `deploy` job in `.github/workflows/ci.yml` publishes `docs/`, the browser
+  playground, to GitHub Pages with `actions/upload-pages-artifact` 5.0.0 and
+  `actions/deploy-pages` 5.0.1, both pinned to a commit SHA. It runs only on
+  a push to `main` and only after the `test` and `web` jobs pass for that
+  commit, so a pull request run or a failed check publishes nothing. Until
+  now Pages published `docs/` from the branch on every push to `main`, before
+  CI finished. The job takes effect once the repository's Pages source is
+  switched to GitHub Actions. `tests/test_ci_workflow.py` checks the job's
+  trigger, dependencies, permissions and pins.
+
 ### Binding result apart from guidance notes in the playground (#38)
 
 #### Changed

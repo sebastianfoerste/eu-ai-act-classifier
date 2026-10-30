@@ -6,7 +6,9 @@ The classifier has three surfaces:
 - the static browser playground in `docs/playground/`, which runs the same package client-side;
 - the optional `web/` cockpit, which is a Next.js fixture demo that runs locally.
 
-Hosted surface: the browser playground at https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/, served by GitHub Pages from `docs/` on `main`. It needs no server: the page loads Pyodide and Pydantic from the Pyodide CDN and installs the classifier wheel committed next to it. Profiles never leave the browser.
+Hosted surface: the browser playground at https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/, served by GitHub Pages from `docs/` on `main` through the CI deployment below. It needs no server: the page loads Pyodide and Pydantic from the Pyodide CDN and installs the classifier wheel committed next to it. Profiles never leave the browser.
+
+Publishing: the `deploy` job in `.github/workflows/ci.yml` uploads `docs/` and deploys it to GitHub Pages. It runs on a push to `main`, after the `test` and `web` jobs pass for that commit. Pull request runs skip it, and a failed check publishes nothing. The repository's Pages source must be GitHub Actions: with a branch as the source, GitHub also publishes `docs/` on every push to `main`, before CI finishes.
 
 The cockpit is not hosted. Its API routes spawn the Python classifier, which a static or serverless host cannot execute, so the earlier Vercel build never returned a result. Run the cockpit locally.
 
@@ -20,7 +22,7 @@ uv run pytest tests/test_playground.py
 node --test tests/playground/*.test.mjs
 ```
 
-The script regenerates `samples.json` and `fields.json` and replaces the wheel. `tests/test_playground.py` fails while any of them is stale. GitHub Pages publishes the result on the next push to `main`.
+The script regenerates `samples.json` and `fields.json` and replaces the wheel. `tests/test_playground.py` fails while any of them is stale. The `deploy` job publishes the result once CI passes on the next push to `main`.
 
 ## Local Web Run
 
