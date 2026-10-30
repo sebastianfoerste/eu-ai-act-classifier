@@ -181,11 +181,12 @@ def _distinct(profiles: list[dict]) -> list[dict]:
 GRID = _distinct([_reachable(p) for p in _grid()])
 
 # The Art. 111 transitions, the Annex I section and Art. 49(3) read facts the grid
-# above holds fixed, so a second grid varies them. The transparency flags stay fixed:
-# the transparency question is skipped only outside scope, where its own check varies
-# them.
+# above holds fixed, so a second grid varies them. Of the transparency flags only the
+# Art. 50(2) one varies, as a legacy high-risk system's Art. 50 finding and item repeat
+# the Art. 111(2) public-authority caveat; the transparency question is skipped only
+# outside scope, where its own check varies them all.
 _TRANSITION_AXES = {
-    "roles": [["provider"], ["deployer"]],
+    "roles": [["provider"], ["deployer"], ["importer"]],
     "scope": [(True, True), (False, True)],
     "prohibited_practices": [[], ["5.1.c"]],
     "annex_i": [(False, False, None), (True, False, None), (True, True, None), (True, True, "B")],
@@ -195,13 +196,16 @@ _TRANSITION_AXES = {
     "significant_change": [False, True],
     "gpai": [(False, None), (True, "2025-01-01")],
     "deployer_public_authority": [False, True],
+    "generates_synthetic_content": [False, True],
 }
 
 
 def _transition_grid() -> list[dict]:
     profiles = []
     for combo in itertools.product(*_TRANSITION_AXES.values()):
-        roles, scope, prohibited, annex_i, annex_iii, authority, dates, change, gpai, dpa = combo
+        roles, scope, prohibited, annex_i, annex_iii, authority, dates, change, gpai, dpa, art50 = (
+            combo
+        )
         profiles.append(
             {
                 "name": "Grid system",
@@ -222,6 +226,7 @@ def _transition_grid() -> list[dict]:
                 "deployer_public_law_body": False,
                 "deployer_private_public_service": False,
                 "deployer_public_authority": dpa,
+                "generates_synthetic_content": art50,
             }
         )
     return profiles

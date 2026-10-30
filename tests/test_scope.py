@@ -276,11 +276,13 @@ def test_a_public_authority_deployer_counts_only_for_the_profiles_own_deployer_r
             annex_iii_area=AnnexIII.CREDITWORTHINESS,
             placing_on_market_date=placed,
             deployer_public_authority=True,
+            generates_synthetic_content=True,
         )
     )
     texts = [
         report.scope.transitional_status,
         *report.open_questions,
+        *(item.requirement for item in report.obligation_graph),
         *(item.application_date_note or "" for item in report.obligation_graph),
     ]
     caveat = "A public-authority deployer is asserted" in " ".join(texts)
@@ -289,6 +291,11 @@ def test_a_public_authority_deployer_counts_only_for_the_profiles_own_deployer_r
     deployer = Role.DEPLOYER in roles
     assert caveat is deployer
     assert clause is (deployer and placed is not None)
+    # The Art. 50 finding of a legacy system repeats the caveat, for a deployer only.
+    art_50 = next(f for f in report.findings if f.rule_id == "TRANSPARENCY.50")
+    assert ("A public-authority deployer is asserted" in (art_50.detail or "")) is (
+        deployer and placed is not None
+    )
     assert (unused in report.scope.transitional_status) is not deployer
     # A legacy system with no change answer keeps its Art. 111(2) question either way.
     if placed is not None:

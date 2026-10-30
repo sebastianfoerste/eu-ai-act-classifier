@@ -73,7 +73,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 
 | | Verdict | Evidence |
 |---|---|---|
-| H1 Guided questionnaire | **Confirmed, built.** Modified: three unknown policies (null routed to review, `III.unsure`, block); `significant_change_after_application_date` and `deployer_public_authority` are asked only where the engine reads them, and the change answer records null on "I don't know" (owner decision 1) | GOV.UK (Observed); peers' unknown handling (Observed); checks in `tests/test_intake.py` |
+| H1 Guided questionnaire | **Confirmed, built.** Modified: three unknown policies (null routed to review, `III.unsure`, block); `significant_change_after_application_date` is asked only where the engine reads it and records null on "I don't know" (owner decision 1), and `deployer_public_authority` is asked only of a deployer on a high-risk route (item 9) | GOV.UK (Observed); peers' unknown handling (Observed); checks in `tests/test_intake.py` |
 | H2 Label catalog EN/DE | **Confirmed; EN built.** DE parked: German legal terms cannot be checked against the DE Official Journal text from this environment | EuConform, AbdelStark DE terms (Observed); IATE and EUR-Lex not reachable |
 | H3 DOCX/PDF export | **Modified, specified.** Print stylesheet first (no dependency); DOCX as an optional Python extra; rename `wordExportPackage` until real DOCX exists | No peer keeps draft status (Observed); `@page` margin boxes Chrome only (Observed) |
 | H4 Cockpit styling, then dark mode | **Styling confirmed and built** without Tailwind ([ADR 0004](../adr/0004-cockpit-styling-without-tailwind.md)). Dark mode specified, not built | Baseline captures |
@@ -222,7 +222,7 @@ D2 and D4 are built; the others are specified.
 
 ## Needs owner decision
 
-1. **Unknown on `significant_change_after_application_date`.** Resolved (owner decision, 28 October 2026): the intake asks the question only for a high-risk system with a date before its Chapter III date, where a null value already raises the engine's Art. 111(2) open question, so "I don't know" records null and the run proceeds to review. Elsewhere the engine reports a given answer as not used, and the bundled examples, which give no date, no longer open with the question unanswered. The Art. 49(3) public-authority deployer question is now asked only of a deployer on a high-risk route, so the provider examples no longer open with it unanswered. It still blocks on "I don't know", because a missing status reaches review only for some Annex III points; `credit_scoring_deployer.json` opens with it unanswered (item 2).
+1. **Unknown on `significant_change_after_application_date`.** Resolved (owner decision, 28 October 2026): the intake asks the question only for a high-risk system with a date before its Chapter III date, where a null value already raises the engine's Art. 111(2) open question, so "I don't know" records null and the run proceeds to review. Elsewhere the engine reports a given answer as not used, and the bundled examples, which give no date, no longer open with the question unanswered.
 2. **Nullable screens.** Most screens are non-nullable booleans, so the intake blocks on "I don't know". Making more fields nullable with engine-side review questions would let more runs proceed ([ADR 0007](../adr/0007-systemprofile-change-proposals.md)).
 3. **Art. 50(2) grace period.** Secondary sources disagree (2 December 2026 versus 2 December 2027, both Claimed). The engine and ledger use 2026-12-02; please re-check against the consolidated text. Nothing was changed.
 4. **Art. 5(1)(ba)/(bb), Art. 5(1a)/(1b) and Art. 4 screens (H7).** Parked until the wording can be checked on EUR-Lex; each needs a `PENDING` ledger row and a test.
@@ -230,6 +230,7 @@ D2 and D4 are built; the others are specified.
 6. **Positioning wording** for the overview (see above).
 7. **Token convergence** between playground and cockpit.
 8. **Optional natural-language intake.** Rejected for the core; acceptable only as an optional extra that drafts a profile a human confirms field by field.
+9. **Art. 49(3) public-authority status (#54).** The intake asks `deployer_public_authority` only of a deployer on a high-risk route, and the engine reads it only for the profile's own deployer role: for any other operator the Art. 111(2) public-authority caveat turns on `public_authority_use` alone. Merging #54 adopts that reading, so the provider examples no longer open with the question unanswered. "I don't know" still blocks, because a missing status reaches review only for some Annex III points; `credit_scoring_deployer.json` opens with it unanswered (item 2).
 
 ## Rejected
 

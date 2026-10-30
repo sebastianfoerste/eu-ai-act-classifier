@@ -22,18 +22,33 @@ Changes since 0.2.2.
 - The engine reads `deployer_public_authority` only for a profile that holds
   the deployer role. For any other profile, the Art. 111(2) caveat on
   systems intended to be used by public authorities turns on
-  `public_authority_use` alone, and the scope check states that a given
-  status is not used. Before, a profile without the deployer role that gave
-  `true` got "A public-authority deployer is asserted: confirm whether the
-  system is intended to be used by public authorities" in the transitional
-  status, the Art. 111(2) open question, the Art. 111(2) graph items and the
-  legacy notes. Its tier, disposition and obligations stay the same, and so
-  do the open questions it raises; only that wording changes.
-- A profile that gives the status without the deployer role, as share links
-  and drafts saved from the guided mode for a high-risk provider before this
-  change do, now opens only in the JSON editor: the guided mode would drop
-  the answer. There it classifies with the not-used sentence instead of the
-  caveat.
+  `public_authority_use` alone. Where a given status is not used (no
+  deployer role, or a deployer with no high-risk route or with a prohibited
+  practice screened), the scope check now says so: "deployer_public_authority
+  is given, but it is not used".
+- For a profile without the deployer role that gave `true`, the report no
+  longer shows the text the status triggered, as for a profile that leaves
+  it unset:
+  - with a date before the Chapter III date, "A public-authority deployer is
+    asserted: confirm whether the system is intended to be used by public
+    authorities" in the transitional status, the Art. 111(2) open question
+    and the Art. 111(2) graph items, and, with an Art. 50 trigger, in the
+    `TRANSPARENCY.50` finding and the Art. 50 item note; the legacy notes on
+    the Chapter III items lose "as the public-authority deployer suggests";
+  - with no date, the whole Art. 111(2) paragraph of the transitional
+    status: the Chapter III date to compare with, the significant-change
+    condition and the "Literal reading, confirm with counsel" flag;
+  - for an Annex I, Section B product without an Annex III area, the
+    Section B Art. 111(2) statement.
+
+  No profile's tier, disposition, obligations, finding rule ids or
+  severities, graph item ids, dates or review statuses, or number of open
+  questions changes (compared over 221,184 synthetic profiles).
+- A high-risk profile without the deployer role that gives the status, as
+  share links and drafts saved from the guided mode before this change do
+  (the guided mode required an answer), now opens only in the JSON editor:
+  the guided mode would drop the answer. There it classifies as described
+  above.
 
 ### Art. 111(2) change answer asked only where it is used (#43)
 
