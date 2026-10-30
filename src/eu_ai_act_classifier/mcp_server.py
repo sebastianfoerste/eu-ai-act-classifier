@@ -15,7 +15,8 @@ or let uv fetch the package and start the server::
     uvx --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp
 
 The server is built on ``mcp.server.fastmcp`` from the 1.x SDK, which mcp 2.0
-renamed, so the ``[mcp]`` extra pins ``mcp>=1.2,<2``.
+renamed. mcp releases before 1.21.1 fail to import it under pydantic 2.14 or
+later, so the ``[mcp]`` extra pins ``mcp>=1.21.1,<2``.
 """
 
 from __future__ import annotations
@@ -28,7 +29,7 @@ from .models import SystemProfile
 from .report import render_report
 
 # The [mcp] extra in pyproject.toml; tests/test_mcp_server.py keeps the two in step.
-MCP_REQUIREMENT = "mcp>=1.2,<2"
+MCP_REQUIREMENT = "mcp>=1.21.1,<2"
 
 
 def _installed_mcp_version() -> str | None:
