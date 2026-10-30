@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import asyncio
 import importlib.util
+import json
 import re
 import struct
 from pathlib import Path
@@ -52,8 +53,20 @@ PUBLIC_MARKDOWN = [
     Path("docs/launch-readiness.md"),
     Path("docs/methodology.md"),
     Path("docs/reviewer-notes.md"),
+    Path("docs/mcp-configuration-guide.md"),
+    Path("docs/worked-examples/bank-credit-scoring.md"),
+    Path("docs/worked-examples/life-insurer-pricing.md"),
     *README_CONTENT_DOCS,
 ]
+WORKED_EXAMPLES = {
+    Path("docs/worked-examples/bank-credit-scoring.md"): Path(
+        "examples/credit_scoring_deployer.json"
+    ),
+    Path("docs/worked-examples/life-insurer-pricing.md"): Path(
+        "examples/life_insurer_pricing.json"
+    ),
+}
+OMITTED = re.compile(r"^\[\.\.\. (\d+) lines omitted\]$")
 EM_DASH = "\u2014"
 EN_DASH = "\u2013"
 README_MAX_WORDS = 350
@@ -288,6 +301,86 @@ def test_mcp_guide_lists_the_tools_the_server_exposes() -> None:
     assert "/Users/" not in guide
 
 
+def _fenced(text: str, language: str) -> list[str]:
+    return re.findall(rf"```{language}\n(.*?)\n```", text, re.S)
+
+
+@pytest.mark.parametrize(("doc", "example"), WORKED_EXAMPLES.items())
+def test_worked_example_quotes_the_real_profile_and_cli_output(doc: Path, example: Path) -> None:
+    text = doc.read_text(encoding="utf-8")
+    profile_text = example.read_text(encoding="utf-8")
+    assert f"uv run eu-ai-act-classify {example.as_posix()}" in text
+    assert json.loads(_fenced(text, "json")[0]) == json.loads(profile_text)
+
+    actual = render_report(classify(SystemProfile.model_validate_json(profile_text))).split("\n")
+    assert f"Output ({len(actual)} lines" in text
+    position = 0
+    for line in _fenced(text, "text")[0].split("\n"):
+        omitted = OMITTED.match(line)
+        if omitted:
+            position += int(omitted.group(1))
+            continue
+        assert position < len(actual) and actual[position] == line, (
+            f"{doc} no longer matches the CLI output at line {position + 1}: rerun the command"
+        )
+        position += 1
+    assert position == len(actual), f"{doc} does not quote the CLI output to its end"
+
+
+# The example output that the README quoted until main's README trim (#27) moved it here.
+# tests/test_sample_output.py checks each output block on the page against the CLI; this
+# test checks the sentence that introduces the high-risk excerpt.
+SAMPLE_OUTPUT = Path("docs/sample-output.md")
+HIGH_RISK_SUMMARY = re.compile(
+    r"A high-risk case \(`(examples/\w+\.json)`\) returns `([^`]+)`, the finding `([^`]+)`, "
+    r"and (\d+) cited obligations, for example:\n\n```text\n(.*?)\n```",
+    re.S,
+)
+CUT = "..."
+
+
+def _cli_lines(example: str) -> list[str]:
+    profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
+    return render_report(classify(profile)).split("\n")
+
+
+def test_sample_output_high_risk_summary_matches_the_cli() -> None:
+    match = HIGH_RISK_SUMMARY.search(SAMPLE_OUTPUT.read_text(encoding="utf-8"))
+    assert match, f"{SAMPLE_OUTPUT} no longer summarises the high-risk case"
+    example, tier, finding, count, quoted = match.groups()
+    profile = SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8"))
+    report = classify(profile)
+    actual = _cli_lines(example)
+    assert tier in actual
+    assert any(line.strip().endswith(finding) for line in actual), finding
+    assert int(count) == len(report.obligations)
+    for line in quoted.split("\n"):
+        assert line.strip() == CUT or line in actual, line
+
+
+# tests/test_sample_output.py checks each dossier block against the CLI. This test checks
+# that the summary table and the blocks name the same profiles in the same order, so a
+# block cannot go missing, and that the table's scope, roles and obligation counts match.
+SAMPLE_DOSSIER = Path("docs/sample-review-dossier.md")
+DOSSIER_SOURCE = re.compile(r"^\*\*Source File:\*\* `(examples/\w+\.json)`$", re.M)
+DOSSIER_ROW = re.compile(r"^\| \*\*([^*|]+)\*\* \| [^|]+ \| (\w+) \| ([^|]+) \| (\d+) \|", re.M)
+
+
+def test_sample_review_dossier_table_and_blocks_cover_the_same_profiles() -> None:
+    text = SAMPLE_DOSSIER.read_text(encoding="utf-8")
+    reports = [
+        classify(SystemProfile.model_validate_json(Path(example).read_text(encoding="utf-8")))
+        for example in DOSSIER_SOURCE.findall(text)
+    ]
+    rows = DOSSIER_ROW.findall(text)
+    assert rows, f"{SAMPLE_DOSSIER} has no summary table rows"
+    assert [name for name, *_ in rows] == [report.system for report in reports]
+    for (name, scope, roles, count), report in zip(rows, reports, strict=True):
+        assert scope == report.scope.status.value, name
+        assert roles.strip() == ", ".join(role.value for role in report.roles), name
+        assert int(count) == len(report.obligations), name
+
+
 def test_feature_matrix_capability_cells_use_the_allowed_values() -> None:
     import csv
 
@@ -360,17 +453,27 @@ def _count(token: str) -> int:
     return int(token) if token.isdigit() else NUMBER_WORDS.index(token.lower())
 
 
-def _article_list(span: str) -> list[int]:
-    """Expand prose such as '9 to 15, 17, 43 and 73' into article numbers."""
-    numbers: list[int] = []
+def _article_key(reference: str) -> tuple[int, str]:
+    number, _, paragraph = reference.partition("(")
+    return int(number), paragraph
+
+
+def _article_list(span: str) -> list[str]:
+    """Expand prose such as '9 to 15, 17, 43(2) and 73' into article references."""
+    references: list[str] = []
     for part in re.split(r", | and ", span):
         low, _, high = part.partition(" to ")
-        numbers.extend(range(int(low), int(high or low) + 1))
-    return numbers
+        if high:
+            references.extend(str(n) for n in range(int(low), int(high) + 1))
+        else:
+            references.append(low)
+    return references
 
 
-def _article_numbers(articles: list[str]) -> list[int]:
-    return sorted(int(re.fullmatch(r"Art\. (\d+) AIA", article).group(1)) for article in articles)
+def _article_numbers(articles: list[str]) -> list[str]:
+    """'Art. 43(2) AIA' -> '43(2)', in article order; a paragraph sorts after its article."""
+    references = (re.fullmatch(r"Art\. (\d+(?:\(\d+\))?) AIA", a).group(1) for a in articles)
+    return sorted(references, key=_article_key)
 
 
 def _search(pattern: str, text: str) -> re.Match[str]:
@@ -383,7 +486,9 @@ def test_case_study_evaluation_counts_match_the_real_cv_screening_report() -> No
     report = _report(CV_SCREENING)
     evaluation = _evaluation()
 
-    obligations = _search(r"lists (\w+) provider obligations \(Art\. ([^)]+) AIA\)", evaluation)
+    obligations = _search(
+        r"lists (\w+) provider obligations \(Art\. ((?:[^()]|\(\d+\))+) AIA\)", evaluation
+    )
     assert _count(obligations.group(1)) == len(report.obligations)
     assert {obligation.applies_to for obligation in report.obligations} == {Role.PROVIDER}
     assert _article_list(obligations.group(2)) == _article_numbers(
@@ -394,7 +499,7 @@ def test_case_study_evaluation_counts_match_the_real_cv_screening_report() -> No
     assert _count(documentation.group(1)) == len(report.documentation_required)
 
     graph = _search(
-        r"marks (\d+) of (\d+) items `review: review_required` \(Art\. ([^)]+) AIA\)",
+        r"marks (\d+) of (\d+) items `review: review_required` \(Art\. ((?:[^()]|\(\d+\))+) AIA\)",
         evaluation,
     )
     flagged = [
@@ -465,3 +570,12 @@ def test_case_study_example_counts_match_the_bundled_examples() -> None:
         r"all (\d+) bundled examples are asserted in `tests/test_examples\.py`", case_study
     )
     assert int(asserted.group(1)) == len(examples)
+
+
+def test_overview_example_count_matches_the_bundled_examples() -> None:
+    overview = " ".join(Path("docs/overview.md").read_text(encoding="utf-8").split())
+    examples = [p for p in EXAMPLES.glob("*.json") if p.name != "classification-packet.json"]
+
+    count = re.search(r"pick one of the (\d+) synthetic examples", overview)
+    assert count, "docs/overview.md no longer says how many synthetic examples there are"
+    assert int(count.group(1)) == len(examples)

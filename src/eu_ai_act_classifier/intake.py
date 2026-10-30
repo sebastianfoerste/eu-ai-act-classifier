@@ -250,6 +250,21 @@ QUESTIONS: list[dict[str, Any]] = [
         "unknown": {"value": AnnexIII.UNSURE.value},
     },
     {
+        "id": "used_for_financial_fraud_detection",
+        "kind": "boolean",
+        "field": "used_for_financial_fraud_detection",
+        "title": "Is the system used for the purpose of detecting financial fraud?",
+        "hint": "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting "
+        "financial fraud. Yes or I don't know raises a review question; the system stays "
+        "high-risk until it is answered.",
+        "article": "Annex III(5)(b) AIA",
+        # The engine reads the field only for an Annex III point 5(b) profile.
+        "show_if": {
+            "all": [IN_SCOPE, {"field": "annex_iii_area", "is": AnnexIII.CREDITWORTHINESS.value}]
+        },
+        "unknown": {"value": None},
+    },
+    {
         "id": "performs_profiling",
         "kind": "boolean",
         "field": "derogation.performs_profiling",

@@ -194,6 +194,55 @@ Changes since 0.2.2.
   this classifier require Python 3.13 or later; without the flag, uvx fails
   with `No solution found` when the default Python is older.
 
+### Legal mapping corrections (#14)
+
+These entries come from #14. The provisions were checked against the
+consolidated AI Act of 27 July 2026 in a GitHub mirror of EUR-Lex, not on
+EUR-Lex itself (see Honest limits in `docs/overview.md`).
+
+#### Added
+
+- `used_for_financial_fraud_detection` (default `false`): point 5(b) excepts
+  AI systems used for the purpose of detecting financial fraud. On a point
+  5(b) profile, `true` or `null` adds an open question and the system stays
+  high-risk, so the disposition is `REQUIRES_REVIEW` and `--strict` exits 1.
+  The guided intake asks it only for a point 5(b) profile; "I don't know"
+  records `null`.
+- New example `examples/life_insurer_pricing.json` (Annex III point 5(c),
+  provider and deployer, with profiling) and two worked examples in
+  `docs/worked-examples/`, a bank's credit-scoring model and a life insurer's
+  pricing model.
+
+#### Changed
+
+- Annex III labels as in Annex III: point 5(b) is "Creditworthiness
+  evaluation and credit scoring of natural persons" and point 5(c) "Risk
+  assessment and pricing for natural persons in life and health insurance".
+  The 5(b) and 5(c) finding titles and the display labels from `labels.py`
+  (#31) change with them.
+- For Annex III points 2 to 8 the provider graph has
+  `high-risk.provider.43.2` (Art. 43(2) AIA, internal control under Annex VI
+  without a notified body, `review_required`) instead of
+  `high-risk.provider.44` (Art. 44 certificate). Integrations that read
+  `high-risk.provider.44` for these systems will no longer find it. Where the
+  Chapter III duties apply, Annex III point 1, `III.unsure` and every system
+  that `annex_i_safety_component` marks as an Annex I product keep the Art. 44
+  item. The new item is dated like the other Section 5 items: 2026-08-02 with
+  "Literal reading, confirm with counsel".
+- The profiling rule is cited as "Art. 6(3), third subparagraph, AIA"
+  instead of "Art. 6(3) subpara. 2 AIA".
+- Art. 50 sources: the placeholder "Transparency guidance tracker" is
+  replaced by the Code of Practice on marking and labelling of AI-generated
+  content (Art. 50(7) AIA, `art-50-code-of-practice`) and the Commission
+  guidelines on the Art. 50 transparency obligations (Art. 96(1)(d) AIA,
+  `art-50-guidelines`). Their titles, dates and URLs come from search results
+  only, so both carry `[noch zu verifizieren]`. With `--advisory`, every
+  Art. 50 profile gets the note `guidance.transparency-guidelines` (was
+  `guidance.transparency`), and profiles under Art. 50(2) or (4) also get
+  `guidance.transparency-code-of-practice`.
+- The regulation named in every report ends with "as amended by Regulation
+  (EU) 2026/1744".
+
 ## 0.2.2 (2026-10-23)
 
 #### Upgrade notes

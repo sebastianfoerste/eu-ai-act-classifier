@@ -19,7 +19,7 @@ The classifier records source status as part of the product contract. A reviewer
 
 1. Classification logic must stay tied to binding legal text and characterised facts.
 2. Amended binding dates, any future provisional dates and guidance overlays must be labelled.
-3. Open legal questions and unverified citations must remain visible in reviewer outputs.
+3. Open legal questions and unverified citations must remain visible in reviewer outputs. A source whose title, date or URL has not been checked on the issuing body's own page carries `[noch zu verifizieren]` in its citation label and says why in its implementation note. The two Art. 50 instruments (the marking and labelling Code of Practice and the Commission's Art. 50 guidelines) are labelled this way.
 4. Draft artifacts must not claim to be legal advice, conformity assessments or filing documents.
 
 ## Validation

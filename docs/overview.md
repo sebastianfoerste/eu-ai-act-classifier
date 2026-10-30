@@ -21,11 +21,11 @@ Built on Regulation (EU) 2024/1689 as consolidated on 27 July 2026. From the ame
 
 [![Live playground: the synthetic CreditSightScore credit scoring profile classified high-risk under Art. 6 AIA, with its Annex III(5)(b) finding and the cited provider obligations from Article 9 onwards](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
-> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 18 synthetic examples, or see [Example output](sample-output.md#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 19 synthetic examples, or see [Example output](sample-output.md#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
-## Human-authored legal judgment
+## Human legal judgment
 
-AI tools assisted the implementation, but the parts that carry the value are human-authored: the Annex/Article mappings, the obligation set, and the prohibited-practice and review-status logic. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable. The rules are plain Python under `src/eu_ai_act_classifier/`, and the eval set is tested for drift.
+AI tools assisted the implementation and drafted some changes to the mappings. The legal judgment that carries the value stays with the author: the Annex and Article mappings, the obligation set, and the prohibited-practice and review-status logic are written by the author or, where AI drafted them, reviewed and adopted by the author before the change is merged. The worked examples carry their own AI-assistance disclosure. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable. The rules are plain Python under `src/eu_ai_act_classifier/`, and the eval set is tested for drift.
 
 ## Honest limits
 
@@ -34,6 +34,7 @@ AI tools assisted the implementation, but the parts that carry the value are hum
 - Guidance changes, and national implementation and supervisory practice may vary by Member State.
 - The engine applies rules to characterised facts and does not decide disputed intended purpose, operator role or factual deployment scope.
 - `requires_review`, draft artifacts and advisory overlays must be reviewed before reliance.
+- The changes of 14 October 2026 (Art. 6(3), third subparagraph; the Annex III point 5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and (3)) are in this repository but not in release 0.2.2, the current release on PyPI. They were checked against a GitHub mirror of the consolidated text, not against EUR-Lex itself. The two Art. 50 sources in the manifest carry `[noch zu verifizieren]` because their Commission pages were not checked. Recheck both on the official pages before reliance.
 
 ## Part of the EU regulation as code suite
 

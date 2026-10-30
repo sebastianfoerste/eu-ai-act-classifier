@@ -57,7 +57,7 @@ Keep `mcp<2` ([why](https://github.com/sebastianfoerste/eu-ai-act-classifier/blo
 ## Documentation
 
 - [Docs index](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/README.md): every guide
-- [Overview](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/overview.md): audience, playground, honest limits, human-authored legal judgment and related tools
+- [Overview](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/overview.md): audience, playground, honest limits, human legal judgment and related tools
 - [What it checks](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/FEATURES.md#what-it-checks): scope, Art. 5 prohibited practices, Art. 6 and Annex III high-risk, GPAI and transparency, with [Annex III coverage](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/coverage.md)
 - [Surfaces](https://github.com/sebastianfoerste/eu-ai-act-classifier/blob/main/docs/surfaces.md#surfaces): playground, CLI, MCP server, local API and web cockpit
 - [JSON Schemas](https://github.com/sebastianfoerste/eu-ai-act-classifier/tree/main/schemas) for profiles and reports

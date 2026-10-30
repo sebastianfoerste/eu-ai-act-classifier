@@ -4,9 +4,10 @@ Every guide in `docs/` and the main project files. The [README](../README.md) co
 
 ## Start here
 
-- [docs/overview.md](overview.md): who it's for, the playground, human-authored legal judgment, honest limits and the EU regulation as code suite
+- [docs/overview.md](overview.md): who it's for, the playground, human legal judgment, honest limits and the EU regulation as code suite
 - [docs/SETUP.md](SETUP.md): the full quick start, JSON Schemas, development setup and the optional web cockpit
 - [docs/sample-output.md](sample-output.md): CLI output for prohibited and high-risk examples, what a draft artifact contains, and GPAI JSON
+- [docs/worked-examples/bank-credit-scoring.md](worked-examples/bank-credit-scoring.md) and [docs/worked-examples/life-insurer-pricing.md](worked-examples/life-insurer-pricing.md): two worked examples, each run end to end with what the classifier decided and what a lawyer still has to decide
 - [docs/launch-readiness.md](launch-readiness.md): a quick route for evaluators
 
 ## Legal method and sources
