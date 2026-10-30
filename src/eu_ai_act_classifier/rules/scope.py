@@ -28,7 +28,9 @@ from ..transitions import (
     gpai_model_date,
     legacy_dates,
     market_dates,
+    public_authority_deployer,
     public_authority_sentence,
+    public_authority_status_used,
     section_b_only,
     undated_public_authority_sentence,
 )
@@ -158,16 +160,25 @@ _CHANGE_UNUSED = (
     "used: it matters only for a high-risk system, with no prohibited practice screened, "
     "placed on the market or put into service before its Chapter III date."
 )
+# The same for a deployer status given where neither Art. 49(3) nor the Art. 111(2)
+# public-authority sentence reads it.
+_PUBLIC_AUTHORITY_STATUS_UNUSED = (
+    "Article 111(2) check: deployer_public_authority is given, but it is not used: it "
+    "describes the profile's own deployer role, so it matters only where the profile holds "
+    "that role for a high-risk system with no prohibited practice screened."
+)
 
 
 def _art_111_2_status(profile: SystemProfile) -> str:
-    """Art. 111(2) AIA check, followed by a note where a change answer is given that the
-    check does not use."""
+    """Art. 111(2) AIA check, followed by a note for each answer given that the check
+    and the rest of the report do not use."""
 
-    status = _art_111_2_check(profile)
-    if profile.significant_change_after_application_date is None or change_used(profile):
-        return status
-    return f"{status} {_CHANGE_UNUSED}" if status else _CHANGE_UNUSED
+    parts = [_art_111_2_check(profile)]
+    if profile.significant_change_after_application_date is not None and not change_used(profile):
+        parts.append(_CHANGE_UNUSED)
+    if profile.deployer_public_authority is not None and not public_authority_status_used(profile):
+        parts.append(_PUBLIC_AUTHORITY_STATUS_UNUSED)
+    return " ".join(part for part in parts if part)
 
 
 def _art_111_2_check(profile: SystemProfile) -> str:
@@ -177,7 +188,7 @@ def _art_111_2_check(profile: SystemProfile) -> str:
     facts = (
         bool(market_dates(profile))
         or profile.public_authority_use
-        or bool(profile.deployer_public_authority)
+        or public_authority_deployer(profile)
     )
     if not facts:
         return ""

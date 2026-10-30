@@ -127,6 +127,13 @@ test("opening a profile reports values the questions would drop", () => {
   const skipped = { name: "x", annex_iii_area: "III.4.a", derogation: { performs_profiling: true, narrow_procedural_task: true } };
   assert.deepEqual(droppedFields(definition, skipped), { skipped: ["derogation.narrow_procedural_task"], unsupported: [] });
   assert.deepEqual(droppedFields(definition, { name: "  padded  " }), none);
+  // A public-authority status saved for a high-risk provider before the question
+  // was narrowed to the deployer role; a deployer still carries it.
+  for (const status of [true, false]) {
+    const provider = { name: "x", annex_iii_area: "III.5.b", deployer_public_authority: status };
+    assert.deepEqual(droppedFields(definition, provider), { skipped: ["deployer_public_authority"], unsupported: [] });
+    assert.deepEqual(droppedFields(definition, { ...provider, roles: ["provider", "deployer"] }), none);
+  }
   // Asked, but not expressible as an answer: a cause other than skipping.
   assert.deepEqual(droppedFields(definition, { name: "x", roles: [] }), { skipped: [], unsupported: ["roles"] });
   assert.deepEqual(droppedFields(definition, { name: "x", annex_iii_area: "III.9" }), { skipped: [], unsupported: ["annex_iii_area"] });

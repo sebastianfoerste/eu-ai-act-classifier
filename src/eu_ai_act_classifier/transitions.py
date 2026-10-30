@@ -173,6 +173,26 @@ def cut_off_contested(profile: SystemProfile, cut_off: str) -> bool:
     return not before(earliest, GENERAL_APPLICATION_DATE) and before(earliest, cut_off)
 
 
+def public_authority_status_used(profile: SystemProfile) -> bool:
+    """Whether ``deployer_public_authority`` can change the result. It describes the
+    profile's own deployer role, so only where the profile holds that role for a high-risk
+    system with no prohibited practice screened (Art. 49(3) and Art. 111(2) AIA)."""
+
+    return (
+        profile.is_deployer
+        and not profile.prohibited_practices
+        and (profile.annex_iii_area is not None or annex_i_route(profile))
+    )
+
+
+def public_authority_deployer(profile: SystemProfile) -> bool:
+    """A public-authority deployer is asserted for the profile's own deployer role. For
+    an operator that is not the deployer, whether the system is intended to be used by
+    public authorities is its public_authority_use answer alone."""
+
+    return profile.is_deployer and profile.deployer_public_authority is True
+
+
 def public_authority_sentence(profile: SystemProfile) -> str:
     """Art. 111(2), second sentence, which applies "in any case", so also after an
     asserted change. It turns on intended use; a public-authority deployer is evidence
@@ -183,7 +203,7 @@ def public_authority_sentence(profile: SystemProfile) -> str:
             " As the system is intended to be used by public authorities, its providers and "
             f"deployers {PUBLIC_AUTHORITY_DUTY}."
         )
-    if profile.deployer_public_authority:
+    if public_authority_deployer(profile):
         return (
             " A public-authority deployer is asserted: confirm whether the system is intended "
             "to be used by public authorities. If it is, its providers and deployers "
@@ -203,7 +223,7 @@ def undated_public_authority_sentence(profile: SystemProfile) -> str:
             " As the system is intended to be used by public authorities, if it was "
             f"{before_that_date}, its providers and deployers {PUBLIC_AUTHORITY_DUTY}."
         )
-    if profile.deployer_public_authority:
+    if public_authority_deployer(profile):
         return (
             " A public-authority deployer is asserted: confirm whether the system is intended "
             f"to be used by public authorities. If it is and was {before_that_date}, its "
@@ -221,7 +241,7 @@ def public_authority_clause(profile: SystemProfile) -> str:
             f", and by {DEADLINE_2030} in any case, as the system is intended to be used by "
             "public authorities"
         )
-    if profile.deployer_public_authority:
+    if public_authority_deployer(profile):
         return (
             f", and by {DEADLINE_2030} in any case if, as the public-authority deployer "
             "suggests, the system is intended to be used by public authorities"

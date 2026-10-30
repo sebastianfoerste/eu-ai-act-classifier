@@ -27,6 +27,7 @@ from eu_ai_act_classifier.intake import (
     BLOCK,
     CHANGE_OPEN,
     IN_SCOPE,
+    PUBLIC_AUTHORITY_STATUS_OPEN,
     QUESTIONS,
     answers_to_profile,
     holds,
@@ -37,7 +38,7 @@ from eu_ai_act_classifier.intake import (
     write_field,
 )
 from eu_ai_act_classifier.models import AnnexIII, Derogation, ProhibitedPractice
-from eu_ai_act_classifier.transitions import change_used
+from eu_ai_act_classifier.transitions import change_used, public_authority_status_used
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = {
@@ -180,11 +181,12 @@ def _distinct(profiles: list[dict]) -> list[dict]:
 GRID = _distinct([_reachable(p) for p in _grid()])
 
 # The Art. 111 transitions, the Annex I section and Art. 49(3) read facts the grid
-# above holds fixed, so a second grid varies them. The transparency flags stay fixed:
-# the transparency question is skipped only outside scope, where its own check varies
-# them.
+# above holds fixed, so a second grid varies them. Of the transparency flags only the
+# Art. 50(2) one varies, as a legacy high-risk system's Art. 50 finding and item repeat
+# the Art. 111(2) public-authority caveat; the transparency question is skipped only
+# outside scope, where its own check varies them all.
 _TRANSITION_AXES = {
-    "roles": [["provider"], ["deployer"]],
+    "roles": [["provider"], ["deployer"], ["importer"]],
     "scope": [(True, True), (False, True)],
     "prohibited_practices": [[], ["5.1.c"]],
     "annex_i": [(False, False, None), (True, False, None), (True, True, None), (True, True, "B")],
@@ -194,13 +196,16 @@ _TRANSITION_AXES = {
     "significant_change": [False, True],
     "gpai": [(False, None), (True, "2025-01-01")],
     "deployer_public_authority": [False, True],
+    "generates_synthetic_content": [False, True],
 }
 
 
 def _transition_grid() -> list[dict]:
     profiles = []
     for combo in itertools.product(*_TRANSITION_AXES.values()):
-        roles, scope, prohibited, annex_i, annex_iii, authority, dates, change, gpai, dpa = combo
+        roles, scope, prohibited, annex_i, annex_iii, authority, dates, change, gpai, dpa, art50 = (
+            combo
+        )
         profiles.append(
             {
                 "name": "Grid system",
@@ -221,6 +226,7 @@ def _transition_grid() -> list[dict]:
                 "deployer_public_law_body": False,
                 "deployer_private_public_service": False,
                 "deployer_public_authority": dpa,
+                "generates_synthetic_content": art50,
             }
         )
     return profiles
@@ -230,8 +236,9 @@ TRANSITION_GRID = _distinct([_reachable(p) for p in _transition_grid()])
 
 # A skipped question may change the report only by the engine's own statement that the
 # value is not used: a section without the Art. 6(1) route, a model date without a
-# general-purpose AI model, a change answer without an Art. 111(2) legacy system.
-# Everything else, the disposition included, must match.
+# general-purpose AI model, a change answer without an Art. 111(2) legacy system, a
+# deployer status without the deployer role on a high-risk route. Everything else, the
+# disposition included, must match.
 _SECTION_UNUSED = "HIGHRISK.6.1.section_unused"
 _GPAI_DATE_UNUSED = (
     "Article 111(3) check: gpai_model_placing_on_market_date is given, but no general-purpose "
@@ -242,7 +249,12 @@ _CHANGE_UNUSED = (
     "used: it matters only for a high-risk system, with no prohibited practice screened, "
     "placed on the market or put into service before its Chapter III date."
 )
-_UNUSED_SENTENCES = (_GPAI_DATE_UNUSED, _CHANGE_UNUSED)
+_PUBLIC_AUTHORITY_STATUS_UNUSED = (
+    "Article 111(2) check: deployer_public_authority is given, but it is not used: it "
+    "describes the profile's own deployer role, so it matters only where the profile holds "
+    "that role for a high-risk system with no prohibited practice screened."
+)
+_UNUSED_SENTENCES = (_GPAI_DATE_UNUSED, _CHANGE_UNUSED, _PUBLIC_AUTHORITY_STATUS_UNUSED)
 _NO_TRANSITION = "No transitional limitation identified from the submitted facts."
 
 
@@ -395,6 +407,65 @@ def test_the_change_answer_is_reported_as_not_used_exactly_where_it_is_not_used(
             changed = {**profile, "significant_change_after_application_date": change}
             status = _report(changed)["scope"]["transitional_status"]
             assert (_CHANGE_UNUSED in status) is (change is not None and not used), changed
+            checked += 1
+    assert checked
+
+
+def test_the_public_authority_question_follows_the_engines_deployer_test() -> None:
+    # The intake asks for the deployer's public-authority status exactly where the
+    # engine reads it: the profile's own deployer role on a high-risk route.
+    routes = [
+        {"annex_iii_area": None},
+        {"annex_iii_area": "III.2"},
+        {"annex_iii_area": "III.5.b"},
+        {"annex_iii_area": "III.unsure"},
+        {"annex_i_safety_component": True},
+        {"annex_i_safety_component": True, "annex_i_third_party_assessment": True},
+        {
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_i_section": "B",
+        },
+    ]
+    roles = [
+        ["provider"],
+        ["deployer"],
+        ["provider", "deployer"],
+        ["importer", "distributor"],
+        ["gpai_provider"],
+    ]
+    checked = 0
+    for route, held, prohibited, in_scope in itertools.product(
+        routes, roles, ([], ["5.1.c"]), (True, False)
+    ):
+        profile = _normalised(
+            {
+                "name": "x",
+                **route,
+                "roles": held,
+                "prohibited_practices": prohibited,
+                "is_ai_system": in_scope,
+            }
+        )
+        used = public_authority_status_used(SystemProfile.model_validate(profile))
+        expected = in_scope and used
+        assert holds(PUBLIC_AUTHORITY_STATUS_OPEN, profile) is expected, profile
+        checked += expected
+    assert checked
+
+
+def test_the_public_authority_status_is_reported_as_not_used_exactly_where_it_is_not_used() -> None:
+    # As for the change answer: the sentence appears for a given status the engine does
+    # not read, never otherwise.
+    checked = 0
+    for profile in GRID + TRANSITION_GRID:
+        if not holds(IN_SCOPE, profile):
+            continue
+        used = public_authority_status_used(SystemProfile.model_validate(profile))
+        for status in (True, False, None):
+            changed = {**profile, "deployer_public_authority": status}
+            text = _report(changed)["scope"]["transitional_status"]
+            assert (_PUBLIC_AUTHORITY_STATUS_UNUSED in text) is (status is not None and not used)
             checked += 1
     assert checked
 

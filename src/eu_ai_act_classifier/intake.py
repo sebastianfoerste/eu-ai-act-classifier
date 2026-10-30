@@ -94,6 +94,13 @@ FRIA_OPEN = {
     ]
 }
 
+# Art. 49(3) AIA and the public-authority deployer in Art. 111(2) read the profile's own
+# deployer role, and only on a high-risk route (transitions.public_authority_status_used).
+# Elsewhere the engine reports a given status as not used.
+PUBLIC_AUTHORITY_STATUS_OPEN = {
+    "all": [HIGH_RISK_ROUTE, {"field": "roles", "has": Role.DEPLOYER.value}]
+}
+
 
 def _dated_before(cut_off: str) -> dict[str, Any]:
     return {
@@ -452,12 +459,10 @@ QUESTIONS: list[dict[str, Any]] = [
         "title": "Is the deployer a public authority or a Union institution, body, office or "
         "agency, or does it act on behalf of one?",
         "article": "Art. 49(3) AIA",
-        # Art. 49(3) and the Art. 111(2) deployer items read it only for a high-risk
-        # route. Elsewhere it changes nothing: without a high-risk route the Art. 111(2)
-        # check ignores it, and for a prohibited practice that check turns on a date or
-        # on public-authority use instead.
-        "show_if": HIGH_RISK_ROUTE,
-        # A missing status is inferred for review only in some contexts, so it blocks.
+        "show_if": PUBLIC_AUTHORITY_STATUS_OPEN,
+        # A missing status raises a review question only in some contexts
+        # (engine._art_49_3_questions); for a point 5(b) deployer without public-authority
+        # use or a public law body, for one, null reads like false, so it blocks.
         "unknown": BLOCK,
     },
 ]

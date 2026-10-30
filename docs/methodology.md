@@ -232,6 +232,10 @@ counts only if it was made on or after that date. Only the provider and deployer
 2 August 2030 sentence. With `public_authority_use` they also carry
 2030-08-02, unless a significant change is asserted; with only a
 public-authority deployer they ask the reviewer to confirm the intended use.
+A public-authority deployer counts only where the profile holds the deployer
+role, as `deployer_public_authority` describes that role; it then counts for
+the items of every operator role the profile holds. For a profile without the
+deployer role the intended use is `public_authority_use` alone.
 
 Art. 113 gives Chapter III no single date. Point (b) applies Section 4 from
 2 August 2025, but Section 4 ("Notifying authorities and notified bodies")
@@ -271,15 +275,21 @@ The scope gate's transitional status states the same comparison in words:
 which dates were given, the Chapter III date and its point, whether the system
 predates it, the significant-change position, for a legacy system the
 Art. 111(1) carve-out, and the 2030 deadline for public-authority use. Where
-the profile gives no date but `public_authority_use` or
-`deployer_public_authority`, it names the date to compare with; where it
+the profile gives no date but `public_authority_use` or, for a profile that
+holds the deployer role, `deployer_public_authority`, it names the date to
+compare with; where it
 gives a date but no high-risk route, it says there is no Chapter III date to
 compare with. A `significant_change_after_application_date` answer counts
 only for a high-risk system, with no prohibited practice screened, placed on
 the market or put into service before its Chapter III date; elsewhere the
-check states that the answer is not used. It also states the Art. 111(3)
+check states that the answer is not used. In the same way it states that a
+`deployer_public_authority` answer is not used unless the profile holds the
+deployer role for a high-risk system with no prohibited practice screened. It
+also states the Art. 111(3)
 check for a general-purpose AI model and the Art. 111(4) check for a system
 generating synthetic content where the profile gives the date they turn on.
+Outside the AI Act's scope there is no transitional status, so none of these
+statements appears.
 
 Art. 50 items (Chapter IV) carry 2 August 2026, subject to the Art. 50(2) rule
 that follows. Under Art. 111(4), providers of generative systems placed on the
