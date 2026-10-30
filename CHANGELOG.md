@@ -176,6 +176,24 @@ Changes since 0.2.2.
   decorator with or without arguments; it matched only `@server.tool()`. A new
   test checks that it finds the same tools as the server registers.
 
+### eu-reg-mcp recommendation (#13)
+
+#### Changed
+
+- When `mcp.server.fastmcp` does not import, the MCP server's exit message
+  still gives the pip, uvx and clone commands, and now ends by recommending
+  eu-reg-mcp for Claude Code and Claude Desktop:
+  `uvx --python 3.13 --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp`.
+- The README, `docs/surfaces.md` and `docs/mcp-configuration-guide.md`
+  recommend eu-reg-mcp ahead of this package's own server. The guide and
+  `docs/surfaces.md` also give the clone command
+  `uv run --extra mcp eu-ai-act-classifier-mcp`.
+- Every uvx command for eu-reg-mcp, and the exit message's uvx command for
+  this package's server, passes `--python 3.13`, as the README and the
+  guides already did for this package's server. eu-reg-mcp, the linter and
+  this classifier require Python 3.13 or later; without the flag, uvx fails
+  with `No solution found` when the default Python is older.
+
 ## 0.2.2 (2026-10-23)
 
 #### Upgrade notes
