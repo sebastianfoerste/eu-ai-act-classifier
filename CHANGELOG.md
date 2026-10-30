@@ -7,6 +7,34 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Art. 49(3) public-authority status asked only of deployers
+
+#### Changed
+
+- The guided intake asks whether the deployer is, or acts on behalf of, a
+  public authority (`deployer_public_authority`, Art. 49(3) AIA) only where
+  the profile holds the deployer role on a high-risk route. The six bundled
+  high-risk examples that name only a provider no longer open with the
+  question unanswered. It still stops the run on "I don't know": for a
+  deployer of an Annex III point 5(b) system, for one, a missing status
+  reads like "no" and raises no review question, so
+  `credit_scoring_deployer.json` still opens with it unanswered.
+- The engine reads `deployer_public_authority` only for a profile that holds
+  the deployer role. For any other profile, the Art. 111(2) caveat on
+  systems intended to be used by public authorities turns on
+  `public_authority_use` alone, and the scope check states that a given
+  status is not used. Before, a profile without the deployer role that gave
+  `true` got "A public-authority deployer is asserted: confirm whether the
+  system is intended to be used by public authorities" in the transitional
+  status, the Art. 111(2) open question, the Art. 111(2) graph items and the
+  legacy notes. Its tier, disposition and obligations stay the same, and so
+  do the open questions it raises; only that wording changes.
+- A profile that gives the status without the deployer role, as share links
+  and drafts saved from the guided mode for a high-risk provider before this
+  change do, now opens only in the JSON editor: the guided mode would drop
+  the answer. There it classifies with the not-used sentence instead of the
+  caveat.
+
 ### Art. 111(2) change answer asked only where it is used (#43)
 
 #### Changed

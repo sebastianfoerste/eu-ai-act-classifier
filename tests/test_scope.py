@@ -259,6 +259,42 @@ def test_a_legacy_system_never_reports_its_change_answer_as_not_used(change: boo
     assert (unused in later.scope.transitional_status) is (change is not None)
 
 
+@pytest.mark.parametrize("placed", [None, "2026-01-01"])
+@pytest.mark.parametrize(
+    "roles", [[Role.PROVIDER], [Role.IMPORTER], [Role.PROVIDER, Role.DEPLOYER]]
+)
+def test_a_public_authority_deployer_counts_only_for_the_profiles_own_deployer_role(
+    placed: str | None, roles: list[Role]
+) -> None:
+    # deployer_public_authority describes the profile's deployer role. Without it, the
+    # Art. 111(2) public-authority caveat turns on public_authority_use alone, and the
+    # status given is reported as not used.
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=roles,
+            annex_iii_area=AnnexIII.CREDITWORTHINESS,
+            placing_on_market_date=placed,
+            deployer_public_authority=True,
+        )
+    )
+    texts = [
+        report.scope.transitional_status,
+        *report.open_questions,
+        *(item.application_date_note or "" for item in report.obligation_graph),
+    ]
+    caveat = "A public-authority deployer is asserted" in " ".join(texts)
+    clause = "as the public-authority deployer suggests" in " ".join(texts)
+    unused = "deployer_public_authority is given, but it is not used"
+    deployer = Role.DEPLOYER in roles
+    assert caveat is deployer
+    assert clause is (deployer and placed is not None)
+    assert (unused in report.scope.transitional_status) is not deployer
+    # A legacy system with no change answer keeps its Art. 111(2) question either way.
+    if placed is not None:
+        assert any(q.startswith("Art. 111(2) AIA") for q in report.open_questions)
+
+
 def test_dated_transitional_status_with_an_asserted_change() -> None:
     status = classify(
         SystemProfile(
