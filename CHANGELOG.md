@@ -95,6 +95,18 @@ Changes since 0.2.2.
   it, `next` uses 8.5.23 and `vite` 8.5.32, and `npm audit` reports 0
   vulnerabilities instead of 3.
 
+### Web cockpit stops tracking next-env.d.ts
+
+#### Changed
+
+- `web/next-env.d.ts` is no longer in Git, and `.gitignore` lists it. Next.js
+  writes the file on `next dev`, `next build` and `next typegen`; `next build`
+  with Next.js 16.4.3 added a line to the committed copy, so every build left
+  the working tree changed. The Next.js TypeScript docs say to add the file to
+  `.gitignore` and remove it from Git, and the `create-next-app` templates
+  ignore it. `npm run build` writes it before its type check, and `npm test`
+  does not need it.
+
 ### Web cockpit errors and artifact filenames
 
 #### Fixed
