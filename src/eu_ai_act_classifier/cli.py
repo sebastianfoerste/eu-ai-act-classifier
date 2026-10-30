@@ -80,9 +80,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--update",
         action="store_true",
-        help="Update source retrieval date to today.",
+        help=(
+            "With --verify-sources, in a source checkout: set the source retrieval dates "
+            "to today, only if every URL is verified."
+        ),
     )
     args = parser.parse_args(argv)
+
+    if args.update and not args.verify_sources:
+        parser.error("--update requires --verify-sources")
 
     if args.schema:
         from .schemas import schema
@@ -91,9 +97,13 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.verify_sources:
-        from .verify_sources import verify_sources
+        from .verify_sources import NotASourceCheckoutError, verify_sources
 
-        return 0 if verify_sources(update=args.update) else 1
+        try:
+            return 0 if verify_sources(update=args.update) else 1
+        except NotASourceCheckoutError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
 
     if not args.profile:
         print("error: the following arguments are required: profile", file=sys.stderr)
