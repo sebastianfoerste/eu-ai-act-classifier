@@ -7,12 +7,13 @@ from datetime import date
 from .catalog import LATER_PROHIBITIONS
 from .citations import (
     ADVISORY_SOURCE_RETRIEVED_ON,
+    AI_CONTENT_CODE_URL,
     AI_SYSTEM_DEFINITION_GUIDELINES_URL,
     GPAI_CODE_URL,
     GPAI_PROVIDER_GUIDELINES_URL,
     HIGH_RISK_GUIDELINES_URL,
     PROHIBITED_GUIDELINES_URL,
-    TRANSPARENCY_GUIDANCE_URL,
+    TRANSPARENCY_GUIDELINES_URL,
 )
 from .models import AdvisoryNote, SystemProfile
 
@@ -121,13 +122,33 @@ def build_advisory_notes(profile: SystemProfile) -> list[AdvisoryNote]:
         notes.append(
             AdvisoryNote(
                 note_id="guidance.transparency",
-                title="Transparency guidance tracker",
+                title="Art. 50 transparency guidelines",
                 detail=(
-                    "Track final Art. 50 transparency guidance and marking or labelling "
-                    "support tools when published."
+                    "The Commission guidelines on the transparency obligations under Art. 50 "
+                    "AIA (published 20 July 2026) are a nonbinding aid for the Art. 50(1) to "
+                    "(4) review. They change no obligation."
                 ),
-                source_id="transparency-guidance",
-                source_url=TRANSPARENCY_GUIDANCE_URL,
+                source_id="transparency-guidelines-2026",
+                source_url=TRANSPARENCY_GUIDELINES_URL,
+            )
+        )
+
+    if profile.generates_synthetic_content or profile.generates_deepfakes:
+        # The Code covers the Art. 50(2) marking and detection and the Art. 50(4)
+        # labelling duties, not Art. 50(1) and (3).
+        notes.append(
+            AdvisoryNote(
+                note_id="guidance.ai-content-code",
+                title="Code of Practice on AI-generated content",
+                detail=(
+                    "The final Code of Practice on marking and labelling of AI-generated "
+                    "content (published 10 June 2026) is a voluntary, nonbinding aid for the "
+                    "Art. 50(2) marking and detection and Art. 50(4) deepfake disclosure "
+                    "duties. The Commission's page states that the Commission and the Board "
+                    "confirmed it as an adequate voluntary tool."
+                ),
+                source_id="ai-content-code-of-practice",
+                source_url=AI_CONTENT_CODE_URL,
             )
         )
 

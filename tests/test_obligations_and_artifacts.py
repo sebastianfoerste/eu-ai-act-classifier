@@ -134,7 +134,8 @@ def test_sections_1_to_3_items_keep_the_deferred_date(
     facts: dict[str, object], deferred_date: str, undeferred: set[str]
 ) -> None:
     graph = _high_risk_graph(facts)
-    deferred = [item for item in graph if item.article not in UNDEFERRED_ARTICLES]
+    # Art. 4 AIA is a Chapter I duty, dated by Art. 113, third paragraph, point (a).
+    deferred = [item for item in graph if item.article not in UNDEFERRED_ARTICLES | {"Art. 4 AIA"}]
 
     articles = {item.article for item in deferred}
     assert articles <= DEFERRED_ARTICLES
@@ -798,11 +799,29 @@ def test_section_b_product_gets_only_the_art_2_2_provisions() -> None:
         )
     )
 
-    # Still classified high-risk under Art. 6(1), but no Chapter III duty attaches.
+    # Still classified high-risk under Art. 6(1), but no Chapter III duty attaches. The
+    # Chapter I duty in Art. 4 AIA stays for the provider and the deployer (not the
+    # importer), flagged, as Art. 2(2) does not list it either.
     assert report.risk_tier is RiskTier.HIGH
-    assert [ob.article for ob in report.obligations] == ["Art. 2(2) AIA"]
+    assert [ob.article for ob in report.obligations] == [
+        "Art. 4 AIA",
+        "Art. 4 AIA",
+        "Art. 2(2) AIA",
+    ]
+    assert [ob.applies_to for ob in report.obligations[:2]] == [Role.PROVIDER, Role.DEPLOYER]
+    assert all(
+        "Literal reading, confirm with counsel" in ob.requirement for ob in report.obligations[:2]
+    )
     assert report.documentation_required == []
-    (item,) = report.obligation_graph
+    assert [item.obligation_id for item in report.obligation_graph] == [
+        "literacy.provider.4",
+        "literacy.deployer.4",
+        "high-risk.section-b.2.2",
+    ]
+    assert all(
+        item.review_status is ReviewStatus.REVIEW_REQUIRED for item in report.obligation_graph
+    )
+    item = report.obligation_graph[-1]
     assert item.obligation_id == "high-risk.section-b.2.2"
     assert item.actor is Role.PROVIDER
     assert "Art. 6(1), Art. 60a and Arts. 102 to 112" in item.requirement
@@ -1017,7 +1036,11 @@ def test_section_b_dual_item_states_the_literal_reading_it_departs_from() -> Non
 
 
 def test_section_b_item_dates_every_listed_provision() -> None:
-    (item,) = classify(SystemProfile(name="machinery", **SECTION_B)).obligation_graph
+    (item,) = [
+        item
+        for item in classify(SystemProfile(name="machinery", **SECTION_B)).obligation_graph
+        if item.article == "Art. 2(2) AIA"
+    ]
 
     for part in ("from 2028-08-02", "Arts. 102 to 110 from 2026-07-27", "Art. 60a, Arts. 111"):
         assert part in item.application_date_note

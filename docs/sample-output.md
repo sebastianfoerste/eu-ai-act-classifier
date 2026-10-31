@@ -38,7 +38,7 @@ Source manifest:
   ...
 ```
 
-A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring`, and 14 cited obligations, for example:
+A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring`, and 15 cited obligations, the Art. 4 AIA AI literacy duty first, then for example:
 
 ```text
 ...
@@ -50,9 +50,9 @@ A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK 
 
 When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](../examples/classification-packet.md) and [`examples/classification-packet.json`](../examples/classification-packet.json).
 
-![Actual CLI output of eu-ai-act-classify examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with its 14 obligations, the obligation graph, the binding application timeline and the source manifest](demo.png)
+![Actual CLI output of eu-ai-act-classify examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with its 15 obligations, the obligation graph, the binding application timeline and the source manifest](demo.png)
 
-*All 92 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
+*All 95 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
 
 ## CLI Report
 
@@ -83,6 +83,7 @@ Findings:
 ...
 
 Obligation graph:
+  - literacy.provider.4: Art. 4 AIA (provider), evidence: AI literacy measures record: training plan, materials and participation by role., review: determined
   - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
   ...
   - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
@@ -128,10 +129,13 @@ Disposition: REQUIRES_REVIEW
 ...
 
 Obligations:
+  - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, ... Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
   - Art. 26 AIA: Deployer obligations. Use per instructions, assign human oversight, monitor use, keep logs. Where the deployer is itself a public authority or Union institution, body, office or agency and finds that the system has not been registered in the EU database, do not use it and inform the provider or the distributor (Art. 26(8) AIA).
   - Art. 49(3) AIA: Registration of use by a public-authority deployer. Where the deployer is, or acts on behalf of, a public authority or Union institution, body, office or agency: register as deployer, select the system and register its use in the EU database before putting it into service or using it. Selecting the system presupposes that it is registered there, so do not use a system that is not.
 
 Obligation graph:
+  - literacy.deployer.4: Art. 4 AIA (deployer), evidence: AI literacy measures record: training plan, materials and participation by role., review: review_required
+      Literal reading, confirm with counsel: Art. 111(2) AIA applies this Regulation to a high-risk system put into service on 2026-09-01, before 2027-12-02, only if its design changes significantly as from that date, so on its wording Art. 4 would apply to it only then. This report keeps the Art. 4 dating as the conservative reading. ... Which date Art. 111(2) means is itself contested (see the Art. 111(2) item).
   - high-risk.deployer.26: Art. 26 AIA (deployer), evidence: Deployer operating procedure and monitoring log., review: review_required
       Art. 111(2) AIA: the system was put into service on 2026-09-01, before 2027-12-02. Whatever date this item gives, the duty attaches only once the system's design changes significantly as from 2027-12-02, and by 2 August 2030 in any case, as the system is intended to be used by public authorities. Literal reading, confirm with counsel: this uses 2027-12-02 as the Art. 111(2) AIA cut-off. ...
   - high-risk.deployer.49.3: Art. 49(3) AIA (deployer), evidence: EU database registration-of-use record., review: review_required
@@ -156,16 +160,19 @@ Command:
 echo '{"name":"Robot arm controller","annex_i_safety_component":true,"annex_i_third_party_assessment":true,"annex_i_section":"B"}' | eu-ai-act-classify -
 ```
 
-The system stays high-risk under Art. 6(1), but the Chapter III set is replaced by the Art. 2(2) provisions. The finding says that no Chapter III duty attaches through this route, and the Art. 2(2) item, dated 2028-08-02 by Art. 6(1), goes to review:
+The system stays high-risk under Art. 6(1), but the Chapter III set is replaced by the Art. 2(2) provisions. The finding says that no Chapter III duty attaches through this route, and the Art. 2(2) item, dated 2028-08-02 by Art. 6(1), goes to review. The Chapter I duty in Art. 4 AIA, which Art. 2(2) does not list either, is kept and flagged like Art. 5 and Art. 50:
 
 ```text
 ...
 Risk tier: HIGH-RISK (Art. 6 AIA)
 ...
 Obligations:
+  - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff ... Literal reading, confirm with counsel: for an Annex I, Section B product Art. 2(2) AIA lists only Art. 6(1), Art. 60a and Arts. 102 to 112 (and Arts. 57 to 59 in so far as the sectoral legislation integrates the high-risk requirements), so on its wording Art. 4 does not apply. This report keeps the Art. 4 duty as the conservative reading.
   - Art. 2(2) AIA: Annex I, Section B product: limited application. Only Art. 6(1), Art. 60a and Arts. 102 to 112 AIA apply; Arts. 57, 58 and 59 apply only in so far as the high-risk requirements have been integrated in the sectoral Union harmonisation legislation. The high-risk requirements reach the product only through the sectoral legislation, as far as its delegated or implementing acts integrate them.
 
 Obligation graph:
+  - literacy.provider.4: Art. 4 AIA (provider), evidence: AI literacy measures record: training plan, materials and participation by role., review: review_required
+      Literal reading, confirm with counsel: for an Annex I, Section B product Art. 2(2) AIA lists only ... so on its wording Art. 4 does not apply. This report keeps the Art. 4 duty as the conservative reading.
   - high-risk.section-b.2.2: Art. 2(2) AIA (provider), evidence: Sectoral legislation mapping for the Annex I, Section B product., review: review_required
       Dated by Art. 6(1), which classifies Annex I products as high-risk from 2028-08-02 (Art. 113, third paragraph, point (c)(ii) AIA). The other listed provisions apply earlier: ...
 ...
@@ -222,6 +229,14 @@ Excerpt:
   "gpai_systemic": true,
   ...
   "obligation_graph": [
+    {
+      "obligation_id": "literacy.provider.4",
+      "article": "Art. 4 AIA",
+      "actor": "provider",
+      ...
+      "application_date": "2025-02-02",
+      ...
+    },
     {
       "obligation_id": "gpai.provider.53.a",
       "article": "Art. 53(1)(a) AIA",

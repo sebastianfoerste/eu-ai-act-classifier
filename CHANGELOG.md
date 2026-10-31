@@ -7,6 +7,76 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Precision notes from Regulation (EU) 2026/1744
+
+#### Changed
+
+- `placing_on_market_date` and `putting_into_service_date` carry a
+  description in the JSON Schema, the field guide and the guided intake: ISO
+  dates, and for Art. 111(2) AIA the date the first unit of that type and
+  model was placed on the Union market or put into service decides
+  (recital 39 of Regulation (EU) 2026/1744).
+- The Art. 73 obligation and graph item name both reporting routes: the
+  market surveillance authorities of the Member States where the incident
+  occurred (Art. 73(1)), or the AI Office where it is exclusively competent
+  for the system under Art. 75(1) (Art. 75(1a), inserted by Art. 1,
+  point (31)).
+- The Art. 72 obligation and graph item say that the post-market monitoring
+  plan is part of the Annex IV technical documentation and that the
+  Commission's guidance and template are due by 2 September 2027
+  (Art. 72(3) as replaced by Art. 1, point (30)).
+- The report footer names the amendment: "as amended by Regulation (EU)
+  2026/1744 (consolidated version of 27 July 2026)". The playground footer
+  links the consolidated text of 27 July 2026 instead of the 2024 text.
+
+### Final Art. 50 guidance sources
+
+#### Changed
+
+- The source manifest replaces the "Transparency guidance status tracker"
+  placeholder with the Commission guidelines on the transparency obligations
+  under Art. 50 (published 20 July 2026) and the final Code of Practice on
+  marking and labelling of AI-generated content (published 10 June 2026;
+  Art. 50(2) and (4)), both `nonbinding_guidance` with their own retrieval
+  date (`TRANSPARENCY_SOURCE_RETRIEVED_ON`, 2026-10-31). The advisory note for
+  an Art. 50 trigger points to the guidelines; a system generating synthetic
+  content or deepfakes also gets a note on the Code. The note no longer says
+  to "track" guidance "when published".
+- The GPAI provider guidelines source points to the Commission's library page
+  for the guidelines instead of an on-the-fly printable PDF link; its
+  retrieval date is unchanged, as the page's last update (20 April 2026)
+  predates it.
+- `--verify-sources --update` moves all three retrieval dates together, still
+  only when every URL is verified.
+
+### Art. 6(3) profiling rule cited to the third subparagraph
+
+#### Fixed
+
+- The finding for an Annex III system that performs profiling, the high-risk
+  rule docstring and the `Derogation` field description (JSON Schema and
+  field guide) cited "Art. 6(3) subpara. 2". The profiling rule is the third
+  subparagraph of Art. 6(3); the second holds the conditions (a) to (d).
+
+### Art. 4 AI literacy duty
+
+#### Added
+
+- Every report whose scope is not outside the AI Act lists an Art. 4 AIA
+  obligation and a graph item (`literacy.provider.4`, `literacy.deployer.4`,
+  dated 2025-02-02) once per provider or deployer role the profile holds,
+  whatever the tier: take measures to support the AI literacy of staff and
+  other persons operating or using the system on the operator's behalf, in the
+  words of Art. 4(1) as replaced by Art. 1, point (5) of Regulation (EU)
+  2026/1744 (in force 27 July 2026). A minimal-risk run, such as
+  `examples/spam_filter.json`, listed no obligation at all. Importers,
+  distributors, authorised representatives and a general-purpose AI model
+  provider as such get none; a prohibited system gets none either, as for the
+  GPAI duties. For a Section B product and for a legacy high-risk system the
+  item is kept, flagged "Literal reading, confirm with counsel" and sent to
+  review, as the Art. 50 items are. The claim ledger has a CORRECTED row and a
+  PENDING row for the Section B reading.
+
 ### Art. 111(2) change answer asked only where it is used (#43)
 
 #### Changed

@@ -30,9 +30,13 @@ from eu_ai_act_classifier.verify_sources import (
 
 ROOT = Path(__file__).resolve().parents[1]
 REAL_CITATIONS = ROOT / "src" / "eu_ai_act_classifier" / "citations.py"
-DATE_LINE = re.compile(r'^(BINDING|ADVISORY)_SOURCE_RETRIEVED_ON = "([^"]*)"$', re.MULTILINE)
+DATE_LINE = re.compile(
+    r'^(BINDING|ADVISORY|TRANSPARENCY)_SOURCE_RETRIEVED_ON = "([^"]*)"$', re.MULTILINE
+)
+DATE_GROUPS = ("BINDING", "ADVISORY", "TRANSPARENCY")
 # A date no run of --update can produce, so a moved date is visible.
 OLD_DATE = "2000-01-01"
+OLD_DATES = dict.fromkeys(DATE_GROUPS, OLD_DATE)
 FAILING = "AI_ACT_URL"
 
 
@@ -62,7 +66,7 @@ def checkout(tmp_path) -> Path:
         lambda match: f'{match[1]}_SOURCE_RETRIEVED_ON = "{OLD_DATE}"',
         REAL_CITATIONS.read_text(encoding="utf-8"),
     )
-    assert count == 2
+    assert count == len(DATE_GROUPS)
     (package / "citations.py").write_text(text, encoding="utf-8")
     return root
 
@@ -124,7 +128,7 @@ def test_requests_name_the_checker_and_its_version(monkeypatch) -> None:
     assert [request.get_header("User-agent") for request in sent] == [expected]
 
 
-def test_all_sources_passing_updates_both_dates_and_nothing_else(checkout) -> None:
+def test_all_sources_passing_updates_every_date_and_nothing_else(checkout) -> None:
     before = _citations(checkout).read_text(encoding="utf-8")
     fetch = _fetch()
     first_day = date.today().isoformat()
@@ -133,8 +137,8 @@ def test_all_sources_passing_updates_both_dates_and_nothing_else(checkout) -> No
 
     days = {first_day, date.today().isoformat()}
     dates = _dates(checkout)
-    assert set(dates) == {"BINDING", "ADVISORY"}
-    assert dates["BINDING"] == dates["ADVISORY"]
+    assert set(dates) == set(DATE_GROUPS)
+    assert len(set(dates.values())) == 1
     assert dates["BINDING"] in days
     after = _citations(checkout).read_text(encoding="utf-8")
     assert DATE_LINE.sub("", after) == DATE_LINE.sub("", before)
@@ -167,7 +171,7 @@ def test_one_failed_url_changes_nothing_and_returns_false(checkout, capsys, outc
     assert verify_sources(update=True, fetch=fetch, root=checkout) is False
 
     assert _citations(checkout).read_bytes() == before
-    assert _dates(checkout) == {"BINDING": OLD_DATE, "ADVISORY": OLD_DATE}
+    assert _dates(checkout) == OLD_DATES
     assert not (checkout / "dist").exists()
     # The failure does not cut the check short: every URL is still reported.
     assert fetch.calls == list(URLS.values())
@@ -188,7 +192,7 @@ def test_every_failed_url_is_named(checkout, capsys) -> None:
     assert verify_sources(update=True, fetch=fetch, root=checkout) is False
 
     assert _failed_names(capsys.readouterr().err) == failing
-    assert _dates(checkout) == {"BINDING": OLD_DATE, "ADVISORY": OLD_DATE}
+    assert _dates(checkout) == OLD_DATES
 
 
 @pytest.mark.parametrize(
@@ -408,7 +412,7 @@ def test_an_unverified_url_keeps_update_from_moving_the_dates(checkout, capsys, 
     assert verify_sources(update=True, fetch=fetch, root=checkout) is False
 
     assert _citations(checkout).read_bytes() == before
-    assert _dates(checkout) == {"BINDING": OLD_DATE, "ADVISORY": OLD_DATE}
+    assert _dates(checkout) == OLD_DATES
     assert not (checkout / "dist").exists()
     err = capsys.readouterr().err
     assert _unverified_names(err) == {UNVERIFIED}

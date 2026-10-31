@@ -14,6 +14,7 @@ Findings:
       Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.
 
 Obligations:
+  - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
   - Art. 9 AIA: Risk management system. Establish, document and maintain a continuous risk management system.
   - Art. 10 AIA: Data and data governance. Apply data governance to training, validation and testing data sets.
   - Art. 11 AIA: Technical documentation. Draw up technical documentation (Annex IV) before placing on the market.
@@ -26,8 +27,8 @@ Obligations:
   - Art. 47 AIA: EU declaration of conformity. Draw up and keep an EU declaration of conformity.
   - Art. 48 AIA: CE marking. Affix the CE marking to indicate conformity.
   - Art. 49 AIA: Registration. Register the system in the EU database before market placement.
-  - Art. 72 AIA: Post-market monitoring. Operate a post-market monitoring system.
-  - Art. 73 AIA: Serious incident reporting. Report serious incidents to the market surveillance authority.
+  - Art. 72 AIA: Post-market monitoring. Operate a post-market monitoring system based on a post-market monitoring plan, which is part of the Annex IV technical documentation. The Commission's guidance on the plan, including a template, is due by 2 September 2027 (Art. 72(3) AIA as replaced by Art. 1, point (30) of Regulation (EU) 2026/1744).
+  - Art. 73 AIA: Serious incident reporting. Report serious incidents to the market surveillance authorities of the Member States where the incident occurred (Art. 73(1) AIA), or to the AI Office where it is exclusively competent for the system under Art. 75(1), as for AI systems based on a general-purpose AI model developed by the same provider or its undertaking, with the exceptions listed there, and systems of designated very large online platforms or search engines (Art. 75(1a) AIA, inserted by Art. 1, point (31) of Regulation (EU) 2026/1744).
 
 Documentation to maintain:
   - Art. 11 AIA + Annex IV: Technical documentation. Annex IV technical documentation, kept current.
@@ -37,6 +38,7 @@ Documentation to maintain:
   - Art. 47 AIA: EU declaration of conformity. Signed EU declaration of conformity.
 
 Obligation graph:
+  - literacy.provider.4: Art. 4 AIA (provider), evidence: AI literacy measures record: training plan, materials and participation by role., review: determined
   - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
   - high-risk.provider.17: Art. 17 AIA (provider), evidence: Quality management system file., review: determined
   - high-risk.provider.18: Art. 18 AIA (provider), evidence: Document retention register., review: determined
@@ -86,7 +88,8 @@ Source manifest:
   - Draft high-risk classification guidelines: nonbinding_guidance, retrieved 2026-06-18
   - GPAI Code of Practice: nonbinding_guidance, retrieved 2026-06-18
   - GPAI provider guidelines: nonbinding_guidance, retrieved 2026-06-18
-  - Transparency guidance tracker: nonbinding_guidance, retrieved 2026-06-18
+  - Art. 50 transparency guidelines: nonbinding_guidance, retrieved 2026-10-31
+  - Code of Practice on AI-generated content: nonbinding_guidance, retrieved 2026-10-31
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744 (consolidated version of 27 July 2026)
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.

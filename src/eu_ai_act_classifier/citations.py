@@ -27,7 +27,8 @@ from .models import RegulatorySource, SourceStatus
 
 REGULATION = (
     "Regulation (EU) 2024/1689 of the European Parliament and of the Council "
-    "of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024"
+    "of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by "
+    "Regulation (EU) 2026/1744 (consolidated version of 27 July 2026)"
 )
 SHORT = "AIA"
 AI_ACT_URL = "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
@@ -46,14 +47,27 @@ AI_SYSTEM_DEFINITION_GUIDELINES_URL = (
     "commission-publishes-guidelines-ai-system-definition-facilitate-first-ai-acts-rules-application"
 )
 GPAI_CODE_URL = "https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai"
-GPAI_PROVIDER_GUIDELINES_URL = "https://digital-strategy.ec.europa.eu/en/node/13982/printable/pdf"
-TRANSPARENCY_GUIDANCE_URL = (
-    "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+GPAI_PROVIDER_GUIDELINES_URL = (
+    "https://digital-strategy.ec.europa.eu/en/library/"
+    "guidelines-scope-obligations-providers-general-purpose-ai-models-under-ai-act"
+)
+# Commission guidelines on the transparency obligations under Art. 50 AIA, published
+# 20 July 2026, and the final Code of Practice on marking and labelling of AI-generated
+# content (Art. 50(2) and (4)), published 10 June 2026. Both nonbinding.
+TRANSPARENCY_GUIDELINES_URL = (
+    "https://digital-strategy.ec.europa.eu/en/library/"
+    "guidelines-transparency-obligations-providers-and-deployers-ai-systems"
+)
+AI_CONTENT_CODE_URL = (
+    "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content"
 )
 
 
 BINDING_SOURCE_RETRIEVED_ON = "2026-10-18"
 ADVISORY_SOURCE_RETRIEVED_ON = "2026-06-18"
+# The Art. 50 sources were read later than the other advisory sources, so they carry
+# their own date. `verify_sources --update` moves all three dates together.
+TRANSPARENCY_SOURCE_RETRIEVED_ON = "2026-10-31"
 
 
 def source_manifest() -> list[RegulatorySource]:
@@ -128,7 +142,9 @@ def source_manifest() -> list[RegulatorySource]:
         ),
         RegulatorySource(
             source_id="gpai-provider-guidelines",
-            title="Guidelines for providers of general-purpose AI models",
+            title=(
+                "Guidelines on the scope of obligations for providers of general-purpose AI models"
+            ),
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=GPAI_PROVIDER_GUIDELINES_URL,
             retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
@@ -136,14 +152,28 @@ def source_manifest() -> list[RegulatorySource]:
             implementation_note="Nonbinding scope and compliance support for GPAI model providers.",
         ),
         RegulatorySource(
-            source_id="transparency-guidance",
-            title="Transparency guidance status tracker",
+            source_id="transparency-guidelines-2026",
+            title="Commission guidelines on the transparency obligations under Art. 50 AIA",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
-            url=TRANSPARENCY_GUIDANCE_URL,
-            retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
-            citation_label="Transparency guidance tracker",
+            url=TRANSPARENCY_GUIDELINES_URL,
+            retrieved_on=TRANSPARENCY_SOURCE_RETRIEVED_ON,
+            citation_label="Art. 50 transparency guidelines",
             implementation_note=(
-                "Placeholder advisory source until final Art. 50 guidance is published."
+                "Nonbinding Commission guidance on Art. 50(1) to (4), published 20 July 2026; "
+                "advisory overlay only."
+            ),
+        ),
+        RegulatorySource(
+            source_id="ai-content-code-of-practice",
+            title="Code of Practice on marking and labelling of AI-generated content",
+            legal_status=SourceStatus.NONBINDING_GUIDANCE,
+            url=AI_CONTENT_CODE_URL,
+            retrieved_on=TRANSPARENCY_SOURCE_RETRIEVED_ON,
+            citation_label="Code of Practice on AI-generated content",
+            implementation_note=(
+                "Voluntary code, final text published 10 June 2026, on the Art. 50(2) marking "
+                "and detection and Art. 50(4) labelling duties. The Commission's page states "
+                "that the Commission and the Board confirmed it as an adequate voluntary tool."
             ),
         ),
     ]

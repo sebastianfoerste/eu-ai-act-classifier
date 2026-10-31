@@ -5,6 +5,7 @@ from __future__ import annotations
 from .advisory import build_advisory_notes
 from .catalog import (
     ANNEX_III,
+    ai_literacy_obligations,
     eu_database_registration_applies,
     gpai_obligations,
     high_risk_authorized_representative_obligations,
@@ -17,6 +18,7 @@ from .catalog import (
     public_authority_registration_applies,
     public_authority_users,
     section_b_annex_iii_flag,
+    section_b_kept_flag,
     section_b_obligations,
 )
 from .citations import AMENDING_APPLICATION_DATES, APPLICATION_DATES, REGULATION, source_manifest
@@ -53,6 +55,9 @@ from .transitions import (
 
 _FRIA_AREAS = {AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH}
 _FRIA_EXCLUDED_AREAS = {AnnexIII.CRITICAL_INFRASTRUCTURE}
+# Art. 2(2) AIA lists Art. 4 for no Section B product; the report keeps the duty, flagged,
+# as it keeps Art. 5 and Art. 50. The graph item carries the same flag.
+SECTION_B_LITERACY_FLAG = section_b_kept_flag("Art. 4", "the Art. 4 duty")
 
 
 def classify(profile: SystemProfile, *, include_advisory: bool = False) -> ClassificationReport:
@@ -152,6 +157,12 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         obligations += gpai_obligations(systemic_risk=gpai_systemic)
         open_questions += _gpai_date_questions(profile)
 
+    if ai_literacy_applies(final_tier):
+        # Art. 4 AIA (Chapter I) binds every provider and deployer of an AI system within
+        # the Regulation's scope, whatever the tier, so it heads the list.
+        literacy_flag = SECTION_B_LITERACY_FLAG if section_b_product(profile) else ""
+        obligations = ai_literacy_obligations(profile.roles, literacy_flag) + obligations
+
     disposition = Disposition.REQUIRES_REVIEW if open_questions else Disposition.DETERMINED
 
     unverified = sorted(
@@ -204,6 +215,14 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         open_questions=open_questions,
         unverified_citations=unverified,
     )
+
+
+def ai_literacy_applies(final_tier: RiskTier) -> bool:
+    """Art. 4 AIA attaches to every system within the Regulation's scope, whatever its
+    tier, except a prohibited one: as for the GPAI duties, a system that may not be placed
+    on the market, put into service or used (Art. 5 AIA) has no staff to operate it."""
+
+    return final_tier not in (RiskTier.OUT_OF_SCOPE, RiskTier.PROHIBITED)
 
 
 def _fria_required(profile: SystemProfile) -> bool:

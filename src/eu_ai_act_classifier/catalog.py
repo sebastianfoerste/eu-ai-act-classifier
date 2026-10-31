@@ -14,6 +14,7 @@ from .models import AnnexIII, Obligation, ProhibitedPractice, Role
 # Article labels other modules match on. Use these constants, not copies of the
 # string, so a wording change cannot silently break the match.
 ART_2_2 = "Art. 2(2) AIA"
+ART_4 = "Art. 4 AIA"
 ART_49 = "Art. 49 AIA"
 ART_49_2 = "Art. 49(2) AIA"
 ART_49_3 = "Art. 49(3) AIA"
@@ -265,6 +266,71 @@ def section_b_annex_iii_flag(derogation_asserted: bool) -> str:
     )
 
 
+# --- AI literacy (Art. 4 AIA, Chapter I) -------------------------------------
+# Art. 4(1) AIA as replaced by Regulation (EU) 2026/1744, Art. 1, point (5), in force
+# 27 July 2026, in the words of the consolidated text. Chapter I applies from
+# citations.POINT_A_DATE (Art. 113, third paragraph, point (a)). The duty binds providers
+# and deployers of AI systems whatever the risk tier; it asks for measures, not for a
+# level of literacy. Importers, distributors, authorised representatives and the
+# provider of a general-purpose AI model, as such, are not addressed.
+AI_LITERACY_REQUIREMENT = (
+    "Take measures to support the development of AI literacy of staff and other persons "
+    "dealing with the operation and use of the system on the operator's behalf, taking into "
+    "account their technical knowledge, experience, education and training, the context the "
+    "system is to be used in and the persons or groups of persons it is to be used on. No "
+    "specific level of AI literacy of any individual has to be guaranteed. Wording: "
+    "Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force "
+    "27 July 2026."
+)
+_AI_LITERACY_ROLES = (Role.PROVIDER, Role.DEPLOYER)
+
+
+def ai_literacy_roles(roles: list[Role]) -> list[Role]:
+    """The roles Art. 4 AIA addresses that ``roles`` holds, each once: provider, then
+    deployer."""
+
+    return [role for role in _AI_LITERACY_ROLES if role in roles]
+
+
+def ai_literacy_obligations(roles: list[Role], flag: str = "") -> list[Obligation]:
+    """One Art. 4 AIA obligation per provider or deployer role held, with ``flag``
+    appended where Art. 2(2) AIA does not list Art. 4 (a Section B product)."""
+
+    requirement = f"{AI_LITERACY_REQUIREMENT} {flag}" if flag else AI_LITERACY_REQUIREMENT
+    return [
+        Obligation(
+            article=ART_4,
+            title="AI literacy",
+            applies_to=role,
+            requirement=requirement,
+        )
+        for role in ai_literacy_roles(roles)
+    ]
+
+
+# Art. 72(3) AIA as replaced by Regulation (EU) 2026/1744, Art. 1, point (30): the plan
+# is part of the Annex IV technical documentation and the Commission adopts guidance,
+# including a template, by 2 September 2027.
+ART_72_REQUIREMENT = (
+    "Operate a post-market monitoring system based on a post-market monitoring plan, which "
+    "is part of the Annex IV technical documentation. The Commission's guidance on the plan, "
+    "including a template, is due by 2 September 2027 (Art. 72(3) AIA as replaced by Art. 1, "
+    "point (30) of Regulation (EU) 2026/1744)."
+)
+# Art. 73(1) AIA names the market surveillance authorities; Art. 75(1a), inserted by
+# Regulation (EU) 2026/1744, Art. 1, point (31)(c), routes the providers of the systems
+# under the AI Office's exclusive competence (Art. 75(1)) to the AI Office instead. The
+# profile does not record that competence, so the text states both routes.
+ART_73_REQUIREMENT = (
+    "Report serious incidents to the market surveillance authorities of the Member States "
+    "where the incident occurred (Art. 73(1) AIA), or to the AI Office where it is exclusively "
+    "competent for the system under Art. 75(1), as for AI systems based on a general-purpose "
+    "AI model developed by the same provider or its undertaking, with the exceptions listed "
+    "there, and systems of designated very large online platforms or search engines "
+    "(Art. 75(1a) AIA, inserted by Art. 1, point (31) of Regulation (EU) 2026/1744)."
+)
+
+
 # --- High-risk obligation sets ---------------------------------------------
 def eu_database_registration_applies(annex_iii_area: AnnexIII | None) -> bool:
     """Art. 49(1) AIA provider registration in the EU database covers only high-risk
@@ -486,13 +552,13 @@ def high_risk_provider_obligations(
             article="Art. 72 AIA",
             title="Post-market monitoring",
             applies_to=p,
-            requirement="Operate a post-market monitoring system.",
+            requirement=ART_72_REQUIREMENT,
         ),
         Obligation(
             article="Art. 73 AIA",
             title="Serious incident reporting",
             applies_to=p,
-            requirement="Report serious incidents to the market surveillance authority.",
+            requirement=ART_73_REQUIREMENT,
         ),
     ]
     if eu_database_registration:

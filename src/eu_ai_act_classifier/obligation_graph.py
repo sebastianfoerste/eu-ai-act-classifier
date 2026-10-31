@@ -3,14 +3,19 @@
 from __future__ import annotations
 
 from .catalog import (
+    AI_LITERACY_REQUIREMENT,
     ANNEX_III,
     ART_2_2,
+    ART_4,
     ART_26_8,
     ART_49,
     ART_49_2,
     ART_49_3,
     ART_50_2,
+    ART_72_REQUIREMENT,
+    ART_73_REQUIREMENT,
     ART_111_2,
+    ai_literacy_roles,
     eu_database_registration_applies,
     national_registration_for_public_authority_deployer,
     public_authority_registration_applies,
@@ -27,6 +32,7 @@ from .citations import (
     ART_111_3_DEADLINE,
     ART_111_4_DEADLINE,
     GENERAL_APPLICATION_DATE,
+    POINT_A_DATE,
     POINT_B_DATE,
     POINT_C_ANNEX_I,
     POINT_C_ANNEX_III,
@@ -83,6 +89,7 @@ _GPAI_DATE_FALLBACK = (
 # Art. 2(2) AIA lists neither Art. 5 nor Art. 50 for a Section B product. The report keeps
 # the Art. 50 duties (and, in rules/prohibited.py, Art. 5) as the conservative reading.
 _SECTION_B_TRANSPARENCY_FLAG = section_b_kept_flag("Art. 50", "the Art. 50 duties")
+_SECTION_B_LITERACY_FLAG = section_b_kept_flag("Art. 4", "the Art. 4 duty")
 _PROVIDER_OR_DEPLOYER = (Role.PROVIDER, Role.DEPLOYER)
 
 
@@ -278,7 +285,42 @@ def build_obligation_graph(
             )
         )
 
+    # Art. 4 AIA (Chapter I) heads the graph: every provider and deployer, whatever the
+    # tier. The engine applies the same condition to the obligation list.
+    if final_tier not in (RiskTier.OUT_OF_SCOPE, RiskTier.PROHIBITED):
+        items = _ai_literacy_items(profile, final_tier) + items
+
     return items
+
+
+def _ai_literacy_items(profile: SystemProfile, final_tier: RiskTier) -> list[ObligationGraphItem]:
+    """Art. 4 AIA, one item per provider or deployer role held, dated by Chapter I
+    (Art. 113, third paragraph, point (a)). Art. 2(2) AIA does not list Art. 4 for a
+    Section B product, and Art. 111(2) AIA reaches it for a legacy high-risk system as it
+    reaches Art. 50: in both cases the item is kept, flagged and sent to review."""
+
+    section_b_flag = _SECTION_B_LITERACY_FLAG if section_b_product(profile) else None
+    legacy_flag = (
+        legacy_transparency_flag(profile, "Art. 4") if final_tier is RiskTier.HIGH else None
+    )
+    note = " ".join(part for part in (section_b_flag, legacy_flag) if part) or None
+    return [
+        _item(
+            f"literacy.{_actor_slug(actor)}.4",
+            ART_4,
+            actor,
+            (
+                f"{actor.value.capitalize()} of an AI system within the scope of the "
+                "Regulation, whatever its risk tier."
+            ),
+            AI_LITERACY_REQUIREMENT,
+            "AI literacy measures record: training plan, materials and participation by role.",
+            POINT_A_DATE,
+            ReviewStatus.REVIEW_REQUIRED if note else ReviewStatus.DETERMINED,
+            note,
+        )
+        for actor in ai_literacy_roles(profile.roles)
+    ]
 
 
 def _high_risk_provider_graph(
@@ -416,7 +458,7 @@ def _high_risk_provider_graph(
             "high-risk.provider.72",
             "Art. 72 AIA",
             "High-risk AI system lifecycle.",
-            "Operate a post-market monitoring system and plan.",
+            ART_72_REQUIREMENT,
             "Post-market monitoring plan.",
             _CHAPTER_IX,
             application_date,
@@ -425,7 +467,7 @@ def _high_risk_provider_graph(
             "high-risk.provider.73",
             "Art. 73 AIA",
             "Serious incident identified.",
-            "Report serious incidents to the market surveillance authority.",
+            ART_73_REQUIREMENT,
             "Serious incident register.",
             _CHAPTER_IX,
             application_date,

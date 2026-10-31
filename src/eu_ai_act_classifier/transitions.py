@@ -285,11 +285,11 @@ def cut_off_flag(profile: SystemProfile, cut_off: str) -> str:
     )
 
 
-def legacy_transparency_flag(profile: SystemProfile) -> str | None:
+def legacy_transparency_flag(profile: SystemProfile, provision: str = "Art. 50") -> str | None:
     """Art. 111(2) AIA applies "this Regulation", not only Chapter III, to a legacy
     high-risk system only after a significant change in design, so on its wording that
-    reaches Art. 50 too. The report keeps the Art. 50 dating as the conservative reading.
-    For a high-risk system only; the caller checks the tier."""
+    reaches Art. 50 (and Art. 4) too. The report keeps the ``provision`` dating as the
+    conservative reading. For a high-risk system only; the caller checks the tier."""
 
     if section_b_only(profile) or profile.significant_change_after_application_date is True:
         return None
@@ -300,9 +300,9 @@ def legacy_transparency_flag(profile: SystemProfile) -> str | None:
     return (
         "Literal reading, confirm with counsel: Art. 111(2) AIA applies this Regulation to a "
         f"high-risk system {describe_dates(legacy)}, before {cut_off}, only if its design "
-        "changes significantly as from that date, so on its wording Art. 50 would apply to it "
-        "only then. This report keeps the Art. 50 dating as the conservative reading."
-        f"{public_authority_sentence(profile)} Which date Art. 111(2) means is itself "
+        f"changes significantly as from that date, so on its wording {provision} would apply "
+        f"to it only then. This report keeps the {provision} dating as the conservative "
+        f"reading.{public_authority_sentence(profile)} Which date Art. 111(2) means is itself "
         f"contested{_see_item(profile)}."
     )
 

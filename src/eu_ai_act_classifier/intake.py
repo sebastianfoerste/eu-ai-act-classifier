@@ -406,7 +406,10 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "details",
         "title": "Market dates",
         "hint": "YYYY-MM-DD, the AI system's dates. Leave blank if not yet placed on the "
-        "market or put into service. A general-purpose AI model's own date is asked next.",
+        "market or put into service. For Art. 111(2) AIA the date the first unit of that type "
+        "and model was placed on the Union market or put into service decides (recital 39 of "
+        "Regulation (EU) 2026/1744). A general-purpose AI model's own date is asked next.",
+        "article": "Art. 111(2) AIA",
         "fields": [
             {"field": "placing_on_market_date", "label": "Placed on the market", "type": "date"},
             {"field": "putting_into_service_date", "label": "Put into service", "type": "date"},

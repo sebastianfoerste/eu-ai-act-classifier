@@ -111,9 +111,14 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             (
                 "placing_on_market_date",
                 "YYYY-MM-DD, the AI system's date. Drives Art. 111(2) and (4) AIA; for a GPAI "
-                "model without its own date, also Art. 111(3).",
+                "model without its own date, also Art. 111(3). For Art. 111(2) the first unit "
+                "of that type and model decides (recital 39 of Regulation (EU) 2026/1744).",
             ),
-            ("putting_into_service_date", "YYYY-MM-DD. Drives Art. 111(2) AIA."),
+            (
+                "putting_into_service_date",
+                "YYYY-MM-DD. Drives Art. 111(2) AIA; the first unit of that type and model "
+                "decides (recital 39 of Regulation (EU) 2026/1744).",
+            ),
             (
                 "significant_change_after_application_date",
                 "Art. 111(2) AIA: a significant design change as from the Chapter III date. "

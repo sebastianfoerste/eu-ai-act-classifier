@@ -1,6 +1,6 @@
 {
   "system": "CreditSightScore",
-  "regulation": "Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024",
+  "regulation": "Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744 (consolidated version of 27 July 2026)",
   "risk_tier": "high_risk",
   "disposition": "determined",
   "scope": {
@@ -29,6 +29,13 @@
     }
   ],
   "obligations": [
+    {
+      "article": "Art. 4 AIA",
+      "citation_verified": true,
+      "title": "AI literacy",
+      "applies_to": "provider",
+      "requirement": "Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026."
+    },
     {
       "article": "Art. 9 AIA",
       "citation_verified": true,
@@ -118,14 +125,14 @@
       "citation_verified": true,
       "title": "Post-market monitoring",
       "applies_to": "provider",
-      "requirement": "Operate a post-market monitoring system."
+      "requirement": "Operate a post-market monitoring system based on a post-market monitoring plan, which is part of the Annex IV technical documentation. The Commission's guidance on the plan, including a template, is due by 2 September 2027 (Art. 72(3) AIA as replaced by Art. 1, point (30) of Regulation (EU) 2026/1744)."
     },
     {
       "article": "Art. 73 AIA",
       "citation_verified": true,
       "title": "Serious incident reporting",
       "applies_to": "provider",
-      "requirement": "Report serious incidents to the market surveillance authority."
+      "requirement": "Report serious incidents to the market surveillance authorities of the Member States where the incident occurred (Art. 73(1) AIA), or to the AI Office where it is exclusively competent for the system under Art. 75(1), as for AI systems based on a general-purpose AI model developed by the same provider or its undertaking, with the exceptions listed there, and systems of designated very large online platforms or search engines (Art. 75(1a) AIA, inserted by Art. 1, point (31) of Regulation (EU) 2026/1744)."
     }
   ],
   "documentation_required": [
@@ -167,6 +174,19 @@
   ],
   "transparency_obligations": [],
   "obligation_graph": [
+    {
+      "obligation_id": "literacy.provider.4",
+      "article": "Art. 4 AIA",
+      "actor": "provider",
+      "trigger": "Provider of an AI system within the scope of the Regulation, whatever its risk tier.",
+      "requirement": "Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.",
+      "evidence_artifact": "AI literacy measures record: training plan, materials and participation by role.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2025-02-02",
+      "review_status": "determined",
+      "application_date_note": null
+    },
     {
       "obligation_id": "high-risk.provider.16",
       "article": "Art. 16 AIA",
@@ -354,7 +374,7 @@
       "article": "Art. 72 AIA",
       "actor": "provider",
       "trigger": "High-risk AI system lifecycle.",
-      "requirement": "Operate a post-market monitoring system and plan.",
+      "requirement": "Operate a post-market monitoring system based on a post-market monitoring plan, which is part of the Annex IV technical documentation. The Commission's guidance on the plan, including a template, is due by 2 September 2027 (Art. 72(3) AIA as replaced by Art. 1, point (30) of Regulation (EU) 2026/1744).",
       "evidence_artifact": "Post-market monitoring plan.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
@@ -367,7 +387,7 @@
       "article": "Art. 73 AIA",
       "actor": "provider",
       "trigger": "Serious incident identified.",
-      "requirement": "Report serious incidents to the market surveillance authority.",
+      "requirement": "Report serious incidents to the market surveillance authorities of the Member States where the incident occurred (Art. 73(1) AIA), or to the AI Office where it is exclusively competent for the system under Art. 75(1), as for AI systems based on a general-purpose AI model developed by the same provider or its undertaking, with the exceptions listed there, and systems of designated very large online platforms or search engines (Art. 75(1a) AIA, inserted by Art. 1, point (31) of Regulation (EU) 2026/1744).",
       "evidence_artifact": "Serious incident register.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
@@ -532,21 +552,30 @@
     },
     {
       "source_id": "gpai-provider-guidelines",
-      "title": "Guidelines for providers of general-purpose AI models",
+      "title": "Guidelines on the scope of obligations for providers of general-purpose AI models",
       "legal_status": "nonbinding_guidance",
-      "url": "https://digital-strategy.ec.europa.eu/en/node/13982/printable/pdf",
+      "url": "https://digital-strategy.ec.europa.eu/en/library/guidelines-scope-obligations-providers-general-purpose-ai-models-under-ai-act",
       "retrieved_on": "2026-06-18",
       "citation_label": "GPAI provider guidelines",
       "implementation_note": "Nonbinding scope and compliance support for GPAI model providers."
     },
     {
-      "source_id": "transparency-guidance",
-      "title": "Transparency guidance status tracker",
+      "source_id": "transparency-guidelines-2026",
+      "title": "Commission guidelines on the transparency obligations under Art. 50 AIA",
       "legal_status": "nonbinding_guidance",
-      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
-      "retrieved_on": "2026-06-18",
-      "citation_label": "Transparency guidance tracker",
-      "implementation_note": "Placeholder advisory source until final Art. 50 guidance is published."
+      "url": "https://digital-strategy.ec.europa.eu/en/library/guidelines-transparency-obligations-providers-and-deployers-ai-systems",
+      "retrieved_on": "2026-10-31",
+      "citation_label": "Art. 50 transparency guidelines",
+      "implementation_note": "Nonbinding Commission guidance on Art. 50(1) to (4), published 20 July 2026; advisory overlay only."
+    },
+    {
+      "source_id": "ai-content-code-of-practice",
+      "title": "Code of Practice on marking and labelling of AI-generated content",
+      "legal_status": "nonbinding_guidance",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content",
+      "retrieved_on": "2026-10-31",
+      "citation_label": "Code of Practice on AI-generated content",
+      "implementation_note": "Voluntary code, final text published 10 June 2026, on the Art. 50(2) marking and detection and Art. 50(4) labelling duties. The Commission's page states that the Commission and the Board confirmed it as an adequate voluntary tool."
     }
   ],
   "advisory_notes": [],
