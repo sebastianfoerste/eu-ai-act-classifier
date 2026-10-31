@@ -7,6 +7,20 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Omnibus coverage map
+
+#### Added
+
+- `docs/omnibus-coverage.md` lists all 43 amending points of Art. 1 of
+  Regulation (EU) 2026/1744 and its Arts. 2 to 4 with the classifier's
+  status for each (encoded, flagged for review, outside the classifier's
+  scope, or not encoded) and where the code or the claim ledger handles it.
+  `tests/test_omnibus_coverage.py` checks that every point has one row. The
+  claim ledger's "in part" row points to the map instead of saying the other
+  amendments were not checked, and a PENDING row records the corrigendum
+  CELEX 32026R1744R(01) (OJ L 2026/90810, 29.9.2026; German language version
+  only per the Publications Office metadata; not read).
+
 ### Precision notes from Regulation (EU) 2026/1744
 
 #### Changed

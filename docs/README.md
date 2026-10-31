@@ -13,6 +13,7 @@ Every guide in `docs/` and the main project files. The [README](../README.md) co
 
 - [docs/methodology.md](methodology.md): how Regulation (EU) 2024/1689 is encoded, including gate order and source versions; the legal audit surface
 - [docs/REGULATORY_CLAIM_LEDGER.md](REGULATORY_CLAIM_LEDGER.md): the record of legal claims, including the amended high-risk application dates, each with its primary source, access date and review note
+- [docs/omnibus-coverage.md](omnibus-coverage.md): every amending point of Regulation (EU) 2026/1744 (Digital Omnibus on AI) with its status in the classifier: encoded, flagged, outside scope or a gap
 - [docs/source-status-model.md](source-status-model.md): binding text, provisional context and nonbinding guidance
 - [docs/deterministic-classification-vs-legal-advice.md](deterministic-classification-vs-legal-advice.md): what the classifier does and does not do
 - [docs/reviewer-notes.md](reviewer-notes.md): review triggers and the practical review rule
