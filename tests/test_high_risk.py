@@ -32,6 +32,11 @@ def test_profiling_forecloses_derogation() -> None:
     report = classify(profile)
     assert report.risk_tier is RiskTier.HIGH
     assert report.disposition is Disposition.DETERMINED
+    # The profiling rule is the third subparagraph of Art. 6(3) (the first holds the
+    # derogation, the second its conditions (a) to (d)).
+    (finding,) = [f for f in report.findings if f.rule_id == "HIGHRISK.III.4.a"]
+    assert "(Art. 6(3), third subparagraph, AIA)" in finding.detail
+    assert "subpara. 2" not in finding.detail
 
 
 def test_derogation_triggers_review() -> None:

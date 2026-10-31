@@ -7,6 +7,15 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Art. 6(3) profiling rule cited to the third subparagraph
+
+#### Fixed
+
+- The finding for an Annex III system that performs profiling, the high-risk
+  rule docstring and the `Derogation` field description (JSON Schema and
+  field guide) cited "Art. 6(3) subpara. 2". The profiling rule is the third
+  subparagraph of Art. 6(3); the second holds the conditions (a) to (d).
+
 ### Art. 4 AI literacy duty
 
 #### Added

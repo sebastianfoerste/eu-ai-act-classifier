@@ -173,7 +173,8 @@ class Derogation(BaseModel):
     An Annex III system is *not* high-risk if it does not pose a significant
     risk of harm, but only where one of the four conditions holds AND the
     system does not perform profiling of natural persons. Profiling always
-    keeps the system high-risk (Art. 6(3) subpara. 2 AIA).
+    keeps the system high-risk (Art. 6(3), third subparagraph, AIA; the
+    conditions are in the second subparagraph).
     """
 
     narrow_procedural_task: bool = False
