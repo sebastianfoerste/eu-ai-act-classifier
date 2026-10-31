@@ -6,6 +6,10 @@ their own, with no higher tier, they place the system in the limited-risk tier.
 
 Each item applies to one role. Where the profile does not hold it, the item stays
 listed and an open question names the role, so the result goes to review.
+
+For an Annex I, Section B product the items stay listed on the conservative reading of
+Art. 2(2) AIA, and an open question carries the counsel flag, so the result goes to
+review.
 """
 
 from __future__ import annotations
@@ -14,6 +18,8 @@ from ..catalog import TRANSPARENCY, section_b_kept_flag
 from ..models import Finding, Obligation, RiskTier, Role, Severity
 from ..transitions import section_b_product
 from .base import GateOutput
+
+_SECTION_B_FLAG = section_b_kept_flag("Art. 50", "the Art. 50 duties")
 
 
 def evaluate(profile) -> GateOutput:
@@ -34,7 +40,9 @@ def evaluate(profile) -> GateOutput:
         detail = "Art. 50 AIA transparency duties are triggered."
         # Art. 2(2) AIA lists Art. 50 for no Section B product, Annex III area or not.
         if section_b_product(profile):
-            detail += f" {section_b_kept_flag('Art. 50', 'the Art. 50 duties')}"
+            detail += f" {_SECTION_B_FLAG}"
+            # The dossier and the cockpit list open questions, not finding details.
+            out.open_questions.append(f"Art. 2(2) AIA and Art. 50 AIA: {_SECTION_B_FLAG}")
         out.findings.append(
             Finding(
                 rule_id="TRANSPARENCY.50",

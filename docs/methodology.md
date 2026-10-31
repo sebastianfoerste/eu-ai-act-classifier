@@ -96,8 +96,8 @@ Art. 6(1), in particular not Art. 6(2), so a
 Section B product that also falls in an Annex III area would get only the
 listed provisions. The report keeps the Annex III obligations as the
 conservative reading, since the system is also classified high-risk under
-Art. 6(2) and Annex III. The Art. 6(1) finding and the Art. 2(2) graph item,
-which is `review_required`, state both after
+Art. 6(2) and Annex III. The Art. 6(1) finding, the Art. 2(2) graph item,
+which is `review_required`, and an open question state both after
 "Literal reading, confirm with counsel". Where an Art. 6(3) derogation is
 asserted, they add that only the Art. 2(2) provisions apply if it is
 established. As for every Section B product, Art. 5 and Art. 50 are kept and
@@ -107,8 +107,20 @@ Art. 2(2) lists neither Art. 5 nor Art. 50, so on its wording neither applies
 to a Section B product. The report keeps the prohibition and the Art. 50
 duties as the conservative reading for every Section B product, Annex III
 area or not, and flags both with "Literal reading, confirm with counsel": the
-Art. 5 finding and an open question, and the `TRANSPARENCY.50` finding and
-each Art. 50 graph item, which is `review_required`.
+Art. 5 finding and an open question, and the `TRANSPARENCY.50` finding, each
+Art. 50 graph item, which is `review_required`, and an open question.
+
+Each of these three Section B flags asks whether a whole set of duties
+reaches the product, so each is also an open question, and the disposition
+becomes `requires_review`. The question opens with the provisions it
+concerns ("Art. 2(2) AIA and Art. 6(2) AIA", "Art. 2(2) AIA and Art. 5 AIA"
+or "Art. 2(2) AIA and Art. 50 AIA") and repeats the flag. The report still
+picks no side: the duties stay listed. A Section B product with no Annex III
+area and no Art. 5 or Art. 50 screen carries none of these flags. Other
+counsel flags, such as the Art. 113 dating flags on the items of a plain
+Annex III report or the Art. 50 flag for a high-risk system already on the
+market, stay on their findings and items and do not by themselves change the
+disposition.
 
 Annex III systems are treated as high-risk unless an Art. 6(3) derogation is
 asserted. An asserted derogation keeps the tier high-risk and changes the

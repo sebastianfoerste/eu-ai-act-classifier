@@ -47,8 +47,10 @@ Art. 2(2) AIA lists neither Art. 5 nor Art. 50 for a Section B product. The
 report keeps both as the conservative reading, and a Section B product also in
 an Annex III area keeps the Annex III duties. Each kept position is flagged
 "Literal reading, confirm with counsel" for the reviewer to confirm: Art. 5 on
-its finding and an open question, Art. 50 on its finding and items, and the
-Annex III duties on the Art. 6(1) finding and the Art. 2(2) item.
+its finding, Art. 50 on its finding and items, and the Annex III duties on the
+Art. 6(1) finding and the Art. 2(2) item. Each of the three is also an open
+question, so such a report is never `determined`. Answer it by confirming
+whether the kept duties apply to the product.
 
 ### Article 6(3) Derogation Claims
 

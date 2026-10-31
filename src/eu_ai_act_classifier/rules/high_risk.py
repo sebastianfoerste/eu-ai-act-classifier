@@ -7,6 +7,10 @@ derogation entirely (Art. 6(3) subpara. 2). An asserted-but-unconfirmed
 derogation is not silently applied: the system stays high-risk and the call is
 handed to review, because Art. 6(3)/(4) require a documented assessment before
 a system leaves the high-risk tier.
+
+An Annex I, Section B product that also falls in an Annex III area keeps the Annex III
+duties on the conservative reading of Art. 2(2) AIA, and an open question carries the
+counsel flag, so the result goes to review.
 """
 
 from __future__ import annotations
@@ -56,7 +60,10 @@ def evaluate(profile) -> GateOutput:
             f"{_ANNEX_I_SECTION_NOTE[profile.annex_i_section]}"
         )
         if section_b_product(profile) and profile.annex_iii_area is not None:
-            detail += f" {section_b_annex_iii_flag(derogation_asserted(profile))}"
+            flag = section_b_annex_iii_flag(derogation_asserted(profile))
+            detail += f" {flag}"
+            # The dossier and the cockpit list open questions, not finding details.
+            out.open_questions.append(f"Art. 2(2) AIA and Art. 6(2) AIA: {flag}")
         out.findings.append(
             Finding(
                 rule_id="HIGHRISK.6.1",

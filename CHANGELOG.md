@@ -7,6 +7,26 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Section B flags reach the review gate
+
+#### Fixed
+
+- A report for an Annex I, Section B product returned `determined` when it
+  also fell in an Annex III area or had an Art. 50 screen, although Art. 2(2)
+  AIA lists neither Art. 6(2) nor Art. 50 and the report keeps those duties
+  only as the conservative reading. The counsel flag sat in the finding
+  detail and on the graph items, which the dossier and the cockpit do not
+  list as open questions. `high_risk.evaluate` now adds the open question
+  "Art. 2(2) AIA and Art. 6(2) AIA" and `transparency.evaluate` adds
+  "Art. 2(2) AIA and Art. 50 AIA", each repeating the flag, as
+  `prohibited.evaluate` already did for Art. 5. Such a report is now
+  `requires_review`. The duties stay listed, and the two PENDING ledger rows
+  stay open. Other counsel flags, such as the Art. 113 dating flags on a
+  plain Annex III report and the Art. 50 flag for a high-risk system already
+  on the market, do not change the disposition: `examples/credit_scoring.json`
+  and a plain Annex III(5)(b) provider report stay `determined`.
+  `docs/methodology.md` ("High-Risk Logic") states the rule.
+
 ### Cockpit sets every Art. 50 fact
 
 #### Fixed

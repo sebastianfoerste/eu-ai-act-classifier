@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
 
 from eu_ai_act_classifier import AnnexIII, Role, SystemProfile, classify, render_report
 from eu_ai_act_classifier.artifacts import render_artifact, write_artifacts
+from eu_ai_act_classifier.catalog import section_b_kept_flag
 from eu_ai_act_classifier.cli import main
 from eu_ai_act_classifier.dossier import build_review_dossier, render_review_dossier_markdown
 from eu_ai_act_classifier.models import (
@@ -1197,6 +1199,118 @@ def test_art_5_section_b_flag_is_also_an_open_question() -> None:
     )
     plain = classify(SystemProfile(name="x", prohibited_practices=["5.1.f"]))
     assert not any("Art. 2(2)" in q for q in plain.open_questions)
+
+
+# The Art. 50 and Annex III flags for a Section B product reach the review gate as the
+# Art. 5 flag does: the report keeps the duties and asks counsel to confirm the reading.
+SECTION_B_ART_50_QUESTION = "Art. 2(2) AIA and Art. 50 AIA: Literal reading, confirm with counsel"
+SECTION_B_ANNEX_III_QUESTION = (
+    "Art. 2(2) AIA and Art. 6(2) AIA: Literal reading, confirm with counsel"
+)
+
+
+@pytest.mark.parametrize("derogation", [False, True], ids=["no-derogation", "derogation"])
+def test_section_b_annex_iii_flag_is_also_an_open_question(derogation: bool) -> None:
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.PROVIDER],
+            annex_iii_area=AnnexIII.CREDITWORTHINESS,
+            derogation=Derogation(narrow_procedural_task=derogation),
+            **SECTION_B,
+        )
+    )
+
+    assert report.risk_tier is RiskTier.HIGH
+    assert report.disposition is Disposition.REQUIRES_REVIEW
+    (question,) = [q for q in report.open_questions if q.startswith(SECTION_B_ANNEX_III_QUESTION)]
+    assert "keeps the Annex III duties as the conservative reading" in question
+    assert ("unless the asserted Art. 6(3) derogation is established" in question) is derogation
+    # The question repeats the flag on the Art. 6(1) finding, word for word.
+    (finding,) = [f for f in report.findings if f.rule_id == "HIGHRISK.6.1"]
+    assert question.removeprefix("Art. 2(2) AIA and Art. 6(2) AIA: ") in finding.detail
+    # The Annex III duties stay listed.
+    assert {"Art. 9 AIA", "Art. 2(2) AIA"} <= {ob.article for ob in report.obligations}
+
+
+@pytest.mark.parametrize(
+    "screen",
+    [
+        "interacts_with_natural_persons",
+        "generates_synthetic_content",
+        "deploys_emotion_or_biometric_categorisation",
+        "generates_deepfakes",
+    ],
+)
+def test_section_b_art_50_flag_is_also_an_open_question(screen: str) -> None:
+    # Both roles, so no Art. 50 item is for a role the profile does not hold.
+    report = classify(
+        SystemProfile(name="x", roles=[Role.PROVIDER, Role.DEPLOYER], **{screen: True}, **SECTION_B)
+    )
+
+    assert report.disposition is Disposition.REQUIRES_REVIEW
+    assert report.open_questions == [
+        f"Art. 2(2) AIA and Art. 50 AIA: {section_b_kept_flag('Art. 50', 'the Art. 50 duties')}"
+    ]
+    assert report.transparency_obligations
+
+
+def test_section_b_chatbot_in_an_annex_iii_area_asks_both_questions_once() -> None:
+    report = classify(
+        SystemProfile(
+            name="AI-enabled machinery that screens workers and talks to them",
+            interacts_with_natural_persons=True,
+            generates_synthetic_content=True,
+            **SECTION_B_ANNEX_III,
+        )
+    )
+
+    assert report.disposition is Disposition.REQUIRES_REVIEW
+    # One question per flag, in gate order, however many Art. 50 items there are.
+    annex_iii, art_50 = [q for q in report.open_questions if q.startswith("Art. 2(2) AIA")]
+    assert annex_iii.startswith(SECTION_B_ANNEX_III_QUESTION)
+    assert art_50.startswith(SECTION_B_ART_50_QUESTION)
+
+
+def test_other_counsel_flags_leave_the_disposition_determined() -> None:
+    # The disposition does not follow every counsel flag: only the Section B flags, which
+    # ask whether a whole obligation set applies, become open questions.
+    credit_scoring = json.loads(
+        (Path(__file__).resolve().parent.parent / "examples" / "credit_scoring.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    plain_5_b = classify(
+        SystemProfile(name="x", roles=[Role.PROVIDER], annex_iii_area=AnnexIII.CREDITWORTHINESS)
+    )
+
+    assert any(
+        "Literal reading, confirm with counsel" in (item.application_date_note or "")
+        for item in plain_5_b.obligation_graph
+    )
+    for report in (
+        classify(SystemProfile.model_validate(credit_scoring)),
+        plain_5_b,
+        classify(
+            SystemProfile(
+                name="medical device software in an Annex III area",
+                roles=[Role.PROVIDER],
+                annex_iii_area=AnnexIII.CREDITWORTHINESS,
+                annex_i_safety_component=True,
+                annex_i_third_party_assessment=True,
+                annex_i_section="A",
+            )
+        ),
+        classify(
+            SystemProfile(
+                name="chatbot", roles=[Role.PROVIDER], interacts_with_natural_persons=True
+            )
+        ),
+        # A Section B product with no Annex III area and no Art. 50 screen carries no flag.
+        classify(SystemProfile(name="machinery", **SECTION_B)),
+    ):
+        assert report.disposition is Disposition.DETERMINED, (report.system, report.open_questions)
+        assert not any(q.startswith("Art. 2(2) AIA") for q in report.open_questions)
 
 
 def test_legacy_art_50_items_go_to_review_and_the_finding_carries_the_flag() -> None:
