@@ -115,8 +115,10 @@ Changes since 0.2.2.
   commit, so a pull request run or a failed check publishes nothing. Until
   now Pages published `docs/` from the branch on every push to `main`, before
   CI finished. The job takes effect once the repository's Pages source is
-  switched to GitHub Actions. `tests/test_ci_workflow.py` checks the job's
-  trigger, dependencies, permissions and pins.
+  switched to GitHub Actions. Like every other job, it has a 15-minute
+  timeout and its checkout does not persist credentials.
+  `tests/test_ci_workflow.py` checks the job's trigger, dependencies,
+  permissions and pins, and the timeout and checkout of every job.
 
 ### CI trust signals and dependency floors
 

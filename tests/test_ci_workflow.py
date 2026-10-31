@@ -121,6 +121,25 @@ def test_every_action_is_pinned_to_a_commit_sha() -> None:
     assert [action for action in uses if not PINNED_ACTION.fullmatch(action)] == []
 
 
+def test_every_job_has_a_timeout_and_its_checkout_keeps_no_credentials() -> None:
+    # Every job is bounded, and no checkout leaves the token in .git/config for later
+    # steps. The deploy job holds pages: write and id-token: write, so it needs both most.
+    jobs = _jobs()
+    assert "deploy" in jobs, "ci.yml has no deploy job"
+    for name, job in jobs.items():
+        assert "timeout-minutes" in _scalars(job, 4), f"{name} has no timeout-minutes"
+        checkouts = [
+            step
+            for step in _steps(job)
+            if str(step.get("uses", "")).startswith("actions/checkout@")
+        ]
+        assert checkouts, f"{name} has no checkout step"
+        for step in checkouts:
+            assert step["with"].get("persist-credentials") == "false", (
+                f"{name} checks out with persisted credentials"
+            )
+
+
 def test_deployment_doc_names_the_ci_deploy_job() -> None:
     text = DEPLOYMENT.read_text(encoding="utf-8")
     assert "the `deploy` job in `.github/workflows/ci.yml`" in text
