@@ -7,6 +7,17 @@ pull requests.
 
 Changes since 0.2.2.
 
+### npm advisories fail CI
+
+#### Changed
+
+- The `web` job in `.github/workflows/ci.yml` runs
+  `npm audit --audit-level=high` right after `npm ci`. A high or critical
+  advisory in `web/package-lock.json` now fails CI before the cockpit's tests
+  and build run. Moderate and low advisories are still listed but do not fail
+  the job. The current lockfile passes with 0 vulnerabilities.
+  `tests/test_ci_workflow.py` checks the step and its place in the job.
+
 ### Cockpit POST routes reject cross-site writes
 
 #### Fixed
