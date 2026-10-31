@@ -7,6 +7,17 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Readable CLI validation errors
+
+#### Fixed
+
+- An invalid profile no longer prints pydantic's raw report with
+  `errors.pydantic.dev` links. The CLI prints one line per error as
+  `field: message`: an enum error lists the allowed values and the value
+  given, an unknown field says so and points at `--schema profile`, and a
+  date error shows the validator's own message. Exit code stays 2.
+  `tests/test_cli.py` covers every error path and the `--strict` exit codes.
+
 ### Precision notes from Regulation (EU) 2026/1744
 
 #### Changed
