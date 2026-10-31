@@ -7,6 +7,17 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Research notes brought up to date
+
+#### Changed
+
+- `docs/research/2026-10-competitive-landscape.md` marks the Art. 50(2)
+  grace-period conflict as resolved (Art. 111(4) AIA: "by 2 December 2026";
+  recital (38): a four-month transitional period), and
+  `docs/research/adaptation-plan.md` notes that the Art. 5(1)(ba)/(bb)
+  screens are encoded since PR #30 and the Art. 4 duty since this release,
+  each as a dated update line next to the original text.
+
 ### Omnibus coverage map
 
 #### Added
