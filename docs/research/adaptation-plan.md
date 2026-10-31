@@ -222,7 +222,7 @@ D2 and D4 are built; the others are specified.
 
 ## Needs owner decision
 
-1. **Unknown on `significant_change_after_application_date`.** Resolved in the audit follow-up: "I don't know" now blocks, and a profile that leaves the field at its default opens with the question unanswered. Open: whether the engine should raise a review question for a null value instead, which would let the run proceed.
+1. **Unknown on `significant_change_after_application_date`.** Resolved (owner decision, 28 October 2026): the intake asks the question only for a high-risk system with a date before its Chapter III date, where a null value already raises the engine's Art. 111(2) open question, so "I don't know" records null and the run proceeds to review. Elsewhere the engine reports a given answer as not used, and the bundled examples, which give no date, no longer open with the question unanswered. The Art. 49(3) public-authority deployer question still blocks on "I don't know" for high-risk examples (item 2).
 2. **Nullable screens.** Most screens are non-nullable booleans, so the intake blocks on "I don't know". Making more fields nullable with engine-side review questions would let more runs proceed ([ADR 0007](../adr/0007-systemprofile-change-proposals.md)).
 3. **Art. 50(2) grace period.** Secondary sources disagree (2 December 2026 versus 2 December 2027, both Claimed). The engine and ledger use 2026-12-02; please re-check against the consolidated text. Nothing was changed.
 4. **Art. 5(1)(ba)/(bb), Art. 5(1a)/(1b) and Art. 4 screens (H7).** Parked until the wording can be checked on EUR-Lex; each needs a `PENDING` ledger row and a test.

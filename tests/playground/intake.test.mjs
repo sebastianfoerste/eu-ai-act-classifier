@@ -90,18 +90,35 @@ test("every recorded unknown says it routes the result to review", () => {
   for (const question of definition.questions) {
     if (!question.unknown || question.unknown === "block") continue;
     assert.match(describeAnswer(definition, question, UNKNOWN), /routed to review/, question.id);
-    assert.notDeepEqual(question.unknown.value, readField(definition.defaults, question.field), question.id);
+    // Equal to the default only for a conditional null that fails closed where asked.
+    if (question.unknown.value === readField(definition.defaults, question.field)) {
+      assert.ok(question.unknown.value === null && question.show_if, question.id);
+    }
   }
 });
 
-test("a model-default null is left unanswered, not shown as I don't know", () => {
+test("a model-default null opens as I don't know only where that answer writes null", () => {
   for (const profile of Object.values(samples.profiles)) {
     const answers = profileToAnswers(definition, profile);
-    assert.equal(answers.significant_change, undefined);
     for (const question of definition.questions) {
       if (answers[question.id] === UNKNOWN) assert.equal(question.unknown?.value, null, question.id);
     }
+    // No bundled example gives a date, so the Art. 111(2) change question is not asked.
+    assert.ok(!askedQuestions(definition, answers).some(q => q.id === "significant_change"));
   }
+});
+
+test("the change question is asked only before the Chapter III date", () => {
+  const ask = profile => askedQuestions(definition, profileToAnswers(definition, profile)).some(q => q.id === "significant_change");
+  const annexIII = { name: "x", annex_iii_area: "III.4.a" };
+  assert.equal(ask({ ...annexIII, placing_on_market_date: "2027-12-01" }), true);
+  assert.equal(ask({ ...annexIII, putting_into_service_date: "2027-12-01" }), true);
+  assert.equal(ask({ ...annexIII, placing_on_market_date: "2027-12-02" }), false);
+  assert.equal(ask(annexIII), false);
+  assert.equal(ask({ ...annexIII, prohibited_practices: ["5.1.c"], placing_on_market_date: "2025-01-01" }), false);
+  const annexI = { name: "x", annex_i_safety_component: true, annex_i_third_party_assessment: true, annex_i_section: "A" };
+  assert.equal(ask({ ...annexI, placing_on_market_date: "2028-01-01" }), true);
+  assert.equal(ask({ ...annexI, annex_i_section: "B", placing_on_market_date: "2028-01-01" }), false);
 });
 
 test("opening a profile reports values the questions would drop", () => {

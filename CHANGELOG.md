@@ -118,6 +118,44 @@ Changes since 0.2.2.
   switched to GitHub Actions. `tests/test_ci_workflow.py` checks the job's
   trigger, dependencies, permissions and pins.
 
+### CI trust signals and dependency floors
+
+#### Changed
+
+- CI runs the Python suite on 3.13 and 3.14, gates statement coverage at 94 %
+  (the integer part of the measured total; `pytest-cov` joins the `dev`
+  extra), runs the suite at the lowest declared dependency versions
+  (`uv run --isolated --resolution lowest-direct`) and installs the built
+  wheel into a clean environment to run the CLI, expecting exit 1 for
+  `examples/social_scoring.json --strict`. Each job has a timeout, checkouts
+  do not persist credentials, and a new push cancels the superseded run of a
+  pull request.
+- The declared `pydantic` floor rises from `>=2.6` to `>=2.11`, the lowest
+  version the lowest-direct job passes with on Python 3.13; the `mcp` extra
+  floor (1.21.1) passes there too. The package classifiers add Python 3.14.
+
+### Art. 111(2) change answer asked only where it is used (#43)
+
+#### Changed
+
+- The guided intake asks whether the system changed significantly
+  (`significant_change_after_application_date`) only for a high-risk system,
+  with no prohibited practice, placed on the market or put into service
+  before its Chapter III date. There "I don't know" records `null`, which
+  raises the Art. 111(2) open question, so the run goes to review instead of
+  stopping. Profiles without such a date, the bundled examples among them, no
+  longer open with the question unanswered.
+- Where Art. 111(2) cannot use a given change answer (no date before the
+  Chapter III date, no high-risk route, a Section B product without an
+  Annex III area, or a prohibited practice), the scope check states that the
+  answer is not used instead of echoing it. For a prohibited practice, the
+  Art. 111(2) "not applied" sentence now appears only when a date or
+  public-authority use is given.
+- A profile that gives a change answer without such a date, as share links
+  and drafts saved from the guided mode before this change do, now opens
+  only in the JSON editor: the guided mode would drop the answer. It
+  classifies the same there.
+
 ### Binding result apart from guidance notes in the playground (#38)
 
 #### Changed
@@ -264,6 +302,24 @@ Changes since 0.2.2.
 - `tests/test_docs.py` finds the server's tools by their `@server.tool(...)`
   decorator with or without arguments; it matched only `@server.tool()`. A new
   test checks that it finds the same tools as the server registers.
+
+### eu-reg-mcp recommendation (#13)
+
+#### Changed
+
+- When `mcp.server.fastmcp` does not import, the MCP server's exit message
+  still gives the pip, uvx and clone commands, and now ends by recommending
+  eu-reg-mcp for Claude Code and Claude Desktop:
+  `uvx --python 3.13 --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp`.
+- The README, `docs/surfaces.md` and `docs/mcp-configuration-guide.md`
+  recommend eu-reg-mcp ahead of this package's own server. The guide and
+  `docs/surfaces.md` also give the clone command
+  `uv run --extra mcp eu-ai-act-classifier-mcp`.
+- Every uvx command for eu-reg-mcp, and the exit message's uvx command for
+  this package's server, passes `--python 3.13`, as the README and the
+  guides already did for this package's server. eu-reg-mcp, the linter and
+  this classifier require Python 3.13 or later; without the flag, uvx fails
+  with `No solution found` when the default Python is older.
 
 ## 0.2.2 (2026-10-23)
 

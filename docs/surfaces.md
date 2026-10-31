@@ -32,7 +32,7 @@ Reports and draft artifacts use a versioned source manifest. The current binding
 
 The [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) runs the classifier client-side with Pyodide. It opens on guided questions: one question per page with the article under it, an "I don't know" answer where the fact may be open, and a check-answers page that also lists every value left at its default. "I don't know" never becomes "no": it records an unconfirmed value that routes the result to review, marks the Annex III point as unsettled, or pauses the run until counsel answers. The JSON editor stays available as a second mode: pick a synthetic example or paste a `SystemProfile`, classify it, then export the JSON or text report. A field guide lists every input field and its allowed values.
 
-The questions, their order and when each is asked come from `src/eu_ai_act_classifier/intake.py`; the browser only interprets the generated `intake.json`. `tests/test_intake.py` checks that every example round-trips through the questions, that every "I don't know" either pauses the run or yields `requires_review`, and, over grids of states the intake can reach, that no answer to a skipped question changes the classification, apart from the engine's own note that a value given there is not used. Nonbinding advisory notes are outside that check for a profile outside the AI Act's scope. The pinpoint shown under a question is always one the engine already cites; the intake adds no citation of its own.
+The questions, their order and when each is asked come from `src/eu_ai_act_classifier/intake.py`; the browser only interprets the generated `intake.json`. `tests/test_intake.py` checks that every example round-trips through the questions, that every "I don't know" either pauses the run or yields `requires_review`, and, over grids of states the intake can reach, that no answer to a skipped question changes the classification, apart from the engine's own note that a value given there is not used. Nonbinding advisory notes are outside that check for a profile outside the AI Act's scope. The Art. 111(2) significant-change question is asked only for a high-risk system with a date before its Chapter III date, the one case where the answer changes the result; there "I don't know" leaves the value open and the engine raises an Art. 111(2) open question. Elsewhere the engine reports a given answer as not used. The pinpoint shown under a question is always one the engine already cites; the intake adds no citation of its own.
 
 "Create share link" puts the profile, compressed, in the address after the `#`. Browsers do not send that part to a server. Opening such a link loads the profile for checking and never classifies it on its own. The link is encoded, not encrypted, and browser history sync and chat services keep it, so share synthetic or public facts only. Profiles that would need more than 8,000 characters are refused; save the JSON instead.
 
@@ -46,14 +46,22 @@ uv run python scripts/build_playground.py
 
 ## MCP and local API
 
-The MCP server ships in the [PyPI package](https://pypi.org/project/eu-ai-act-classifier/) behind the `[mcp]` extra. Install it and start the server:
+For Claude Code or Claude Desktop, use [eu-reg-mcp](https://github.com/sebastianfoerste/eu-reg-mcp), which serves this classifier as an MCP tool next to its MiCAR tools:
+
+```bash
+uvx --python 3.13 --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp
+```
+
+To register it with Claude Code, put `claude mcp add eu-reg --` in front of that command. The Claude Desktop configuration is in the [MCP configuration guide](mcp-configuration-guide.md#recommended-for-claude-eu-reg-mcp).
+
+This package's own MCP server ships in the [PyPI package](https://pypi.org/project/eu-ai-act-classifier/) behind the `[mcp]` extra. Install it and start the server:
 
 ```bash
 pip install "eu-ai-act-classifier[mcp]" "mcp<2"
 eu-ai-act-classifier-mcp
 ```
 
-Or let uv fetch and run it: `uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp`. Client configuration (Claude Desktop, Cursor) and the reason for the `mcp<2` constraint are in [mcp-configuration-guide.md](mcp-configuration-guide.md).
+Or let uv fetch and run it: `uvx --python 3.13 --from "eu-ai-act-classifier[mcp]" --with "mcp<2" eu-ai-act-classifier-mcp`. Client configuration (Claude Desktop, Cursor) and the reason for the `mcp<2` constraint are in [mcp-configuration-guide.md](mcp-configuration-guide.md). From a clone, `uv run --extra mcp eu-ai-act-classifier-mcp` runs your working copy with the pinned extra.
 
 Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1; the 0.2.0 extra does not.
 
