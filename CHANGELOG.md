@@ -7,6 +7,26 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Final Art. 50 guidance sources
+
+#### Changed
+
+- The source manifest replaces the "Transparency guidance status tracker"
+  placeholder with the Commission guidelines on the transparency obligations
+  under Art. 50 (published 20 July 2026) and the final Code of Practice on
+  marking and labelling of AI-generated content (published 10 June 2026;
+  Art. 50(2) and (4)), both `nonbinding_guidance` with their own retrieval
+  date (`TRANSPARENCY_SOURCE_RETRIEVED_ON`, 2026-10-31). The advisory note for
+  an Art. 50 trigger points to the guidelines; a system generating synthetic
+  content or deepfakes also gets a note on the Code. The note no longer says
+  to "track" guidance "when published".
+- The GPAI provider guidelines source points to the Commission's library page
+  for the guidelines instead of an on-the-fly printable PDF link; its
+  retrieval date is unchanged, as the page's last update (20 April 2026)
+  predates it.
+- `--verify-sources --update` moves all three retrieval dates together, still
+  only when every URL is verified.
+
 ### Art. 6(3) profiling rule cited to the third subparagraph
 
 #### Fixed

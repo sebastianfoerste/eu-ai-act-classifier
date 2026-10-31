@@ -41,8 +41,12 @@ agreements. No provisional AI Omnibus source remains in the current manifest.
 
 Nonbinding guidance appears only as advisory overlay or eval context. The
 overlay can point reviewers to Commission materials, the AI Act Service Desk,
-the GPAI Code of Practice and draft high-risk guidance. It never changes the
-binding classification.
+the GPAI Code of Practice, the draft high-risk guidelines, the Commission
+guidelines on the transparency obligations under Art. 50 (published
+20 July 2026) and the final Code of Practice on marking and labelling of
+AI-generated content (published 10 June 2026; Art. 50(2) and (4)). It never
+changes the binding classification. The Art. 50 sources carry their own
+retrieval date, 31 October 2026; the other advisory sources keep theirs.
 
 ## AI Literacy (Art. 4)
 

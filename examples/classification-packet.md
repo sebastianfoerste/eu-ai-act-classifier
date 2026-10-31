@@ -88,7 +88,8 @@ Source manifest:
   - Draft high-risk classification guidelines: nonbinding_guidance, retrieved 2026-06-18
   - GPAI Code of Practice: nonbinding_guidance, retrieved 2026-06-18
   - GPAI provider guidelines: nonbinding_guidance, retrieved 2026-06-18
-  - Transparency guidance tracker: nonbinding_guidance, retrieved 2026-06-18
+  - Art. 50 transparency guidelines: nonbinding_guidance, retrieved 2026-10-31
+  - Code of Practice on AI-generated content: nonbinding_guidance, retrieved 2026-10-31
 
 Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.

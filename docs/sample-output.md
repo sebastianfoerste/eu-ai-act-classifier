@@ -52,7 +52,7 @@ When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `exampl
 
 ![Actual CLI output of eu-ai-act-classify examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with its 15 obligations, the obligation graph, the binding application timeline and the source manifest](demo.png)
 
-*All 94 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
+*All 95 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
 
 ## CLI Report
 
