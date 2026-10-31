@@ -13,6 +13,7 @@ import pydantic
 import pytest
 
 from eu_ai_act_classifier import SystemProfile, classify, mcp_server, render_report
+from eu_ai_act_classifier.models import AnnexIII, ProhibitedPractice, Role
 
 ROOT = Path(__file__).resolve().parents[1]
 PIP_COMMAND = "pip install 'eu-ai-act-classifier[mcp]'"
@@ -187,8 +188,46 @@ def test_invalid_profile_is_rejected_with_a_tool_error_naming_the_field(tool: st
     with pytest.raises(ToolError, match=f"^Error executing tool {tool}: ") as excinfo:
         asyncio.run(server.call_tool(tool, {"profile": {**PROFILE, "roles": "bogus"}}))
 
-    # pydantic puts each failing field on its own line of the message.
-    assert "roles" in str(excinfo.value).splitlines()
+    # The SDK validates the typed `profile` argument before the tool runs; pydantic puts
+    # each failing field on its own line of the message.
+    assert "profile.roles" in str(excinfo.value).splitlines()
     cause = excinfo.value.__cause__
     assert isinstance(cause, pydantic.ValidationError)
-    assert [error["loc"] for error in cause.errors()] == [("roles",)]
+    assert [error["loc"] for error in cause.errors()] == [("profile", "roles")]
+
+
+@pytest.mark.parametrize("tool", ["classify_ai_system", "classify_ai_system_text"])
+def test_tools_carry_read_only_annotations(tool: str) -> None:
+    tools = {t.name: t for t in asyncio.run(_server().list_tools())}
+    annotations = tools[tool].annotations
+
+    assert annotations is not None
+    assert annotations.readOnlyHint is True
+    assert annotations.destructiveHint is False
+    assert annotations.idempotentHint is True
+    assert annotations.openWorldHint is False
+
+
+@pytest.mark.parametrize("tool", ["classify_ai_system", "classify_ai_system_text"])
+def test_tool_input_schema_is_the_profile_schema_with_its_enums(tool: str) -> None:
+    tools = {t.name: t for t in asyncio.run(_server().list_tools())}
+    schema = tools[tool].inputSchema
+    defs = schema["$defs"]
+
+    assert schema["properties"]["profile"] == {"$ref": "#/$defs/SystemProfile"}
+    assert "profile" in schema["required"]
+    assert set(defs["SystemProfile"]["properties"]) == set(SystemProfile.model_fields)
+    assert defs["ProhibitedPractice"]["enum"] == [p.value for p in ProhibitedPractice]
+    assert "5.1.ba" in defs["ProhibitedPractice"]["enum"]
+    assert defs["AnnexIII"]["enum"] == [a.value for a in AnnexIII]
+    assert defs["Role"]["enum"] == [r.value for r in Role]
+    placing = defs["SystemProfile"]["properties"]["placing_on_market_date"]
+    assert "first unit" in placing["description"]
+
+
+def test_profile_given_as_a_json_string_is_accepted() -> None:
+    expected = classify(SystemProfile.model_validate(PROFILE)).model_dump(mode="json")
+
+    blocks, _structured = _call("classify_ai_system", {"profile": json.dumps(PROFILE)})
+
+    assert json.loads(blocks[0].text) == expected

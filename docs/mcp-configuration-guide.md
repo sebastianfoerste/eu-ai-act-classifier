@@ -35,6 +35,12 @@ The rest of this guide covers this package's own two-tool server.
    ```
    Keep the `mcp<2` constraint. The server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1. The 0.2.0 extra does not rule out `mcp` 2.x, and the 0.2.0 server then exits with `The MCP extra is not installed` although the extra is installed. From a clone, `uv run --extra mcp eu-ai-act-classifier-mcp` runs your working copy with the pinned extra.
 
+## SDK version
+
+This server is built on the 1.x MCP Python SDK (`mcp.server.fastmcp.FastMCP`), pinned by the `[mcp]` extra to `mcp>=1.21.1,<2`. MCP Python SDK v2.0.0 (released 28 July 2026) renamed `FastMCP` to `MCPServer`, importable from `mcp.server.mcpserver`, moved every `mcp.server.fastmcp.*` submodule to `mcp.server.mcpserver.*` and raises `ModuleNotFoundError` for the old path; the `@server.tool()` decorator API is unchanged. The v1.x line is in maintenance mode and receives critical bug fixes and security patches only. Sources: the [v2.0.0 release notes](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.0.0) and the [migration guide](https://py.sdk.modelcontextprotocol.io/migration/). Whether and when to migrate is the owner's decision; until then the `<2` bound stays.
+
+Both tools type their `profile` parameter as the `SystemProfile` model, so a client receives the full input schema (field names, the `prohibited_practices` and `annex_iii_area` codes, date patterns) and the SDK validates the argument before the tool runs. Both carry the tool annotations `readOnlyHint`, `idempotentHint` (true) and `destructiveHint`, `openWorldHint` (false): they read the profile and compute, nothing more.
+
 ## Configuration for Claude Desktop
 
 To add the classifier to Claude Desktop, edit your `claude_desktop_config.json` file.

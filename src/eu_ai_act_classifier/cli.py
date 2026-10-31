@@ -127,7 +127,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         profile = SystemProfile.model_validate_json(raw)
     except ValidationError as exc:
-        print(f"error: invalid SystemProfile:\n{exc}", file=sys.stderr)
+        print("error: invalid SystemProfile:", file=sys.stderr)
+        for line in _validation_lines(exc):
+            print(line, file=sys.stderr)
         return 2
 
     report = classify(profile, include_advisory=args.advisory)
@@ -172,6 +174,25 @@ def main(argv: list[str] | None = None) -> int:
     ):
         return 1
     return 0
+
+
+def _validation_lines(exc: ValidationError) -> list[str]:
+    """One line per error, ``field: message``, readable without pydantic's documentation
+    links: an enum error lists the allowed values, an unknown field says so, and a
+    validator's own message is shown without the "Value error, " prefix."""
+
+    lines = []
+    for error in exc.errors(include_url=False):
+        location = ".".join(str(part) for part in error["loc"]) or "profile"
+        context = error.get("ctx") or {}
+        if error["type"] == "enum" and context.get("expected"):
+            message = f"allowed values: {context['expected']} (got {error['input']!r})"
+        elif error["type"] == "extra_forbidden":
+            message = "unknown field; `eu-ai-act-classify --schema profile` lists the fields"
+        else:
+            message = error["msg"].removeprefix("Value error, ")
+        lines.append(f"  {location}: {message}")
+    return lines
 
 
 if __name__ == "__main__":

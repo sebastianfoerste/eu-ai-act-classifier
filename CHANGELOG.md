@@ -7,6 +7,32 @@ pull requests.
 
 Changes since 0.2.2.
 
+### MCP tools: typed input schema and read-only annotations
+
+#### Changed
+
+- `classify_ai_system` and `classify_ai_system_text` type their `profile`
+  parameter as the `SystemProfile` model instead of `dict`, so `list_tools`
+  returns the profile's JSON Schema (field names, the `prohibited_practices`
+  and `annex_iii_area` codes, date patterns) and the SDK validates the
+  argument before the tool runs; an invalid profile is still a `ToolError`
+  naming the field, now as `profile.<field>`. Both tools carry
+  `readOnlyHint`/`idempotentHint` true and `destructiveHint`/`openWorldHint`
+  false. Verified on the locked mcp (1.30.0) and on the 1.21.1 floor. The
+  MCP guide notes that SDK v2 renamed `FastMCP` to `MCPServer` and that v1
+  receives security fixes only; the migration is the owner's call.
+
+### Readable CLI validation errors
+
+#### Fixed
+
+- An invalid profile no longer prints pydantic's raw report with
+  `errors.pydantic.dev` links. The CLI prints one line per error as
+  `field: message`: an enum error lists the allowed values and the value
+  given, an unknown field says so and points at `--schema profile`, and a
+  date error shows the validator's own message. Exit code stays 2.
+  `tests/test_cli.py` covers every error path and the `--strict` exit codes.
+
 ### Precision notes from Regulation (EU) 2026/1744
 
 #### Changed
