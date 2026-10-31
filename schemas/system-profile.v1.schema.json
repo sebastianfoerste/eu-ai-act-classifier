@@ -134,6 +134,7 @@
       "items": {
         "$ref": "#/$defs/Role"
       },
+      "minItems": 1,
       "title": "Roles",
       "type": "array"
     },

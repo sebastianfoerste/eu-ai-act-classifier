@@ -27,6 +27,34 @@ facts. The engine applies the rules and makes uncertainty visible.
 6. Resolution: highest tier, review disposition, source-backed obligations,
    timeline and open legal questions.
 
+## Operator Roles
+
+`roles` lists the roles the organisation holds for the system, and every
+obligation and graph item names the role it applies to. A profile holds at
+least one role: the model and the published profile schema (`minItems: 1`)
+reject an empty list, which used to classify with no duty at all. A
+general-purpose AI model provider (`gpai_provider`) is not, as such, an
+operator of the AI system (see Application Dates), so that role counts only
+for the Chapter V items.
+
+Where the roles do not match the facts the profile screens, the engine keeps
+every item it lists and adds an open question, so the disposition becomes
+`requires_review`. It drops no item and does not pick a role for the
+organisation. The questions cover four cases:
+
+1. A high-risk tier where the profile holds no operator role for the system
+   (provider, deployer, importer, distributor or authorized_representative).
+2. `is_gpai_model` without the `gpai_provider` role. The Chapter V items the
+   report lists stay listed.
+3. The `gpai_provider` role without `is_gpai_model`. The report lists no
+   Chapter V item.
+4. An Art. 50 item for a role the profile does not hold. The catalog lists
+   Art. 50(1) and (2) for the provider and Art. 50(3) and (4) for the
+   deployer. One question per missing role names the items and the role.
+
+Outside the AI Act's scope no gate runs and no item is listed, so none of
+these questions is asked there.
+
 ## Source Statuses
 
 Binding Level 1 text drives classification and obligations. The current source

@@ -45,6 +45,7 @@ from .transitions import (
     legacy_note_flag,
     legacy_transparency_flag,
     market_dates,
+    operator_roles,
     operators,
     public_authority_sentence,
     section_b_only,
@@ -53,6 +54,7 @@ from .transitions import (
 
 _FRIA_AREAS = {AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH}
 _FRIA_EXCLUDED_AREAS = {AnnexIII.CRITICAL_INFRASTRUCTURE}
+_OPERATOR_ROLES = [role.value for role in Role if role is not Role.GPAI_PROVIDER]
 
 
 def classify(profile: SystemProfile, *, include_advisory: bool = False) -> ClassificationReport:
@@ -148,6 +150,9 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
                 for finding in findings
             ]
 
+    if scope_assessment.status is not ScopeStatus.OUTSIDE_SCOPE:
+        open_questions += _role_questions(profile, final_tier)
+
     if is_gpai and final_tier is not RiskTier.PROHIBITED:
         obligations += gpai_obligations(systemic_risk=gpai_systemic)
         open_questions += _gpai_date_questions(profile)
@@ -204,6 +209,35 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         open_questions=open_questions,
         unverified_citations=unverified,
     )
+
+
+def _role_questions(profile: SystemProfile, final_tier: RiskTier) -> list[str]:
+    """Duties attach per role. Where the roles do not match the facts the profile screens,
+    the result goes to review instead of resolving silently; the items stay listed.
+    ``rules/transparency.py`` does the same for the Art. 50 items."""
+
+    questions = []
+    if final_tier is RiskTier.HIGH and not operator_roles(profile):
+        roles = f"{', '.join(_OPERATOR_ROLES[:-1])} or {_OPERATOR_ROLES[-1]}"
+        questions.append(
+            f"High-risk AI system: the profile holds no operator role for the system ({roles}), "
+            "and the high-risk duties attach per operator role. Confirm the roles the "
+            "organisation holds for this system (roles)."
+        )
+    gpai_role = Role.GPAI_PROVIDER in profile.roles
+    if profile.is_gpai_model and not gpai_role:
+        questions.append(
+            "GPAI model: the profile describes a general-purpose AI model (is_gpai_model) but "
+            "does not hold the gpai_provider role. Any Chapter V item stays listed for review. "
+            "Confirm whether the organisation is the model's provider (roles)."
+        )
+    if gpai_role and not profile.is_gpai_model:
+        questions.append(
+            "GPAI model: the profile holds the gpai_provider role but does not describe a "
+            "general-purpose AI model (is_gpai_model), so the report lists no Chapter V item. "
+            "Confirm is_gpai_model and the roles (roles)."
+        )
+    return questions
 
 
 def _fria_required(profile: SystemProfile) -> bool:

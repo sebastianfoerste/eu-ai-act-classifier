@@ -11,6 +11,7 @@ from eu_ai_act_classifier.cli import main
 from eu_ai_act_classifier.dossier import build_review_dossier, render_review_dossier_markdown
 from eu_ai_act_classifier.models import (
     Derogation,
+    Disposition,
     ObligationGraphItem,
     ReviewStatus,
     RiskTier,
@@ -1050,6 +1051,12 @@ def test_section_b_product_without_an_operator_role_gets_no_item() -> None:
     assert report.risk_tier is RiskTier.HIGH
     assert report.obligations == []
     assert report.obligation_graph == []
+    # No duty at a high-risk tier is never a determined result.
+    assert report.disposition is Disposition.REQUIRES_REVIEW
+    assert any(
+        question.startswith("High-risk AI system:") and "operator role" in question
+        for question in report.open_questions
+    )
 
 
 @pytest.mark.parametrize(

@@ -230,7 +230,8 @@ class SystemProfile(BaseModel):
 
     name: str
     description: str = ""
-    roles: list[Role] = Field(default_factory=lambda: [Role.PROVIDER])
+    # Duties attach per role, so a profile holds at least one.
+    roles: list[Role] = Field(default_factory=lambda: [Role.PROVIDER], min_length=1)
     purpose: str = ""
     sector: str = ""
 

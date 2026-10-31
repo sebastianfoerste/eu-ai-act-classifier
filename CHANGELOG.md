@@ -7,6 +7,27 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Operator roles reach the review gate
+
+#### Fixed
+
+- A profile whose roles did not match its facts returned `determined`: a
+  deployer with `is_gpai_model` got the Art. 53 items for the GPAI model
+  provider, a provider with `generates_deepfakes` got the Art. 50(4) item for
+  the deployer, and a high-risk profile holding only `gpai_provider` got no
+  duty at all. Each mismatch now adds an open question and the result is
+  `requires_review`: a high-risk tier with no operator role for the system,
+  `is_gpai_model` without the `gpai_provider` role, the `gpai_provider` role
+  without `is_gpai_model`, and an Art. 50 item for a role the profile does
+  not hold. The items stay listed. `docs/methodology.md` ("Operator Roles")
+  states the rule.
+
+#### Changed
+
+- `roles` must hold at least one role. `SystemProfile` rejects an empty list
+  and `schemas/system-profile.v1.schema.json` gives `minItems: 1`. An empty
+  list used to classify with no duty at all.
+
 ### Playground deploys after CI passes
 
 #### Changed

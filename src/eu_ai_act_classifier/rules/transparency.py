@@ -3,12 +3,15 @@
 These obligations attach on top of any tier: a high-risk system that also acts
 as a chatbot owes both its high-risk duties and the Art. 50(1) disclosure. On
 their own, with no higher tier, they place the system in the limited-risk tier.
+
+Each item applies to one role. Where the profile does not hold it, the item stays
+listed and an open question names the role, so the result goes to review.
 """
 
 from __future__ import annotations
 
 from ..catalog import TRANSPARENCY, section_b_kept_flag
-from ..models import Finding, RiskTier, Severity
+from ..models import Finding, Obligation, RiskTier, Role, Severity
 from ..transitions import section_b_product
 from .base import GateOutput
 
@@ -42,4 +45,25 @@ def evaluate(profile) -> GateOutput:
                 tier=RiskTier.LIMITED,
             )
         )
+    out.open_questions += _unheld_role_questions(profile, out.transparency)
     return out
+
+
+def _unheld_role_questions(profile, transparency: list[Obligation]) -> list[str]:
+    """One open question for each role an Art. 50 item applies to and the profile does
+    not hold."""
+
+    unheld: dict[Role, list[str]] = {}
+    for ob in transparency:
+        if ob.applies_to not in profile.roles:
+            unheld.setdefault(ob.applies_to, []).append(ob.article)
+    questions = []
+    for role, articles in unheld.items():
+        one = len(articles) == 1
+        questions.append(
+            f"{' and '.join(articles)}: the report lists "
+            f"{'this duty' if one else 'these duties'} for the {role.value} role, which the "
+            f"profile does not hold. {'It stays' if one else 'They stay'} listed for review. "
+            "Confirm the roles the organisation holds for this system (roles)."
+        )
+    return questions
