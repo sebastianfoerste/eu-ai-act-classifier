@@ -3,8 +3,9 @@
 GitHub Pages serves `docs/` on `main`. With the branch as the Pages source, a push
 publishes before CI finishes, so a red merge reaches the public playground. The
 `deploy` job in `.github/workflows/ci.yml` publishes instead, after `test` and
-`web` pass for the same commit. These tests read the workflow as text: the
-repository has no YAML parser, and the shape checked here is plain block YAML.
+`web` pass for the same commit. The `web` job also fails on a high or critical
+npm advisory in the cockpit's lockfile. These tests read the workflow as text:
+the repository has no YAML parser, and the shape checked here is plain block YAML.
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ PUSH_TO_MAIN = "github.event_name == 'push' && github.ref == 'refs/heads/main'"
 # A job `if:` without a status function runs only when every needed job succeeded.
 STATUS_FUNCTIONS = ("always()", "failure()", "cancelled()", "success()")
 PINNED_ACTION = re.compile(r"[\w.-]+/[\w.-]+(?:/[\w./-]+)?@[0-9a-f]{40}")
+NPM_AUDIT = "npm audit --audit-level=high"
 
 
 def _indent(line: str) -> int:
@@ -123,3 +125,17 @@ def test_deployment_doc_names_the_ci_deploy_job() -> None:
     text = DEPLOYMENT.read_text(encoding="utf-8")
     assert "the `deploy` job in `.github/workflows/ci.yml`" in text
     assert "after the `test` and `web` jobs pass" in text
+
+
+def test_web_job_fails_on_high_npm_advisories_before_the_tests() -> None:
+    web = _jobs()["web"]
+    # The job's steps run in web/, so the audit reads web/package-lock.json.
+    assert _scalars(_block(_block(web, "defaults", 4), "run", 6), 8) == {"working-directory": "web"}
+    steps = _steps(web)
+    runs = [step["run"] for step in steps if "run" in step]
+    assert NPM_AUDIT in runs, "the web job installs npm packages without auditing them"
+    # It audits the tree npm ci installed, before any of that code runs.
+    assert runs.index("npm ci") < runs.index(NPM_AUDIT) < runs.index("npm test")
+    audit = next(step for step in steps if step.get("run") == NPM_AUDIT)
+    assert "continue-on-error" not in audit
+    assert "working-directory" not in audit
