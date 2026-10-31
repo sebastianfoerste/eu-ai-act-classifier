@@ -343,6 +343,36 @@ def test_annex_iii_unknown_is_unsettled_point() -> None:
     assert _report(profile)["disposition"] == "requires_review"
 
 
+# AIA-06: the Art. 27 deployer status questions are expected to belong to the
+# Art. 6(2) route only. Blocked until Art. 27(1) AIA is read on EUR-Lex; remove the
+# marker with the FRIA_OPEN change in intake.py and the matching change in
+# engine._fria_required.
+@pytest.mark.xfail(
+    strict=True,
+    reason="AIA-06 is blocked on the EUR-Lex reading of Art. 27(1) AIA",
+)
+@pytest.mark.parametrize(
+    "question_id", ["deployer_public_law_body", "deployer_private_public_service"]
+)
+def test_fria_status_is_asked_on_the_annex_iii_route_only(question_id: str) -> None:
+    question = next(q for q in QUESTIONS if q["id"] == question_id)
+    annex_i = {
+        "name": "x",
+        "roles": ["deployer"],
+        "annex_i_safety_component": True,
+        "annex_i_third_party_assessment": True,
+    }
+    annex_iii_area = AnnexIII.ESSENTIAL_PUBLIC_BENEFITS.value
+
+    assert holds(question["show_if"], _normalised({**annex_i, "annex_iii_area": annex_iii_area}))
+    assert holds(
+        question["show_if"],
+        _normalised({"name": "x", "roles": ["deployer"], "annex_iii_area": annex_iii_area}),
+    )
+    assert not holds(question["show_if"], _normalised(annex_i))
+    assert not holds(question["show_if"], _normalised({**annex_i, "annex_i_section": "A"}))
+
+
 def test_definition_is_json_and_defaults_match_the_model() -> None:
     definition = json.loads(json.dumps(intake_definition()))
     defaults = SystemProfile(name="x").model_dump(mode="json")
