@@ -7,6 +7,28 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Precision notes from Regulation (EU) 2026/1744
+
+#### Changed
+
+- `placing_on_market_date` and `putting_into_service_date` carry a
+  description in the JSON Schema, the field guide and the guided intake: ISO
+  dates, and for Art. 111(2) AIA the date the first unit of that type and
+  model was placed on the Union market or put into service decides
+  (recital 39 of Regulation (EU) 2026/1744).
+- The Art. 73 obligation and graph item name both reporting routes: the
+  market surveillance authorities of the Member States where the incident
+  occurred (Art. 73(1)), or the AI Office where it is exclusively competent
+  for the system under Art. 75(1) (Art. 75(1a), inserted by Art. 1,
+  point (31)).
+- The Art. 72 obligation and graph item say that the post-market monitoring
+  plan is part of the Annex IV technical documentation and that the
+  Commission's guidance and template are due by 2 September 2027
+  (Art. 72(3) as replaced by Art. 1, point (30)).
+- The report footer names the amendment: "as amended by Regulation (EU)
+  2026/1744 (consolidated version of 27 July 2026)". The playground footer
+  links the consolidated text of 27 July 2026 instead of the 2024 text.
+
 ### Final Art. 50 guidance sources
 
 #### Changed

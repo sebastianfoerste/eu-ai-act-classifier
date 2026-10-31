@@ -242,8 +242,25 @@ class SystemProfile(BaseModel):
     eu_nexus: bool | None = True
     excluded_use_flags: list[ExcludedUse] = Field(default_factory=list)
     # The AI system's dates: Art. 111(2) and, for placing on the market, Art. 111(4) AIA.
-    placing_on_market_date: IsoDate | None = None
-    putting_into_service_date: IsoDate | None = None
+    placing_on_market_date: IsoDate | None = Field(
+        default=None,
+        description=(
+            "ISO date (YYYY-MM-DD) on which the AI system was placed on the Union market. "
+            "Drives Art. 111(2) and (4) AIA. For Art. 111(2) the date on which the first unit "
+            "of that type and model was placed on the market or put into service decides "
+            "(recital 39 of Regulation (EU) 2026/1744), not the date of a later unit. Null: "
+            "not given."
+        ),
+    )
+    putting_into_service_date: IsoDate | None = Field(
+        default=None,
+        description=(
+            "ISO date (YYYY-MM-DD) on which the AI system was put into service. Drives "
+            "Art. 111(2) AIA, for which the first unit of that type and model placed on the "
+            "market or put into service decides (recital 39 of Regulation (EU) 2026/1744). "
+            "Null: not given."
+        ),
+    )
     significant_change_after_application_date: bool | None = Field(
         default=None,
         description=(

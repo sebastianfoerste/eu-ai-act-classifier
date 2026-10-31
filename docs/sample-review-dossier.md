@@ -84,7 +84,7 @@ Source manifest:
   - Art. 50 transparency guidelines: nonbinding_guidance, retrieved 2026-10-31
   - Code of Practice on AI-generated content: nonbinding_guidance, retrieved 2026-10-31
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744 (consolidated version of 27 July 2026)
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.
 ```
 
@@ -166,7 +166,7 @@ Source manifest:
   - Art. 50 transparency guidelines: nonbinding_guidance, retrieved 2026-10-31
   - Code of Practice on AI-generated content: nonbinding_guidance, retrieved 2026-10-31
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744 (consolidated version of 27 July 2026)
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.
 ```
 
@@ -248,7 +248,7 @@ Source manifest:
   - Art. 50 transparency guidelines: nonbinding_guidance, retrieved 2026-10-31
   - Code of Practice on AI-generated content: nonbinding_guidance, retrieved 2026-10-31
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744 (consolidated version of 27 July 2026)
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.
 ```
 
@@ -286,8 +286,8 @@ Obligations:
   - Art. 47 AIA: EU declaration of conformity. Draw up and keep an EU declaration of conformity.
   - Art. 48 AIA: CE marking. Affix the CE marking to indicate conformity.
   - Art. 49 AIA: Registration. Register the system in the EU database before market placement.
-  - Art. 72 AIA: Post-market monitoring. Operate a post-market monitoring system.
-  - Art. 73 AIA: Serious incident reporting. Report serious incidents to the market surveillance authority.
+  - Art. 72 AIA: Post-market monitoring. Operate a post-market monitoring system based on a post-market monitoring plan, which is part of the Annex IV technical documentation. The Commission's guidance on the plan, including a template, is due by 2 September 2027 (Art. 72(3) AIA as replaced by Art. 1, point (30) of Regulation (EU) 2026/1744).
+  - Art. 73 AIA: Serious incident reporting. Report serious incidents to the market surveillance authorities of the Member States where the incident occurred (Art. 73(1) AIA), or to the AI Office where it is exclusively competent for the system under Art. 75(1), as for AI systems based on a general-purpose AI model developed by the same provider or its undertaking, with the exceptions listed there, and systems of designated very large online platforms or search engines (Art. 75(1a) AIA, inserted by Art. 1, point (31) of Regulation (EU) 2026/1744).
 
 Documentation to maintain:
   - Art. 11 AIA + Annex IV: Technical documentation. Annex IV technical documentation, kept current.
@@ -350,7 +350,7 @@ Source manifest:
   - Art. 50 transparency guidelines: nonbinding_guidance, retrieved 2026-10-31
   - Code of Practice on AI-generated content: nonbinding_guidance, retrieved 2026-10-31
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744 (consolidated version of 27 July 2026)
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.
 ```
 

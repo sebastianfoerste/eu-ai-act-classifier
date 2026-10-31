@@ -308,6 +308,29 @@ def ai_literacy_obligations(roles: list[Role], flag: str = "") -> list[Obligatio
     ]
 
 
+# Art. 72(3) AIA as replaced by Regulation (EU) 2026/1744, Art. 1, point (30): the plan
+# is part of the Annex IV technical documentation and the Commission adopts guidance,
+# including a template, by 2 September 2027.
+ART_72_REQUIREMENT = (
+    "Operate a post-market monitoring system based on a post-market monitoring plan, which "
+    "is part of the Annex IV technical documentation. The Commission's guidance on the plan, "
+    "including a template, is due by 2 September 2027 (Art. 72(3) AIA as replaced by Art. 1, "
+    "point (30) of Regulation (EU) 2026/1744)."
+)
+# Art. 73(1) AIA names the market surveillance authorities; Art. 75(1a), inserted by
+# Regulation (EU) 2026/1744, Art. 1, point (31)(c), routes the providers of the systems
+# under the AI Office's exclusive competence (Art. 75(1)) to the AI Office instead. The
+# profile does not record that competence, so the text states both routes.
+ART_73_REQUIREMENT = (
+    "Report serious incidents to the market surveillance authorities of the Member States "
+    "where the incident occurred (Art. 73(1) AIA), or to the AI Office where it is exclusively "
+    "competent for the system under Art. 75(1), as for AI systems based on a general-purpose "
+    "AI model developed by the same provider or its undertaking, with the exceptions listed "
+    "there, and systems of designated very large online platforms or search engines "
+    "(Art. 75(1a) AIA, inserted by Art. 1, point (31) of Regulation (EU) 2026/1744)."
+)
+
+
 # --- High-risk obligation sets ---------------------------------------------
 def eu_database_registration_applies(annex_iii_area: AnnexIII | None) -> bool:
     """Art. 49(1) AIA provider registration in the EU database covers only high-risk
@@ -529,13 +552,13 @@ def high_risk_provider_obligations(
             article="Art. 72 AIA",
             title="Post-market monitoring",
             applies_to=p,
-            requirement="Operate a post-market monitoring system.",
+            requirement=ART_72_REQUIREMENT,
         ),
         Obligation(
             article="Art. 73 AIA",
             title="Serious incident reporting",
             applies_to=p,
-            requirement="Report serious incidents to the market surveillance authority.",
+            requirement=ART_73_REQUIREMENT,
         ),
     ]
     if eu_database_registration:

@@ -27,7 +27,8 @@ from .models import RegulatorySource, SourceStatus
 
 REGULATION = (
     "Regulation (EU) 2024/1689 of the European Parliament and of the Council "
-    "of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024"
+    "of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by "
+    "Regulation (EU) 2026/1744 (consolidated version of 27 July 2026)"
 )
 SHORT = "AIA"
 AI_ACT_URL = "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
