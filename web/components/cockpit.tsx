@@ -450,6 +450,16 @@ export function Cockpit() {
                 onChange={(checked) => updateProfile("interacts_with_natural_persons", checked)}
               />
               <Toggle
+                label="Synthetic content generation"
+                checked={profile.generates_synthetic_content}
+                onChange={(checked) => updateProfile("generates_synthetic_content", checked)}
+              />
+              <Toggle
+                label="Emotion recognition or biometric categorisation"
+                checked={profile.deploys_emotion_or_biometric_categorisation}
+                onChange={(checked) => updateProfile("deploys_emotion_or_biometric_categorisation", checked)}
+              />
+              <Toggle
                 label="Deepfake generation"
                 checked={profile.generates_deepfakes}
                 onChange={(checked) => updateProfile("generates_deepfakes", checked)}

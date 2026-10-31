@@ -7,6 +7,26 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Cockpit sets every Art. 50 fact
+
+#### Fixed
+
+- The cockpit had toggles for the Art. 50(1) and Art. 50(4) facts only, so a
+  reviewer could not set `generates_synthetic_content` (Art. 50(2)) or
+  `deploys_emotion_or_biometric_categorisation` (Art. 50(3)). Both stayed at
+  `false` from the blank profile, and a system that generates synthetic
+  content classified in the cockpit without its Art. 50(2) duty. The
+  "GPAI And Transparency" group now has an on/off toggle for each, in
+  Art. 50 order. They send booleans only, as `SystemProfile` types both
+  fields as `bool`.
+
+#### Added
+
+- `web/components/cockpit-controls.test.ts` fails when a key of
+  `SystemProfile` in `web/lib/types.ts` has no cockpit control and is not on
+  the test's hidden list, which is empty, and when an Art. 50 fact is not set
+  by an on/off toggle.
+
 ### npm advisories fail CI
 
 #### Changed
