@@ -30,6 +30,13 @@
   ],
   "obligations": [
     {
+      "article": "Art. 4 AIA",
+      "citation_verified": true,
+      "title": "AI literacy",
+      "applies_to": "provider",
+      "requirement": "Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026."
+    },
+    {
       "article": "Art. 9 AIA",
       "citation_verified": true,
       "title": "Risk management system",
@@ -167,6 +174,19 @@
   ],
   "transparency_obligations": [],
   "obligation_graph": [
+    {
+      "obligation_id": "literacy.provider.4",
+      "article": "Art. 4 AIA",
+      "actor": "provider",
+      "trigger": "Provider of an AI system within the scope of the Regulation, whatever its risk tier.",
+      "requirement": "Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.",
+      "evidence_artifact": "AI literacy measures record: training plan, materials and participation by role.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2025-02-02",
+      "review_status": "determined",
+      "application_date_note": null
+    },
     {
       "obligation_id": "high-risk.provider.16",
       "article": "Art. 16 AIA",

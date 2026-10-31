@@ -24,8 +24,9 @@ facts. The engine applies the rules and makes uncertainty visible.
    Annex III.
 4. GPAI: Art. 51 systemic threshold and Arts. 53, 55 and 56 obligations.
 5. Transparency: Art. 50(1) to (4) AIA.
-6. Resolution: highest tier, review disposition, source-backed obligations,
-   timeline and open legal questions.
+6. Resolution: highest tier, review disposition, source-backed obligations
+   (the Art. 4 AI literacy duty of every provider and deployer first), timeline
+   and open legal questions.
 
 ## Source Statuses
 
@@ -42,6 +43,35 @@ Nonbinding guidance appears only as advisory overlay or eval context. The
 overlay can point reviewers to Commission materials, the AI Act Service Desk,
 the GPAI Code of Practice and draft high-risk guidance. It never changes the
 binding classification.
+
+## AI Literacy (Art. 4)
+
+Art. 4(1) AIA, as replaced by Regulation (EU) 2026/1744, Art. 1, point (5)
+(in force 27 July 2026), binds providers and deployers of AI systems whatever
+the risk tier: they "take measures to support the development of AI literacy
+of their staff and other persons dealing with the operation and use of AI
+systems on their behalf", taking into account their technical knowledge,
+experience, education and training, the context of use and the persons the
+system is used on; no specific level of AI literacy of any individual has to
+be guaranteed. Chapter I applies from 2 February 2025 (Art. 113, third
+paragraph, point (a)).
+
+The report lists one Art. 4 obligation and one graph item (`literacy.provider.4`,
+`literacy.deployer.4`, dated 2025-02-02, `determined`) per provider or deployer
+role the profile holds, for every report whose scope is not outside the AI
+Act, including a minimal-risk system and a system whose scope is under review.
+Importers, distributors, authorised representatives and the provider of a
+general-purpose AI model, as such, get none. A prohibited system gets none
+either, as for the GPAI duties: a system that may not be placed on the market,
+put into service or used (Art. 5) has no staff to operate it; the choice is
+pinned in `tests/test_ai_literacy.py`.
+
+Two positions are flagged "Literal reading, confirm with counsel" and sent to
+review, as the same positions are for Art. 50: for a Section B product
+Art. 2(2) does not list Art. 4 (the obligation text and the item carry the
+flag), and for a legacy high-risk system Art. 111(2) applies the Regulation
+only after a significant change in design (the item keeps its date and carries
+the flag).
 
 ## High-Risk Logic
 

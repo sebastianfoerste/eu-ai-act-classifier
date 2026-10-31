@@ -42,7 +42,8 @@ asserted and documentation needed.
 `deepfake_generator.json`: Limited risk, determined. Deepfake disclosure under
 Art. 50(4) AIA.
 
-`spam_filter.json`: Minimal risk, determined. No regulated use case.
+`spam_filter.json`: Minimal risk, determined. No regulated use case; only the
+Art. 4 AIA AI literacy duty of every provider and deployer attaches.
 
 `foundation_model_systemic.json`: Minimal system-level risk, determined. GPAI
 with systemic risk under Arts. 51, 53 and 55 AIA.

@@ -14,6 +14,7 @@ Findings:
       Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.
 
 Obligations:
+  - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
   - Art. 9 AIA: Risk management system. Establish, document and maintain a continuous risk management system.
   - Art. 10 AIA: Data and data governance. Apply data governance to training, validation and testing data sets.
   - Art. 11 AIA: Technical documentation. Draw up technical documentation (Annex IV) before placing on the market.
@@ -37,6 +38,7 @@ Documentation to maintain:
   - Art. 47 AIA: EU declaration of conformity. Signed EU declaration of conformity.
 
 Obligation graph:
+  - literacy.provider.4: Art. 4 AIA (provider), evidence: AI literacy measures record: training plan, materials and participation by role., review: determined
   - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
   - high-risk.provider.17: Art. 17 AIA (provider), evidence: Quality management system file., review: determined
   - high-risk.provider.18: Art. 18 AIA (provider), evidence: Document retention register., review: determined

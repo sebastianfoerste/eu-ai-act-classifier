@@ -7,6 +7,25 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Art. 4 AI literacy duty
+
+#### Added
+
+- Every report whose scope is not outside the AI Act lists an Art. 4 AIA
+  obligation and a graph item (`literacy.provider.4`, `literacy.deployer.4`,
+  dated 2025-02-02) once per provider or deployer role the profile holds,
+  whatever the tier: take measures to support the AI literacy of staff and
+  other persons operating or using the system on the operator's behalf, in the
+  words of Art. 4(1) as replaced by Art. 1, point (5) of Regulation (EU)
+  2026/1744 (in force 27 July 2026). A minimal-risk run, such as
+  `examples/spam_filter.json`, listed no obligation at all. Importers,
+  distributors, authorised representatives and a general-purpose AI model
+  provider as such get none; a prohibited system gets none either, as for the
+  GPAI duties. For a Section B product and for a legacy high-risk system the
+  item is kept, flagged "Literal reading, confirm with counsel" and sent to
+  review, as the Art. 50 items are. The claim ledger has a CORRECTED row and a
+  PENDING row for the Section B reading.
+
 ### Art. 111(2) change answer asked only where it is used (#43)
 
 #### Changed
