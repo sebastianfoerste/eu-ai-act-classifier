@@ -430,6 +430,11 @@ export function Cockpit() {
                   ))}
                 </select>
               </label>
+              <TriStateControl
+                label="Used to detect financial fraud (Annex III(5)(b))"
+                value={profile.used_for_financial_fraud_detection}
+                onChange={(value) => updateProfile("used_for_financial_fraud_detection", value)}
+              />
               <Toggle
                 label="Annex I safety component"
                 checked={profile.annex_i_safety_component}
@@ -492,6 +497,16 @@ export function Cockpit() {
                 label="Natural-person interaction"
                 checked={profile.interacts_with_natural_persons}
                 onChange={(checked) => updateProfile("interacts_with_natural_persons", checked)}
+              />
+              <Toggle
+                label="Synthetic content generation"
+                checked={profile.generates_synthetic_content}
+                onChange={(checked) => updateProfile("generates_synthetic_content", checked)}
+              />
+              <Toggle
+                label="Emotion recognition or biometric categorisation"
+                checked={profile.deploys_emotion_or_biometric_categorisation}
+                onChange={(checked) => updateProfile("deploys_emotion_or_biometric_categorisation", checked)}
               />
               <Toggle
                 label="Deepfake generation"
