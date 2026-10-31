@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ClassifierBridgeError } from "../../lib/bridge-error";
 import { runClassifierBridge } from "../../lib/python";
@@ -16,10 +16,19 @@ const VALIDATION_ERROR_LINE = JSON.stringify({
   error: "1 validation error for SystemProfile\nroles\n  Input should be a valid list",
 });
 
-function post(url: string, body: string): Request {
+const COCKPIT = "http://127.0.0.1:3000";
+
+/** A POST as the cockpit page sends it with fetch(); `headers` overrides single headers. */
+function post(url: string, body: string, headers: Record<string, string> = {}): Request {
   return new Request(url, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: {
+      host: "127.0.0.1:3000",
+      origin: COCKPIT,
+      "sec-fetch-site": "same-origin",
+      "content-type": "application/json",
+      ...headers,
+    },
     body,
   });
 }
@@ -29,11 +38,16 @@ describe.each([
   ["artifacts", artifactsPOST],
   ["dossier", dossierPOST],
 ] as const)("POST /api/%s", (command, POST) => {
-  const url = `http://local/api/${command}`;
+  const url = `${COCKPIT}/api/${command}`;
   const payload = { profile: { name: "x" }, artifact: "fria" };
 
   beforeEach(() => {
     bridge.mockReset();
+    vi.stubEnv("PORT", "3000");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("passes the payload to the Python bridge", async () => {
@@ -84,6 +98,52 @@ describe.each([
     const response = await POST(post(url, "{not json"));
 
     expect(response.status).toBe(400);
+    expect(bridge).not.toHaveBeenCalled();
+  });
+
+  it("accepts a same-origin JSON POST from localhost with a charset", async () => {
+    bridge.mockResolvedValue({ system: "x" });
+
+    const response = await POST(
+      post(url, JSON.stringify(payload), {
+        host: "localhost:3000",
+        origin: "http://localhost:3000",
+        "content-type": "application/json; charset=utf-8",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(bridge).toHaveBeenCalledWith(command, payload);
+  });
+
+  it("answers 415 for a text/plain body, without running the bridge", async () => {
+    const response = await POST(post(url, JSON.stringify(payload), { "content-type": "text/plain" }));
+
+    expect(response.status).toBe(415);
+    expect(bridge).not.toHaveBeenCalled();
+  });
+
+  it.each<{ name: string; headers: Record<string, string> }>([
+    {
+      name: "a cross-site text/plain POST",
+      headers: {
+        origin: "https://evil.example",
+        "sec-fetch-site": "cross-site",
+        "content-type": "text/plain",
+      },
+    },
+    {
+      name: "a JSON POST from https://evil.example",
+      headers: { origin: "https://evil.example", "sec-fetch-site": "cross-site" },
+    },
+    {
+      name: "a DNS-rebound host",
+      headers: { host: "evil.example:3000", origin: "http://evil.example:3000" },
+    },
+  ])("answers 403 for $name, without running the bridge", async ({ headers }) => {
+    const response = await POST(post(url, JSON.stringify(payload), headers));
+
+    expect(response.status).toBe(403);
     expect(bridge).not.toHaveBeenCalled();
   });
 });

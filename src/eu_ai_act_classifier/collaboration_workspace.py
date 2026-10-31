@@ -292,6 +292,34 @@ def import_workspace(payload: str, inventory: AISystemInventory) -> Collaboratio
     return workspace
 
 
+def _record_import(
+    current: CollaborationWorkspace,
+    imported: CollaborationWorkspace,
+    *,
+    actor: str,
+    now: datetime,
+) -> CollaborationWorkspace:
+    """Take the imported cells and keep the activity trail.
+
+    The imported file replaces the review cells. The activity list only grows: the
+    entries already recorded stay, the file's entries the trail lacks follow them, and
+    an "imported" event closes the import and counts the entries it added.
+    """
+
+    added = [entry for entry in imported.activity if entry not in current.activity]
+    activity = [
+        *current.activity,
+        *added,
+        {
+            "event": "imported",
+            "actor": actor,
+            "occurredAt": now.isoformat(),
+            "importedEntries": str(len(added)),
+        },
+    ]
+    return imported.model_copy(update={"activity": activity})
+
+
 def build_policy_workflows(
     inventory: AISystemInventory,
 ) -> tuple[list[PolicyWorkflowDefinition], list[PolicyWorkflowRun]]:
@@ -484,9 +512,11 @@ def apply_workspace_action(
         raw = payload.get("workspace")
         if raw is None:
             raise ValueError("missing workspace payload for import action")
-        current = import_workspace(
-            json.dumps(raw) if not isinstance(raw, str) else raw,
-            inventory,
+        current = _record_import(
+            current,
+            import_workspace(json.dumps(raw) if not isinstance(raw, str) else raw, inventory),
+            actor=actor,
+            now=occurred_at,
         )
     elif action == "self_assess":
         return build_collaboration_workspace(

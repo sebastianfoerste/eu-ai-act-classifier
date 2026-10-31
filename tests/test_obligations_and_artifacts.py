@@ -11,7 +11,6 @@ from eu_ai_act_classifier.cli import main
 from eu_ai_act_classifier.dossier import build_review_dossier, render_review_dossier_markdown
 from eu_ai_act_classifier.models import (
     Derogation,
-    Disposition,
     ObligationGraphItem,
     ReviewStatus,
     RiskTier,
