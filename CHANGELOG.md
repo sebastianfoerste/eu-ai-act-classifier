@@ -7,6 +7,22 @@ pull requests.
 
 Changes since 0.2.2.
 
+### CI trust signals and dependency floors
+
+#### Changed
+
+- CI runs the Python suite on 3.13 and 3.14, gates statement coverage at 94 %
+  (the integer part of the measured total; `pytest-cov` joins the `dev`
+  extra), runs the suite at the lowest declared dependency versions
+  (`uv run --isolated --resolution lowest-direct`) and installs the built
+  wheel into a clean environment to run the CLI, expecting exit 1 for
+  `examples/social_scoring.json --strict`. Each job has a timeout, checkouts
+  do not persist credentials, and a new push cancels the superseded run of a
+  pull request.
+- The declared `pydantic` floor rises from `>=2.6` to `>=2.11`, the lowest
+  version the lowest-direct job passes with on Python 3.13; the `mcp` extra
+  floor (1.21.1) passes there too. The package classifiers add Python 3.14.
+
 ### Art. 111(2) change answer asked only where it is used (#43)
 
 #### Changed
