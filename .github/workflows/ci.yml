@@ -8,36 +8,93 @@ on:
 permissions:
   contents: read
 
+# One run per branch: a new push to a pull request cancels the run it supersedes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
-          python-version: "3.13"
+          python-version: ${{ matrix.python-version }}
       - run: uv sync --locked --extra dev --extra mcp
       - name: Lint
         run: uv run ruff check .
       - name: Format check
         run: uv run ruff format --check .
-      - name: Tests
-        run: uv run pytest
+      - name: Tests with coverage gate
+        # The floor is the integer part of the measured total (94.95 % on 2026-10-31).
+        run: uv run pytest --cov=eu_ai_act_classifier --cov-report=term --cov-fail-under=94
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: matrix.python-version == '3.13'
         with:
           node-version: "22"
       - name: Browser playground checks
+        if: matrix.python-version == '3.13'
         run: |
           for file in docs/playground/*.mjs; do node --check "$file"; done
           node --test tests/playground/*.test.mjs
 
+  lowest-direct:
+    # The declared dependency floors must pass, not only the locked versions.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: "3.13"
+      - name: Tests at the lowest direct dependency versions
+        run: uv run --isolated --resolution lowest-direct --extra dev --extra mcp pytest
+      - name: Lock file untouched
+        run: git diff --exit-code -- uv.lock
+
+  package:
+    # The wheel a user installs must run the CLI from a clean environment.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: "3.13"
+      - run: uv build
+      - name: Install the built wheel into a clean environment and run the CLI
+        run: |
+          uv venv "$RUNNER_TEMP/smoke"
+          uv pip install --python "$RUNNER_TEMP/smoke/bin/python" dist/*.whl
+          "$RUNNER_TEMP/smoke/bin/eu-ai-act-classify" examples/spam_filter.json
+          set +e
+          "$RUNNER_TEMP/smoke/bin/eu-ai-act-classify" examples/social_scoring.json --strict
+          status=$?
+          set -e
+          test "$status" -eq 1
+
   web:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: web
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
