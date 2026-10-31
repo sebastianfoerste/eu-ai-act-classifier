@@ -3,10 +3,10 @@
   "version": "0.2.2",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 127.0.0.1",
     "test": "vitest run",
     "build": "next build",
-    "start": "next start"
+    "start": "next start -H 127.0.0.1"
   },
   "dependencies": {
     "lucide-react": "1.61.0",

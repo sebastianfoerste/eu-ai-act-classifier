@@ -52,7 +52,7 @@ its Status column and notes.
 
 ```bash
 cd web && npm ci && CLASSIFIER_REPO_ROOT=.. npx next build
-CLASSIFIER_REPO_ROOT=.. timeout 600 npx next start -p 3917 &
+CLASSIFIER_REPO_ROOT=.. timeout 600 npx next start -H 127.0.0.1 -p 3917 &
 SERVER=$!
 timeout 120 google-chrome --headless=new --no-sandbox --force-device-scale-factor=1 \
   --virtual-time-budget=20000 --window-size=1180,16000 --screenshot=../docs/cockpit.png http://127.0.0.1:3917/

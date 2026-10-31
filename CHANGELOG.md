@@ -7,6 +7,31 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Cockpit POST routes reject cross-site writes
+
+#### Fixed
+
+- Any web page the reviewer had open could write to the local cockpit. A
+  cross-site POST with `Content-Type: text/plain` reached
+  `/api/collaboration`, stored a reviewer override and, as an import, emptied
+  the activity list. The four POST routes (`/api/classify`,
+  `/api/artifacts`, `/api/dossier`, `/api/collaboration`) now call one guard,
+  `web/lib/local-request-guard.ts`, before they read the body. It answers 415
+  unless the body is `application/json`, and 403 when `Sec-Fetch-Site` marks
+  a request from another origin or when `Host` or `Origin` names anything but
+  `localhost` or `127.0.0.1` at the server's port, which also stops DNS
+  rebinding.
+- An import replaced the whole collaboration workspace, its activity list
+  included. It still replaces the review cells, but the activity list now
+  keeps every earlier entry, adds the file's entries it lacks and ends with
+  an `imported` event that names the actor and counts the added entries.
+
+#### Changed
+
+- `npm run dev` and `npm run start` in `web/` bind to `127.0.0.1`. Next.js
+  binds `0.0.0.0` by default, which put the cockpit on every network the
+  machine joined.
+
 ### Operator roles reach the review gate
 
 #### Fixed
