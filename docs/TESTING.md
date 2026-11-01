@@ -5,8 +5,13 @@
 ```bash
 uv run ruff check .
 uv run ruff format --check .
-uv run pytest
+uv run pytest --cov=eu_ai_act_classifier --cov-report=term --cov-fail-under=94
 ```
+
+CI also runs the suite on Python 3.14, at the lowest declared dependency versions
+(`uv run --isolated --resolution lowest-direct --extra dev --extra mcp pytest`) and
+from the built wheel installed into a clean environment (`uv build`, then the CLI on
+`examples/spam_filter.json` and, expecting exit 1, `examples/social_scoring.json --strict`).
 
 ## Focused Source And Artifact Checks
 

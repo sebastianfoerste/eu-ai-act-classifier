@@ -19,6 +19,22 @@ Changes since 0.2.2.
   classifier does not read these files yet, and their digests still need a
   fresh download to confirm them (see `sources/README.md`).
 
+### CI trust signals and dependency floors
+
+#### Changed
+
+- CI runs the Python suite on 3.13 and 3.14, gates statement coverage at 94 %
+  (the integer part of the measured total; `pytest-cov` joins the `dev`
+  extra), runs the suite at the lowest declared dependency versions
+  (`uv run --isolated --resolution lowest-direct`) and installs the built
+  wheel into a clean environment to run the CLI, expecting exit 1 for
+  `examples/social_scoring.json --strict`. Each job has a timeout, checkouts
+  do not persist credentials, and a new push cancels the superseded run of a
+  pull request.
+- The declared `pydantic` floor rises from `>=2.6` to `>=2.11`, the lowest
+  version the lowest-direct job passes with on Python 3.13; the `mcp` extra
+  floor (1.21.1) passes there too. The package classifiers add Python 3.14.
+
 ### Art. 111(2) change answer asked only where it is used (#43)
 
 #### Changed
@@ -187,6 +203,24 @@ Changes since 0.2.2.
 - `tests/test_docs.py` finds the server's tools by their `@server.tool(...)`
   decorator with or without arguments; it matched only `@server.tool()`. A new
   test checks that it finds the same tools as the server registers.
+
+### eu-reg-mcp recommendation (#13)
+
+#### Changed
+
+- When `mcp.server.fastmcp` does not import, the MCP server's exit message
+  still gives the pip, uvx and clone commands, and now ends by recommending
+  eu-reg-mcp for Claude Code and Claude Desktop:
+  `uvx --python 3.13 --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp`.
+- The README, `docs/surfaces.md` and `docs/mcp-configuration-guide.md`
+  recommend eu-reg-mcp ahead of this package's own server. The guide and
+  `docs/surfaces.md` also give the clone command
+  `uv run --extra mcp eu-ai-act-classifier-mcp`.
+- Every uvx command for eu-reg-mcp, and the exit message's uvx command for
+  this package's server, passes `--python 3.13`, as the README and the
+  guides already did for this package's server. eu-reg-mcp, the linter and
+  this classifier require Python 3.13 or later; without the flag, uvx fails
+  with `No solution found` when the default Python is older.
 
 ## 0.2.2 (2026-10-23)
 
