@@ -135,7 +135,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Tests.** `tests/playground/share.test.mjs`: round trip for every example, version prefix, size cap, invalid input; Playwright check that loading a share link does not classify automatically.
 - **Risk.** Privacy: links persist in history and chat logs, so the warning is required and the feature stays opt-in. Rule 9: no server, no build step.
 
-### S7. Source content hash (next)
+### S7. Source content hash (partly built)
 
 - **Story.** As a legal engineer I can tell whether the consolidated text changed since the ledger was reviewed.
 - **References.** Lexbeam `@efcbae2:law/manifest.json` (Observed).
@@ -144,6 +144,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Files.** `src/eu_ai_act_classifier/citations.py`, `src/eu_ai_act_classifier/verify_sources.py`, `docs/REGULATORY_CLAIM_LEDGER.md` (a `PENDING` row per recorded hash).
 - **Tests.** `tests/test_verify_sources.py` with a stubbed fetch: same content passes, changed content flags review, network failure is reported and does not pass.
 - **Risk.** Rule 3: the check stays outside the classification path and is never required for a result. Recording the first hashes needs EUR-Lex access.
+- **Status.** `sources/` pins byte-exact Official Journal snapshots with their SHA-256 in `sources/manifest.json`, and `tests/test_sources.py` fails on drift. Open: the digests still need a fresh download to confirm them, and `verify_sources` does not yet compare a live retrieval with the manifest.
 
 ### S8. Draft PDF via print stylesheet, then DOCX (next)
 
