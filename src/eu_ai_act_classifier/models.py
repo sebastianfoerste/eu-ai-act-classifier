@@ -256,14 +256,16 @@ class SystemProfile(BaseModel):
     # A system intended to be used by public authorities (Art. 111(2) AIA).
     public_authority_use: bool = False
     # The deployer is a public authority, Union institution, body, office or agency, or
-    # acts on behalf of one (Art. 49(3) AIA). None: not established.
+    # acts on behalf of one (Art. 49(3) AIA). None: not established. Read only for a
+    # profile that holds the deployer role.
     deployer_public_authority: bool | None = Field(
         default=None,
         description=(
             "Art. 49(3) AIA: the deployer is a public authority, Union institution, body, office "
-            "or agency, or acts on behalf of one. Null: not established, so the registration of "
-            "use is inferred, for review, where the system is intended to be used by public "
-            "authorities or its Annex III point (5(a), 6 or 7) describes such use."
+            "or agency, or acts on behalf of one. Read only where the profile holds the deployer "
+            "role. Null: not established, so the registration of use is inferred, for review, "
+            "where the system is intended to be used by public authorities or its Annex III "
+            "point (5(a), 6 or 7) describes such use."
         ),
     )
     deployer_public_law_body: bool | None = None

@@ -1210,44 +1210,52 @@
           {
             "all": [
               {
-                "not": {
-                  "field": "is_ai_system",
-                  "is": false
-                }
-              },
-              {
-                "not": {
-                  "field": "eu_nexus",
-                  "is": false
-                }
-              }
-            ]
-          },
-          {
-            "field": "prohibited_practices",
-            "empty": true
-          },
-          {
-            "any": [
-              {
-                "not": {
-                  "field": "annex_iii_area",
-                  "is": null
-                }
-              },
-              {
                 "all": [
                   {
-                    "field": "annex_i_safety_component",
-                    "is": true
+                    "not": {
+                      "field": "is_ai_system",
+                      "is": false
+                    }
                   },
                   {
-                    "field": "annex_i_third_party_assessment",
-                    "is": true
+                    "not": {
+                      "field": "eu_nexus",
+                      "is": false
+                    }
+                  }
+                ]
+              },
+              {
+                "field": "prohibited_practices",
+                "empty": true
+              },
+              {
+                "any": [
+                  {
+                    "not": {
+                      "field": "annex_iii_area",
+                      "is": null
+                    }
+                  },
+                  {
+                    "all": [
+                      {
+                        "field": "annex_i_safety_component",
+                        "is": true
+                      },
+                      {
+                        "field": "annex_i_third_party_assessment",
+                        "is": true
+                      }
+                    ]
                   }
                 ]
               }
             ]
+          },
+          {
+            "field": "roles",
+            "has": "deployer"
           }
         ]
       },
