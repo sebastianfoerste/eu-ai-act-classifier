@@ -239,7 +239,7 @@
         }
       ],
       "default": null,
-      "description": "Art. 49(3) AIA: the deployer is a public authority, Union institution, body, office or agency, or acts on behalf of one. Null: not established, so the registration of use is inferred, for review, where the system is intended to be used by public authorities or its Annex III point (5(a), 6 or 7) describes such use.",
+      "description": "Art. 49(3) AIA: the deployer is a public authority, Union institution, body, office or agency, or acts on behalf of one. Read only where the profile holds the deployer role. Null: not established, so the registration of use is inferred, for review, where the system is intended to be used by public authorities or its Annex III point (5(a), 6 or 7) describes such use.",
       "title": "Deployer Public Authority"
     },
     "deployer_public_law_body": {
