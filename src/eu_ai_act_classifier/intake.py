@@ -96,7 +96,7 @@ FRIA_OPEN = {
 
 # Art. 49(3) AIA and the public-authority deployer in Art. 111(2) read the profile's own
 # deployer role, and only on a high-risk route (transitions.public_authority_status_used).
-# Elsewhere the engine reports a given status as not used.
+# Elsewhere, for a profile in scope, the engine reports a given status as not used.
 PUBLIC_AUTHORITY_STATUS_OPEN = {
     "all": [HIGH_RISK_ROUTE, {"field": "roles", "has": Role.DEPLOYER.value}]
 }

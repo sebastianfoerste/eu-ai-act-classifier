@@ -234,8 +234,9 @@ counts only if it was made on or after that date. Only the provider and deployer
 public-authority deployer they ask the reviewer to confirm the intended use.
 A public-authority deployer counts only where the profile holds the deployer
 role, as `deployer_public_authority` describes that role; it then counts for
-the items of every operator role the profile holds. For a profile without the
-deployer role the intended use is `public_authority_use` alone.
+the provider items too where the profile also holds the provider role, never
+for importer, distributor or authorised-representative items. For a profile
+without the deployer role the intended use is `public_authority_use` alone.
 
 Art. 113 gives Chapter III no single date. Point (b) applies Section 4 from
 2 August 2025, but Section 4 ("Notifying authorities and notified bodies")

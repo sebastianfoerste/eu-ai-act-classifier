@@ -160,8 +160,8 @@ _CHANGE_UNUSED = (
     "used: it matters only for a high-risk system, with no prohibited practice screened, "
     "placed on the market or put into service before its Chapter III date."
 )
-# The same for a deployer status given where neither Art. 49(3) nor the Art. 111(2)
-# public-authority sentence reads it.
+# The same for a deployer status given without the deployer role on a high-risk route
+# with no prohibited practice screened (public_authority_status_used).
 _PUBLIC_AUTHORITY_STATUS_UNUSED = (
     "Article 111(2) check: deployer_public_authority is given, but it is not used: it "
     "describes the profile's own deployer role, so it matters only where the profile holds "
@@ -170,8 +170,9 @@ _PUBLIC_AUTHORITY_STATUS_UNUSED = (
 
 
 def _art_111_2_status(profile: SystemProfile) -> str:
-    """Art. 111(2) AIA check, followed by a note for each answer given that the check
-    and the rest of the report do not use."""
+    """Art. 111(2) AIA check, followed by a note for a change answer given outside
+    ``change_used`` and for a deployer status given outside
+    ``public_authority_status_used``."""
 
     parts = [_art_111_2_check(profile)]
     if profile.significant_change_after_application_date is not None and not change_used(profile):

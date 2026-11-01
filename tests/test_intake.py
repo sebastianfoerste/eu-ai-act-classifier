@@ -454,9 +454,9 @@ def test_the_public_authority_question_follows_the_engines_deployer_test() -> No
     assert checked
 
 
-def test_the_public_authority_status_is_reported_as_not_used_exactly_where_it_is_not_used() -> None:
-    # As for the change answer: the sentence appears for a given status the engine does
-    # not read, never otherwise.
+def test_the_public_authority_status_is_reported_as_not_used_exactly_where_it_is_skipped() -> None:
+    # As for the change answer: the sentence appears for a given status wherever the
+    # engine's deployer test fails, and so the intake skips the question, never otherwise.
     checked = 0
     for profile in GRID + TRANSITION_GRID:
         if not holds(IN_SCOPE, profile):

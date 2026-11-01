@@ -174,9 +174,11 @@ def cut_off_contested(profile: SystemProfile, cut_off: str) -> bool:
 
 
 def public_authority_status_used(profile: SystemProfile) -> bool:
-    """Whether ``deployer_public_authority`` can change the result. It describes the
-    profile's own deployer role, so only where the profile holds that role for a high-risk
-    system with no prohibited practice screened (Art. 49(3) and Art. 111(2) AIA)."""
+    """Whether the engine reads ``deployer_public_authority``: it describes the profile's
+    own deployer role, so only where the profile holds that role for a high-risk system
+    with no prohibited practice screened (Art. 49(3) and Art. 111(2) AIA). A necessary
+    condition: on an Annex I route without an Annex III area the status changes the
+    result only for an undated or legacy system without public_authority_use."""
 
     return (
         profile.is_deployer
