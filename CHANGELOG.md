@@ -11,6 +11,21 @@ Changes since 0.2.2.
 
 #### Fixed
 
+- Art. 6(1c) and Art. 2(13) AIA, which #30 added to the Art. 6(1) finding,
+  were shown as verified although no primary source was recorded for them.
+  Each is now an `info` finding of its own, `HIGHRISK.6.1c` on every Annex I
+  route and `HIGHRISK.2.13` for Section A, with `citation_verified` false;
+  both are listed in `unverified_citations` and flagged
+  "[noch zu verifizieren]" in the text report. Their wording is unchanged.
+- The Art. 111(1) carve-out for Annex X components and its two dates
+  (placed on the market or put into service before 2 August 2027, brought
+  into compliance by 31 December 2030) carry "[noch zu verifizieren]" in the
+  Art. 111(2) scope text, the Art. 111(2) graph notes and the binding
+  timeline, and `unverified_citations` lists Art. 111(1) AIA where the scope
+  text or a graph note states it. The dates are unchanged.
+- The claim ledger has a PENDING row for each of the three: the text as
+  shown, its source (#30), and what to check once EUR-Lex can be read
+  (it could not be on 2 November 2026).
 - Guided intake: the number answer (training compute) takes the same inputs
   in the Python and the browser interpreter. Both accept ASCII digits only
   and trim only ASCII whitespace; before, Python also took Arabic-Indic or

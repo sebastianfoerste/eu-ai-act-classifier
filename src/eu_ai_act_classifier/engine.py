@@ -19,7 +19,13 @@ from .catalog import (
     section_b_annex_iii_flag,
     section_b_obligations,
 )
-from .citations import AMENDING_APPLICATION_DATES, APPLICATION_DATES, REGULATION, source_manifest
+from .citations import (
+    AMENDING_APPLICATION_DATES,
+    APPLICATION_DATES,
+    ART_111_1,
+    REGULATION,
+    source_manifest,
+)
 from .models import (
     TIER_ORDER,
     AnnexIII,
@@ -35,6 +41,7 @@ from .models import (
 from .obligation_graph import build_obligation_graph
 from .rules import gpai, high_risk, prohibited, scope, transparency
 from .transitions import (
+    ANNEX_X_CARVE_OUT,
     before,
     chapter_iii_date,
     derogation_asserted,
@@ -183,6 +190,12 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         fria_required=fria_required,
         transparency_obligations=transparency_obligations,
     )
+
+    # The Art. 111(1) carve-out is stated in prose, not as a finding or an obligation.
+    stated = [scope_assessment.transitional_status]
+    stated += [item.application_date_note or "" for item in obligation_graph]
+    if any(ANNEX_X_CARVE_OUT in text for text in stated):
+        unverified = sorted({*unverified, ART_111_1.ref})
 
     return ClassificationReport(
         system=profile.name,
