@@ -31,6 +31,9 @@ Changes since 0.2.2.
   says that the report keeps Art. 5, Art. 50 and any Annex III duties of a
   Section B product for review, as the PENDING ledger rows on Art. 2(2)
   record.
+- The #31 entry below said "I don't know" pauses the run on all three new
+  intake questions; the model-date question offers no "I don't know", and a
+  blank model date means "not given".
 - Guided intake: the number answer (training compute) takes the same inputs
   in the Python and the browser interpreter. Both accept ASCII digits only
   and trim only ASCII whitespace; before, Python also took Arabic-Indic or
@@ -559,7 +562,7 @@ checked against the consolidated AI Act of 27 July 2026 and Regulation (EU)
 #### Added
 
 - Guided intake in the browser playground: one question per page, an "I don't know" answer that routes to review or pauses the run for counsel, and a check-answers page listing every defaulted value. Questions, order and skip conditions come from `src/eu_ai_act_classifier/intake.py`; the JSON editor remains as a second mode.
-- The guided intake also asks the fields the entries above add: the Annex I section on the Art. 6(1) route, the general-purpose AI model's own date, and the deployer's public-authority status (Art. 49(3)) on a high-risk route. "I don't know" pauses the run on all three.
+- The guided intake also asks the fields the entries above add: the Annex I section on the Art. 6(1) route, the general-purpose AI model's own date, and the deployer's public-authority status (Art. 49(3)) on a high-risk route. "I don't know" pauses the run on the Annex I section and the deployer's status; a blank model date means "not given" (dated by the system's date for review, or noting the Art. 111(3) transition).
 - `labels.py`: one display-label catalog for the playground field guide and the cockpit, using the pinpoints and titles in `catalog.py`.
 - Competitive research, a feature matrix, a design teardown and an adaptation plan in `docs/research/`, and architecture decision records in `docs/adr/`.
 
