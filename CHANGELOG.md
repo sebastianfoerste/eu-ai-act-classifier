@@ -26,6 +26,11 @@ Changes since 0.2.2.
 - The claim ledger has a PENDING row for each of the three: the text as
   shown, its source (#30), and what to check once EUR-Lex can be read
   (it could not be on 2 November 2026).
+- Guided intake and playground field guide: the Annex I section hint no
+  longer states the contested literal reading of Art. 2(2) as settled. It
+  says that the report keeps Art. 5, Art. 50 and any Annex III duties of a
+  Section B product for review, as the PENDING ledger rows on Art. 2(2)
+  record.
 - Guided intake: the number answer (training compute) takes the same inputs
   in the Python and the browser interpreter. Both accept ASCII digits only
   and trim only ASCII whitespace; before, Python also took Arabic-Indic or

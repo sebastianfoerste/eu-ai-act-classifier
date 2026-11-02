@@ -235,7 +235,10 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "single",
         "field": "annex_i_section",
         "title": "Which section of Annex I lists that legislation?",
-        "hint": "For a Section B product only the provisions in Art. 2(2) AIA apply.",
+        # Whether Art. 2(2) also displaces Art. 5, Art. 50 and Annex III duties is open (PENDING
+        # rows in docs/REGULATORY_CLAIM_LEDGER.md), so the hint does not state it as settled.
+        "hint": "Art. 2(2) AIA limits a Section B product to the provisions it lists; the report "
+        "keeps Art. 5, Art. 50 and any Annex III duties for review.",
         "article": "Art. 6(1) AIA",
         "options": _options(AnnexISection),
         # Off the Art. 6(1) route the engine reports a given section as unused.

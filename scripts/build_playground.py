@@ -174,8 +174,9 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             (
                 "annex_i_section",
                 "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): "
-                "only Art. 6(1), 60a and 102-112 apply, and 57-59 as far as integrated in the "
-                "sectoral legislation (Art. 2(2) AIA). Unset: Section A.",
+                "Art. 2(2) AIA limits it to Art. 6(1), 60a and 102-112, and 57-59 as far as "
+                "integrated in the sectoral legislation; the report keeps Art. 5, Art. 50 and any "
+                "Annex III duties for review. Unset: Section A.",
             ),
             (
                 "annex_iii_area",
