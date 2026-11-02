@@ -15,8 +15,11 @@ or let uv fetch the package and start the server::
     uvx --python 3.13 --from 'eu-ai-act-classifier[mcp]' eu-ai-act-classifier-mcp
 
 The server is built on ``mcp.server.fastmcp`` from the 1.x SDK, which mcp 2.0
-renamed. mcp releases before 1.21.1 fail to import it under pydantic 2.14 or
-later, so the ``[mcp]`` extra pins ``mcp>=1.21.1,<2``.
+renamed (``mcp.server.mcpserver.MCPServer``). mcp releases before 1.21.1 fail
+to import it under pydantic 2.14 or later, so the ``[mcp]`` extra pins
+``mcp>=1.21.1,<2``. Both tools take the ``SystemProfile`` model as their
+``profile`` parameter and carry read-only tool annotations; both the typed
+schema and ``ToolAnnotations`` exist at the 1.21.1 floor.
 
 For Claude Code and Claude Desktop, the recommended integration is eu-reg-mcp,
 which serves this classifier as a tool next to its MiCAR tools.
@@ -72,34 +75,42 @@ def _missing_extra_message(installed_mcp: str | None, error: ImportError) -> str
 def build_server() -> Any:
     try:
         from mcp.server.fastmcp import FastMCP
+        from mcp.types import ToolAnnotations
     except ImportError as exc:
         raise SystemExit(_missing_extra_message(_installed_mcp_version(), exc)) from exc
 
     server = FastMCP("eu-ai-act-classifier")
+    # Both tools read the profile and compute a report: nothing is written or fetched,
+    # and the same profile always gives the same report.
+    read_only = ToolAnnotations(
+        readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False
+    )
 
-    @server.tool()
+    # The parameter is typed as the SystemProfile model, so the tool's input schema is
+    # the profile's JSON Schema (field names, enums such as prohibited_practices codes,
+    # date patterns), and the SDK validates the argument before the tool runs.
+    @server.tool(annotations=read_only)
     def classify_ai_system(
-        profile: dict[str, Any], include_advisory: bool = False
+        profile: SystemProfile, include_advisory: bool = False
     ) -> dict[str, Any]:
-        """Classify an AI system under the EU AI Act (Reg (EU) 2024/1689).
+        """Classify an AI system under the EU AI Act (Reg (EU) 2024/1689 as amended by
+        Reg (EU) 2026/1744).
 
-        `profile` is a SystemProfile object (name, roles, annex_iii_area,
-        annex_i_section, prohibited_practices, is_gpai_model, training_flops,
-        transparency screens, …; dates YYYY-MM-DD, e.g. placing_on_market_date
-        "2026-03-01" for the AI system and gpai_model_placing_on_market_date
-        for the model). Returns a ClassificationReport: risk tier, disposition,
-        obligations with article citations, required documentation, open
-        questions for review, and any citations pending verification.
+        `profile` is a SystemProfile object; its JSON Schema is this tool's input
+        schema (name, roles, annex_iii_area, annex_i_section, prohibited_practices,
+        is_gpai_model, training_flops, transparency screens, …; dates YYYY-MM-DD,
+        e.g. placing_on_market_date "2026-03-01" for the AI system and
+        gpai_model_placing_on_market_date for the model). Returns a
+        ClassificationReport: risk tier, disposition, obligations with article
+        citations, required documentation, open questions for review, and any
+        citations pending verification.
         """
-        report = classify(SystemProfile.model_validate(profile), include_advisory=include_advisory)
-        return report.model_dump(mode="json")
+        return classify(profile, include_advisory=include_advisory).model_dump(mode="json")
 
-    @server.tool()
-    def classify_ai_system_text(profile: dict[str, Any], include_advisory: bool = False) -> str:
+    @server.tool(annotations=read_only)
+    def classify_ai_system_text(profile: SystemProfile, include_advisory: bool = False) -> str:
         """As classify_ai_system, but returns the human-readable report text."""
-        return render_report(
-            classify(SystemProfile.model_validate(profile), include_advisory=include_advisory)
-        )
+        return render_report(classify(profile, include_advisory=include_advisory))
 
     return server
 
