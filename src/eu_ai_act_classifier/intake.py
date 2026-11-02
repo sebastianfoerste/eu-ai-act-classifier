@@ -537,7 +537,15 @@ def _base_profile() -> dict[str, Any]:
 
 # One grammar for both interpreters (NUMBER in intake.mjs): a decimal with an
 # optional exponent, so "2e25" passes and "0x10" or "1_000" do not, in either.
-_NUMBER = re.compile(r"^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$")
+# ASCII digits only, and only ASCII whitespace is trimmed (NUMBER_SPACE in
+# intake.mjs): str.strip() and String.prototype.trim() each remove characters the
+# other keeps, and Python's \d and float() also take other Unicode digits.
+_NUMBER = re.compile(r"^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$", re.ASCII)
+_NUMBER_SPACE = " \t\n\v\f\r"
+
+
+def _number_text(value: str) -> str:
+    return value.strip(_NUMBER_SPACE)
 
 
 def _is_number(value: Any) -> bool:
@@ -545,11 +553,15 @@ def _is_number(value: Any) -> bool:
         return False
     if isinstance(value, int | float):
         return math.isfinite(value)
-    return (
-        isinstance(value, str)
-        and bool(_NUMBER.match(value.strip()))
-        and (math.isfinite(float(value)))
-    )
+    if not isinstance(value, str):
+        return False
+    text = _number_text(value)
+    if not _NUMBER.match(text):
+        return False
+    try:
+        return math.isfinite(float(text))
+    except (ValueError, OverflowError):
+        return False
 
 
 def is_answered(question: dict[str, Any], answers: dict[str, Any]) -> bool:
@@ -630,7 +642,11 @@ def answers_to_profile(
             for option in question["options"]:
                 write_field(profile, option["field"], option["field"] in answer)
         elif kind == "number":
-            write_field(profile, question["field"], None if answer in ("", None) else float(answer))
+            if answer in ("", None):
+                number = None
+            else:
+                number = float(_number_text(answer) if isinstance(answer, str) else answer)
+            write_field(profile, question["field"], number)
     return profile, asked, blocked, missing
 
 

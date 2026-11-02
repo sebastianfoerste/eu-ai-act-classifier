@@ -151,7 +151,10 @@ test("a single question without a none option does not accept none", () => {
 });
 
 test("numbers use the same grammar as the Python interpreter", () => {
-  for (const ok of ["2e25", " 2e25 ", ".5e3", "10", 2e25]) assert.equal(isNumber(ok), true, String(ok));
-  for (const bad of ["0x10", "1_000", "1e", "", " ", "Infinity", NaN]) assert.equal(isNumber(bad), false, String(bad));
+  // The same inputs as NUMBERS_ACCEPTED and NUMBERS_REJECTED in tests/test_intake.py: ASCII
+  // digits only, and only ASCII whitespace is trimmed.
+  for (const ok of ["2e25", " 2e25 ", ".5e3", "10", "\t10\n", "\v10\f\r", 2e25]) assert.equal(isNumber(ok), true, JSON.stringify(ok));
+  const unicode = ["\u0661\u0662", "\uff11\uff12", "\ufeff5", "\u00a05", "5\u2028", "\u30005", "\x1c5", "5\x1f", "5\x85"];
+  for (const bad of ["0x10", "1_000", "1e", "", " ", "Infinity", NaN, ...unicode]) assert.equal(isNumber(bad), false, JSON.stringify(bad));
 });
 

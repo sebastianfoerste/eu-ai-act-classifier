@@ -8,11 +8,19 @@ export const UNKNOWN = "unknown";
 
 // One grammar for both interpreters (_NUMBER in intake.py): a decimal with an
 // optional exponent, so "2e25" passes and "0x10" or "1_000" do not, in either.
+// ASCII digits only, and only ASCII whitespace is trimmed (_NUMBER_SPACE in
+// intake.py): String.prototype.trim() and str.strip() each remove characters the
+// other keeps.
 const NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/;
+const NUMBER_SPACE = /^[ \t\n\v\f\r]+|[ \t\n\v\f\r]+$/g;
+
+const numberText = value => value.replace(NUMBER_SPACE, "");
 
 export function isNumber(value) {
   if (typeof value === "number") return Number.isFinite(value);
-  return typeof value === "string" && NUMBER.test(value.trim()) && Number.isFinite(Number(value));
+  if (typeof value !== "string") return false;
+  const text = numberText(value);
+  return NUMBER.test(text) && Number.isFinite(Number(text));
 }
 
 export function readField(profile, field) {
@@ -78,7 +86,7 @@ export function answersToProfile(definition, answers) {
       case "flags":
         for (const option of question.options) writeField(profile, option.field, answer.includes(option.field));
         break;
-      case "number": writeField(profile, question.field, answer === "" || answer === null ? null : Number(answer)); break;
+      case "number": writeField(profile, question.field, answer === "" || answer === null ? null : Number(typeof answer === "string" ? numberText(answer) : answer)); break;
       default: throw new Error("Unknown question kind");
     }
   }

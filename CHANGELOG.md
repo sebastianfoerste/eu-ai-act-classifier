@@ -7,6 +7,18 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Audit fixes on commits merged after verification
+
+#### Fixed
+
+- Guided intake: the number answer (training compute) takes the same inputs
+  in the Python and the browser interpreter. Both accept ASCII digits only
+  and trim only ASCII whitespace; before, Python also took Arabic-Indic or
+  fullwidth digits, each side trimmed characters the other kept (a byte
+  order mark in the browser, `\x1c` to `\x1f` and `\x85` in Python), and
+  Python raised `ValueError` on `"\x1c5"` instead of reporting the answer as
+  missing. The generated fixtures cover these inputs.
+
 ### Art. 49(3) public-authority status asked only of deployers (#54)
 
 #### Changed
