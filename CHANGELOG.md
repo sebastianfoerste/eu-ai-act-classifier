@@ -7,6 +7,42 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Audit fixes on commits merged after verification
+
+#### Fixed
+
+- Art. 6(1c) and Art. 2(13) AIA, which #30 added to the Art. 6(1) finding,
+  were shown as verified although no primary source was recorded for them.
+  Each is now an `info` finding of its own, `HIGHRISK.6.1c` on every Annex I
+  route and `HIGHRISK.2.13` for Section A, with `citation_verified` false;
+  both are listed in `unverified_citations` and flagged
+  "[noch zu verifizieren]" in the text report. Their wording is unchanged.
+- The Art. 111(1) carve-out for Annex X components and its two dates
+  (placed on the market or put into service before 2 August 2027, brought
+  into compliance by 31 December 2030) carry "[noch zu verifizieren]" in the
+  Art. 111(2) scope text, the Art. 111(2) graph notes and the binding
+  timeline, and `unverified_citations` lists Art. 111(1) AIA where the scope
+  text or a graph note states it. The dates are unchanged.
+- The claim ledger has a PENDING row for each of the three: the text as
+  shown, its source (#30), and what to check once EUR-Lex can be read
+  (it could not be on 2 November 2026).
+- Guided intake, playground field guide and the system-profile schema
+  (`annex_i_section` and `AnnexISection` descriptions): the Annex I section
+  text no longer states the contested literal reading of Art. 2(2) as
+  settled. It says that the report keeps Art. 5, Art. 50 and any Annex III
+  duties of a Section B product for review, as the PENDING ledger rows on
+  Art. 2(2) record.
+- The #31 entry below said "I don't know" pauses the run on all three new
+  intake questions; the model-date question offers no "I don't know", and a
+  blank model date means "not given".
+- Guided intake: the number answer (training compute) takes the same inputs
+  in the Python and the browser interpreter. Both accept ASCII digits only
+  and trim only ASCII whitespace; before, Python also took Arabic-Indic or
+  fullwidth digits, each side trimmed characters the other kept (a byte
+  order mark in the browser, `\x1c` to `\x1f` and `\x85` in Python), and
+  Python raised `ValueError` on `"\x1c5"` instead of reporting the answer as
+  missing. The generated fixtures cover these inputs.
+
 ### Art. 49(3) public-authority status asked only of deployers (#54)
 
 #### Changed
@@ -527,7 +563,7 @@ checked against the consolidated AI Act of 27 July 2026 and Regulation (EU)
 #### Added
 
 - Guided intake in the browser playground: one question per page, an "I don't know" answer that routes to review or pauses the run for counsel, and a check-answers page listing every defaulted value. Questions, order and skip conditions come from `src/eu_ai_act_classifier/intake.py`; the JSON editor remains as a second mode.
-- The guided intake also asks the fields the entries above add: the Annex I section on the Art. 6(1) route, the general-purpose AI model's own date, and the deployer's public-authority status (Art. 49(3)) on a high-risk route. "I don't know" pauses the run on all three.
+- The guided intake also asks the fields the entries above add: the Annex I section on the Art. 6(1) route, the general-purpose AI model's own date, and the deployer's public-authority status (Art. 49(3)) on a high-risk route. "I don't know" pauses the run on the Annex I section and the deployer's status; a blank model date means "not given" (dated by the system's date for review, or noting the Art. 111(3) transition).
 - `labels.py`: one display-label catalog for the playground field guide and the cockpit, using the pinpoints and titles in `catalog.py`.
 - Competitive research, a feature matrix, a design teardown and an adaptation plan in `docs/research/`, and architecture decision records in `docs/adr/`.
 

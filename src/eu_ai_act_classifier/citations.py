@@ -170,6 +170,15 @@ def cite(ref: str, *, verified: bool = True) -> Citation:
     return Citation(ref=ref, verified=verified)
 
 
+# Pinpoints added by #30 that were not re-read on EUR-Lex: no primary-source record holds
+# their wording or dates (PENDING rows in docs/REGULATORY_CLAIM_LEDGER.md). Every output
+# that states them carries the flag until they are read.
+UNVERIFIED_FLAG = "[noch zu verifizieren]"
+ART_6_1C = cite("Art. 6(1c) AIA", verified=False)
+ART_2_13 = cite("Art. 2(13) AIA", verified=False)
+ART_111_1 = cite("Art. 111(1) AIA", verified=False)
+
+
 # --- Application timeline (Art. 113 AIA) -----------------------------------
 # Entry into force 1.8.2024; staggered application thereafter. Checked on
 # 2026-10-18 against Art. 113 and Art. 111 in the consolidated text of
@@ -349,7 +358,7 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
             "by 2 August 2030 in any case (Art. 111(2) AIA as replaced by Art. 1, point (39)(a) "
             "of Regulation (EU) 2026/1744). Components of the Annex X large-scale IT systems "
             "placed on the market or put into service before 2 August 2027 follow Art. 111(1) "
-            "instead."
+            f"instead {UNVERIFIED_FLAG}."
         ),
         SourceStatus.BINDING_LEVEL_1,
         "ai-act-amendment-2026-1744",

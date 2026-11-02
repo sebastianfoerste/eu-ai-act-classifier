@@ -293,7 +293,7 @@
       "kind": "single",
       "field": "annex_i_section",
       "title": "Which section of Annex I lists that legislation?",
-      "hint": "For a Section B product only the provisions in Art. 2(2) AIA apply.",
+      "hint": "Art. 2(2) AIA limits a Section B product to the provisions it lists; the report keeps Art. 5, Art. 50 and any Annex III duties for review.",
       "article": "Art. 6(1) AIA",
       "options": [
         {

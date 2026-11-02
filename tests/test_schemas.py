@@ -93,3 +93,18 @@ def test_profile_schema_describes_what_null_means_for_the_new_fields() -> None:
     assert "Null: treated as Section A" in props["annex_i_section"]["description"]
     change = props["significant_change_after_application_date"]["description"]
     assert "2027-12-02" in change and "2026-08-02" in change
+
+
+def test_profile_schema_does_not_settle_the_contested_art_2_2_reading() -> None:
+    # As in the intake hint and the field guide (tests/test_playground.py): the PENDING
+    # ledger rows on Art. 2(2) leave open whether it also displaces Art. 5, Art. 50 and the
+    # Annex III duties of a Section B product, and the report keeps them.
+    committed = json.loads(
+        (ROOT / "schemas" / "system-profile.v1.schema.json").read_text(encoding="utf-8")
+    )
+    field = committed["properties"]["annex_i_section"]["description"]
+    section = committed["$defs"]["AnnexISection"]["description"]
+    for text in (" ".join(field.split()), " ".join(section.split())):
+        assert "the report keeps Art. 5, Art. 50 and any Annex III duties for review" in text
+        assert "only the Art. 2(2) provisions apply" not in text
+        assert "Arts. 102 to 112 apply" not in text

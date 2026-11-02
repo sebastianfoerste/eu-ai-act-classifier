@@ -93,3 +93,17 @@ def test_bridge_returns_field_errors_without_echoing_input() -> None:
     locations = {error["loc"] for error in result["errors"]}
     assert {"roles.0", "annex_iii_area", "typo"} <= locations
     assert secret not in json.dumps(result)
+
+
+def test_section_b_guidance_does_not_settle_the_contested_art_2_2_reading() -> None:
+    # The PENDING ledger rows on Art. 2(2) leave open whether it also displaces Art. 5,
+    # Art. 50 and the Annex III duties of a Section B product, and the report keeps them.
+    # The intake hint and the field guide say so rather than "only Art. 2(2) applies".
+    intake = json.loads((PLAYGROUND / "intake.json").read_text(encoding="utf-8"))
+    (question,) = [q for q in intake["questions"] if q["id"] == "annex_i_section"]
+    fields = json.loads((PLAYGROUND / "fields.json").read_text(encoding="utf-8"))
+    (entry,) = [f for g in fields["groups"] for f in g["fields"] if f["name"] == "annex_i_section"]
+    for hint in (question["hint"], entry["hint"]):
+        assert "the report keeps Art. 5, Art. 50 and any Annex III duties for review" in hint
+        assert "only the provisions" not in hint
+        assert "only Art. 6(1)" not in hint
