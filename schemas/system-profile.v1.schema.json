@@ -36,7 +36,7 @@
       "type": "string"
     },
     "AnnexISection": {
-      "description": "Annex I sections for the Art. 6(1) AIA product route.\n\nFor a Section B product only Art. 6(1), Art. 60a and Arts. 102 to 112 apply,\nand Arts. 57 to 59 only in so far as the high-risk requirements have been\nintegrated in the sectoral legislation (Art. 2(2) AIA). Regulation (EU)\n2026/1744 moved machinery to Section B:\nSection A, point 1 is deleted and Regulation (EU) 2023/1230 is Section B,\npoint 21.",
+      "description": "Annex I sections for the Art. 6(1) AIA product route.\n\nFor a Section B product Art. 2(2) AIA lists only Art. 6(1), Art. 60a and\nArts. 102 to 112, and Arts. 57 to 59 only in so far as the high-risk\nrequirements have been integrated in the sectoral legislation; the report\nkeeps Art. 5, Art. 50 and any Annex III duties for review. Regulation (EU)\n2026/1744 moved machinery to Section B:\nSection A, point 1 is deleted and Regulation (EU) 2023/1230 is Section B,\npoint 21.",
       "enum": [
         "A",
         "B"
@@ -358,7 +358,7 @@
         }
       ],
       "default": null,
-      "description": "Annex I section of the Art. 6(1) AIA product. For Section B only the Art. 2(2) provisions apply. Null: treated as Section A."
+      "description": "Annex I section of the Art. 6(1) AIA product. For Section B, Art. 2(2) AIA limits it to the provisions it lists; the report keeps Art. 5, Art. 50 and any Annex III duties for review. Null: treated as Section A."
     },
     "annex_iii_area": {
       "anyOf": [
