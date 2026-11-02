@@ -16,7 +16,7 @@ The table below summarizes the classification status, risk tier, number of direc
 | **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 4 | 2025-08-02 (Chapter V general-purpose AI models; 2027-08-02 under Art. 111(3) AIA if placed on the market before 2025-08-02) |
 | **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 8 | 2025-08-02 (Chapter V general-purpose AI models; 2027-08-02 under Art. 111(3) AIA if placed on the market before 2025-08-02) |
 | **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 8 | 2025-08-02 (Chapter V general-purpose AI models; 2027-08-02 under Art. 111(3) AIA if placed on the market before 2025-08-02) |
-| **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 14 | 2026-08-02 (Arts. 40-44, 47-49, 72 and 73; "Literal reading, confirm with counsel"; 2027-12-02 if they follow the Sections 1 to 3 deferral), then 2027-12-02 (Annex III, Chapter III Sections 1 to 3) |
+| **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 14 | 2026-08-02 (Arts. 40-43, 43(2), 47-49, 72 and 73; "Literal reading, confirm with counsel"; 2027-12-02 if they follow the Sections 1 to 3 deferral), then 2027-12-02 (Annex III, Chapter III Sections 1 to 3) |
 
 ---
 
@@ -79,9 +79,10 @@ Source manifest:
   - Draft high-risk classification guidelines: nonbinding_guidance, retrieved 2026-06-18
   - GPAI Code of Practice: nonbinding_guidance, retrieved 2026-06-18
   - GPAI provider guidelines: nonbinding_guidance, retrieved 2026-06-18
-  - Transparency guidance tracker: nonbinding_guidance, retrieved 2026-06-18
+  - Art. 50 marking and labelling Code of Practice [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
+  - Commission Art. 50 transparency guidelines [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.
 ```
 
@@ -158,9 +159,10 @@ Source manifest:
   - Draft high-risk classification guidelines: nonbinding_guidance, retrieved 2026-06-18
   - GPAI Code of Practice: nonbinding_guidance, retrieved 2026-06-18
   - GPAI provider guidelines: nonbinding_guidance, retrieved 2026-06-18
-  - Transparency guidance tracker: nonbinding_guidance, retrieved 2026-06-18
+  - Art. 50 marking and labelling Code of Practice [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
+  - Commission Art. 50 transparency guidelines [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.
 ```
 
@@ -237,9 +239,10 @@ Source manifest:
   - Draft high-risk classification guidelines: nonbinding_guidance, retrieved 2026-06-18
   - GPAI Code of Practice: nonbinding_guidance, retrieved 2026-06-18
   - GPAI provider guidelines: nonbinding_guidance, retrieved 2026-06-18
-  - Transparency guidance tracker: nonbinding_guidance, retrieved 2026-06-18
+  - Art. 50 marking and labelling Code of Practice [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
+  - Commission Art. 50 transparency guidelines [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.
 ```
 
@@ -260,7 +263,7 @@ Scope and intake:
   Transitional status: No transitional limitation identified from the submitted facts.
 
 Findings:
-  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring
+  [high] Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons
       Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.
 
 Obligations:
@@ -301,7 +304,7 @@ Obligation graph:
       Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
   - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
       Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
-  - high-risk.provider.44: Art. 44 AIA (provider), evidence: Certificate register., review: review_required
+  - high-risk.provider.43.2: Art. 43(2) AIA (provider), evidence: Annex VI internal-control assessment record., review: review_required
       Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
   - high-risk.provider.47: Art. 47 AIA (provider), evidence: EU declaration of conformity., review: review_required
       Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
@@ -336,9 +339,10 @@ Source manifest:
   - Draft high-risk classification guidelines: nonbinding_guidance, retrieved 2026-06-18
   - GPAI Code of Practice: nonbinding_guidance, retrieved 2026-06-18
   - GPAI provider guidelines: nonbinding_guidance, retrieved 2026-06-18
-  - Transparency guidance tracker: nonbinding_guidance, retrieved 2026-06-18
+  - Art. 50 marking and labelling Code of Practice [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
+  - Commission Art. 50 transparency guidelines [noch zu verifizieren]: nonbinding_guidance, retrieved 2026-10-14 (search results only)
 
-Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024
+Regulation (EU) 2024/1689 of the European Parliament and of the Council of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744
 This is a screening tool, not legal advice. It does not produce a conformity assessment and it does not replace review by a qualified lawyer. Determinations marked 'requires_review' turn on facts the engine cannot settle.
 ```
 
