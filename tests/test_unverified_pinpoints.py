@@ -16,6 +16,7 @@ from pathlib import Path
 import pytest
 
 from eu_ai_act_classifier import AnnexIII, Role, SystemProfile, classify
+from eu_ai_act_classifier.guidance_eval import load_guidance_examples
 from eu_ai_act_classifier.models import ClassificationReport
 from eu_ai_act_classifier.report import render_report
 
@@ -131,11 +132,33 @@ def test_art_111_1_is_flagged_in_the_binding_timeline() -> None:
     assert entry.note.endswith(f" {TIMELINE_TEXT}")
 
 
+def test_the_annex_i_guidance_example_carries_the_unverified_art_6_1c_finding() -> None:
+    (example,) = [
+        e for e in load_guidance_examples() if e["id"] == "draft-guidance-machinery-safety-stop"
+    ]
+    report = classify(SystemProfile.model_validate(example["profile"]))
+
+    assert example["profile"]["annex_i_section"] == "B"
+    assert [(f.rule_id, f.citation_verified) for f in report.findings] == [
+        ("HIGHRISK.6.1", True),
+        ("HIGHRISK.6.1c", False),
+    ]
+    assert report.unverified_citations == ["Art. 6(1c) AIA"]
+    # The guidance evaluation compares only these, and they are unchanged.
+    assert report.risk_tier.value == example["expected"]["risk_tier"]
+    assert report.disposition.value == example["expected"]["disposition"]
+
+
 def _profiles() -> list[tuple[str, SystemProfile]]:
     profiles = [
         (path.name, SystemProfile.model_validate_json(path.read_text(encoding="utf-8")))
         for path in sorted(EXAMPLES.glob("*.json"))
         if path.name != "classification-packet.json"
+    ]
+    # The Commission guidance examples; one of them takes the Annex I, Section B route.
+    profiles += [
+        (example["id"], SystemProfile.model_validate(example["profile"]))
+        for example in load_guidance_examples()
     ]
     legacy = {"placing_on_market_date": "2024-01-01", "public_authority_use": True}
     roles = [Role.PROVIDER, Role.DEPLOYER, Role.IMPORTER]
