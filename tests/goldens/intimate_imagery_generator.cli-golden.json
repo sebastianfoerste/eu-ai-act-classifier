@@ -1,0 +1,18 @@
+{
+  "system": "Nudification image app",
+  "risk_tier": "prohibited",
+  "disposition": "determined",
+  "scope_status": "in_scope",
+  "finding_citations": [
+    "Art. 5(1)(ba) AIA",
+    "Art. 50(2) AIA"
+  ],
+  "obligation_articles": [],
+  "timeline_source_statuses": [
+    "binding_level_1"
+  ],
+  "source_manifest_statuses": [
+    "binding_level_1",
+    "nonbinding_guidance"
+  ]
+}

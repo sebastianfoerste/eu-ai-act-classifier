@@ -7,6 +7,23 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Tests cover every example, `--strict` and the cockpit types
+
+#### Changed
+
+- `tests/test_golden_json.py` locks the classification summary of all 18
+  example profiles, not only `examples/credit_scoring.json`, and resolves its
+  paths from the repository root. `uv run python tests/test_golden_json.py`
+  rewrites the goldens after a reviewed rule change.
+- `tests/test_cli.py` checks the `--strict` exit codes: 1 for a prohibited
+  and for a `requires_review` report, 0 otherwise.
+- `tests/test_web_types.py` fails when a type in `web/lib/types.ts` no longer
+  matches the pydantic model it mirrors, field by field.
+- `tests/test_ci_workflow.py` also catches an inline `permissions:` value on a
+  job other than `deploy` and a condition on the npm audit step.
+- A test pins the effect text of the Art. 6(3) derogation finding for an
+  Annex I, Section B product in an Annex III area.
+
 ### Docs and the cockpit health route say what the code does
 
 #### Fixed

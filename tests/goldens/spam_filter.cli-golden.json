@@ -1,0 +1,15 @@
+{
+  "system": "InboxGuard",
+  "risk_tier": "minimal_risk",
+  "disposition": "determined",
+  "scope_status": "in_scope",
+  "finding_citations": [],
+  "obligation_articles": [],
+  "timeline_source_statuses": [
+    "binding_level_1"
+  ],
+  "source_manifest_statuses": [
+    "binding_level_1",
+    "nonbinding_guidance"
+  ]
+}

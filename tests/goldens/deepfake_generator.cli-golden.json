@@ -1,0 +1,17 @@
+{
+  "system": "FaceSwap Studio",
+  "risk_tier": "limited_risk",
+  "disposition": "determined",
+  "scope_status": "in_scope",
+  "finding_citations": [
+    "Art. 50(4) AIA"
+  ],
+  "obligation_articles": [],
+  "timeline_source_statuses": [
+    "binding_level_1"
+  ],
+  "source_manifest_statuses": [
+    "binding_level_1",
+    "nonbinding_guidance"
+  ]
+}

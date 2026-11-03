@@ -1,0 +1,26 @@
+{
+  "system": "NexusUltra-Large",
+  "risk_tier": "minimal_risk",
+  "disposition": "determined",
+  "scope_status": "in_scope",
+  "finding_citations": [
+    "Art. 51 AIA"
+  ],
+  "obligation_articles": [
+    "Art. 53(1)(a) AIA",
+    "Art. 53(1)(b) AIA",
+    "Art. 53(1)(c) AIA",
+    "Art. 53(1)(d) AIA",
+    "Art. 55(1)(a) AIA",
+    "Art. 55(1)(b) AIA",
+    "Art. 55(1)(c) AIA",
+    "Art. 55(1)(d) AIA"
+  ],
+  "timeline_source_statuses": [
+    "binding_level_1"
+  ],
+  "source_manifest_statuses": [
+    "binding_level_1",
+    "nonbinding_guidance"
+  ]
+}

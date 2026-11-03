@@ -96,8 +96,11 @@ def test_only_the_deploy_job_can_write_to_pages() -> None:
         "pages": "write",
         "id-token": "write",
     }
-    for name in CHECK_JOBS:
-        assert "    permissions:" not in jobs[name], f"{name} must keep the read-only token"
+    # Every other job keeps the workflow's read-only token. The key is checked in both
+    # forms, the `permissions:` block and an inline `permissions: write-all`.
+    for name, job in jobs.items():
+        if name != "deploy":
+            assert "permissions" not in _scalars(job, 4), f"{name} must keep the read-only token"
 
 
 def test_deploy_job_publishes_docs_to_the_github_pages_environment() -> None:
@@ -159,5 +162,7 @@ def test_web_job_fails_on_high_npm_advisories_before_the_tests() -> None:
     # It audits the tree npm ci installed, before any of that code runs.
     assert runs.index("npm ci") < runs.index(NPM_AUDIT) < runs.index("npm test")
     audit = next(step for step in steps if step.get("run") == NPM_AUDIT)
+    # The step runs on every web job run and its failure fails the job.
+    assert "if" not in audit, "the audit step must not be skipped by a condition"
     assert "continue-on-error" not in audit
     assert "working-directory" not in audit

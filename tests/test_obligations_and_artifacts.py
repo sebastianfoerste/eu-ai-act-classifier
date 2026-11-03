@@ -1233,6 +1233,35 @@ def test_section_b_annex_iii_flag_is_also_an_open_question(derogation: bool) -> 
     assert {"Art. 9 AIA", "Art. 2(2) AIA"} <= {ob.article for ob in report.obligations}
 
 
+def test_section_b_derogation_finding_states_the_art_2_2_effect() -> None:
+    # The Section B branch of the Art. 6(3) derogation finding (rules/high_risk.py). Its
+    # last sentence is the "if it is established" clause of the PENDING Art. 2(2) row in
+    # docs/REGULATORY_CLAIM_LEDGER.md, so the wording changes only together with that row.
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.PROVIDER],
+            annex_iii_area=AnnexIII.CREDITWORTHINESS,
+            derogation=Derogation(narrow_procedural_task=True),
+            **SECTION_B,
+        )
+    )
+
+    (finding,) = [f for f in report.findings if f.rule_id.endswith(".derogation")]
+    assert finding.rule_id == "HIGHRISK.III.5.b.derogation"
+    assert finding.citation == "Art. 6(3) AIA"
+    assert finding.tier is RiskTier.HIGH
+    assert finding.title == (
+        "High-risk pending Art. 6(3) derogation: Creditworthiness evaluation and credit scoring"
+    )
+    assert finding.detail == (
+        "Creditworthiness evaluation and credit scoring (Annex III(5)(b) AIA). A derogation "
+        "condition is asserted and no profiling is performed, which may take the system out "
+        "of the Annex III route. It stays high-risk under Art. 6(1), and if the derogation "
+        "is established only the Art. 2(2) AIA provisions apply to it."
+    )
+
+
 @pytest.mark.parametrize(
     "screen",
     [
