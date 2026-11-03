@@ -5,6 +5,10 @@ import { runClassifierBridge } from "../../lib/python";
 import { POST as artifactsPOST } from "./artifacts/route";
 import { POST as classifyPOST } from "./classify/route";
 import { POST as dossierPOST } from "./dossier/route";
+import { GET as inventoryGET } from "./inventory/route";
+import { GET as schemaGET } from "./schema/route";
+import { GET as sourcesGET } from "./sources/route";
+import { GET as workspaceGET } from "./workspace/route";
 
 vi.mock("../../lib/python", () => ({
   runClassifierBridge: vi.fn(),
@@ -12,9 +16,38 @@ vi.mock("../../lib/python", () => ({
 
 const bridge = vi.mocked(runClassifierBridge);
 
-const VALIDATION_ERROR_LINE = JSON.stringify({
-  error: "1 validation error for SystemProfile\nroles\n  Input should be a valid list",
-});
+const VALIDATION_ERROR = "1 validation error for SystemProfile\nroles\n  Input should be a valid list";
+const VALIDATION_ERROR_LINE = JSON.stringify({ error: VALIDATION_ERROR });
+
+// Failures that are not local_api rejecting the input, with what the route answers.
+// Neither stderr, a traceback, the bridge's own message nor the request reaches the body.
+const SERVER_FAILURES = [
+  {
+    failure: "a timeout",
+    error: new ClassifierBridgeError("classifier bridge timed out"),
+    body: "classifier bridge timed out",
+  },
+  {
+    failure: "a crash",
+    error: new ClassifierBridgeError(
+      'Traceback (most recent call last):\n  File "/home/x/local_api.py"',
+      1,
+      'Traceback (most recent call last):\n  File "/home/x/local_api.py"\nRuntimeError: boom\n',
+    ),
+    body: "classifier bridge failed",
+  },
+  {
+    failure: "uv failing before Python starts",
+    error: new ClassifierBridgeError("error: Failed to spawn", 2, "error: Failed to spawn\n"),
+    body: "classifier bridge failed",
+  },
+  { failure: "uv missing", error: new Error("spawn uv ENOENT"), body: "classifier bridge failed" },
+  {
+    failure: "unreadable output",
+    error: new SyntaxError(`Unexpected token 'n', "not json" is not valid JSON`),
+    body: "classifier bridge failed",
+  },
+];
 
 const COCKPIT = "http://127.0.0.1:3000";
 
@@ -68,36 +101,25 @@ describe.each([
     const response = await POST(post(url, JSON.stringify({ profile: { roles: "bogus" } })));
 
     expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toMatchObject({
-      error: expect.stringContaining("validation error for SystemProfile"),
-    });
+    // local_api's message only: no "Error:" prefix and no other stderr line.
+    await expect(response.json()).resolves.toEqual({ error: VALIDATION_ERROR });
   });
 
-  it.each([
-    { failure: "a timeout", error: new ClassifierBridgeError("classifier bridge timed out") },
-    {
-      failure: "a crash",
-      error: new ClassifierBridgeError("Traceback", 1, "Traceback\nRuntimeError: boom\n"),
-    },
-    {
-      failure: "uv failing before Python starts",
-      error: new ClassifierBridgeError("error: Failed to spawn", 2, "error: Failed to spawn\n"),
-    },
-    { failure: "uv missing", error: new Error("spawn uv ENOENT") },
-    { failure: "unreadable output", error: new SyntaxError("Unexpected token 'n'") },
-  ])("answers 500 for $failure", async ({ error }) => {
+  it.each(SERVER_FAILURES)("answers 500 for $failure, with a fixed message", async ({ error, body }) => {
     bridge.mockRejectedValue(error);
 
     const response = await POST(post(url, JSON.stringify(payload)));
 
     expect(response.status).toBe(500);
-    await expect(response.json()).resolves.toEqual({ error: String(error) });
+    await expect(response.json()).resolves.toEqual({ error: body });
   });
 
-  it("answers 400 for a request body that is not JSON, without running the bridge", async () => {
-    const response = await POST(post(url, "{not json"));
+  it("answers 400 for a request body that is not JSON, without running the bridge or echoing it", async () => {
+    const response = await POST(post(url, "{not json SECRET-BODY"));
 
     expect(response.status).toBe(400);
+    // The JSON parser's own message quotes the start of the body.
+    await expect(response.json()).resolves.toEqual({ error: "request body is not valid JSON" });
     expect(bridge).not.toHaveBeenCalled();
   });
 
@@ -145,5 +167,35 @@ describe.each([
 
     expect(response.status).toBe(403);
     expect(bridge).not.toHaveBeenCalled();
+  });
+});
+
+describe.each([
+  ["inventory", inventoryGET],
+  ["schema", schemaGET],
+  ["sources", sourcesGET],
+  ["workspace", workspaceGET],
+] as const)("GET /api/%s", (command, GET) => {
+  beforeEach(() => {
+    bridge.mockReset();
+  });
+
+  it("returns what the Python bridge prints", async () => {
+    bridge.mockResolvedValue({ ok: true });
+
+    const response = await GET();
+
+    expect(response.status).toBe(200);
+    expect(bridge).toHaveBeenCalledWith(command);
+    await expect(response.json()).resolves.toEqual({ ok: true });
+  });
+
+  it.each(SERVER_FAILURES)("answers 500 for $failure, with a fixed message", async ({ error, body }) => {
+    bridge.mockRejectedValue(error);
+
+    const response = await GET();
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: body });
   });
 });

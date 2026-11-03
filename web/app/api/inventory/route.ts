@@ -1,3 +1,4 @@
+import { bridgeErrorBody } from "../../../lib/bridge-error";
 import { runClassifierBridge } from "../../../lib/python";
 
 export const runtime = "nodejs";
@@ -7,6 +8,6 @@ export async function GET() {
     const inventory = await runClassifierBridge("inventory");
     return Response.json(inventory);
   } catch (error) {
-    return Response.json({ error: String(error) }, { status: 500 });
+    return Response.json(bridgeErrorBody(error), { status: 500 });
   }
 }

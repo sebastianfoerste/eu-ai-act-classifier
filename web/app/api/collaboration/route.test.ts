@@ -60,21 +60,26 @@ describe("local collaboration workspace route", () => {
   });
 
   it("preserves stale-write conflicts at the web boundary", async () => {
-    bridge.mockRejectedValue(new Error("409 Conflict: stale review cell revision"));
-
-    const response = await POST(post({ action: "lock", expectedRevision: 1 }));
-
-    expect(response.status).toBe(409);
-    await expect(response.json()).resolves.toMatchObject({ error: expect.stringContaining("409 Conflict") });
-  });
-
-  it("keeps the conflict status when the bridge reports it as rejected input", async () => {
     const line = JSON.stringify({ error: "409 Conflict: stale review cell revision" });
     bridge.mockRejectedValue(new ClassifierBridgeError(line, 2, `${line}\n`));
 
     const response = await POST(post({ action: "lock", expectedRevision: 1 }));
 
     expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual({
+      error: "409 Conflict: stale review cell revision",
+    });
+  });
+
+  it("does not take a crash whose output mentions a conflict for a conflict", async () => {
+    // A conflict is local_api rejecting the action. Any other error that happens to
+    // contain the words is a server failure, and its text stays out of the response.
+    bridge.mockRejectedValue(new Error("409 Conflict: stale review cell revision"));
+
+    const response = await POST(post({ action: "lock", expectedRevision: 1 }));
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: "classifier bridge failed" });
   });
 
   it("answers 400 when local_api rejects the action (exit 2)", async () => {
@@ -84,31 +89,57 @@ describe("local collaboration workspace route", () => {
     const response = await POST(post({ action: "lock", targetId: "factor:missing", expectedRevision: 1 }));
 
     expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toMatchObject({
-      error: expect.stringContaining("unknown review cell"),
-    });
+    await expect(response.json()).resolves.toEqual({ error: "unknown review cell: factor:missing" });
   });
 
   it.each([
-    { failure: "a timeout", error: new ClassifierBridgeError("classifier bridge timed out") },
+    {
+      failure: "a timeout",
+      error: new ClassifierBridgeError("classifier bridge timed out"),
+      body: "classifier bridge timed out",
+    },
     {
       failure: "a crash",
       error: new ClassifierBridgeError("Traceback", 1, "Traceback\nRuntimeError: boom\n"),
+      body: "classifier bridge failed",
     },
-  ])("answers 500 for $failure instead of blaming the request", async ({ error }) => {
+  ])("answers 500 for $failure instead of blaming the request", async ({ error, body }) => {
     bridge.mockRejectedValue(error);
 
     const response = await POST(post({ action: "comment", targetId: "factor:role", expectedRevision: 1 }));
 
     expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: body });
   });
 
-  it("answers 500 when loading the workspace fails", async () => {
-    bridge.mockRejectedValue(new ClassifierBridgeError("classifier bridge timed out"));
+  it("answers 500 when loading the workspace fails, without the bridge's stderr", async () => {
+    bridge.mockRejectedValue(
+      new ClassifierBridgeError("Traceback", 1, 'Traceback\n  File "/home/x/collaboration_workspace.py"\n'),
+    );
 
     const response = await GET();
 
     expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: "classifier bridge failed" });
+  });
+
+  it("answers 400 for a request body that is not JSON, without echoing it", async () => {
+    const response = await POST(
+      new Request(`${COCKPIT}/api/collaboration`, {
+        method: "POST",
+        headers: {
+          host: "127.0.0.1:3000",
+          origin: COCKPIT,
+          "sec-fetch-site": "same-origin",
+          "content-type": "application/json",
+        },
+        body: '{"action": "comment", "body": SECRET-COMMENT',
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({ error: "request body is not valid JSON" });
+    expect(bridge).not.toHaveBeenCalled();
   });
 
   it("accepts a same-origin JSON POST from localhost with a charset", async () => {
