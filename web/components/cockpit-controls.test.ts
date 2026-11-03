@@ -6,9 +6,17 @@ import { baseProfile } from "../lib/samples";
 /**
  * SystemProfile keys the cockpit deliberately offers no control for, each with the
  * reason. A key without a control leaves the profile at the blank default, so the
- * reviewer cannot set that fact at all. Empty: every key has a control.
+ * reviewer cannot set that fact at all.
  */
-const HIDDEN_FIELDS: Record<string, string> = {};
+const HIDDEN_FIELDS: Record<string, string> = {
+  assessment_date:
+    "Left null: results that turn on a later application date stay open and go to review.",
+  intimate_imagery:
+    "The Art. 5(1)(ba) element facts are a nested screen; without them a generating system gets the engine's open question.",
+  child_sexual_abuse_material:
+    "The Art. 5(1)(bb) element facts are a nested screen; without them a generating system gets the engine's open question.",
+  annex_i_legislation: "The Annex I section control covers the Section A or B effect; the act itself is not asked.",
+};
 
 /** The Art. 50 screens. The model types each one as bool, so null fails validation. */
 const ART_50_FIELDS = [

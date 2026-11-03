@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from eu_ai_act_classifier import Disposition, RiskTier, SystemProfile, classify
 from eu_ai_act_classifier.cli import main
 
 EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
@@ -155,6 +156,24 @@ def test_strict_exit_codes(example: str, code: int, capsys) -> None:
     assert main([str(EXAMPLES / example), "--strict"]) == code
     assert main([str(EXAMPLES / example)]) == 0
     capsys.readouterr()
+
+
+@pytest.mark.parametrize(
+    ("example", "tier", "disposition"),
+    [
+        ("social_scoring.json", RiskTier.PROHIBITED, Disposition.DETERMINED),
+        ("ambiguous_use_case.json", RiskTier.HIGH, Disposition.REQUIRES_REVIEW),
+    ],
+)
+def test_each_strict_exit_1_case_meets_one_condition_only(
+    example: str, tier: RiskTier, disposition: Disposition
+) -> None:
+    # The prohibited case is determined and the review case is not prohibited, so each
+    # half of the --strict condition gets its own exit 1.
+    profile = SystemProfile.model_validate_json((EXAMPLES / example).read_text(encoding="utf-8"))
+    report = classify(profile)
+
+    assert (report.risk_tier, report.disposition) == (tier, disposition)
 
 
 def test_schema_and_sources_flags_print_json(capsys) -> None:
