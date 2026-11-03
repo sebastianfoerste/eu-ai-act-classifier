@@ -96,7 +96,7 @@ npm install
 npm run dev
 ```
 
-The web app uses in-memory state for v1. It does not persist client, matter, candidate, account or privileged data.
+Only `/api/collaboration`, which the `/self-assessment` page uses, writes to disk. Each review action saves the workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root. The file is git-ignored and stays on the machine until you delete it. The other routes keep no state. Enter synthetic data only (see [PRIVACY.md](../PRIVACY.md)).
 
 Deployment notes for the playground and the cockpit are in [DEPLOYMENT.md](../DEPLOYMENT.md).
 

@@ -1,7 +1,7 @@
 """The public playground deploys from CI, and only after the check jobs pass.
 
 GitHub Pages serves `docs/` on `main`. With the branch as the Pages source, a push
-publishes before CI finishes, so a red merge reaches the public playground. The
+publishes without waiting for CI, so a red merge reaches the public playground. The
 `deploy` job in `.github/workflows/ci.yml` publishes instead, after `test` and
 `web` pass for the same commit. The `web` job also fails on a high or critical
 npm advisory in the cockpit's lockfile. These tests read the workflow as text:
@@ -144,6 +144,9 @@ def test_deployment_doc_names_the_ci_deploy_job() -> None:
     text = DEPLOYMENT.read_text(encoding="utf-8")
     assert "the `deploy` job in `.github/workflows/ci.yml`" in text
     assert "after the `test` and `web` jobs pass" in text
+    # The branch-source build starts with CI and sometimes ends after it, so the doc says
+    # it does not wait for CI, not that it ends first.
+    assert "without waiting for CI" in text
 
 
 def test_web_job_fails_on_high_npm_advisories_before_the_tests() -> None:
