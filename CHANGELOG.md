@@ -7,6 +7,19 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Inventory outside a clone
+
+#### Fixed
+
+- The example inventory (`eu-ai-act-local-api inventory`, the cockpit's
+  inventory and `build_example_inventory()`) reads `examples/` relative to
+  the working directory, and the installed package does not include it. From
+  any directory but a clone's root, it listed no systems, gave no warning and
+  reported `determined`. It now warns that the directory is missing, or that
+  it holds no valid system profile, says that the inventory therefore lists
+  no systems, and reports `review_required` with that warning as the next
+  action. Run from a clone's root, the inventory is unchanged.
+
 ### Version stamp
 
 #### Added

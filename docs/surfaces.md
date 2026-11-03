@@ -65,7 +65,7 @@ Or let uv fetch and run it: `uvx --python 3.13 --from "eu-ai-act-classifier[mcp]
 
 Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1; the 0.2.0 extra does not.
 
-The local JSON bridge is used by the optional web cockpit. Run it from the repository root, because `inventory` and `workspace` read the synthetic profiles in `examples/`:
+The local JSON bridge is used by the optional web cockpit. Run it from the repository root, because `inventory` and `workspace` read the synthetic profiles in `examples/`, which the installed package does not include. From any other directory, `inventory` lists no systems, gives `review_required` and says why in `warnings` and `nextAction`, and `workspace` is empty:
 
 ```bash
 eu-ai-act-local-api schema

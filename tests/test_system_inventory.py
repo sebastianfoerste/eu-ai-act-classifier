@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from eu_ai_act_classifier.inventory import (
     INVENTORY_SCHEMA,
     SYSTEM_REVIEW_TABLE_SCHEMA,
@@ -203,4 +205,82 @@ def test_example_inventory_warns_about_profiles_that_fail_validation(tmp_path: P
 def test_committed_example_inventory_has_no_load_warnings() -> None:
     inventory = build_example_inventory(generated_at="2026-06-27T10:00:00+00:00")
 
-    assert not any("skipped" in warning for warning in inventory.warnings)
+    assert inventory.systems
+    assert all(warning.endswith(": open facts") for warning in inventory.warnings)
+
+
+CLONE_HINT = (
+    "Run the inventory from the root of a repository clone, "
+    "where examples/ holds the synthetic profiles."
+)
+
+
+def test_example_inventory_outside_a_clone_says_it_found_no_examples(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Installed from PyPI and run from any other directory, the default examples/
+    # resolves against the working directory and does not exist. The inventory used
+    # to come back with no systems, no warning and the status "determined".
+    monkeypatch.chdir(tmp_path)
+
+    inventory = build_example_inventory(generated_at="2026-06-27T10:00:00+00:00")
+
+    assert inventory.systems == []
+    assert inventory.warnings == [
+        f"examples: no such directory, so the inventory lists no systems. {CLONE_HINT}"
+    ]
+    assert inventory.reviewStatus == "review_required"
+    assert inventory.nextAction == inventory.warnings[0]
+    assert inventory.blockers == []
+
+
+def test_example_inventory_warns_when_the_path_is_not_a_directory(tmp_path: Path) -> None:
+    not_a_directory = tmp_path / "examples"
+    not_a_directory.write_text("{}", encoding="utf-8")
+
+    inventory = build_example_inventory(not_a_directory)
+
+    assert inventory.warnings == [
+        f"{not_a_directory}: no such directory, so the inventory lists no systems. {CLONE_HINT}"
+    ]
+    assert inventory.reviewStatus == "review_required"
+
+
+@pytest.mark.parametrize(
+    "files",
+    [
+        {},
+        # Another project's examples/ folder: JSON, but no system profile.
+        {"packet.json": {"system": "CreditSightScore", "risk_tier": "high_risk"}},
+    ],
+    ids=["empty", "no-profile"],
+)
+def test_example_inventory_warns_when_the_directory_holds_no_profile(
+    tmp_path: Path, files: dict[str, object]
+) -> None:
+    for filename, payload in files.items():
+        (tmp_path / filename).write_text(json.dumps(payload), encoding="utf-8")
+
+    inventory = build_example_inventory(tmp_path)
+
+    assert inventory.systems == []
+    assert inventory.warnings == [
+        f"{tmp_path}: no valid system profile found, so the inventory lists no systems. "
+        f"{CLONE_HINT}"
+    ]
+    assert inventory.reviewStatus == "review_required"
+    assert inventory.nextAction == inventory.warnings[0]
+
+
+def test_example_inventory_with_only_invalid_profiles_names_them_first(tmp_path: Path) -> None:
+    (tmp_path / "old_date.json").write_text(
+        json.dumps({"name": "Legacy model", "placing_on_market_date": "2025-03"}),
+        encoding="utf-8",
+    )
+
+    inventory = build_example_inventory(tmp_path)
+
+    skipped, empty = inventory.warnings
+    assert skipped.startswith("old_date.json: skipped, invalid system profile")
+    assert empty.startswith(f"{tmp_path}: no valid system profile found")
+    assert inventory.nextAction == skipped

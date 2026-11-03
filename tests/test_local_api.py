@@ -131,6 +131,23 @@ def _cell(result: dict[str, Any], target_id: str) -> dict[str, Any]:
     return next(cell for cell in result["collaboration"]["cells"] if cell["target_id"] == target_id)
 
 
+def test_local_api_inventory_outside_a_clone_says_why_it_lists_no_systems(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    # `eu-ai-act-local-api inventory` run from a directory without examples/, as
+    # after `pip install` anywhere but a clone's root.
+    monkeypatch.chdir(tmp_path)
+
+    inventory = _run_local_api(monkeypatch, capsys, "inventory")
+
+    assert inventory["systems"] == []
+    assert inventory["reviewStatus"] == "review_required"
+    assert inventory["nextAction"].startswith(
+        "examples: no such directory, so the inventory lists no systems."
+    )
+    assert inventory["warnings"] == [inventory["nextAction"]]
+
+
 def test_local_api_collaboration_survives_a_clock_tick_between_actions(
     tmp_path, monkeypatch, capsys
 ) -> None:

@@ -222,13 +222,26 @@ def load_example_profiles(examples_dir: Path | str = Path("examples")) -> list[S
     return _load_example_profiles(examples_dir)[0]
 
 
+_CLONE_HINT = (
+    "Run the inventory from the root of a repository clone, "
+    "where examples/ holds the synthetic profiles."
+)
+
+
 def _load_example_profiles(examples_dir: Path | str) -> tuple[list[SystemProfile], list[str]]:
     """Profiles in ``examples_dir`` and a warning for each file that has a profile
     "name" but fails validation (for example a date not in YYYY-MM-DD form), so it
     does not drop out of the inventory unnoticed. Files without a "name", such as
-    the classification packet, are not profiles and are skipped silently."""
+    the classification packet, are not profiles and are skipped silently.
+
+    A relative ``examples_dir``, the default included, resolves against the working
+    directory. Outside a clone's root it is usually missing or holds no profile,
+    and a warning then says why the inventory lists no systems. The warning names the
+    path as given, not its absolute form, because the inventory is exported."""
 
     root = Path(examples_dir)
+    if not root.is_dir():
+        return [], [f"{root}: no such directory, so the inventory lists no systems. {_CLONE_HINT}"]
     profiles: list[SystemProfile] = []
     warnings: list[str] = []
     for path in sorted(root.glob("*.json")):
@@ -245,6 +258,11 @@ def _load_example_profiles(examples_dir: Path | str) -> tuple[list[SystemProfile
                     for error in exc.errors()
                 )
                 warnings.append(f"{path.name}: skipped, invalid system profile ({errors})")
+    if not profiles:
+        warnings.append(
+            f"{root}: no valid system profile found, so the inventory lists no systems. "
+            f"{_CLONE_HINT}"
+        )
     return profiles, warnings
 
 
