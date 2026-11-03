@@ -52,7 +52,7 @@ When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `exampl
 
 ![Actual CLI output of eu-ai-act-classify examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with its 14 obligations, the obligation graph, the binding application timeline and the source manifest](demo.png)
 
-*All 92 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
+*All 108 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
 
 ## CLI Report
 
@@ -83,7 +83,7 @@ Findings:
 ...
 
 Obligation graph:
-  - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
+  - high-risk.provider.9: Art. 9 AIA (provider), evidence: Risk management file., review: determined
   ...
   - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
       Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
@@ -128,8 +128,9 @@ Disposition: REQUIRES_REVIEW
 ...
 
 Obligations:
-  - Art. 26 AIA: Deployer obligations. Use per instructions, assign human oversight, monitor use, keep logs. Where the deployer is itself a public authority or Union institution, body, office or agency and finds that the system has not been registered in the EU database, do not use it and inform the provider or the distributor (Art. 26(8) AIA).
+  - Art. 26 AIA: Deployer obligations. Use the system per instructions, assign oversight, monitor operation and keep logs. Where the deployer is itself a public authority or Union institution, body, office or agency and finds that the system has not been registered in the EU database, do not use it and inform the provider or the distributor (Art. 26(8) AIA).
   - Art. 49(3) AIA: Registration of use by a public-authority deployer. Where the deployer is, or acts on behalf of, a public authority or Union institution, body, office or agency: register as deployer, select the system and register its use in the EU database before putting it into service or using it. Selecting the system presupposes that it is registered there, so do not use a system that is not.
+  - Art. 111(2) AIA: System already placed on the market or put into service. Apart from Art. 5, the Regulation applies only if the design changes significantly as from 2027-12-02. Confirm whether it has and keep a design-change log. As the system is intended to be used by public authorities, its providers and deployers in any case take the necessary steps to comply with the requirements and obligations laid down in this Regulation by 2 August 2030.
 
 Obligation graph:
   - high-risk.deployer.26: Art. 26 AIA (deployer), evidence: Deployer operating procedure and monitoring log., review: review_required

@@ -29,15 +29,18 @@ advisory notes and draft artifact support.
 `citations.py` defines the source registry and binding application dates,
 including the dates introduced by Regulation (EU) 2026/1744.
 
-`catalog.py` maps legal duties and Annex III references to structured
-obligations.
+`catalog.py` maps Annex III references and prohibited practices, and holds
+each legal duty once, as a `Duty` that gives both its obligation and its
+obligation graph item.
 
 `rules/` contains pure gate modules.
 
 `engine.py` aggregates gates, resolves tier, attaches obligations and builds the
 report.
 
-`obligation_graph.py` expands legal duties into review workflow items.
+`obligation_graph.py` decides which duties a profile gets, dates them, sets
+their review status and builds both the obligation list and the obligation
+graph from them.
 
 `artifacts.py` renders draft work products from the report.
 

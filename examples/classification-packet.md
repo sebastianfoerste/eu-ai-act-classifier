@@ -21,12 +21,21 @@ Obligations:
   - Art. 13 AIA: Transparency to deployers. Provide instructions for use enabling deployers to comply.
   - Art. 14 AIA: Human oversight. Design the system for effective oversight by natural persons.
   - Art. 15 AIA: Accuracy, robustness, cybersecurity. Achieve appropriate accuracy, robustness and cybersecurity.
-  - Art. 17 AIA: Quality management system. Put a quality management system in place.
-  - Art. 43 AIA: Conformity assessment. Undergo the applicable conformity assessment before market placement.
-  - Art. 47 AIA: EU declaration of conformity. Draw up and keep an EU declaration of conformity.
-  - Art. 48 AIA: CE marking. Affix the CE marking to indicate conformity.
-  - Art. 49 AIA: Registration. Register the system in the EU database before market placement.
-  - Art. 72 AIA: Post-market monitoring. Operate a post-market monitoring system.
+  - Art. 16 AIA: Provider obligations. Ensure the high-risk system complies with Chapter III requirements.
+  - Art. 17 AIA: Quality management system. Maintain a quality management system.
+  - Art. 18 AIA: Document retention. Keep technical documentation, logs and conformity documentation.
+  - Art. 19 AIA: Log retention. Keep automatically generated logs where under provider control.
+  - Art. 20 AIA: Corrective action and notification. Take corrective action and inform relevant parties where required.
+  - Art. 21 AIA: Authority cooperation. Cooperate with competent authorities and provide requested information.
+  - Art. 40 AIA: Harmonised standards. Track applicable harmonised standards and standardisation deliverables.
+  - Art. 41 AIA: Common specifications. Assess common specifications where harmonised standards are unavailable or insufficient.
+  - Art. 42 AIA: Presumption of conformity. Map implemented controls to standards, specifications or alternative evidence.
+  - Art. 43 AIA: Conformity assessment. Complete the applicable conformity assessment.
+  - Art. 44 AIA: Notified body certificates. Track certificate validity, changes and renewal obligations.
+  - Art. 47 AIA: EU declaration of conformity. Draw up and keep the EU declaration of conformity.
+  - Art. 48 AIA: CE marking. Affix CE marking where required.
+  - Art. 49 AIA: Registration. Register the provider and system in the EU database where required.
+  - Art. 72 AIA: Post-market monitoring. Operate a post-market monitoring system and plan.
   - Art. 73 AIA: Serious incident reporting. Report serious incidents to the market surveillance authority.
 
 Documentation to maintain:
@@ -37,6 +46,13 @@ Documentation to maintain:
   - Art. 47 AIA: EU declaration of conformity. Signed EU declaration of conformity.
 
 Obligation graph:
+  - high-risk.provider.9: Art. 9 AIA (provider), evidence: Risk management file., review: determined
+  - high-risk.provider.10: Art. 10 AIA (provider), evidence: Data governance record., review: determined
+  - high-risk.provider.11: Art. 11 AIA (provider), evidence: Annex IV technical documentation., review: determined
+  - high-risk.provider.12: Art. 12 AIA (provider), evidence: Event logging design record., review: determined
+  - high-risk.provider.13: Art. 13 AIA (provider), evidence: Instructions for use., review: determined
+  - high-risk.provider.14: Art. 14 AIA (provider), evidence: Human oversight design record., review: determined
+  - high-risk.provider.15: Art. 15 AIA (provider), evidence: Accuracy, robustness and cybersecurity test record., review: determined
   - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
   - high-risk.provider.17: Art. 17 AIA (provider), evidence: Quality management system file., review: determined
   - high-risk.provider.18: Art. 18 AIA (provider), evidence: Document retention register., review: determined

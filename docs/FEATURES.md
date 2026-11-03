@@ -41,12 +41,16 @@ Turns classification findings into reviewer-facing obligations with article, act
 
 Beyond the Chapter III duties, the graph covers Art. 49(3) registration of use by public-authority deployers (inferred for review where the deployer's status is unset and the system is intended to be used by public authorities or its Annex III point is 5(a), 6 or 7), the Art. 49(5) pointer for point 2, the Art. 111(2) transition for high-risk systems already on the market (one item per operator role, with the 2 August 2030 deadline for the providers and deployers of systems intended to be used by public authorities), the Art. 2(2) limit for Annex I, Section B products, and the Art. 111(3) and (4) transitions dated by separate model and system dates. Contested items carry "Literal reading, confirm with counsel" and are `review_required`.
 
+`obligations` lists the same duties as the graph, from the same `Duty` entries in `catalog.py`, with the same article, actor and requirement. Only the Art. 50 items are elsewhere, in `transparency_obligations`.
+
 A high-risk system placed on the market or put into service before its Chapter III date gets a flagged Art. 111(2) note on every high-risk item and an open question, so its disposition is `requires_review` and `--strict` exits 1 until `significant_change_after_application_date` is answered. A GPAI profile dated only by `placing_on_market_date` also goes to review until the model's own date is given.
 
 Implementation:
 
 1. `src/eu_ai_act_classifier/obligation_graph.py`
-2. `tests/test_obligations_and_artifacts.py`
+2. `src/eu_ai_act_classifier/catalog.py`
+3. `tests/test_obligations_and_artifacts.py`
+4. `tests/test_obligation_catalog.py`
 
 ## AI Systems Inventory And Review Table
 

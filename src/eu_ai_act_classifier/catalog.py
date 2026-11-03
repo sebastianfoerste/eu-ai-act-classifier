@@ -4,9 +4,14 @@ This module is the lawyer's contribution. The engine in :mod:`.engine` is
 generic; the rule sets here are what encode Regulation (EU) 2024/1689. Each
 entry carries its pinpoint citation, so every line of output traces back to a
 provision a reviewer can open.
+
+Each duty is one :class:`Duty`, the single source of both its
+``report.obligations`` entry and its ``report.obligation_graph`` item.
 """
 
 from __future__ import annotations
+
+from dataclasses import dataclass
 
 from .citations import Citation, cite
 from .models import AnnexIII, Obligation, ProhibitedPractice, Role
@@ -17,6 +22,7 @@ ART_2_2 = "Art. 2(2) AIA"
 ART_49 = "Art. 49 AIA"
 ART_49_2 = "Art. 49(2) AIA"
 ART_49_3 = "Art. 49(3) AIA"
+ART_49_5 = "Art. 49(5) AIA"
 ART_50_2 = "Art. 50(2) AIA"
 ART_111_2 = "Art. 111(2) AIA"
 
@@ -399,235 +405,477 @@ def public_authority_registration_requirement(
     return requirement
 
 
-def high_risk_provider_obligations(
-    *, eu_database_registration: bool, annex_iii_area: AnnexIII | None = None
-) -> list[Obligation]:
-    """Provider duties for a high-risk system (Arts. 9-15, 17, 43, 47-49, 72-73 AIA).
-    Art. 49 only where ``eu_database_registration`` is true, with any Art. 49(4) note
-    for ``annex_iii_area``."""
-    p = Role.PROVIDER
-    obligations = [
-        Obligation(
-            article="Art. 9 AIA",
-            title="Risk management system",
-            applies_to=p,
-            requirement="Establish, document and maintain a continuous risk management system.",
-        ),
-        Obligation(
-            article="Art. 10 AIA",
-            title="Data and data governance",
-            applies_to=p,
-            requirement="Apply data governance to training, validation and testing data sets.",
-        ),
-        Obligation(
-            article="Art. 11 AIA",
-            title="Technical documentation",
-            applies_to=p,
-            requirement="Draw up technical documentation (Annex IV) before placing on the market.",
-        ),
-        Obligation(
-            article="Art. 12 AIA",
-            title="Record-keeping (logging)",
-            applies_to=p,
-            requirement="Enable automatic recording of events (logs) over the system's lifetime.",
-        ),
-        Obligation(
-            article="Art. 13 AIA",
-            title="Transparency to deployers",
-            applies_to=p,
-            requirement="Provide instructions for use enabling deployers to comply.",
-        ),
-        Obligation(
-            article="Art. 14 AIA",
-            title="Human oversight",
-            applies_to=p,
-            requirement="Design the system for effective oversight by natural persons.",
-        ),
-        Obligation(
-            article="Art. 15 AIA",
-            title="Accuracy, robustness, cybersecurity",
-            applies_to=p,
-            requirement="Achieve appropriate accuracy, robustness and cybersecurity.",
-        ),
-        Obligation(
-            article="Art. 17 AIA",
-            title="Quality management system",
-            applies_to=p,
-            requirement="Put a quality management system in place.",
-        ),
-        Obligation(
-            article="Art. 43 AIA",
-            title="Conformity assessment",
-            applies_to=p,
-            requirement="Undergo the applicable conformity assessment before market placement.",
-        ),
-        Obligation(
-            article="Art. 47 AIA",
-            title="EU declaration of conformity",
-            applies_to=p,
-            requirement="Draw up and keep an EU declaration of conformity.",
-        ),
-        Obligation(
-            article="Art. 48 AIA",
-            title="CE marking",
-            applies_to=p,
-            requirement="Affix the CE marking to indicate conformity.",
-        ),
-        Obligation(
-            article=ART_49,
-            title="Registration",
-            applies_to=p,
-            requirement=(
-                "Register the system in the EU database before market placement."
-                f"{secure_section_note(annex_iii_area)}"
-            ),
-        ),
-        Obligation(
-            article="Art. 72 AIA",
-            title="Post-market monitoring",
-            applies_to=p,
-            requirement="Operate a post-market monitoring system.",
-        ),
-        Obligation(
-            article="Art. 73 AIA",
-            title="Serious incident reporting",
-            applies_to=p,
-            requirement="Report serious incidents to the market surveillance authority.",
-        ),
-    ]
-    if eu_database_registration:
-        return obligations
-    return [o for o in obligations if o.article != ART_49]
+# --- Duties: one catalog for the obligations list and the obligation graph -------
+@dataclass(frozen=True, slots=True)
+class Duty:
+    """One duty, the single source of a ``report.obligations`` entry and its
+    ``report.obligation_graph`` item. The list shows the article, title, actor and
+    requirement; the graph item shows the same article, actor and requirement with the id,
+    trigger and evidence artifact. :mod:`.obligation_graph` decides which duties a profile
+    gets, dates each item and sets its review status; ``review_required`` marks a duty
+    that goes to review whatever its date."""
+
+    obligation_id: str
+    article: str
+    actor: Role
+    title: str
+    requirement: str
+    trigger: str
+    evidence_artifact: str
+    review_required: bool = False
+
+    def obligation(self) -> Obligation:
+        return Obligation(
+            article=self.article,
+            title=self.title,
+            applies_to=self.actor,
+            requirement=self.requirement,
+        )
 
 
-def high_risk_deployer_obligations(
+_HIGH_RISK_PROVIDER = "Provider of a high-risk AI system."
+
+
+def _provider_duty(
+    article: int,
+    title: str,
+    requirement: str,
+    evidence_artifact: str,
+    trigger: str = _HIGH_RISK_PROVIDER,
     *,
-    fria_required: bool,
-    public_authority_registration: bool = False,
-    annex_iii_area: AnnexIII | None = None,
-    deployer_public_authority: bool | None = None,
-) -> list[Obligation]:
-    """Deployer duties for a high-risk system (Art. 26, Art. 27 FRIA, and Art. 49(3)
-    registration, with the Art. 26(8) check, where ``public_authority_registration`` is
-    true)."""
-    d = Role.DEPLOYER
-    art_26_8 = f" {ART_26_8}" if public_authority_registration else ""
-    out = [
-        Obligation(
-            article="Art. 26 AIA",
-            title="Deployer obligations",
-            applies_to=d,
-            requirement=(
-                f"Use per instructions, assign human oversight, monitor use, keep logs.{art_26_8}"
-            ),
+    review_required: bool = False,
+) -> Duty:
+    return Duty(
+        obligation_id=f"high-risk.provider.{article}",
+        article=f"Art. {article} AIA",
+        actor=Role.PROVIDER,
+        title=title,
+        requirement=requirement,
+        trigger=trigger,
+        evidence_artifact=evidence_artifact,
+        review_required=review_required,
+    )
+
+
+# Arts. 9 to 21, within Chapter III, Sections 1 to 3 (Arts. 6 to 27): dated by Art. 113,
+# third paragraph, point (c) AIA (docs/REGULATORY_CLAIM_LEDGER.md).
+HIGH_RISK_PROVIDER_DUTIES: tuple[Duty, ...] = (
+    _provider_duty(
+        9,
+        "Risk management system",
+        "Establish, document and maintain a continuous risk management system.",
+        "Risk management file.",
+    ),
+    _provider_duty(
+        10,
+        "Data and data governance",
+        "Apply data governance to training, validation and testing data sets.",
+        "Data governance record.",
+    ),
+    _provider_duty(
+        11,
+        "Technical documentation",
+        "Draw up technical documentation (Annex IV) before placing on the market.",
+        "Annex IV technical documentation.",
+    ),
+    _provider_duty(
+        12,
+        "Record-keeping (logging)",
+        "Enable automatic recording of events (logs) over the system's lifetime.",
+        "Event logging design record.",
+    ),
+    _provider_duty(
+        13,
+        "Transparency to deployers",
+        "Provide instructions for use enabling deployers to comply.",
+        "Instructions for use.",
+    ),
+    _provider_duty(
+        14,
+        "Human oversight",
+        "Design the system for effective oversight by natural persons.",
+        "Human oversight design record.",
+    ),
+    _provider_duty(
+        15,
+        "Accuracy, robustness, cybersecurity",
+        "Achieve appropriate accuracy, robustness and cybersecurity.",
+        "Accuracy, robustness and cybersecurity test record.",
+    ),
+    _provider_duty(
+        16,
+        "Provider obligations",
+        "Ensure the high-risk system complies with Chapter III requirements.",
+        "Provider compliance responsibility matrix.",
+    ),
+    _provider_duty(
+        17,
+        "Quality management system",
+        "Maintain a quality management system.",
+        "Quality management system file.",
+    ),
+    _provider_duty(
+        18,
+        "Document retention",
+        "Keep technical documentation, logs and conformity documentation.",
+        "Document retention register.",
+    ),
+    _provider_duty(
+        19,
+        "Log retention",
+        "Keep automatically generated logs where under provider control.",
+        "Logging retention policy.",
+    ),
+    _provider_duty(
+        20,
+        "Corrective action and notification",
+        "Take corrective action and inform relevant parties where required.",
+        "Corrective-action and notification log.",
+        "Risk or nonconformity after placing on the market.",
+        review_required=True,
+    ),
+    _provider_duty(
+        21,
+        "Authority cooperation",
+        "Cooperate with competent authorities and provide requested information.",
+        "Authority cooperation protocol.",
+        "Competent-authority request.",
+        review_required=True,
+    ),
+)
+
+# Chapter III, Section 5 (Arts. 40 to 49), apart from the Art. 49 registration duties below.
+HIGH_RISK_PROVIDER_SECTION_5_DUTIES: tuple[Duty, ...] = (
+    _provider_duty(
+        40,
+        "Harmonised standards",
+        "Track applicable harmonised standards and standardisation deliverables.",
+        "Standards applicability matrix.",
+        "High-risk requirements where harmonised standards are available.",
+    ),
+    _provider_duty(
+        41,
+        "Common specifications",
+        "Assess common specifications where harmonised standards are unavailable or insufficient.",
+        "Common specifications assessment.",
+        "Common specifications become applicable.",
+    ),
+    _provider_duty(
+        42,
+        "Presumption of conformity",
+        "Map implemented controls to standards, specifications or alternative evidence.",
+        "Presumption of conformity mapping.",
+        "Use of standards or specifications for presumption of conformity.",
+    ),
+    _provider_duty(
+        43,
+        "Conformity assessment",
+        "Complete the applicable conformity assessment.",
+        "Conformity assessment file.",
+        "Before placing high-risk AI system on the market or putting into service.",
+    ),
+    _provider_duty(
+        44,
+        "Notified body certificates",
+        "Track certificate validity, changes and renewal obligations.",
+        "Certificate register.",
+        "Certificate issued by notified body where applicable.",
+    ),
+    _provider_duty(
+        47,
+        "EU declaration of conformity",
+        "Draw up and keep the EU declaration of conformity.",
+        "EU declaration of conformity.",
+        "Conformity established.",
+    ),
+    _provider_duty(
+        48,
+        "CE marking",
+        "Affix CE marking where required.",
+        "CE marking record.",
+        "Conformity established for a high-risk AI system.",
+    ),
+)
+
+# Chapter IX (Arts. 72 and 73).
+HIGH_RISK_PROVIDER_CHAPTER_IX_DUTIES: tuple[Duty, ...] = (
+    _provider_duty(
+        72,
+        "Post-market monitoring",
+        "Operate a post-market monitoring system and plan.",
+        "Post-market monitoring plan.",
+        "High-risk AI system lifecycle.",
+    ),
+    _provider_duty(
+        73,
+        "Serious incident reporting",
+        "Report serious incidents to the market surveillance authority.",
+        "Serious incident register.",
+        "Serious incident identified.",
+    ),
+)
+
+_NATIONAL_REGISTRATION = "Registration at national level"
+_NATIONAL_REGISTRATION_RECORD = "National registration record."
+
+
+def provider_registration_duty(annex_iii_area: AnnexIII | None) -> Duty:
+    """Art. 49(1) AIA, where :func:`eu_database_registration_applies`, with any
+    Art. 49(4) note for ``annex_iii_area``."""
+
+    return Duty(
+        obligation_id="high-risk.provider.49",
+        article=ART_49,
+        actor=Role.PROVIDER,
+        title="Registration",
+        requirement=(
+            "Register the provider and system in the EU database where required."
+            f"{secure_section_note(annex_iii_area)}"
         ),
-    ]
-    if fria_required:
-        out.append(
-            Obligation(
-                article="Art. 27 AIA",
-                title="Fundamental rights impact assessment",
-                applies_to=d,
-                requirement="Conduct a fundamental rights impact assessment before deployment.",
-            )
-        )
-    if public_authority_registration:
-        out.append(
-            Obligation(
-                article=ART_49_3,
-                title="Registration of use by a public-authority deployer",
-                applies_to=d,
-                requirement=public_authority_registration_requirement(
-                    annex_iii_area, deployer_public_authority
-                ),
-            )
-        )
-    return out
+        trigger=(
+            "Before placing an Annex III high-risk AI system on the market or putting it into "
+            "service."
+        ),
+        evidence_artifact="EU database registration record.",
+    )
 
 
-def section_b_requirement(*, annex_iii: bool = False, flag: str = "") -> str:
+PROVIDER_NATIONAL_REGISTRATION = Duty(
+    obligation_id="high-risk.provider.49.5",
+    article=ART_49_5,
+    actor=Role.PROVIDER,
+    title=_NATIONAL_REGISTRATION,
+    requirement=(
+        "Have the system registered at national level, not in the EU database; confirm the "
+        "national procedure and who registers."
+    ),
+    trigger="Annex III point 2 high-risk AI system (critical infrastructure).",
+    evidence_artifact=_NATIONAL_REGISTRATION_RECORD,
+)
+
+
+def derogation_registration_duty(annex_iii_area: AnnexIII | None) -> Duty:
+    """Art. 49(2) AIA for a provider relying on Art. 6(3), with any Art. 49(4) note."""
+
+    return Duty(
+        obligation_id="high-risk.provider.49.2",
+        article=ART_49_2,
+        actor=Role.PROVIDER,
+        title="Registration when relying on Art. 6(3)",
+        requirement=(
+            "If the provider concludes under Art. 6(3) that the system is not high-risk, "
+            "register the provider and system in the EU database before placing it on the "
+            f"market or putting it into service.{secure_section_note(annex_iii_area)}"
+        ),
+        trigger="Art. 6(3) derogation asserted for an Annex III AI system.",
+        evidence_artifact="Art. 6(4) assessment and EU database registration record.",
+    )
+
+
+def deployer_duty(*, public_authority_registration: bool) -> Duty:
+    """Art. 26 AIA, with the Art. 26(8) check where ``public_authority_registration``."""
+
+    art_26_8 = f" {ART_26_8}" if public_authority_registration else ""
+    return Duty(
+        obligation_id="high-risk.deployer.26",
+        article="Art. 26 AIA",
+        actor=Role.DEPLOYER,
+        title="Deployer obligations",
+        requirement=(
+            "Use the system per instructions, assign oversight, monitor operation and keep "
+            f"logs.{art_26_8}"
+        ),
+        trigger="Deployer of a high-risk AI system.",
+        evidence_artifact="Deployer operating procedure and monitoring log.",
+    )
+
+
+FRIA = Duty(
+    obligation_id="high-risk.deployer.27",
+    article="Art. 27 AIA",
+    actor=Role.DEPLOYER,
+    title="Fundamental rights impact assessment",
+    requirement=("Perform and maintain a fundamental rights impact assessment before first use."),
+    trigger="FRIA trigger under Art. 27(1) AIA.",
+    evidence_artifact="Draft FRIA and notification record.",
+    review_required=True,
+)
+
+
+def public_authority_registration_duty(
+    annex_iii_area: AnnexIII | None,
+    deployer_public_authority: bool | None,
+    public_authority_use: bool,
+) -> Duty:
+    """Art. 49(3) AIA: public-authority deployers of Annex III systems other than point 2,
+    where :func:`public_authority_registration_applies`. The trigger says on what the
+    duty rests where the deployer's status is not given."""
+
+    if annex_iii_area is AnnexIII.UNSURE:
+        system = (
+            "an Annex III high-risk AI system whose point is not settled (if it is point 2, "
+            "national registration under Art. 49(5) AIA applies instead)"
+        )
+    else:
+        system = "an Annex III high-risk AI system (not point 2)"
+    if deployer_public_authority:
+        trigger = (
+            "Deployer that is, or acts on behalf of, a public authority or Union institution, "
+            f"body, office or agency, using {system}."
+        )
+    else:
+        use = "intended to be used by public authorities"
+        if not public_authority_use and (users := public_authority_users(annex_iii_area)):
+            # Annex III, points 5(a), 6 and 7 describe use by the deployers Art. 49(3) names.
+            use = f"which {ANNEX_III[annex_iii_area][0].ref} describes as used {users}"
+        trigger = (
+            f"{system[0].upper()}{system[1:]}, {use}. Confirm that the deployer is, or acts on "
+            "behalf of, a public authority or Union institution, body, office or agency."
+        )
+    return Duty(
+        obligation_id="high-risk.deployer.49.3",
+        article=ART_49_3,
+        actor=Role.DEPLOYER,
+        title="Registration of use by a public-authority deployer",
+        requirement=public_authority_registration_requirement(
+            annex_iii_area, deployer_public_authority
+        ),
+        trigger=trigger,
+        evidence_artifact="EU database registration-of-use record.",
+    )
+
+
+def deployer_national_registration_duty(deployer_public_authority: bool | None) -> Duty:
+    """Art. 49(5) AIA for a deployer Art. 49(3) would otherwise cover, where
+    :func:`national_registration_for_public_authority_deployer`."""
+
+    system = "an Annex III point 2 high-risk AI system (critical infrastructure)"
+    trigger = (
+        "Deployer that is, or acts on behalf of, a public authority or Union "
+        f"institution, body, office or agency, using {system}."
+        if deployer_public_authority
+        else f"{system[0].upper()}{system[1:]}, intended to be used by public "
+        "authorities; the deployer's own status is not given."
+    )
+    return Duty(
+        obligation_id="high-risk.deployer.49.5",
+        article=ART_49_5,
+        actor=Role.DEPLOYER,
+        title=_NATIONAL_REGISTRATION,
+        requirement=(
+            "Art. 49(3) AIA excepts point 2, so there is no registration of use in the EU "
+            "database; the system is registered at national level. Confirm what the national "
+            "procedure asks of the deployer."
+        ),
+        trigger=trigger,
+        evidence_artifact=_NATIONAL_REGISTRATION_RECORD,
+    )
+
+
+IMPORTER = Duty(
+    obligation_id="high-risk.importer.23",
+    article="Art. 23 AIA",
+    actor=Role.IMPORTER,
+    title="Importer obligations",
+    requirement=(
+        "Verify provider conformity, documentation, CE marking and instructions before "
+        "placing on the market."
+    ),
+    trigger="Importer of a high-risk AI system.",
+    evidence_artifact="Importer due-diligence checklist.",
+    review_required=True,
+)
+
+DISTRIBUTOR = Duty(
+    obligation_id="high-risk.distributor.24",
+    article="Art. 24 AIA",
+    actor=Role.DISTRIBUTOR,
+    title="Distributor obligations",
+    requirement=(
+        "Verify CE marking, EU declaration, instructions and provider/importer compliance signals."
+    ),
+    trigger="Distributor of a high-risk AI system.",
+    evidence_artifact="Distributor pre-supply checklist.",
+    review_required=True,
+)
+
+AUTHORISED_REPRESENTATIVE = Duty(
+    obligation_id="high-risk.authorised-representative.22",
+    article="Art. 22 AIA",
+    actor=Role.AUTHORIZED_REPRESENTATIVE,
+    title="Authorised representative obligations",
+    requirement=(
+        "Maintain mandate, documentation access and competent-authority cooperation process."
+    ),
+    trigger="Provider established outside the EU or authorised representative role selected.",
+    evidence_artifact="Authorised representative mandate and document-access file.",
+    review_required=True,
+)
+
+VALUE_CHAIN = Duty(
+    obligation_id="high-risk.value-chain.25",
+    article="Art. 25 AIA",
+    actor=Role.PROVIDER,
+    title="Value-chain provider responsibility",
+    requirement="Assess whether provider responsibilities shift along the AI value chain.",
+    trigger=(
+        "Substantial modification or market placement under own name or trademark is asserted."
+    ),
+    evidence_artifact="Value-chain responsibility assessment.",
+    review_required=True,
+)
+
+
+def legacy_system_duty(actor: Role, trigger: str, requirement: str) -> Duty:
+    """Art. 111(2) AIA for one operator role of a high-risk system placed on the market or
+    put into service before its Chapter III date. :mod:`.obligation_graph` words the
+    trigger and requirement from the profile's dates."""
+
+    slug = (
+        "authorised-representative"
+        if actor is Role.AUTHORIZED_REPRESENTATIVE
+        else actor.value.replace("_", "-")
+    )
+    return Duty(
+        obligation_id=f"high-risk.{slug}.111.2",
+        article=ART_111_2,
+        actor=actor,
+        title="System already placed on the market or put into service",
+        requirement=requirement,
+        trigger=trigger,
+        evidence_artifact=(
+            "First placing-on-market or putting-into-service record and design-change log."
+        ),
+        review_required=True,
+    )
+
+
+def section_b_requirement(*, annex_iii: bool = False) -> str:
     """The Art. 2(2) AIA requirement; for a Section B product also in an Annex III area
-    (``annex_iii``) limited to the Art. 6(1) route, with ``flag`` appended if given."""
+    (``annex_iii``) limited to the Art. 6(1) route."""
 
     requirement = f"{SECTION_B_PROVISIONS}. {SECTION_B_ROUTE}"
     if not annex_iii:
         return f"{requirement[0].upper()}{requirement[1:]}"
-    return f"Through the Art. 6(1) route, {requirement}{f' {flag}' if flag else ''}"
+    return f"Through the Art. 6(1) route, {requirement}"
 
 
-def section_b_obligations(role: Role, annex_iii_flag: str | None = None) -> list[Obligation]:
+def section_b_duty(actor: Role, *, annex_iii: bool) -> Duty:
     """Art. 2(2) AIA: an Art. 6(1) high-risk system for an Annex I, Section B product gets
     none of the Chapter III duties, only the provisions listed there. With an Annex III
-    area the Annex III duties stay and this obligation carries ``annex_iii_flag``."""
-    return [
-        Obligation(
-            article=ART_2_2,
-            title="Annex I, Section B product: limited application",
-            applies_to=role,
-            requirement=section_b_requirement(
-                annex_iii=annex_iii_flag is not None, flag=annex_iii_flag or ""
-            ),
-        )
-    ]
+    area (``annex_iii``) the Annex III duties stay, and :mod:`.obligation_graph` notes
+    the flag of :func:`section_b_annex_iii_flag` on this duty."""
 
-
-def high_risk_importer_obligations() -> list[Obligation]:
-    i = Role.IMPORTER
-    return [
-        Obligation(
-            article="Art. 23 AIA",
-            title="Importer obligations",
-            applies_to=i,
-            requirement=(
-                "Verify provider conformity, documentation, CE marking and instructions "
-                "before placing a high-risk AI system on the market."
-            ),
-        )
-    ]
-
-
-def high_risk_distributor_obligations() -> list[Obligation]:
-    d = Role.DISTRIBUTOR
-    return [
-        Obligation(
-            article="Art. 24 AIA",
-            title="Distributor obligations",
-            applies_to=d,
-            requirement=(
-                "Verify CE marking, EU declaration, instructions and provider or importer "
-                "compliance signals before making the system available."
-            ),
-        )
-    ]
-
-
-def high_risk_authorized_representative_obligations() -> list[Obligation]:
-    a = Role.AUTHORIZED_REPRESENTATIVE
-    return [
-        Obligation(
-            article="Art. 22 AIA",
-            title="Authorised representative obligations",
-            applies_to=a,
-            requirement=(
-                "Maintain the written mandate, documentation access and authority "
-                "cooperation process for a non-EU provider."
-            ),
-        )
-    ]
-
-
-def high_risk_value_chain_obligations() -> list[Obligation]:
-    return [
-        Obligation(
-            article="Art. 25 AIA",
-            title="Value-chain provider responsibility",
-            applies_to=Role.PROVIDER,
-            requirement=(
-                "Assess whether substantial modification or own-name placement shifts "
-                "provider obligations along the AI value chain."
-            ),
-        )
-    ]
+    return Duty(
+        obligation_id="high-risk.section-b.2.2",
+        article=ART_2_2,
+        actor=actor,
+        title="Annex I, Section B product: limited application",
+        requirement=section_b_requirement(annex_iii=annex_iii),
+        trigger="Art. 6(1) high-risk AI system for a product in Annex I, Section B.",
+        evidence_artifact="Sectoral legislation mapping for the Annex I, Section B product.",
+        review_required=True,
+    )
 
 
 def high_risk_documentation() -> list[Obligation]:
@@ -667,63 +915,112 @@ def high_risk_documentation() -> list[Obligation]:
     ]
 
 
-# --- GPAI obligation sets (Chapter V AIA) ----------------------------------
-def gpai_obligations(*, systemic_risk: bool) -> list[Obligation]:
-    g = Role.GPAI_PROVIDER
-    out = [
-        Obligation(
-            article="Art. 53(1)(a) AIA",
-            title="Model technical documentation",
-            applies_to=g,
-            requirement="Draw up and keep technical documentation per Annex XI.",
-        ),
-        Obligation(
-            article="Art. 53(1)(b) AIA",
-            title="Information to downstream providers",
-            applies_to=g,
-            requirement="Provide downstream providers with information per Annex XII.",
-        ),
-        Obligation(
-            article="Art. 53(1)(c) AIA",
-            title="Copyright policy",
-            applies_to=g,
-            requirement="Put in place a policy to comply with Union copyright law.",
-        ),
-        Obligation(
-            article="Art. 53(1)(d) AIA",
-            title="Training-content summary",
-            applies_to=g,
-            requirement="Publish a sufficiently detailed summary of training content.",
-        ),
-    ]
-    if systemic_risk:
-        out += [
-            Obligation(
-                article="Art. 55(1)(a) AIA",
-                title="Model evaluation",
-                applies_to=g,
-                requirement="Perform model evaluation, including adversarial testing.",
-            ),
-            Obligation(
-                article="Art. 55(1)(b) AIA",
-                title="Systemic-risk mitigation",
-                applies_to=g,
-                requirement="Assess and mitigate systemic risks at Union level.",
-            ),
-            Obligation(
-                article="Art. 55(1)(c) AIA",
-                title="Serious-incident tracking",
-                applies_to=g,
-                requirement="Track, document and report serious incidents.",
-            ),
-            Obligation(
-                article="Art. 55(1)(d) AIA",
-                title="Cybersecurity",
-                applies_to=g,
-                requirement="Ensure an adequate level of cybersecurity protection.",
-            ),
-        ]
-    return out
+# --- GPAI duties (Chapter V AIA) -------------------------------------------
+_GPAI_PROVIDER = "Provider of a general-purpose AI model."
+_GPAI_SYSTEMIC = "GPAI model with systemic risk."
+
+
+def _gpai_duty(
+    point: str,
+    article: str,
+    title: str,
+    requirement: str,
+    trigger: str,
+    evidence_artifact: str,
+    *,
+    review_required: bool = True,
+) -> Duty:
+    return Duty(
+        obligation_id=f"gpai.provider.{point}",
+        article=article,
+        actor=Role.GPAI_PROVIDER,
+        title=title,
+        requirement=requirement,
+        trigger=trigger,
+        evidence_artifact=evidence_artifact,
+        review_required=review_required,
+    )
+
+
+GPAI_DUTIES: tuple[Duty, ...] = (
+    _gpai_duty(
+        "53.a",
+        "Art. 53(1)(a) AIA",
+        "Model technical documentation",
+        "Keep model technical documentation per Annex XI.",
+        _GPAI_PROVIDER,
+        "GPAI model documentation checklist.",
+        review_required=False,
+    ),
+    _gpai_duty(
+        "53.b",
+        "Art. 53(1)(b) AIA",
+        "Information to downstream providers",
+        "Provide downstream providers with information per Annex XII.",
+        _GPAI_PROVIDER,
+        "Downstream provider information pack.",
+        review_required=False,
+    ),
+    _gpai_duty(
+        "53.c",
+        "Art. 53(1)(c) AIA",
+        "Copyright policy",
+        "Maintain a policy to comply with Union copyright law.",
+        _GPAI_PROVIDER,
+        "Copyright compliance policy.",
+    ),
+    _gpai_duty(
+        "53.d",
+        "Art. 53(1)(d) AIA",
+        "Training-content summary",
+        "Publish a sufficiently detailed summary of training content.",
+        _GPAI_PROVIDER,
+        "Training-content summary.",
+    ),
+    _gpai_duty(
+        "56",
+        "Art. 56 AIA",
+        "Code of Practice adherence",
+        "Track Code of Practice adherence or alternative means of compliance.",
+        "Provider choosing a Code of Practice route or alternative compliance evidence.",
+        "GPAI Code of Practice adherence record.",
+    ),
+)
+
+GPAI_SYSTEMIC_DUTIES: tuple[Duty, ...] = (
+    _gpai_duty(
+        "55.a",
+        "Art. 55(1)(a) AIA",
+        "Model evaluation",
+        "Perform model evaluation, including adversarial testing.",
+        _GPAI_SYSTEMIC,
+        "Systemic model evaluation file.",
+    ),
+    _gpai_duty(
+        "55.b",
+        "Art. 55(1)(b) AIA",
+        "Systemic-risk mitigation",
+        "Assess and mitigate systemic risks at Union level.",
+        _GPAI_SYSTEMIC,
+        "Systemic risk assessment and mitigation plan.",
+    ),
+    _gpai_duty(
+        "55.c",
+        "Art. 55(1)(c) AIA",
+        "Serious-incident tracking",
+        "Track, document and report serious incidents.",
+        _GPAI_SYSTEMIC,
+        "GPAI serious incident register.",
+    ),
+    _gpai_duty(
+        "55.d",
+        "Art. 55(1)(d) AIA",
+        "Cybersecurity",
+        "Ensure an adequate level of cybersecurity protection.",
+        _GPAI_SYSTEMIC,
+        "Cybersecurity control file.",
+    ),
+)
 
 
 # --- Transparency obligations (Art. 50 AIA) --------------------------------

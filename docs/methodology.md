@@ -149,8 +149,14 @@ engine raises a review question instead of asserting a FRIA conclusion.
 
 ## Obligation Graph
 
-The legacy obligation lists remain for compatibility. The richer
-`obligation_graph` is the product surface for review workflows.
+`obligations` and `obligation_graph` list the same duties, in the same order
+and with the same article, actor and requirement. Each duty is one `Duty` entry
+in `catalog.py`, and `obligation_graph.py` builds both lists from it, so a duty
+cannot reach one list and miss the other. The Art. 50 items are the exception:
+the graph lists them, and `transparency_obligations` holds them instead of
+`obligations`. `tests/test_obligation_catalog.py` checks the agreement for every
+example and for one profile per branch. The richer `obligation_graph` is the
+product surface for review workflows.
 
 Each graph item records:
 
@@ -178,7 +184,7 @@ Dates follow Art. 113 AIA as amended by Regulation (EU) 2026/1744, checked on
 
 Chapter III, Sections 1, 2 and 3 (Arts. 6 to 27, except Art. 6(5)) apply from
 2 December 2027 for Annex III systems and from 2 August 2028 for Annex I
-systems (Art. 113, third paragraph, point (c)). Graph items for Arts. 16 to 27
+systems (Art. 113, third paragraph, point (c)). Graph items for Arts. 9 to 27
 carry that date. A system that is an Annex I product and also falls in an
 Annex III area is still "classified as high-risk pursuant to Article 6(2) and
 Annex III", so point (c)(i) applies and its items carry 2 December 2027. Only
@@ -199,16 +205,16 @@ does not pick a side.
 The Art. 49 registration duty appears only where Art. 49(1) reaches the system:
 high-risk systems listed in Annex III, except point 2 (critical
 infrastructure). An Annex I product without an Annex III area gets no Art. 49
-obligation or graph item. A point 2 system gets an Art. 49(5) graph item
-instead (registration at national level, not in the EU database), marked
-`review_required`. An unsettled Annex III point (`III.unsure`) keeps the
+obligation or graph item. A point 2 system gets an Art. 49(5) obligation and
+graph item instead (registration at national level, not in the EU database),
+marked `review_required`. An unsettled Annex III point (`III.unsure`) keeps the
 Art. 49 item for review. Where the profile asserts an Art. 6(3) derogation
-condition for any Annex III area, point 2 included, and no profiling, the graph
-also has an Art. 49(2) item: a provider that relies on the derogation registers
-itself and the system in the EU database (Art. 6(4)), and Art. 49(2) has no
-point 2 exception. It is marked `review_required` and is the item the Art. 6(4)
-assessment artifact lists. Because registration reaches a system only through
-Annex III, the deferred alternative named on these items is always
+condition for any Annex III area, point 2 included, and no profiling, the
+report also lists an Art. 49(2) item: a provider that relies on the derogation
+registers itself and the system in the EU database (Art. 6(4)), and Art. 49(2)
+has no point 2 exception. It is marked `review_required` and is the item the
+Art. 6(4) assessment artifact lists. Because registration reaches a system only
+through Annex III, the deferred alternative named on these items is always
 2 December 2027 (point (c)(i)), also for a system that is an Annex I product
 too.
 

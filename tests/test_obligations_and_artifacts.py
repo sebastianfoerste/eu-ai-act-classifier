@@ -182,9 +182,11 @@ def test_art_49_registration_follows_art_49_scope(
     report = classify(SystemProfile(name="high-risk system", **facts))
 
     assert report.risk_tier is RiskTier.HIGH
+    # The obligations list names the same registration duty as the graph.
     obligations = {ob.article for ob in report.obligations}
-    assert ("Art. 49 AIA" in obligations) is (registration == "Art. 49 AIA")
-    assert "Art. 49(5) AIA" not in obligations
+    assert obligations & {"Art. 49 AIA", "Art. 49(5) AIA"} == (
+        {registration} if registration else set()
+    )
     graph = {item.article: item for item in report.obligation_graph}
     assert {"Art. 43 AIA", "Art. 47 AIA", "Art. 48 AIA"} <= graph.keys()
     assert graph.keys() & {"Art. 49 AIA", "Art. 49(5) AIA"} == (
@@ -232,7 +234,7 @@ def test_derogation_adds_art_49_2_registration_item(
     assert item.application_date_note.startswith("Literal reading, confirm with counsel")
     assert "Chapter III, Section 5 duty" in item.application_date_note
     assert "2027-12-02 applies" in item.application_date_note
-    assert "Art. 49(2) AIA" not in {ob.article for ob in report.obligations}
+    assert "Art. 49(2) AIA" in {ob.article for ob in report.obligations}
 
 
 @pytest.mark.parametrize(

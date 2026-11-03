@@ -6,18 +6,9 @@ from .advisory import build_advisory_notes
 from .catalog import (
     ANNEX_III,
     eu_database_registration_applies,
-    gpai_obligations,
-    high_risk_authorized_representative_obligations,
-    high_risk_deployer_obligations,
-    high_risk_distributor_obligations,
     high_risk_documentation,
-    high_risk_importer_obligations,
-    high_risk_provider_obligations,
-    high_risk_value_chain_obligations,
     public_authority_registration_applies,
     public_authority_users,
-    section_b_annex_iii_flag,
-    section_b_obligations,
 )
 from .citations import AMENDING_APPLICATION_DATES, APPLICATION_DATES, REGULATION, source_manifest
 from .models import (
@@ -32,12 +23,11 @@ from .models import (
     SystemProfile,
     TimelineItem,
 )
-from .obligation_graph import build_obligation_graph
+from .obligation_graph import build_obligations
 from .rules import gpai, high_risk, prohibited, scope, transparency
 from .transitions import (
     before,
     chapter_iii_date,
-    derogation_asserted,
     derogation_note,
     describe_dates,
     gpai_model_date,
@@ -46,10 +36,8 @@ from .transitions import (
     legacy_transparency_flag,
     market_dates,
     operator_roles,
-    operators,
     public_authority_sentence,
     section_b_only,
-    section_b_product,
 )
 
 _FRIA_AREAS = {AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH}
@@ -84,20 +72,13 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         else RiskTier.MINIMAL
     )
 
-    obligations: list[Obligation] = []
     documentation: list[Obligation] = []
     fria_required = False
 
-    if final_tier is RiskTier.HIGH and section_b_only(profile):
-        # Art. 2(2) AIA: none of the Chapter III duties below, only the listed provisions.
-        for role in operators(profile, (Role.PROVIDER,)):
-            obligations += section_b_obligations(role)
-    elif final_tier is RiskTier.HIGH:
+    # A Section B product with no Annex III area gets none of the Chapter III duties, only
+    # the Art. 2(2) item (obligation_graph.build_obligations).
+    if final_tier is RiskTier.HIGH and not section_b_only(profile):
         if profile.is_provider:
-            obligations += high_risk_provider_obligations(
-                eu_database_registration=eu_database_registration_applies(profile.annex_iii_area),
-                annex_iii_area=profile.annex_iii_area,
-            )
             documentation += high_risk_documentation()
         if profile.is_deployer:
             fria_required = _fria_required(profile)
@@ -106,12 +87,6 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
                 profile.deployer_public_authority,
                 profile.public_authority_use,
             )
-            obligations += high_risk_deployer_obligations(
-                fria_required=fria_required,
-                public_authority_registration=public_authority_registration,
-                annex_iii_area=profile.annex_iii_area,
-                deployer_public_authority=profile.deployer_public_authority,
-            )
             open_questions += _art_49_3_questions(profile, public_authority_registration)
             if _fria_needs_review(profile, fria_required):
                 open_questions.append(
@@ -119,12 +94,6 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
                     "where the deployer is a body governed by public law or a private "
                     "operator providing a public service. Confirm deployer status."
                 )
-        if profile.is_importer:
-            obligations += high_risk_importer_obligations()
-        if profile.is_distributor:
-            obligations += high_risk_distributor_obligations()
-        if profile.is_authorized_representative or profile.provider_established_outside_eu:
-            obligations += high_risk_authorized_representative_obligations()
         if (
             profile.provider_established_outside_eu
             and profile.has_authorised_representative is False
@@ -133,13 +102,6 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
                 "Art. 22 AIA: provider is established outside the EU and no authorised "
                 "representative is confirmed. Confirm representative arrangements."
             )
-        if profile.substantially_modifies_system or profile.puts_name_or_trademark_on_system:
-            obligations += high_risk_value_chain_obligations()
-        if section_b_product(profile):
-            # Also in an Annex III area: the Annex III duties above stay, flagged here.
-            flag = section_b_annex_iii_flag(derogation_asserted(profile))
-            for role in operators(profile, (Role.PROVIDER,)):
-                obligations += section_b_obligations(role, flag)
         open_questions += _art_111_2_questions(profile)
         if legacy_flag := legacy_transparency_flag(profile):
             # The Art. 50 graph items carry the same flag.
@@ -154,10 +116,19 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         open_questions += _role_questions(profile, final_tier)
 
     if is_gpai and final_tier is not RiskTier.PROHIBITED:
-        obligations += gpai_obligations(systemic_risk=gpai_systemic)
         open_questions += _gpai_date_questions(profile)
 
     disposition = Disposition.REQUIRES_REVIEW if open_questions else Disposition.DETERMINED
+
+    # One catalog entry per duty gives both lists (catalog.Duty).
+    obligations, obligation_graph = build_obligations(
+        profile=profile,
+        final_tier=final_tier,
+        is_gpai=is_gpai,
+        gpai_systemic=gpai_systemic,
+        fria_required=fria_required,
+        transparency_obligations=transparency_obligations,
+    )
 
     unverified = sorted(
         {f.citation for f in findings if not f.citation_verified}
@@ -179,15 +150,6 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         )
         for a in sorted(APPLICATION_DATES + AMENDING_APPLICATION_DATES, key=lambda d: d.date)
     ]
-
-    obligation_graph = build_obligation_graph(
-        profile=profile,
-        final_tier=final_tier,
-        is_gpai=is_gpai,
-        gpai_systemic=gpai_systemic,
-        fria_required=fria_required,
-        transparency_obligations=transparency_obligations,
-    )
 
     return ClassificationReport(
         system=profile.name,

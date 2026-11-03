@@ -7,6 +7,33 @@ pull requests.
 
 Changes since 0.2.2.
 
+### One catalog for the obligations list and the obligation graph
+
+#### Changed
+
+- `report.obligations` and `report.obligation_graph` came from two
+  hand-maintained catalogs that listed different articles for the same role.
+  For a high-risk provider the list had Arts. 9 to 15 and no Arts. 16, 18 to 21,
+  40 to 42 or 44; the graph had the reverse. Only the graph had Art. 49(2),
+  Art. 49(5), Art. 56 and the Art. 111(2) items. Each duty is now one `Duty`
+  entry in `catalog.py`, and `obligation_graph.py` builds both lists from it.
+  `report.obligations` lists every graph item except the Art. 50 items, which
+  stay in `report.transparency_obligations`, with the same article, actor and
+  requirement, in the same order. `tests/test_obligation_catalog.py` checks
+  this for every example and for one profile per branch.
+- The obligation list gains Arts. 16, 18 to 21, 40 to 42 and 44 for a
+  high-risk provider, Art. 49(2) and Art. 49(5) where the graph has them,
+  Art. 56 for a GPAI model provider and one Art. 111(2) entry per operator role
+  of a system already on the market. A high-risk provider now has 23 entries
+  instead of 14. The graph gains Arts. 9 to 15, dated and reviewed like the
+  Art. 16 item. No tier, disposition, open question, documentation item or
+  existing graph item changed.
+- Where both lists had an article, the entry keeps the graph's requirement,
+  so the list's wording changes for Arts. 17, 22 to 27, 43, 47, 48, 49, 72,
+  53(1)(a) and 53(1)(c). The Art. 2(2) entry for a Section B product in an
+  Annex III area no longer repeats the counsel flag that the finding, the
+  graph item's note and the open question carry.
+
 ### Tests cover every example, `--strict` and the cockpit types
 
 #### Changed

@@ -79,46 +79,109 @@
       "requirement": "Achieve appropriate accuracy, robustness and cybersecurity."
     },
     {
+      "article": "Art. 16 AIA",
+      "citation_verified": true,
+      "title": "Provider obligations",
+      "applies_to": "provider",
+      "requirement": "Ensure the high-risk system complies with Chapter III requirements."
+    },
+    {
       "article": "Art. 17 AIA",
       "citation_verified": true,
       "title": "Quality management system",
       "applies_to": "provider",
-      "requirement": "Put a quality management system in place."
+      "requirement": "Maintain a quality management system."
+    },
+    {
+      "article": "Art. 18 AIA",
+      "citation_verified": true,
+      "title": "Document retention",
+      "applies_to": "provider",
+      "requirement": "Keep technical documentation, logs and conformity documentation."
+    },
+    {
+      "article": "Art. 19 AIA",
+      "citation_verified": true,
+      "title": "Log retention",
+      "applies_to": "provider",
+      "requirement": "Keep automatically generated logs where under provider control."
+    },
+    {
+      "article": "Art. 20 AIA",
+      "citation_verified": true,
+      "title": "Corrective action and notification",
+      "applies_to": "provider",
+      "requirement": "Take corrective action and inform relevant parties where required."
+    },
+    {
+      "article": "Art. 21 AIA",
+      "citation_verified": true,
+      "title": "Authority cooperation",
+      "applies_to": "provider",
+      "requirement": "Cooperate with competent authorities and provide requested information."
+    },
+    {
+      "article": "Art. 40 AIA",
+      "citation_verified": true,
+      "title": "Harmonised standards",
+      "applies_to": "provider",
+      "requirement": "Track applicable harmonised standards and standardisation deliverables."
+    },
+    {
+      "article": "Art. 41 AIA",
+      "citation_verified": true,
+      "title": "Common specifications",
+      "applies_to": "provider",
+      "requirement": "Assess common specifications where harmonised standards are unavailable or insufficient."
+    },
+    {
+      "article": "Art. 42 AIA",
+      "citation_verified": true,
+      "title": "Presumption of conformity",
+      "applies_to": "provider",
+      "requirement": "Map implemented controls to standards, specifications or alternative evidence."
     },
     {
       "article": "Art. 43 AIA",
       "citation_verified": true,
       "title": "Conformity assessment",
       "applies_to": "provider",
-      "requirement": "Undergo the applicable conformity assessment before market placement."
+      "requirement": "Complete the applicable conformity assessment."
+    },
+    {
+      "article": "Art. 44 AIA",
+      "citation_verified": true,
+      "title": "Notified body certificates",
+      "applies_to": "provider",
+      "requirement": "Track certificate validity, changes and renewal obligations."
     },
     {
       "article": "Art. 47 AIA",
       "citation_verified": true,
       "title": "EU declaration of conformity",
       "applies_to": "provider",
-      "requirement": "Draw up and keep an EU declaration of conformity."
+      "requirement": "Draw up and keep the EU declaration of conformity."
     },
     {
       "article": "Art. 48 AIA",
       "citation_verified": true,
       "title": "CE marking",
       "applies_to": "provider",
-      "requirement": "Affix the CE marking to indicate conformity."
+      "requirement": "Affix CE marking where required."
     },
     {
       "article": "Art. 49 AIA",
       "citation_verified": true,
       "title": "Registration",
       "applies_to": "provider",
-      "requirement": "Register the system in the EU database before market placement."
+      "requirement": "Register the provider and system in the EU database where required."
     },
     {
       "article": "Art. 72 AIA",
       "citation_verified": true,
       "title": "Post-market monitoring",
       "applies_to": "provider",
-      "requirement": "Operate a post-market monitoring system."
+      "requirement": "Operate a post-market monitoring system and plan."
     },
     {
       "article": "Art. 73 AIA",
@@ -167,6 +230,97 @@
   ],
   "transparency_obligations": [],
   "obligation_graph": [
+    {
+      "obligation_id": "high-risk.provider.9",
+      "article": "Art. 9 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Establish, document and maintain a continuous risk management system.",
+      "evidence_artifact": "Risk management file.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
+      "review_status": "determined",
+      "application_date_note": null
+    },
+    {
+      "obligation_id": "high-risk.provider.10",
+      "article": "Art. 10 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Apply data governance to training, validation and testing data sets.",
+      "evidence_artifact": "Data governance record.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
+      "review_status": "determined",
+      "application_date_note": null
+    },
+    {
+      "obligation_id": "high-risk.provider.11",
+      "article": "Art. 11 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Draw up technical documentation (Annex IV) before placing on the market.",
+      "evidence_artifact": "Annex IV technical documentation.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
+      "review_status": "determined",
+      "application_date_note": null
+    },
+    {
+      "obligation_id": "high-risk.provider.12",
+      "article": "Art. 12 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Enable automatic recording of events (logs) over the system's lifetime.",
+      "evidence_artifact": "Event logging design record.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
+      "review_status": "determined",
+      "application_date_note": null
+    },
+    {
+      "obligation_id": "high-risk.provider.13",
+      "article": "Art. 13 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Provide instructions for use enabling deployers to comply.",
+      "evidence_artifact": "Instructions for use.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
+      "review_status": "determined",
+      "application_date_note": null
+    },
+    {
+      "obligation_id": "high-risk.provider.14",
+      "article": "Art. 14 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Design the system for effective oversight by natural persons.",
+      "evidence_artifact": "Human oversight design record.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
+      "review_status": "determined",
+      "application_date_note": null
+    },
+    {
+      "obligation_id": "high-risk.provider.15",
+      "article": "Art. 15 AIA",
+      "actor": "provider",
+      "trigger": "Provider of a high-risk AI system.",
+      "requirement": "Achieve appropriate accuracy, robustness and cybersecurity.",
+      "evidence_artifact": "Accuracy, robustness and cybersecurity test record.",
+      "source_status": "binding_level_1",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
+      "application_date": "2027-12-02",
+      "review_status": "determined",
+      "application_date_note": null
+    },
     {
       "obligation_id": "high-risk.provider.16",
       "article": "Art. 16 AIA",
