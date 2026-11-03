@@ -230,9 +230,14 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
     if not ART_111_1.verified and any(ANNEX_X_CARVE_OUT in text for text in stated):
         unverified = sorted({*unverified, ART_111_1.ref})
 
+    # Imported here because the package's __init__ imports this module before it sets
+    # __version__.
+    from . import __version__
+
     return ClassificationReport(
         system=profile.name,
         regulation=REGULATION,
+        classifier_version=__version__,
         risk_tier=final_tier,
         disposition=disposition,
         scope=scope_assessment,

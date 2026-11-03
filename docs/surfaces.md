@@ -7,7 +7,7 @@ Longer reference material moved out of the README. The CLI remains the authorita
 | Surface | Use it for | Details |
 |---|---|---|
 | Browser playground | Zero-install trial, nothing leaves the page | [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) |
-| CLI (`eu-ai-act-classify`) | Authoritative surface; `--json`, `--strict`, `--sources`, draft artifacts | [Local verification](#local-verification) |
+| CLI (`eu-ai-act-classify`) | Authoritative surface; `--json`, `--strict`, `--sources`, `--version`, draft artifacts | [Local verification](#local-verification) |
 | MCP server | Let an agent call the classifier | [docs/mcp-configuration-guide.md](mcp-configuration-guide.md) |
 | Local API and web cockpit | Local inventory, review and export workflow | [MCP and local API](#mcp-and-local-api), [Optional web cockpit](#optional-web-cockpit) |
 
