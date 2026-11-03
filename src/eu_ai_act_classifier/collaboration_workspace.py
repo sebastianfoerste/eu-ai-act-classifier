@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import tempfile
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Literal
@@ -108,6 +110,28 @@ def _inventory_digest(inventory: AISystemInventory) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
+class StaleWorkspaceError(ValueError):
+    """A workspace built for another inventory than the current one."""
+
+
+def _as_utc(moment: datetime) -> datetime:
+    """``moment`` with a time zone: a naive time counts as UTC."""
+
+    return moment if moment.tzinfo is not None else moment.replace(tzinfo=UTC)
+
+
+def _locked_by_another(cell: ReviewCellState, actor: str, now: datetime) -> bool:
+    """Whether a lock held by someone other than ``actor`` is still running at ``now``.
+
+    The lock time and ``now`` may each be naive or aware, as an imported file or a
+    direct caller gives them; a naive time counts as UTC on both sides.
+    """
+
+    if not (cell.locked_by and cell.locked_by != actor and cell.lock_expires_at):
+        return False
+    return _as_utc(datetime.fromisoformat(cell.lock_expires_at)) > _as_utc(now)
+
+
 def build_collaboration_state(inventory: AISystemInventory) -> CollaborationWorkspace:
     return CollaborationWorkspace(
         inventory_digest=_inventory_digest(inventory),
@@ -140,14 +164,8 @@ def lock_cell(
         raise ValueError(
             f"409 Conflict: expected revision {expected_revision}, received {cell.revision}"
         )
-    if cell.locked_by and cell.locked_by != actor and cell.lock_expires_at:
-        lock_expiry = datetime.fromisoformat(cell.lock_expires_at)
-        now_utc = now if now.tzinfo is not None else now.replace(tzinfo=UTC)
-        lock_expiry_utc = (
-            lock_expiry if lock_expiry.tzinfo is not None else lock_expiry.replace(tzinfo=UTC)
-        )
-        if lock_expiry_utc > now_utc:
-            raise ValueError(f"409 Conflict: review cell is locked by {cell.locked_by}")
+    if _locked_by_another(cell, actor, now):
+        raise ValueError(f"409 Conflict: review cell is locked by {cell.locked_by}")
     cell.revision += 1
     cell.locked_by = actor
     cell.lock_expires_at = (now + timedelta(minutes=15)).isoformat()
@@ -247,12 +265,7 @@ def review_cell(
     cell = _cell(updated, target_id)
     if cell.revision != expected_revision:
         raise ValueError("409 Conflict: stale review cell revision")
-    if (
-        cell.locked_by
-        and cell.locked_by != reviewer
-        and cell.lock_expires_at
-        and datetime.fromisoformat(cell.lock_expires_at) > now
-    ):
+    if _locked_by_another(cell, reviewer, now):
         raise ValueError(f"409 Conflict: review cell is locked by {cell.locked_by}")
     cell.revision += 1
     cell.reviewer = reviewer
@@ -269,15 +282,92 @@ def review_cell(
 
 
 def save_workspace(workspace: CollaborationWorkspace, path: Path) -> Path:
+    """Write the workspace to ``path`` in one step.
+
+    The JSON goes to a temporary file next to ``path``, which then replaces ``path``.
+    A write that fails partway leaves the previous file as it was and removes the
+    temporary file, so ``path`` never holds half a workspace.
+    """
+
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(workspace.model_dump_json(by_alias=True, indent=2) + "\n", encoding="utf-8")
+    payload = workspace.model_dump_json(by_alias=True, indent=2) + "\n"
+    descriptor, temporary = tempfile.mkstemp(
+        dir=path.parent, prefix=f".{path.name}.", suffix=".tmp"
+    )
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    except BaseException:
+        Path(temporary).unlink(missing_ok=True)
+        raise
     return path
 
 
 def load_workspace(path: Path, inventory: AISystemInventory) -> CollaborationWorkspace:
+    """The workspace saved at ``path``.
+
+    Raises a ValueError when the file is not a valid workspace, and
+    StaleWorkspaceError when it was built for another inventory.
+    """
+
     workspace = CollaborationWorkspace.model_validate_json(path.read_text(encoding="utf-8"))
     if workspace.inventory_digest != _inventory_digest(inventory):
-        raise ValueError("workspace state is stale for the current deterministic inventory")
+        raise StaleWorkspaceError(
+            "workspace state is stale for the current deterministic inventory"
+        )
+    return workspace
+
+
+def _archive_path(path: Path, reason: str, now: datetime) -> Path:
+    """A free name next to ``path`` that records why and when the file was set aside."""
+
+    stamp = _as_utc(now).astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
+    candidate = path.with_name(f"{path.stem}.{reason}-{stamp}{path.suffix}")
+    counter = 2
+    while candidate.exists():
+        candidate = path.with_name(f"{path.stem}.{reason}-{stamp}-{counter}{path.suffix}")
+        counter += 1
+    return candidate
+
+
+def _load_or_recover(
+    path: Path, inventory: AISystemInventory, now: datetime
+) -> CollaborationWorkspace:
+    """The saved workspace, or a new one when the saved file cannot be used.
+
+    A file that is not a valid workspace (cut off by a failed write, or edited by
+    hand) or that was built for another inventory (an example changed) used to fail
+    every action until someone deleted it. Such a file is now renamed, not deleted:
+    it stays next to ``path`` as ``<name>.unreadable-<UTC time>.json`` or
+    ``<name>.stale-<UTC time>.json``. A new workspace whose activity starts with a
+    "recovered" event naming that file is saved at once. A file the process cannot
+    read at all (an OSError) is an operator problem and still fails.
+    """
+
+    if not path.exists():
+        return build_collaboration_state(inventory)
+    try:
+        return load_workspace(path, inventory)
+    except StaleWorkspaceError:
+        reason = "stale"
+    except ValueError:
+        # Invalid JSON or not a workspace (a pydantic ValidationError), or not UTF-8.
+        reason = "unreadable"
+    archive = _archive_path(path, reason, now)
+    path.replace(archive)
+    workspace = build_collaboration_state(inventory)
+    workspace.activity.append(
+        {
+            "event": "recovered",
+            "reason": reason,
+            "archivedAs": archive.name,
+            "occurredAt": now.isoformat(),
+        }
+    )
+    save_workspace(workspace, path)
     return workspace
 
 
@@ -288,7 +378,9 @@ def export_workspace(workspace: CollaborationWorkspace) -> str:
 def import_workspace(payload: str, inventory: AISystemInventory) -> CollaborationWorkspace:
     workspace = CollaborationWorkspace.model_validate_json(payload)
     if workspace.inventory_digest != _inventory_digest(inventory):
-        raise ValueError("workspace state is stale for the current deterministic inventory")
+        raise StaleWorkspaceError(
+            "workspace state is stale for the current deterministic inventory"
+        )
     return workspace
 
 
@@ -444,8 +536,15 @@ def _inventory_timestamp(now: datetime | None) -> str | None:
 
     if now is None:
         return None
-    now_utc = now if now.tzinfo is not None else now.replace(tzinfo=UTC)
-    return now_utc.astimezone(UTC).replace(microsecond=0).isoformat()
+    return _as_utc(now).astimezone(UTC).replace(microsecond=0).isoformat()
+
+
+def _expected_revision(payload: dict[str, object]) -> int:
+    try:
+        return int(payload.get("expectedRevision", 0))
+    except (TypeError, ValueError, OverflowError):
+        # int() names the rejected value in its message; this one does not.
+        raise ValueError("expectedRevision must be an integer") from None
 
 
 def apply_workspace_action(
@@ -455,21 +554,18 @@ def apply_workspace_action(
 
     The inventory is stamped with ``now`` (or the clock). The digest the stored
     workspace is checked against leaves that timestamp out, so actions at different
-    times operate on the same workspace.
+    times operate on the same workspace. A stored file that is unreadable or stale is
+    set aside and a new workspace started (see ``_load_or_recover``).
     """
 
     inventory = build_example_inventory(generated_at=_inventory_timestamp(now))
-    current = (
-        load_workspace(runtime_path, inventory)
-        if runtime_path.exists()
-        else build_collaboration_state(inventory)
-    )
-    action = str(payload.get("action", "snapshot"))
     occurred_at = now or datetime.now(UTC)
+    current = _load_or_recover(runtime_path, inventory, occurred_at)
+    action = str(payload.get("action", "snapshot"))
     if action == "snapshot":
         return build_collaboration_workspace(collaboration=current)
     target_id = str(payload.get("targetId", ""))
-    expected_revision = int(payload.get("expectedRevision", 0))
+    expected_revision = _expected_revision(payload)
     actor = str(payload.get("actor", "Local reviewer")).strip() or "Local reviewer"
     if action == "lock":
         current = lock_cell(
@@ -519,9 +615,12 @@ def apply_workspace_action(
             now=occurred_at,
         )
     elif action == "self_assess":
+        answers = payload.get("answers", {})
+        if not isinstance(answers, dict):
+            raise ValueError("answers must be a JSON object")
         return build_collaboration_workspace(
             collaboration=current,
-            assessment_answers=dict(payload.get("answers", {})),
+            assessment_answers=dict(answers),
         )
     else:
         raise ValueError(f"unsupported workspace action: {action}")

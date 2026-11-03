@@ -96,7 +96,7 @@ npm install
 npm run dev
 ```
 
-Only `/api/collaboration`, which the `/self-assessment` page uses, writes to disk. Each review action saves the workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root. The file is git-ignored and stays on the machine until you delete it. The other routes keep no state. Enter synthetic data only (see [PRIVACY.md](../PRIVACY.md)).
+Only `/api/collaboration`, which the `/self-assessment` page uses, writes to disk. Each review action saves the workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root. The file is git-ignored and stays on the machine until you delete it. A stored file the bridge cannot read, or one built for a different set of examples, is renamed next to it with `unreadable` or `stale` and the time in its name, and a new workspace is started; those copies stay as well (see [COLLABORATION_PROGRAMME.md](COLLABORATION_PROGRAMME.md)). The other routes keep no state. Enter synthetic data only (see [PRIVACY.md](../PRIVACY.md)).
 
 Deployment notes for the playground and the cockpit are in [DEPLOYMENT.md](../DEPLOYMENT.md).
 

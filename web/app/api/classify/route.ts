@@ -1,4 +1,4 @@
-import { bridgeErrorStatus } from "../../../lib/bridge-error";
+import { bodyNotJsonResponse, bridgeErrorResponse } from "../../../lib/bridge-error";
 import { rejectUnsafeLocalPost } from "../../../lib/local-request-guard";
 import { runClassifierBridge } from "../../../lib/python";
 
@@ -12,13 +12,13 @@ export async function POST(request: Request) {
   let payload: unknown;
   try {
     payload = await request.json();
-  } catch (error) {
-    return Response.json({ error: String(error) }, { status: 400 });
+  } catch {
+    return bodyNotJsonResponse();
   }
   try {
     const report = await runClassifierBridge("classify", payload);
     return Response.json(report);
   } catch (error) {
-    return Response.json({ error: String(error) }, { status: bridgeErrorStatus(error) });
+    return bridgeErrorResponse(error);
   }
 }

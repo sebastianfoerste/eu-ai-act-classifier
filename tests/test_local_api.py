@@ -7,6 +7,8 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 import eu_ai_act_classifier.collaboration_workspace as collaboration_workspace_module
 import eu_ai_act_classifier.inventory as inventory_module
 from eu_ai_act_classifier import SystemProfile, classify
@@ -207,3 +209,155 @@ def test_local_api_collaboration_survives_a_clock_tick_between_actions(
     # A page load after the tick reads the stored workspace back with the comment.
     snapshot = _run_local_api(monkeypatch, capsys, "collaboration")
     assert _cell(snapshot, target["target_id"]) == cell
+
+
+def _run_local_api_error(
+    monkeypatch, capsys, command: str, payload: dict[str, Any]
+) -> tuple[int, str]:
+    # A failing run: nothing on stdout and exactly one JSON line on stderr.
+    monkeypatch.setattr("sys.stdin", io.StringIO(json.dumps(payload)))
+    code = main([command])
+    out, err = capsys.readouterr()
+    assert out == ""
+    lines = err.strip().splitlines()
+    assert len(lines) == 1, err
+    return code, json.loads(lines[0])["error"]
+
+
+def test_local_api_validation_error_names_the_field_but_not_the_value(monkeypatch, capsys) -> None:
+    # Pydantic's message carried the rejected value (input_value=...) and a docs link,
+    # and the cockpit returned it to the HTTP client (AIA-21).
+    code, error = _run_local_api_error(
+        monkeypatch,
+        capsys,
+        "classify",
+        {"profile": {"name": "Confidential system", "roles": "bogus-SECRET-VALUE"}},
+    )
+
+    assert code == 2
+    assert error == "1 validation error for SystemProfile\nroles\n  Input should be a valid list"
+    assert "SECRET" not in error
+    assert "input_value" not in error
+    assert "errors.pydantic.dev" not in error
+
+
+def test_local_api_counts_every_validation_error(monkeypatch, capsys) -> None:
+    code, error = _run_local_api_error(
+        monkeypatch,
+        capsys,
+        "classify",
+        {"profile": {"name": "x", "roles": "bogus", "placing_on_market_date": "13.07.2026"}},
+    )
+
+    assert code == 2
+    assert error.splitlines()[0] == "2 validation errors for SystemProfile"
+    assert "bogus" not in error
+    assert "13.07.2026" not in error
+
+
+def test_local_api_internal_failure_prints_a_generic_error_without_traceback(
+    monkeypatch, capsys
+) -> None:
+    # Any exception other than invalid input printed a traceback, with absolute paths and
+    # the failing values, which the cockpit passed on to the HTTP client (AIA-21).
+    def crash(*args, **kwargs):
+        raise RuntimeError(f"boom in {ROOT} with SECRET-VALUE")
+
+    monkeypatch.setattr("eu_ai_act_classifier.local_api.classify", crash)
+
+    code, error = _run_local_api_error(monkeypatch, capsys, "classify", {"profile": {"name": "x"}})
+
+    assert code == 1
+    assert error == "the classifier bridge failed"
+
+
+def _collaboration_checkout(tmp_path, monkeypatch) -> None:
+    # The cockpit runs the bridge from the repository root, where examples/ and
+    # runtime-data/ live.
+    shutil.copytree(ROOT / "examples", tmp_path / "examples")
+    monkeypatch.chdir(tmp_path)
+
+
+@pytest.mark.parametrize("revision", [{}, [1], "two-SECRET", None])
+def test_local_api_collaboration_rejects_a_revision_that_is_not_a_number(
+    revision, tmp_path, monkeypatch, capsys
+) -> None:
+    # The audit's probe: expectedRevision {} raised TypeError and printed a traceback.
+    _collaboration_checkout(tmp_path, monkeypatch)
+    target = _run_local_api(monkeypatch, capsys, "collaboration")["collaboration"]["cells"][0]
+
+    code, error = _run_local_api_error(
+        monkeypatch,
+        capsys,
+        "collaboration",
+        {"action": "lock", "targetId": target["target_id"], "expectedRevision": revision},
+    )
+
+    assert (code, error) == (2, "expectedRevision must be an integer")
+
+
+def test_local_api_collaboration_rejects_answers_that_are_not_an_object(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    _collaboration_checkout(tmp_path, monkeypatch)
+
+    code, error = _run_local_api_error(
+        monkeypatch, capsys, "collaboration", {"action": "self_assess", "answers": 7}
+    )
+
+    assert (code, error) == (2, "answers must be a JSON object")
+
+
+def test_local_api_review_of_an_imported_naive_lock_answers_409(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    # The audit's probe: a workspace imported with a naive lock_expires_at made the
+    # next review raise TypeError (AIA-26), which escaped as a traceback (AIA-21).
+    _collaboration_checkout(tmp_path, monkeypatch)
+    collaboration = _run_local_api(monkeypatch, capsys, "collaboration")["collaboration"]
+    target = collaboration["cells"][0]
+    locked = {
+        **target,
+        "revision": 2,
+        "locked_by": "Reviewer A",
+        "lock_expires_at": "2999-01-01T00:00:00",
+    }
+    exported = {**collaboration, "cells": [locked, *collaboration["cells"][1:]]}
+    _run_local_api(
+        monkeypatch, capsys, "collaboration", {"action": "import", "workspace": exported}
+    )
+
+    code, error = _run_local_api_error(
+        monkeypatch,
+        capsys,
+        "collaboration",
+        {
+            "action": "review",
+            "targetId": target["target_id"],
+            "expectedRevision": 2,
+            "actor": "Reviewer B",
+            "reviewerOverride": "human_review_required",
+        },
+    )
+
+    assert (code, error) == (2, "409 Conflict: review cell is locked by Reviewer A")
+
+
+def test_local_api_collaboration_recovers_from_a_truncated_store(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    # A half-written store made every cockpit page load fail until the file was
+    # deleted by hand (AIA-22).
+    _collaboration_checkout(tmp_path, monkeypatch)
+    store = Path("runtime-data/collaboration-workspace.json")
+    store.parent.mkdir()
+    store.write_text('{"schema": "review.collaboration.v1", "cells": [', encoding="utf-8")
+
+    snapshot = _run_local_api(monkeypatch, capsys, "collaboration")
+
+    [recovered] = snapshot["collaboration"]["activity"]
+    assert (recovered["event"], recovered["reason"]) == ("recovered", "unreadable")
+    assert (store.parent / recovered["archivedAs"]).read_text(encoding="utf-8") == (
+        '{"schema": "review.collaboration.v1", "cells": ['
+    )
+    assert json.loads(store.read_text(encoding="utf-8")) == snapshot["collaboration"]

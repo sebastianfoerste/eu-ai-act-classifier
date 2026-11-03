@@ -1,4 +1,4 @@
-import { bridgeErrorStatus } from "../../../lib/bridge-error";
+import { bodyNotJsonResponse, bridgeErrorBody, bridgeErrorStatus } from "../../../lib/bridge-error";
 import { rejectUnsafeLocalPost } from "../../../lib/local-request-guard";
 import { runClassifierBridge } from "../../../lib/python";
 
@@ -8,7 +8,7 @@ export async function GET() {
   try {
     return Response.json(await runClassifierBridge("collaboration"));
   } catch (error) {
-    return Response.json({ error: String(error) }, { status: 500 });
+    return Response.json(bridgeErrorBody(error), { status: 500 });
   }
 }
 
@@ -20,16 +20,17 @@ export async function POST(request: Request) {
   let payload: unknown;
   try {
     payload = await request.json();
-  } catch (error) {
-    return Response.json({ error: String(error) }, { status: 400 });
+  } catch {
+    return bodyNotJsonResponse();
   }
   try {
     return Response.json(await runClassifierBridge("collaboration", payload));
   } catch (error) {
-    const message = String(error);
-    return Response.json(
-      { error: message },
-      { status: message.includes("409 Conflict") ? 409 : bridgeErrorStatus(error) },
-    );
+    // A stale revision or a lock is local_api rejecting the action with a 409 message.
+    const body = bridgeErrorBody(error);
+    const status = bridgeErrorStatus(error);
+    return Response.json(body, {
+      status: status === 400 && body.error.startsWith("409 Conflict") ? 409 : status,
+    });
   }
 }

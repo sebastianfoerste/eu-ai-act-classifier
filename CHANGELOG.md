@@ -7,6 +7,39 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Collaboration store and bridge errors
+
+#### Fixed
+
+- `save_workspace` wrote `runtime-data/collaboration-workspace.json` in
+  place, so a write that stopped partway left half a JSON document. It now
+  writes a temporary file in the same directory and renames it over the old
+  one, and a failed write leaves the previous file as it was. On POSIX
+  systems the file is now readable and writable by its owner only.
+- A stored workspace that was not valid JSON, or that was built for another
+  inventory (for example before an example was renamed), failed every
+  collaboration action, the page load included, until the file was deleted
+  by hand. The bridge now renames such a file to
+  `collaboration-workspace.unreadable-<UTC time>.json` or
+  `collaboration-workspace.stale-<UTC time>.json`, starts a new workspace and
+  records a `recovered` event that names the renamed file.
+- `review_cell` compared a lock time without a time zone with one that has
+  one and raised `TypeError`, for example after an import of a file with such
+  a lock. It now compares both in UTC, as `lock_cell` does, and answers
+  `409 Conflict` while another reviewer's lock runs.
+- `local_api` printed pydantic's message, which repeats each rejected value
+  and links pydantic's documentation, and a traceback for any other failure.
+  It now prints the number of errors, each field path and each reason, and
+  exits 1 with `{"error": "the classifier bridge failed"}` for any other
+  failure. An `expectedRevision` that is not a number and `answers` that are
+  not an object are now rejected as input instead of failing with a traceback.
+- The cockpit routes returned the bridge's whole stderr, or the text of a
+  JavaScript error, in the HTTP response. They now return local_api's message
+  for rejected input and a fixed text otherwise: `classifier bridge timed out`,
+  `classifier bridge failed` or `request body is not valid JSON`. The JSON
+  parser's message, which quoted the start of the request body, no longer
+  reaches the response.
+
 ### One catalog for the obligations list and the obligation graph
 
 #### Changed

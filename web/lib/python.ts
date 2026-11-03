@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import path from "node:path";
 
-import { ClassifierBridgeError } from "./bridge-error";
+import { BRIDGE_TIMED_OUT, ClassifierBridgeError, bridgeExitError } from "./bridge-error";
 
 const REPO_ROOT =
   process.env.CLASSIFIER_REPO_ROOT ?? path.resolve(/* turbopackIgnore: true */ process.cwd(), "..");
@@ -23,7 +23,7 @@ export async function runClassifierBridge(command: string, payload?: unknown): P
     let stderr = "";
     const timer = setTimeout(() => {
       child.kill("SIGTERM");
-      reject(new ClassifierBridgeError("classifier bridge timed out"));
+      reject(new ClassifierBridgeError(BRIDGE_TIMED_OUT));
     }, TIMEOUT_MS);
 
     child.stdout.on("data", (chunk: Buffer) => {
@@ -39,9 +39,7 @@ export async function runClassifierBridge(command: string, payload?: unknown): P
     child.on("close", (code) => {
       clearTimeout(timer);
       if (code !== 0) {
-        reject(
-          new ClassifierBridgeError(stderr || `classifier bridge exited with ${code}`, code, stderr),
-        );
+        reject(bridgeExitError(code, stderr));
         return;
       }
       try {
