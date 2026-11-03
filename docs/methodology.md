@@ -27,6 +27,9 @@ facts. The engine applies the rules and makes uncertainty visible.
 6. Resolution: highest tier, review disposition, source-backed obligations,
    timeline and open legal questions.
 
+Art. 4 AIA is not encoded. No gate checks it, and no report lists an
+obligation, a graph item or an open question for it, whatever the tier.
+
 ## Operator Roles
 
 `roles` lists the roles the organisation holds for the system, and every

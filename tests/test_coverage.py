@@ -36,3 +36,12 @@ def test_every_annex_iii_point_is_high_risk_on_a_minimal_profile(area: AnnexIII)
     assert report.risk_tier is RiskTier.HIGH
     expected = Disposition.REQUIRES_REVIEW if area is AnnexIII.UNSURE else Disposition.DETERMINED
     assert report.disposition is expected
+
+
+def test_header_names_the_roles_the_minimal_profile_holds() -> None:
+    # build() classifies SystemProfile(name=..., annex_iii_area=...), which takes the
+    # default roles, so the header must name them and not say the profile has none.
+    header = _builder().HEADER
+    assert "no roles" not in header
+    for role in SystemProfile(name="coverage").roles:
+        assert f"`{role.value}`" in header

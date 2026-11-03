@@ -8,7 +8,7 @@ The classifier has three surfaces:
 
 Hosted surface: the browser playground at https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/, served by GitHub Pages from `docs/` on `main` through the CI deployment below. It needs no server: the page loads Pyodide and Pydantic from the Pyodide CDN and installs the classifier wheel committed next to it. Profiles never leave the browser.
 
-Publishing: the `deploy` job in `.github/workflows/ci.yml` uploads `docs/` and deploys it to GitHub Pages. It runs on a push to `main`, after the `test` and `web` jobs pass for that commit. Pull request runs skip it, and a failed check publishes nothing. The repository's Pages source must be GitHub Actions: with a branch as the source, GitHub also publishes `docs/` on every push to `main`, before CI finishes.
+Publishing: the `deploy` job in `.github/workflows/ci.yml` uploads `docs/` and deploys it to GitHub Pages. It runs on a push to `main`, after the `test` and `web` jobs pass for that commit. Pull request runs skip it, and a failed check publishes nothing. The repository's Pages source must be GitHub Actions: with a branch as the source, GitHub also publishes `docs/` on every push to `main` without waiting for CI, so a commit whose checks fail is published too.
 
 The cockpit is not hosted. Its API routes spawn the Python classifier, which a static or serverless host cannot execute, so the earlier Vercel build never returned a result. Run the cockpit locally.
 

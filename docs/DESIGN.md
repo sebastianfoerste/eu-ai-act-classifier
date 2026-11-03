@@ -80,7 +80,7 @@ Amended application dates are tied to Regulation (EU) 2026/1744 and displayed as
 
 Draft work products always include a review notice and source manifest.
 
-The web cockpit uses local in-memory state for v1.
+The web cockpit keeps no state of its own. The collaboration bridge saves the review workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root.
 
 ## Cockpit Source-of-Truth Boundary
 

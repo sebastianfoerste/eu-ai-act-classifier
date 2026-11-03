@@ -96,7 +96,7 @@ Implementation:
 
 ## Optional Local Cockpit
 
-Provides a local Next.js reviewer surface over the Python bridge. It keeps the Python classifier as the source of truth and uses in-memory state for v1.
+Provides a local Next.js reviewer surface over the Python bridge. It keeps the Python classifier as the source of truth. The collaboration bridge saves the review workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root.
 
 Implementation:
 

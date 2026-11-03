@@ -7,6 +7,30 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Docs and the cockpit health route say what the code does
+
+#### Fixed
+
+- The cockpit's `/api/health` answered `persistence: "local_in_memory"`, and
+  `PRIVACY.md`, `docs/surfaces.md`, `docs/DESIGN.md` and `docs/FEATURES.md`
+  described the cockpit's state as in-memory or local, while
+  `/api/collaboration` saves reviewer names, overrides and comments to
+  `runtime-data/collaboration-workspace.json`. The route now answers
+  `persistence: "local_file"` with that path as `store`, and the four docs
+  name the file.
+- `docs/coverage.md` said its minimal profiles name no roles. They hold the
+  default `provider` role.
+- `docs/reviewer-notes.md` read as if every Annex I, Section B report were
+  `requires_review`. It now says that a Section B product with no Annex III
+  area and no Art. 5 or Art. 50 screen carries none of the flags.
+- `docs/source-status-model.md` said `verify_sources.py` "checks the source
+  boundary". It now says what the check and `--update` do.
+- `DEPLOYMENT.md` and the Pages entry below said a branch-source Pages build
+  publishes before CI finishes. It publishes without waiting for CI and has
+  finished after it.
+- `docs/methodology.md` now says that Art. 4 AIA is not encoded, and
+  `docs/research/adaptation-plan.md` records that Art. 5(1)(ba) and (bb) are.
+
 ### Section B flags reach the review gate
 
 #### Fixed
@@ -113,10 +137,10 @@ Changes since 0.2.2.
   `actions/deploy-pages` 5.0.1, both pinned to a commit SHA. It runs only on
   a push to `main` and only after the `test` and `web` jobs pass for that
   commit, so a pull request run or a failed check publishes nothing. Until
-  now Pages published `docs/` from the branch on every push to `main`, before
-  CI finished. The job takes effect once the repository's Pages source is
-  switched to GitHub Actions. Like every other job, it has a 15-minute
-  timeout and its checkout does not persist credentials.
+  now Pages published `docs/` from the branch on every push to `main`
+  without waiting for CI. The job takes effect once the repository's Pages
+  source is switched to GitHub Actions. Like every other job, it has a
+  15-minute timeout and its checkout does not persist credentials.
   `tests/test_ci_workflow.py` checks the job's trigger, dependencies,
   permissions and pins, and the timeout and checkout of every job.
 

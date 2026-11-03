@@ -10,7 +10,7 @@ The examples are synthetic system profiles. Use them for public demos. Do not pa
 
 ## Local Cockpit
 
-The cockpit uses local state and a Python bridge. It does not need to persist client, matter, candidate or account data for the portfolio demo.
+The cockpit runs the classifier through a local Python bridge. Classification, artifact and dossier requests keep no state. The collaboration workspace behind `/self-assessment` is saved, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root. The file is git-ignored and stays on the machine until you delete it. Use synthetic data there too.
 
 ## Artifacts
 

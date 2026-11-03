@@ -33,6 +33,18 @@ SAMPLE_OUTPUT = Path("docs/sample-output.md")
 DEMO_PNG = Path("docs/demo.png")
 PYPROJECT = Path("pyproject.toml")
 CLAIM_LEDGER = Path("docs/REGULATORY_CLAIM_LEDGER.md")
+METHODOLOGY = Path("docs/methodology.md")
+PRIVACY = Path("PRIVACY.md")
+LOCAL_API = Path("src/eu_ai_act_classifier/local_api.py")
+# The file the collaboration bridge keeps the review workspace in, under the repository root.
+COLLABORATION_STORE = "runtime-data/collaboration-workspace.json"
+# Docs that describe where the cockpit keeps its state.
+COCKPIT_STATE_DOCS = [
+    PRIVACY,
+    Path("docs/surfaces.md"),
+    Path("docs/DESIGN.md"),
+    Path("docs/FEATURES.md"),
+]
 SOURCE = Path("src/eu_ai_act_classifier")
 # How the code and the claim ledger cite the amending points of Regulation (EU) 2026/1744.
 AMENDING_POINT = re.compile(r"Art\. 1, point \((\d+)\)")
@@ -211,6 +223,43 @@ def test_public_markdown_avoids_em_and_en_dashes() -> None:
         text = path.read_text(encoding="utf-8")
         assert EM_DASH not in text, f"em dash found in {path}"
         assert EN_DASH not in text, f"en dash found in {path}"
+
+
+def test_cockpit_docs_name_the_file_the_collaboration_bridge_writes() -> None:
+    # /api/collaboration writes reviewer names, overrides and comments to disk, so no doc
+    # may call the cockpit's state in-memory.
+    assert f'Path("{COLLABORATION_STORE}")' in LOCAL_API.read_text(encoding="utf-8")
+    for path in COCKPIT_STATE_DOCS:
+        text = " ".join(path.read_text(encoding="utf-8").split())
+        assert "in-memory" not in text.lower(), f"{path} calls the cockpit state in-memory"
+        assert COLLABORATION_STORE in text, f"{path} does not name {COLLABORATION_STORE}"
+
+
+# A citation of Art. 4 AIA itself, not of Art. 40 to 49.
+ART_4 = re.compile(r"\bArt\. 4(?!\d)")
+
+
+def test_methodology_says_art_4_is_not_encoded_while_no_report_cites_it() -> None:
+    # When Art. 4 is encoded, this test fails until the methodology sentence goes.
+    profiles = [
+        SystemProfile.model_validate_json(path.read_text(encoding="utf-8"))
+        for path in sorted(EXAMPLES.glob("*.json"))
+        if path.name != "classification-packet.json"
+    ]
+    for role in Role:
+        profiles.append(SystemProfile(name="minimal", roles=[role]))
+        profiles.append(SystemProfile(name="annex iii", roles=[role], annex_iii_area="III.4.a"))
+    for report in map(classify, profiles):
+        cited = [
+            *(obligation.article for obligation in report.obligations),
+            *(item.article for item in report.obligation_graph),
+            *(finding.citation for finding in report.findings),
+            *(item.provision for item in report.timeline),
+            *report.open_questions,
+        ]
+        assert not [text for text in cited if ART_4.search(text)], report.system
+    methodology = " ".join(METHODOLOGY.read_text(encoding="utf-8").split())
+    assert "Art. 4 AIA is not encoded." in methodology
 
 
 def test_generated_public_text_avoids_em_and_en_dashes() -> None:
