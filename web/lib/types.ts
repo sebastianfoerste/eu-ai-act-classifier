@@ -129,6 +129,7 @@ export type TimelineItem = {
 export type ClassificationReport = {
   system: string;
   regulation: string;
+  classifier_version: string;
   risk_tier: string;
   disposition: string;
   scope: ScopeAssessment;

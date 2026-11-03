@@ -4,6 +4,7 @@
     eu-ai-act-classify profile.json --json     # machine-readable report
     cat profile.json | eu-ai-act-classify -    # read from stdin
     eu-ai-act-classify profile.json --strict   # exit 1 if prohibited or requires_review
+    eu-ai-act-classify --version               # print the classifier version
 
 ``--strict`` lets the classifier sit in a CI step or an intake pipeline as a
 quality gate, the same way a linter does.
@@ -18,6 +19,7 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
+from . import __version__
 from .artifacts import ARTIFACT_NAMES, selected_artifacts, write_artifacts
 from .dossier import write_review_dossier
 from .engine import classify
@@ -35,6 +37,12 @@ def main(argv: list[str] | None = None) -> int:
         nargs="?",
         default=None,
         help="Path to a SystemProfile JSON file, or '-' for stdin.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"eu-ai-act-classifier {__version__}",
+        help="Print the classifier version and exit.",
     )
     parser.add_argument(
         "--json", action="store_true", help="Emit the ClassificationReport as JSON."

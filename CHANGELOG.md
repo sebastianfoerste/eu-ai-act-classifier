@@ -7,6 +7,28 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Version stamp
+
+#### Added
+
+- `eu-ai-act-classify --version` prints `eu-ai-act-classifier` and the
+  installed version, then exits 0.
+- A report did not say which classifier version produced it. Every
+  `ClassificationReport` now carries `classifier_version`, the package
+  version that `--version` prints. The field reaches the `--json` output, the
+  MCP tool, the local API and the cockpit, the playground's JSON export and
+  the review dossier (`report.json` and `dossier.json`). The text report is
+  unchanged.
+
+#### Changed
+
+- `schemas/classification-report.v1.schema.json` lists `classifier_version`
+  as a required string. A report written before this change has no such
+  field, so it no longer validates against the report schema.
+- `examples/classification-packet.json` carries the version as well, so a
+  version bump now also regenerates it with the command in
+  `docs/TESTING.md`.
+
 ### Collaboration store and bridge errors
 
 #### Fixed

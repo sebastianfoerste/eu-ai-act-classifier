@@ -151,9 +151,14 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         for a in sorted(APPLICATION_DATES + AMENDING_APPLICATION_DATES, key=lambda d: d.date)
     ]
 
+    # Imported here because the package's __init__ imports this module before it sets
+    # __version__.
+    from . import __version__
+
     return ClassificationReport(
         system=profile.name,
         regulation=REGULATION,
+        classifier_version=__version__,
         risk_tier=final_tier,
         disposition=disposition,
         scope=scope_assessment,

@@ -425,6 +425,11 @@
       "title": "Regulation",
       "type": "string"
     },
+    "classifier_version": {
+      "description": "The eu-ai-act-classifier version that produced this report.",
+      "title": "Classifier Version",
+      "type": "string"
+    },
     "risk_tier": {
       "$ref": "#/$defs/RiskTier"
     },
@@ -530,6 +535,7 @@
   "required": [
     "system",
     "regulation",
+    "classifier_version",
     "risk_tier",
     "disposition",
     "roles"

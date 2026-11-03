@@ -417,6 +417,9 @@ class ClassificationReport(BaseModel):
 
     system: str
     regulation: str
+    classifier_version: str = Field(
+        description="The eu-ai-act-classifier version that produced this report."
+    )
     risk_tier: RiskTier
     disposition: Disposition
     scope: ScopeAssessment = Field(default_factory=ScopeAssessment)
