@@ -5,12 +5,53 @@ pull requests.
 
 ## 0.2.3 (2026-10-30)
 
-Changes since 0.2.2. The profile and report models and the JSON Schemas are
-as in 0.2.2. The engine change in #43 alters only the wording of the
-Art. 111(2) check, so a profile gets the same tier, disposition, obligations
-and open questions as in 0.2.2. The dependency updates for CI, ruff and the
-web cockpit (#21, #22, #35, #41, #42, #45 to #48) are described in their pull
-requests.
+#### Upgrade notes
+
+Installs and scripts that work with 0.2.2 can fail with 0.2.3. Pinning
+`eu-ai-act-classifier==0.2.2` keeps the 0.2.2 behaviour while you update them.
+
+- The package requires `pydantic>=2.11` (#57). 0.2.2 required
+  `pydantic>=2.6`, so an environment with pydantic below 2.11 must update it
+  before it can install 0.2.3.
+- The `[mcp]` extra requires `mcp>=1.21.1,<2` (see "MCP extra requires mcp
+  1.21.1"). 0.2.2 allowed `mcp>=1.2,<2`, so an environment with mcp below
+  1.21.1 must update it before it can install `eu-ai-act-classifier[mcp]`
+  0.2.3.
+- The source check exits differently (see "Source retrieval dates move only
+  after every URL passes" and "Source check reports bot challenges as
+  unverified"):
+  - `--verify-sources --update` exits 1 and changes no date when a URL fails
+    or is unverified (a 202 answer or a bot challenge page). 0.2.2 moved both
+    retrieval dates on every run, exited 1 only when a URL failed, and
+    counted a 202 answer or a challenge page as a pass.
+  - `--verify-sources --update` outside a source checkout exits 2 before any
+    request. 0.2.2 rewrote the installed `citations.py`.
+  - `--update` without `--verify-sources` exits 2. 0.2.2 ignored it, so
+    `eu-ai-act-classify profile.json --update` ran as if `--update` were
+    absent.
+  - `python -m eu_ai_act_classifier.verify_sources` exits 1 when a URL
+    fails, or with `--update` when a URL is unverified, and 2 with `--update`
+    outside a source checkout. 0.2.2 always exited 0.
+
+  `--verify-sources` without `--update` exits as in 0.2.2: 1 when a URL
+  fails, 0 otherwise.
+
+Changes since 0.2.2. The fields of the profile and report models are as in
+0.2.2. In the JSON Schemas only the description of
+`deployer_public_authority` changes: it now says that the field is read only
+where the profile holds the deployer role (#54). The engine changes in #43
+and #54 alter report text only: #43 the wording of the Art. 111(2) check,
+and #54 the text a report shows for a `deployer_public_authority` status the
+engine does not use. Both also narrow a guided-intake question. Over 3,240
+synthetic profiles, the 18 examples with their roles,
+`deployer_public_authority`, change answer, market date and
+`public_authority_use` varied, 0.2.2 and 0.2.3 give the same tier,
+disposition, obligations, finding rule ids and severities, graph item ids,
+dates and review statuses, and number of open questions. #57 raises the
+`pydantic` floor and adds CI jobs, and #13 recommends eu-reg-mcp in the MCP
+server's exit message and in the docs. The dependency updates for CI, ruff
+and the web cockpit (#21, #22, #35, #41, #42, #45 to #48) are described in
+their pull requests.
 
 ### Package description (#12)
 
@@ -21,6 +62,69 @@ requests.
   Regulation (EU) 2026/1744, and points to the regulatory claim ledger for
   what is encoded. The 0.2.2 description did not say that the amending
   regulation is encoded only in part.
+
+### Art. 49(3) public-authority status asked only of deployers (#54)
+
+#### Changed
+
+- The guided intake asks whether the deployer is, or acts on behalf of, a
+  public authority (`deployer_public_authority`, Art. 49(3) AIA) only where
+  the profile holds the deployer role on a high-risk route. The six bundled
+  high-risk examples that name only a provider no longer open with the
+  question unanswered. It still stops the run on "I don't know": for a
+  deployer of an Annex III point 5(b) system with no public-authority use
+  and no public law body, for one, a missing status reads like "no" and
+  raises no review question, so `credit_scoring_deployer.json` still opens
+  with it unanswered.
+- The engine reads `deployer_public_authority` only for a profile that holds
+  the deployer role. For any other profile, the Art. 111(2) caveat on
+  systems intended to be used by public authorities turns on
+  `public_authority_use` alone. Where a profile in scope gives a status that
+  is not used (no deployer role, or a deployer with no high-risk route or
+  with a prohibited practice screened), the scope check now says so:
+  "deployer_public_authority is given, but it is not used".
+- For a profile without the deployer role that gave `true` and does not
+  assert public-authority use, the report no longer shows the text the
+  status triggered, as for a profile that leaves it unset:
+  - with a date before the Chapter III date, the caveat "A public-authority
+    deployer is asserted: confirm whether the system is intended to be used
+    by public authorities", with the conditional Art. 111(2)
+    public-authority deadline that follows it, in the transitional status,
+    the Art. 111(2) open question and the Art. 111(2) graph items, and,
+    with an Art. 50 trigger, in the `TRANSPARENCY.50` finding and the
+    Art. 50 item notes; the legacy notes on the other high-risk items lose
+    their clause on that deadline ("as the public-authority deployer
+    suggests");
+  - with no date, the whole Art. 111(2) paragraph of the transitional
+    status: the Chapter III date to compare with, the significant-change
+    condition and the "Literal reading, confirm with counsel" flag, or, for
+    an Annex I, Section B product without an Annex III area, the Section B
+    Art. 111(2) statement.
+
+  No profile's tier, disposition, obligations, finding rule ids or
+  severities, graph item ids, dates or review statuses, or number of open
+  questions changes (compared over 221,184 synthetic profiles).
+- A high-risk profile without the deployer role that gives the status, as
+  share links and drafts saved from the guided mode before this change do
+  (the guided mode required an answer), now opens only in the JSON editor:
+  the guided mode would drop the answer. There it classifies as described
+  above.
+
+### CI trust signals and dependency floors (#57)
+
+#### Changed
+
+- CI runs the Python suite on 3.13 and 3.14, gates statement coverage at 94 %
+  (the integer part of the measured total; `pytest-cov` joins the `dev`
+  extra), runs the suite at the lowest declared dependency versions
+  (`uv run --isolated --resolution lowest-direct`) and installs the built
+  wheel into a clean environment to run the CLI, expecting exit 1 for
+  `examples/social_scoring.json --strict`. Each job has a timeout, checkouts
+  do not persist credentials, and a new push cancels the superseded run of a
+  pull request.
+- The declared `pydantic` floor rises from `>=2.6` to `>=2.11`, the lowest
+  version the lowest-direct job passes with on Python 3.13; the `mcp` extra
+  floor (1.21.1) passes there too. The package classifiers add Python 3.14.
 
 ### Art. 111(2) change answer asked only where it is used (#43)
 
@@ -190,6 +294,24 @@ requests.
 - `tests/test_docs.py` finds the server's tools by their `@server.tool(...)`
   decorator with or without arguments; it matched only `@server.tool()`. A new
   test checks that it finds the same tools as the server registers.
+
+### eu-reg-mcp recommendation (#13)
+
+#### Changed
+
+- When `mcp.server.fastmcp` does not import, the MCP server's exit message
+  still gives the pip, uvx and clone commands, and now ends by recommending
+  eu-reg-mcp for Claude Code and Claude Desktop:
+  `uvx --python 3.13 --from 'eu-reg-mcp[lint,classify]' eu-reg-mcp`.
+- The README, `docs/surfaces.md` and `docs/mcp-configuration-guide.md`
+  recommend eu-reg-mcp ahead of this package's own server. The guide and
+  `docs/surfaces.md` also give the clone command
+  `uv run --extra mcp eu-ai-act-classifier-mcp`.
+- Every uvx command for eu-reg-mcp, and the exit message's uvx command for
+  this package's server, passes `--python 3.13`, as the README and the
+  guides already did for this package's server. eu-reg-mcp, the linter and
+  this classifier require Python 3.13 or later; without the flag, uvx fails
+  with `No solution found` when the default Python is older.
 
 ## 0.2.2 (2026-10-23)
 
