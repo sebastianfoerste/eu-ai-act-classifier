@@ -21,6 +21,18 @@ from .base import GateOutput
 
 _LATER_FROM = long_date(POINT_A_EXCEPTION_DATE)  # "2 December 2026"
 _SECTION_B_FLAG = section_b_kept_flag("Art. 5", "the prohibition")
+# Asked where the profile records synthetic content or deep fakes but declares neither
+# Art. 5(1)(ba) nor (bb): from 2 December 2026 a general generator can fall under them
+# through Art. 5(1a)(a)(ii) without generating such material being its purpose.
+LATER_SCREEN_QUESTION = (
+    f"Art. 5(1)(ba) and (bb) AIA (from {_LATER_FROM}): the profile records synthetic "
+    "content or deep fakes but declares neither point. Confirm whether the system generates "
+    "or manipulates the material these points describe. For placing on the market or "
+    "putting into service, Art. 5(1a)(a) asks whether that is its intended purpose or a "
+    "reasonably foreseeable and reproducible outcome without reasonable and adequate "
+    "safeguards; for use, Art. 5(1a)(b) asks whether the deployer uses it for that purpose. "
+    "If so, declare 5.1.ba or 5.1.bb."
+)
 
 
 def evaluate(profile) -> GateOutput:
@@ -50,6 +62,9 @@ def evaluate(profile) -> GateOutput:
                 tier=RiskTier.PROHIBITED,
             )
         )
+    declared_later = set(profile.prohibited_practices) & set(LATER_PROHIBITIONS)
+    if (profile.generates_synthetic_content or profile.generates_deepfakes) and not declared_later:
+        out.open_questions.append(LATER_SCREEN_QUESTION)
     if out.findings:
         out.tier_vote = RiskTier.PROHIBITED
         if section_b_product(profile):
