@@ -32,9 +32,13 @@ Changes since 0.2.2.
   for Art. 111(1) the scope text, the Art. 111(2) graph notes and the
   timeline carry "[noch zu verifizieren]" and `unverified_citations` lists it
   where the scope text or a graph note states the carve-out.
+  `tests/test_reread_pinpoints.py` checks this on a copy of the package with
+  the three citations set to `verified=False`.
 - The claim ledger has a VERIFIED row for each of the three, with the
-  Official Journal text, the pinpoint, the access date (11 November 2026),
-  the snapshot's digest and what was read. EUR-Lex itself could not be read
+  Official Journal text, the pinpoint, the access date (11 November 2026)
+  and what was read. Each row points to the ledger's list "Sources read on
+  11 November 2026", which gives each snapshot's file, request URL,
+  retrieval date and SHA-256 digest. EUR-Lex itself could not be read
   from the session (2 and 11 November 2026), so the snapshot is the source;
   the "Stand" date stays 18 October 2026 with a dated note. Before that
   reading this branch showed all three as unverified (PENDING); that state

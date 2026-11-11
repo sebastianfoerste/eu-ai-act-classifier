@@ -4,14 +4,18 @@ Art. 6(1c), Art. 2(13) and the Art. 111(1) carve-out with its two dates were sho
 unverified from #59 until they were read in the Official Journal texts pinned in pull
 request #40 (VERIFIED rows in docs/REGULATORY_CLAIM_LEDGER.md). These tests pin their exact
 text, unchanged by the reading, their verified status in every output, the ledger rows that
-record the reading, and the mechanism that flags them again if a citation is set back to
-unverified.
+record the reading, and that setting a citation back to unverified in citations.py flags it
+again in every text that states it.
 """
 
 from __future__ import annotations
 
 import json
+import os
 import re
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -170,6 +174,101 @@ def test_the_flag_comes_back_if_a_citation_is_set_back_to_unverified(
     )
     assert "Art. 111(1) AIA" in report.unverified_citations
     assert "Art. 111(1) AIA" not in _report().unverified_citations
+
+
+# Run in a fresh interpreter on a copy of the package whose citations.py sets the three
+# citations to verified=False. The carve-out and the timeline note are built when their
+# modules are imported, so only a fresh import shows what a reversed reading puts in them.
+REVERSED_PROBE = """
+import json
+import eu_ai_act_classifier
+from eu_ai_act_classifier import AnnexIII, Role, SystemProfile, classify
+from eu_ai_act_classifier.report import render_report
+
+legacy = classify(SystemProfile(
+    name="x",
+    roles=[Role.PROVIDER, Role.DEPLOYER],
+    annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
+    placing_on_market_date="2024-01-01",
+))
+section_a = classify(SystemProfile(
+    name="x",
+    roles=[Role.PROVIDER],
+    annex_i_safety_component=True,
+    annex_i_third_party_assessment=True,
+    annex_i_section="A",
+))
+print(json.dumps({
+    "package": eu_ai_act_classifier.__file__,
+    "scope": legacy.scope.transitional_status,
+    "graph_notes": [
+        item.application_date_note
+        for item in legacy.obligation_graph
+        if item.article == "Art. 111(2) AIA"
+    ],
+    "timeline": [t.note for t in legacy.timeline if "Art. 111(1)" in t.note],
+    "legacy_unverified": legacy.unverified_citations,
+    "legacy_rendered": render_report(legacy),
+    "default_unverified": classify(SystemProfile(name="x")).unverified_citations,
+    "findings": [[f.rule_id, f.citation_verified] for f in section_a.findings],
+    "section_a_unverified": section_a.unverified_citations,
+    "section_a_rendered": render_report(section_a),
+}))
+"""
+
+
+def test_setting_the_citations_back_to_unverified_flags_them_in_every_text(
+    tmp_path: Path,
+) -> None:
+    """Decision 1 is reversed by setting verified=False in citations.py and nothing else:
+    the inline flag then comes back in the scope text, the Art. 111(2) graph notes and the
+    timeline note, and the findings and unverified_citations show the three again."""
+
+    package = tmp_path / "eu_ai_act_classifier"
+    shutil.copytree(
+        ROOT / "src" / "eu_ai_act_classifier",
+        package,
+        ignore=shutil.ignore_patterns("__pycache__"),
+    )
+    citations = package / "citations.py"
+    source = citations.read_text(encoding="utf-8")
+    for citation in CITATIONS.values():
+        line = f'cite("{citation.ref}")'
+        assert source.count(line) == 1, line
+        source = source.replace(line, f'cite("{citation.ref}", verified=False)')
+    citations.write_text(source, encoding="utf-8")
+
+    result = subprocess.run(
+        [sys.executable, "-c", REVERSED_PROBE],
+        capture_output=True,
+        text=True,
+        cwd=tmp_path,
+        env={**os.environ, "PYTHONPATH": str(tmp_path)},
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    out = json.loads(result.stdout)
+
+    assert Path(out["package"]).parent == package
+    flagged = f"{ANNEX_X_TEXT} {FLAG}"
+    assert f"Art. 111(2) excludes {flagged}." in out["scope"]
+    assert len(out["graph_notes"]) == 2
+    for note in out["graph_notes"]:
+        assert f"other than {flagged}. " in note
+    assert len(out["timeline"]) == 1
+    assert out["timeline"][0].endswith(" " + TIMELINE_TEXT.replace("instead.", f"instead {FLAG}."))
+    assert out["legacy_unverified"] == ["Art. 111(1) AIA"]
+    assert f"{flagged}." in out["legacy_rendered"]
+    # The timeline is the same in every report, so it alone does not list Art. 111(1).
+    assert out["default_unverified"] == []
+    assert out["findings"] == [
+        ["HIGHRISK.6.1", True],
+        ["HIGHRISK.6.1c", False],
+        ["HIGHRISK.2.13", False],
+    ]
+    assert out["section_a_unverified"] == ["Art. 2(13) AIA", "Art. 6(1c) AIA"]
+    assert f"Art. 6(1c) AIA {FLAG}: Annex I route" in out["section_a_rendered"]
+    assert f"Art. 2(13) AIA {FLAG}: Annex I, Section A" in out["section_a_rendered"]
 
 
 def test_the_annex_i_guidance_example_carries_the_verified_art_6_1c_finding() -> None:
