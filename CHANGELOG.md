@@ -13,19 +13,32 @@ Changes since 0.2.2.
 
 - Art. 6(1c) and Art. 2(13) AIA, which #30 added to the Art. 6(1) finding,
   were shown as verified although no primary source was recorded for them.
-  Each is now an `info` finding of its own, `HIGHRISK.6.1c` on every Annex I
-  route and `HIGHRISK.2.13` for Section A, with `citation_verified` false;
-  both are listed in `unverified_citations` and flagged
-  "[noch zu verifizieren]" in the text report. Their wording is unchanged.
+  They were read on 11 November 2026 in the Official Journal text of
+  Regulation (EU) 2026/1744 (Art. 1, points (8) and (3)), in the snapshot
+  pinned with its SHA-256 digest in #40, and the claim ledger now records
+  that source. Each is now an `info` finding of its own, `HIGHRISK.6.1c` on
+  every Annex I route and `HIGHRISK.2.13` for Section A, with
+  `citation_verified` true. Their wording is unchanged; the `HIGHRISK.6.1`
+  detail no longer states them, so an Annex I profile has one more finding
+  (two for Section A).
 - The Art. 111(1) carve-out for Annex X components and its two dates
   (placed on the market or put into service before 2 August 2027, brought
-  into compliance by 31 December 2030) carry "[noch zu verifizieren]" in the
-  Art. 111(2) scope text, the Art. 111(2) graph notes and the binding
-  timeline, and `unverified_citations` lists Art. 111(1) AIA where the scope
-  text or a graph note states it. The dates are unchanged.
-- The claim ledger has a PENDING row for each of the three: the text as
-  shown, its source (#30), and what to check once EUR-Lex can be read
-  (it could not be on 2 November 2026).
+  into compliance by 31 December 2030) had no recorded source either. They
+  were read on 11 November 2026 in the Official Journal text of Regulation
+  (EU) 2024/1689; Regulation (EU) 2026/1744 amends Art. 111 only in
+  paragraphs 2 and 4. The text and the dates are unchanged. Should one of
+  the three citations be set back to `verified=False` in `citations.py`, the
+  output flags it again: its finding's `citation_verified` turns false, and
+  for Art. 111(1) the scope text, the Art. 111(2) graph notes and the
+  timeline carry "[noch zu verifizieren]" and `unverified_citations` lists it
+  where the scope text or a graph note states the carve-out.
+- The claim ledger has a VERIFIED row for each of the three, with the
+  Official Journal text, the pinpoint, the access date (11 November 2026),
+  the snapshot's digest and what was read. EUR-Lex itself could not be read
+  from the session (2 and 11 November 2026), so the snapshot is the source;
+  the "Stand" date stays 18 October 2026 with a dated note. Before that
+  reading this branch showed all three as unverified (PENDING); that state
+  was never released.
 - Guided intake, playground field guide and the system-profile schema
   (`annex_i_section` and `AnnexISection` descriptions): the Annex I section
   text no longer states the contested literal reading of Art. 2(2) as
@@ -42,6 +55,22 @@ Changes since 0.2.2.
   order mark in the browser, `\x1c` to `\x1f` and `\x85` in Python), and
   Python raised `ValueError` on `"\x1c5"` instead of reporting the answer as
   missing. The generated fixtures cover these inputs.
+
+#### Decisions
+
+Taken in a Claude Code session on the owner's instruction of 10 November
+2026 to answer the open decisions, and applied on 11 November 2026; the
+owner has not reviewed the detail. The claim ledger records them too.
+
+- Art. 6(1c), Art. 2(13) and Art. 111(1) are verified on the Official
+  Journal snapshots pinned in #40, read on 11 November 2026.
+- While Art. 111(1) is unverified, the binding timeline flags it in its note
+  but does not add it to `unverified_citations`, which would send every
+  report's source status to review. With the citation verified, neither
+  applies.
+- `HIGHRISK.6.1c` and `HIGHRISK.2.13` stay findings of their own.
+- The ledger's "Stand" date stays 18 October 2026, with a dated note for
+  the reading of 11 November 2026.
 
 ### Art. 49(3) public-authority status asked only of deployers (#54)
 

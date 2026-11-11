@@ -191,10 +191,11 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         transparency_obligations=transparency_obligations,
     )
 
-    # The Art. 111(1) carve-out is stated in prose, not as a finding or an obligation.
+    # The Art. 111(1) carve-out is stated in prose, not as a finding or an obligation, so
+    # while its citation is unverified the engine lists it wherever the report states it.
     stated = [scope_assessment.transitional_status]
     stated += [item.application_date_note or "" for item in obligation_graph]
-    if any(ANNEX_X_CARVE_OUT in text for text in stated):
+    if not ART_111_1.verified and any(ANNEX_X_CARVE_OUT in text for text in stated):
         unverified = sorted({*unverified, ART_111_1.ref})
 
     return ClassificationReport(

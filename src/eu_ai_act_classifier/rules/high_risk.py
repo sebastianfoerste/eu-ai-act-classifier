@@ -17,15 +17,15 @@ from ..models import AnnexIII, AnnexISection, Finding, RiskTier, Severity
 from ..transitions import annex_i_route, derogation_asserted, section_b_product
 from .base import GateOutput
 
-# Art. 6(1c) AIA, inserted by Regulation (EU) 2026/1744, Art. 1, point (8). Not re-read on
-# EUR-Lex, so it is its own finding with an unverified citation (PENDING ledger row).
+# Art. 6(1c) AIA, inserted by Regulation (EU) 2026/1744, Art. 1, point (8). Its own finding,
+# whose citation_verified follows ART_6_1C (VERIFIED ledger row, read 11 November 2026).
 _ART_6_1C = (
     "A third-party conformity assessment required solely for risks other than risks to "
     "health and safety, such as radio spectrum or electromagnetic interference, does not "
     "meet Art. 6(1)(b) (Art. 6(1c) AIA)."
 )
 # Art. 2(13), added by Regulation (EU) 2026/1744, Art. 1, point (3), lets delegated acts
-# limit some duties for Section A. Not re-read on EUR-Lex either (PENDING ledger row).
+# limit some duties for Section A. Its own finding too (VERIFIED ledger row).
 _ART_2_13 = (
     "Delegated acts under Art. 2(13) AIA, due by 2 August 2027, may limit Arts. 9 to 15 and "
     "17 to 25 where the Section A legislation gives an equivalent or higher level of "
@@ -48,9 +48,9 @@ _ANNEX_I_SECTION_NOTE: dict[AnnexISection | None, str] = {
 }
 
 
-def _unverified_note(rule_id: str, citation: Citation, title: str, detail: str) -> Finding:
-    """A statement on the Annex I route whose pinpoint is not verified: its own finding, so
-    the citation carries the flag in every output."""
+def _pinpoint_note(rule_id: str, citation: Citation, title: str, detail: str) -> Finding:
+    """A statement on the Annex I route with a pinpoint of its own: its own finding, so the
+    citation's verification status shows in every output."""
 
     return Finding(
         rule_id=rule_id,
@@ -86,13 +86,13 @@ def evaluate(profile) -> GateOutput:
             )
         )
         out.findings.append(
-            _unverified_note(
+            _pinpoint_note(
                 "HIGHRISK.6.1c", ART_6_1C, "Annex I route: assessment for other risks", _ART_6_1C
             )
         )
         if profile.annex_i_section is AnnexISection.SECTION_A:
             out.findings.append(
-                _unverified_note(
+                _pinpoint_note(
                     "HIGHRISK.2.13", ART_2_13, "Annex I, Section A: delegated acts", _ART_2_13
                 )
             )

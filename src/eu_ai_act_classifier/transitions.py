@@ -15,7 +15,7 @@ from .citations import (
     GENERAL_APPLICATION_DATE,
     POINT_C_ANNEX_I,
     POINT_C_ANNEX_III,
-    UNVERIFIED_FLAG,
+    flag_unless_verified,
     long_date,
 )
 from .models import AnnexISection, Role, SystemProfile
@@ -27,13 +27,14 @@ PUBLIC_AUTHORITY_DUTY = (
     "in any case take the necessary steps to comply with the requirements and obligations "
     f"laid down in this Regulation by {DEADLINE_2030}"
 )
-# Art. 111(1) AIA, the carve-out Art. 111(2) excludes. Its two dates were not re-read on
-# EUR-Lex (PENDING row in docs/REGULATORY_CLAIM_LEDGER.md), so the text carries the flag
-# wherever it is stated, and the engine lists ART_111_1 among the unverified citations.
+# Art. 111(1) AIA, the carve-out Art. 111(2) excludes. Read with its two dates in the
+# Official Journal text on 11 November 2026 (VERIFIED row in docs/REGULATORY_CLAIM_LEDGER.md).
+# Were ART_111_1 unverified, the text would carry the flag wherever it is stated and the
+# engine would list ART_111_1 among the unverified citations.
 ANNEX_X_CARVE_OUT = (
     "components of the Annex X large-scale IT systems placed on the market or put into "
     "service before 2 August 2027, which are brought into compliance by 31 December 2030 "
-    f"({ART_111_1.ref}) {UNVERIFIED_FLAG}"
+    f"({ART_111_1.ref}){flag_unless_verified(ART_111_1)}"
 )
 
 

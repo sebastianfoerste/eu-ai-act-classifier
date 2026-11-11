@@ -61,12 +61,13 @@ machinery is a Section B product. An unset section is treated as Section A
 (the full Chapter III set), and the Art. 6(1) finding says that a Section B
 product, machinery included, gets only the Art. 2(2) provisions.
 
-Two statements on the Art. 6(1) route are `info` findings of their own, with
-citations flagged `noch zu verifizieren`: Art. 6(1c) (a third-party
-conformity assessment required solely for risks other than risks to health
-and safety does not meet Art. 6(1)(b)) on every Annex I route, and, for
-Section A, the Art. 2(13) note on delegated acts. They were not read on
-EUR-Lex; the claim ledger records both as PENDING.
+Two statements on the Art. 6(1) route are `info` findings of their own:
+`HIGHRISK.6.1c`, Art. 6(1c) (a third-party conformity assessment required
+solely for risks other than risks to health and safety does not meet
+Art. 6(1)(b)), on every Annex I route, and, for Section A, `HIGHRISK.2.13`,
+the Art. 2(13) note on delegated acts. Both citations were read in the
+Official Journal text of Regulation (EU) 2026/1744 on 11 November 2026 and
+are verified; the claim ledger records the source.
 
 On its wording, Art. 2(2) covers any AI system
 "classified as high-risk AI systems in accordance with Article 6(1)" for a
@@ -265,8 +266,9 @@ the point (c) date. For a system whose earliest date falls on or after
 2 August 2026 but before the point (c) date, it says that on the general-date
 reading the system is not a legacy system and the condition does not apply.
 An undated check states both. The item's note also
-states the Art. 111(1) carve-out for the Annex X large-scale IT systems,
-flagged `noch zu verifizieren` with its dates (PENDING in the claim ledger), and
+states the Art. 111(1) carve-out for the Annex X large-scale IT systems
+with its dates (read in the Official Journal text on 11 November 2026; VERIFIED
+in the claim ledger), and
 that the first unit of the type and model decides (recital (39) of
 Regulation (EU) 2026/1744).
 
@@ -283,7 +285,7 @@ Art. 111(2) item, since none of its Chapter III duties apply.
 The scope gate's transitional status states the same comparison in words:
 which dates were given, the Chapter III date and its point, whether the system
 predates it, the significant-change position, for a legacy system the
-flagged Art. 111(1) carve-out, and the 2030 deadline for public-authority use. Where
+Art. 111(1) carve-out, and the 2030 deadline for public-authority use. Where
 the profile gives no date but `public_authority_use` or, for a profile that
 holds the deployer role, `deployer_public_authority`, it names the date to
 compare with; where it
@@ -387,8 +389,11 @@ Citations are pinpoint, for example `Art. 6(2) AIA` and `Annex III(5)(b) AIA`.
 
 Unconfirmed pinpoints are flagged `noch zu verifizieren` and carried in
 `report.unverified_citations`. Nothing is invented. A pinpoint stated in prose,
-such as the Art. 111(1) carve-out, carries the flag in the text; the binding
-timeline, the same in every report, flags it in its note only.
+such as the Art. 111(1) carve-out, carries the flag in the text while its
+citation is unverified; the binding timeline, the same in every report, flags
+it in its note only and does not add it to `report.unverified_citations`. A
+pinpoint becomes verified only with a claim-ledger row that names the source,
+the pinpoint and the access date.
 
 ## Boundaries
 
