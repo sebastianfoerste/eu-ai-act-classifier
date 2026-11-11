@@ -17,14 +17,16 @@ Changes since 0.2.2.
   file's request URL, retrieval date and SHA-256 in `sources/manifest.json`.
   `tests/test_sources.py` fails if a file no longer matches its digest. The
   classifier does not read these files.
-- Each snapshot's text was compared with EUR-Lex on 10 November 2026 and is
-  identical; the two renditions differ only in the `<head>`. The manifest
-  records the EUR-Lex URL, the date and a SHA-256 of the body text, which the
-  test recomputes offline. `scripts/compare_sources.py` repeats the
-  comparison on request: it exits 1 when a text differs and 2 when a source
-  could not be compared, for example when EUR-Lex answers with a bot
-  challenge. The byte digests of the Publications Office responses have not
-  been recomputed against a fresh download (see `sources/README.md`).
+- Each snapshot was compared with its EUR-Lex rendition on 10 November 2026.
+  The renditions differ in presentation only (meta tags, scripts, link and
+  image targets, a table class); the body text and the element structure are
+  identical. The manifest records the EUR-Lex URL, the date, the digest of
+  the EUR-Lex response and SHA-256 digests of the text and the structure,
+  which the test recomputes offline. `scripts/compare_sources.py` repeats the
+  comparison on request: it exits 1 when a text or structure differs and 2
+  when a source could not be compared, for example when EUR-Lex answers with
+  a bot challenge. The byte digests of the Publications Office responses have
+  not been recomputed against a fresh download (see `sources/README.md`).
 
 ### Art. 49(3) public-authority status asked only of deployers (#54)
 

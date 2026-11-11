@@ -24,13 +24,21 @@ Two checks back each file, and `manifest.json` records both.
 
 - **The text, confirmed against EUR-Lex on 10 November 2026.** Each snapshot
   was compared with the EUR-Lex rendition of the same document
-  (`eurlex_check.url`). The two differ only in the `<head>`: EUR-Lex adds meta
-  tags and a different stylesheet path. With the `<head>`, scripts, styles and
-  markup removed, character references resolved and whitespace collapsed, the
-  texts are identical, character for character. `eurlex_check.text_sha256` is
-  the SHA-256 of that text, and `tests/test_sources.py` recomputes it from the
-  committed file. So the claim ledger may cite a snapshot and pinpoint as the
-  checked source.
+  (`eurlex_check.url`). The renditions differ in presentation only: EUR-Lex
+  adds meta tags and stylesheet links in the `<head>`, appends scripts to the
+  `<body>`, rewrites link and image targets and adds a class to some tables.
+  No text node differs. Two forms of each document are identical:
+  - the body text, with the `<head>`, scripts, styles and markup removed,
+    character references resolved and whitespace collapsed
+    (`text_sha256`);
+  - the structure, the body's element names and text nodes in order without
+    attributes, so a lost superscript or a merged paragraph would show
+    (`structure_sha256`).
+
+  `eurlex_bytes` and `eurlex_sha256` identify the EUR-Lex response that was
+  compared, so anyone holding that download can check the record.
+  `tests/test_sources.py` recomputes both digests from the committed file. So
+  the claim ledger may cite a snapshot and pinpoint as the checked source.
 - **The bytes, as retrieved.** `sha256` is the digest of the Publications
   Office response, recorded at retrieval (14 October 2026; Decision (EU)
   2026/2274 on 21 October 2026). It has not been recomputed against a fresh
@@ -45,11 +53,14 @@ uv run python scripts/compare_sources.py            # fetches each eurlex_check.
 uv run python scripts/compare_sources.py --offline  # only recomputes the recorded digests
 ```
 
-It exits 0 when every text is identical, 1 when a text differs ("content
-changed, review required") and 2 when a source could not be compared. EUR-Lex
-sometimes answers a script with a bot challenge instead of the document; that
-is reported as unverified and never counts as a match. The script never writes
-to this folder and is not part of CI.
+Online, it exits 0 when every text and structure is identical, 1 when one
+differs ("text changed, review required" or "structure changed, review
+required") and 2 when a source could not be compared. A bot challenge, a
+network failure or an answer that is not a complete document is reported as
+unverified and never counts as a match; EUR-Lex often answers scripts with a
+challenge. `--offline` compares nothing with EUR-Lex: it reports "recorded"
+when a snapshot still has its digests and exits 1 when one does not. The
+script never writes to this folder and is not part of CI.
 
 The `relied_on_for` lists name the provisions that the rules in pull request
 #34 rest on; the classifier does not read these files.

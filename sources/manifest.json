@@ -30,9 +30,13 @@
       "eurlex_check": {
         "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202601744",
         "checked_on": "2026-11-10",
-        "result": "body text identical",
+        "result": "text and structure identical",
+        "eurlex_bytes": 352970,
+        "eurlex_sha256": "713ffe254c3e949360cf3d2d0cc9add4cdb0db07f902fee31977185d5de1e96f",
         "text_chars": 147499,
-        "text_sha256": "81e65a1e811f3d929dc27e1a931aababdc5b0c1e46903abfd3bf6c05a0229a0b"
+        "text_sha256": "81e65a1e811f3d929dc27e1a931aababdc5b0c1e46903abfd3bf6c05a0229a0b",
+        "structure_tokens": 6517,
+        "structure_sha256": "f6a1b404700edf72d73df81f11b6c38e72bb24154b83c061fd46d704f1eb91e5"
       }
     },
     {
@@ -57,9 +61,13 @@
       "eurlex_check": {
         "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401689",
         "checked_on": "2026-11-10",
-        "result": "body text identical",
+        "result": "text and structure identical",
+        "eurlex_bytes": 1263936,
+        "eurlex_sha256": "242b88140ecf85d87fe1f64f8acea82e21b0008e5025825a62114da637d403bb",
         "text_chars": 582460,
-        "text_sha256": "b3e2ee3c65211d63cc7940496a8f698a3f97b4b11038453806fc9ce68d60c56c"
+        "text_sha256": "b3e2ee3c65211d63cc7940496a8f698a3f97b4b11038453806fc9ce68d60c56c",
+        "structure_tokens": 23947,
+        "structure_sha256": "a64a0d76e6ab02b1cf6cc05b6f692e0086ff3e6564d0045768cfc119f2cf252a"
       }
     },
     {
@@ -83,9 +91,13 @@
       "eurlex_check": {
         "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02024R1689-20260727",
         "checked_on": "2026-11-10",
-        "result": "body text identical",
+        "result": "text and structure identical",
+        "eurlex_bytes": 853356,
+        "eurlex_sha256": "a29c0b5de74c3d6e46fa06ce6d6c7813baac379df27fb7889b27472d8451321b",
         "text_chars": 390475,
-        "text_sha256": "59f493076562148763af14e1fb879b511acafd208b626a744820f13c1d934651"
+        "text_sha256": "59f493076562148763af14e1fb879b511acafd208b626a744820f13c1d934651",
+        "structure_tokens": 17130,
+        "structure_sha256": "69cccfaf9ea6c7c1d3b0065770e99d65a9b876aee1e76c8d635d1a80ef2e340c"
       }
     },
     {
@@ -110,9 +122,13 @@
       "eurlex_check": {
         "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32011L0093",
         "checked_on": "2026-11-10",
-        "result": "body text identical",
+        "result": "text and structure identical",
+        "eurlex_bytes": 152077,
+        "eurlex_sha256": "5203d13c385b1a007254089bd3abae6e13f4470e357934e411c94fa9040edef0",
         "text_chars": 65003,
-        "text_sha256": "c30c7ea808c9ffbfee2f451f3c774ff8216e0cad4cf8bfbd2d562d416c25f36f"
+        "text_sha256": "c30c7ea808c9ffbfee2f451f3c774ff8216e0cad4cf8bfbd2d562d416c25f36f",
+        "structure_tokens": 3271,
+        "structure_sha256": "319da414f4f9627df40ed99e60de63269cd96934d543fd9ff6f9eaef0ca51257"
       }
     },
     {
@@ -137,11 +153,15 @@
       "eurlex_check": {
         "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202602274",
         "checked_on": "2026-11-10",
-        "result": "body text identical",
+        "result": "text and structure identical",
+        "eurlex_bytes": 15169,
+        "eurlex_sha256": "7fe12213a99a0f146c326f6af41b29a566e86403f683ef6c5df02bb71579e64b",
         "text_chars": 4622,
-        "text_sha256": "6387ef7385322670f652b526b3bac2f472d389b618820d59bbd9bcb8ecd2607b"
+        "text_sha256": "6387ef7385322670f652b526b3bac2f472d389b618820d59bbd9bcb8ecd2607b",
+        "structure_tokens": 415,
+        "structure_sha256": "07e4b5e5900a72cddfa8a679c8e5754e980ee584b7dacd0956ba8e37d4dc38f8"
       }
     }
   ],
-  "eurlex_check": "Each snapshot was compared with the EUR-Lex rendition at eurlex_check.url on the date given: with the <head>, scripts, styles and markup removed, character references resolved and whitespace collapsed (scripts/compare_sources.py), the two texts are identical. text_sha256 is the SHA-256 of that text in UTF-8. The Publications Office response itself was not fetched again, so sha256 is still the digest recorded at retrieval."
+  "eurlex_check": "Each snapshot was compared with the EUR-Lex rendition at eurlex_check.url on the date given (scripts/compare_sources.py). The renditions differ in presentation only: EUR-Lex adds meta tags and stylesheet links in the <head>, appends scripts to the <body>, rewrites link and image targets and adds a class to some tables. Two forms of each are identical: the body text (head, scripts, styles and markup removed, character references resolved, whitespace collapsed; text_sha256) and the structure (the body's element names and text nodes in order, without attributes; structure_sha256). eurlex_bytes and eurlex_sha256 identify the EUR-Lex response that was compared. The Publications Office response itself was not fetched again, so sha256 is still the digest recorded at retrieval."
 }
