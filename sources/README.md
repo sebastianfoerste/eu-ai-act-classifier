@@ -27,7 +27,8 @@ Two checks back each file, and `manifest.json` records both.
   (`eurlex_check.url`). The renditions differ in presentation only: EUR-Lex
   adds meta tags and stylesheet links in the `<head>`, appends scripts to the
   `<body>`, rewrites link and image targets and adds a class to some tables.
-  No text node differs. Two forms of each document are identical:
+  Once whitespace is collapsed, no text differs. Two forms of each document
+  are identical:
   - the body text, with the `<head>`, scripts, styles and markup removed,
     character references resolved and whitespace collapsed
     (`text_sha256`);
@@ -39,6 +40,10 @@ Two checks back each file, and `manifest.json` records both.
   compared, so anyone holding that download can check the record.
   `tests/test_sources.py` recomputes both digests from the committed file. So
   the claim ledger may cite a snapshot and pinpoint as the checked source.
+  Both sides are renditions the Publications Office serves: the check shows
+  that the snapshot carries the text EUR-Lex serves today, not that it was
+  compared with the authentic edition of the Official Journal, the signed
+  PDF.
 - **The bytes, as retrieved.** `sha256` is the digest of the Publications
   Office response, recorded at retrieval (14 October 2026; Decision (EU)
   2026/2274 on 21 October 2026). It has not been recomputed against a fresh

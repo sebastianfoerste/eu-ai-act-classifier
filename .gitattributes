@@ -1,3 +1,6 @@
 # Official Journal snapshots are records, not code: keep them out of the
 # language statistics and collapse them in diffs.
-sources/**/*.xhtml linguist-vendored linguist-generated
+# -text: the files are byte-exact and their SHA-256 is tested, so no checkout may convert
+# line endings (core.autocrlf would otherwise rewrite LF to CRLF on Windows).
+sources/**/*.xhtml -text linguist-vendored linguist-generated
+sources/manifest.json -text
