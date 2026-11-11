@@ -27,7 +27,7 @@ EXPECTATIONS: dict[str, tuple[RiskTier, Disposition]] = {
     "ambiguous_use_case.json": (RiskTier.HIGH, Disposition.REQUIRES_REVIEW),
     "employment_derogation.json": (RiskTier.HIGH, Disposition.REQUIRES_REVIEW),
     "support_chatbot.json": (RiskTier.LIMITED, Disposition.DETERMINED),
-    "deepfake_generator.json": (RiskTier.LIMITED, Disposition.DETERMINED),
+    "deepfake_generator.json": (RiskTier.LIMITED, Disposition.REQUIRES_REVIEW),
     "spam_filter.json": (RiskTier.MINIMAL, Disposition.DETERMINED),
     "foundation_model_systemic.json": (RiskTier.MINIMAL, Disposition.DETERMINED),
     "foundation_model_unknown_compute.json": (RiskTier.MINIMAL, Disposition.REQUIRES_REVIEW),

@@ -129,8 +129,9 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             (
                 "deployer_public_authority",
                 "The deployer is, or acts on behalf of, a public authority or Union institution, "
-                "body, office or agency: Art. 49(3) AIA registration of use. Unset: inferred for "
-                "review from public-authority use or Annex III points 5(a), 6 and 7.",
+                "body, office or agency: Art. 49(3) AIA registration of use. Read only for the "
+                "deployer role. Unset: inferred for review from public-authority use or Annex III "
+                "points 5(a), 6 and 7.",
             ),
             ("deployer_public_law_body", "Art. 27 AIA: fundamental rights impact assessment."),
             (
@@ -333,6 +334,18 @@ def build_intake_fixtures() -> dict:
         for answer in ("yes", "no", "unknown"):
             cases[f"edge+change:{label}:{answer}"] = {
                 "answers": {**legacy, "significant_change": answer}
+            }
+    # The Art. 49(3) status is asked only of the profile's own deployer role.
+    for label, roles in {
+        "provider": ["provider"],
+        "deployer": ["deployer"],
+        "provider-deployer": ["provider", "deployer"],
+        "importer": ["importer"],
+    }.items():
+        held = profile_to_answers({"name": "x", "roles": roles, "annex_iii_area": "III.5.b"})
+        for answer in ("yes", "no", "unknown"):
+            cases[f"edge+public-authority:{label}:{answer}"] = {
+                "answers": {**held, "deployer_public_authority": answer}
             }
     for flops in ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", ""):
         cases[f"edge+training-flops:{flops!r}"] = {"answers": {**model, "training_flops": flops}}

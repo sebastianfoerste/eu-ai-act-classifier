@@ -20,7 +20,7 @@ def _report(filename: str):
         ("social_scoring.json", RiskTier.PROHIBITED, Disposition.DETERMINED),
         ("credit_scoring.json", RiskTier.HIGH, Disposition.DETERMINED),
         ("foundation_model_systemic.json", RiskTier.MINIMAL, Disposition.DETERMINED),
-        ("deepfake_generator.json", RiskTier.LIMITED, Disposition.DETERMINED),
+        ("deepfake_generator.json", RiskTier.LIMITED, Disposition.REQUIRES_REVIEW),
         ("ambiguous_use_case.json", RiskTier.HIGH, Disposition.REQUIRES_REVIEW),
     ],
 )

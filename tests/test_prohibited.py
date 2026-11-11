@@ -110,3 +110,27 @@ def test_advisory_note_says_the_guidelines_predate_the_new_bans() -> None:
         ProhibitedPractice.CHILD_SEXUAL_ABUSE_MATERIAL
     )
     assert "predates" not in detail(ProhibitedPractice.SOCIAL_SCORING)
+
+
+# Interim screen for Art. 5(1)(ba) and (bb) AIA: a generator that declares neither point is asked,
+# not cleared, because Art. 5(1a)(a)(ii) can reach a general generator from 2 December 2026.
+def test_generator_without_later_codes_is_asked_about_points_ba_and_bb() -> None:
+    from eu_ai_act_classifier.rules.prohibited import LATER_SCREEN_QUESTION
+
+    for flags in ({"generates_synthetic_content": True}, {"generates_deepfakes": True}):
+        report = classify(SystemProfile(name="x", **flags))
+        assert LATER_SCREEN_QUESTION in report.open_questions
+        assert report.disposition is Disposition.REQUIRES_REVIEW
+        assert report.risk_tier is not RiskTier.PROHIBITED
+
+
+def test_screen_is_not_asked_when_a_later_point_is_declared_or_nothing_is_generated() -> None:
+    from eu_ai_act_classifier.rules.prohibited import LATER_SCREEN_QUESTION
+
+    declared = SystemProfile(
+        name="x",
+        generates_synthetic_content=True,
+        prohibited_practices=[ProhibitedPractice.NON_CONSENSUAL_INTIMATE_IMAGERY],
+    )
+    assert LATER_SCREEN_QUESTION not in classify(declared).open_questions
+    assert LATER_SCREEN_QUESTION not in classify(SystemProfile(name="x")).open_questions
