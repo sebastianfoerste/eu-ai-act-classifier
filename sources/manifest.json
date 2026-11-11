@@ -26,7 +26,14 @@
         "Art. 1(41): Annex I Section A point 1 deleted, Section B point 21 added",
         "Art. 4: entry into force on the third day following publication",
         "Recitals 10 to 13, 38, 40 and 42"
-      ]
+      ],
+      "eurlex_check": {
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202601744",
+        "checked_on": "2026-11-10",
+        "result": "body text identical",
+        "text_chars": 147499,
+        "text_sha256": "81e65a1e811f3d929dc27e1a931aababdc5b0c1e46903abfd3bf6c05a0229a0b"
+      }
     },
     {
       "source_id": "oj-reg-2024-1689",
@@ -46,7 +53,14 @@
         "Art. 2 (scope), Art. 5, Art. 6 and Annex I in their original wording",
         "Art. 111(3): GPAI models placed on the market before 2 August 2025 comply by 2 August 2027 (not amended by Regulation (EU) 2026/1744)",
         "Art. 113, third paragraph, point (b): Chapter V applies from 2 August 2025 (not amended)"
-      ]
+      ],
+      "eurlex_check": {
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401689",
+        "checked_on": "2026-11-10",
+        "result": "body text identical",
+        "text_chars": 582460,
+        "text_sha256": "b3e2ee3c65211d63cc7940496a8f698a3f97b4b11038453806fc9ce68d60c56c"
+      }
     },
     {
       "source_id": "consolidated-ai-act-2026-07-27",
@@ -65,7 +79,14 @@
       "relied_on_for": [
         "Cross-check of Art. 2(2), Art. 5(1)(ba), (bb), (1a), (1b), Art. 6(1a) to (1c), Art. 50(2), Art. 60a, Art. 111, Art. 113 and Annex I as amended"
       ],
-      "notes": "A query of the Publications Office SPARQL endpoint on 2026-10-14 returned only 02024R1689-20240712 and 02024R1689-20260727 as consolidated versions, and only 32026R1744 as an act amending 32024R1689."
+      "notes": "A query of the Publications Office SPARQL endpoint on 2026-10-14 returned only 02024R1689-20240712 and 02024R1689-20260727 as consolidated versions, and only 32026R1744 as an act amending 32024R1689.",
+      "eurlex_check": {
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02024R1689-20260727",
+        "checked_on": "2026-11-10",
+        "result": "body text identical",
+        "text_chars": 390475,
+        "text_sha256": "59f493076562148763af14e1fb879b511acafd208b626a744820f13c1d934651"
+      }
     },
     {
       "source_id": "oj-dir-2011-93",
@@ -85,7 +106,14 @@
         "Art. 2, points (c) and (e): the material and performance referred to in Art. 5(1), first subparagraph, point (bb) AIA",
         "Art. 5(1): conduct punishable when committed 'without right'"
       ],
-      "notes": "A query of the Publications Office SPARQL endpoint on 2026-10-14 found no act amending or repealing 32011L0093."
+      "notes": "A query of the Publications Office SPARQL endpoint on 2026-10-14 found no act amending or repealing 32011L0093.",
+      "eurlex_check": {
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32011L0093",
+        "checked_on": "2026-11-10",
+        "result": "body text identical",
+        "text_chars": 65003,
+        "text_sha256": "c30c7ea808c9ffbfee2f451f3c774ff8216e0cad4cf8bfbd2d562d416c25f36f"
+      }
     },
     {
       "source_id": "oj-dec-impl-2026-2274",
@@ -105,7 +133,15 @@
         "Annex point 1: Harmonised standard EN 18286:2026 (Artificial intelligence – Quality management system for EU AI Act regulatory purposes)",
         "Art. 1 and Recitals 1 to 6: Presumption of conformity under Art. 40(1) AIA for Art. 17 QMS requirements",
         "Standardisation request C(2025) 3871 Annex I point 9"
-      ]
+      ],
+      "eurlex_check": {
+        "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202602274",
+        "checked_on": "2026-11-10",
+        "result": "body text identical",
+        "text_chars": 4622,
+        "text_sha256": "6387ef7385322670f652b526b3bac2f472d389b618820d59bbd9bcb8ecd2607b"
+      }
     }
-  ]
+  ],
+  "eurlex_check": "Each snapshot was compared with the EUR-Lex rendition at eurlex_check.url on the date given: with the <head>, scripts, styles and markup removed, character references resolved and whitespace collapsed (scripts/compare_sources.py), the two texts are identical. text_sha256 is the SHA-256 of that text in UTF-8. The Publications Office response itself was not fetched again, so sha256 is still the digest recorded at retrieval."
 }

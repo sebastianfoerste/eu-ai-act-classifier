@@ -16,8 +16,15 @@ Changes since 0.2.2.
   Directive 2011/93/EU and Implementing Decision (EU) 2026/2274, with each
   file's request URL, retrieval date and SHA-256 in `sources/manifest.json`.
   `tests/test_sources.py` fails if a file no longer matches its digest. The
-  classifier does not read these files yet, and their digests still need a
-  fresh download to confirm them (see `sources/README.md`).
+  classifier does not read these files.
+- Each snapshot's text was compared with EUR-Lex on 10 November 2026 and is
+  identical; the two renditions differ only in the `<head>`. The manifest
+  records the EUR-Lex URL, the date and a SHA-256 of the body text, which the
+  test recomputes offline. `scripts/compare_sources.py` repeats the
+  comparison on request: it exits 1 when a text differs and 2 when a source
+  could not be compared, for example when EUR-Lex answers with a bot
+  challenge. The byte digests of the Publications Office responses have not
+  been recomputed against a fresh download (see `sources/README.md`).
 
 ### Art. 49(3) public-authority status asked only of deployers (#54)
 

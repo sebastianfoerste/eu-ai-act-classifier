@@ -20,15 +20,39 @@ says of itself that it has no legal effect.
 
 ## Authenticity
 
-The digests in `manifest.json` were recorded when the files were retrieved
-(14 October 2026; Decision (EU) 2026/2274 on 21 October 2026). They have not
-been recomputed against a fresh download since: the environment that added this
-folder could not reach publications.europa.eu. Until someone reruns the
-retrieval command for each `request_url` and gets the same SHA-256, treat the
-files as unconfirmed copies, and do not cite them as the checked source in the
-claim ledger. The `relied_on_for` lists name the provisions that the rules in
-pull request #34 rest on; the classifier on this branch does not read these
-files.
+Two checks back each file, and `manifest.json` records both.
+
+- **The text, confirmed against EUR-Lex on 10 November 2026.** Each snapshot
+  was compared with the EUR-Lex rendition of the same document
+  (`eurlex_check.url`). The two differ only in the `<head>`: EUR-Lex adds meta
+  tags and a different stylesheet path. With the `<head>`, scripts, styles and
+  markup removed, character references resolved and whitespace collapsed, the
+  texts are identical, character for character. `eurlex_check.text_sha256` is
+  the SHA-256 of that text, and `tests/test_sources.py` recomputes it from the
+  committed file. So the claim ledger may cite a snapshot and pinpoint as the
+  checked source.
+- **The bytes, as retrieved.** `sha256` is the digest of the Publications
+  Office response, recorded at retrieval (14 October 2026; Decision (EU)
+  2026/2274 on 21 October 2026). It has not been recomputed against a fresh
+  download: publications.europa.eu was not reachable when the text was
+  confirmed. Rerunning the retrieval command for a `request_url` and getting
+  the same SHA-256 would confirm the bytes too.
+
+To repeat the text comparison:
+
+```bash
+uv run python scripts/compare_sources.py            # fetches each eurlex_check.url
+uv run python scripts/compare_sources.py --offline  # only recomputes the recorded digests
+```
+
+It exits 0 when every text is identical, 1 when a text differs ("content
+changed, review required") and 2 when a source could not be compared. EUR-Lex
+sometimes answers a script with a bot challenge instead of the document; that
+is reported as unverified and never counts as a match. The script never writes
+to this folder and is not part of CI.
+
+The `relied_on_for` lists name the provisions that the rules in pull request
+#34 rest on; the classifier does not read these files.
 
 ## Rules
 
