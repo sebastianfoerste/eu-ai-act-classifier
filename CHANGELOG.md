@@ -19,7 +19,8 @@ Changes since 0.2.2.
   deployer of an Annex III point 5(b) system with no public-authority use
   and no public law body, for one, a missing status reads like "no" and
   raises no review question, so `credit_scoring_deployer.json` still opens
-  with it unanswered.
+  with it unanswered, and so does `life_insurer_pricing.json` (#14), a
+  point 5(c) provider and deployer.
 - The engine reads `deployer_public_authority` only for a profile that holds
   the deployer role. For any other profile, the Art. 111(2) caveat on
   systems intended to be used by public authorities turns on
@@ -259,9 +260,11 @@ Changes since 0.2.2.
 
 ### Legal mapping corrections (#14)
 
-These entries come from #14. The provisions were checked against the
-consolidated AI Act of 27 July 2026 in a GitHub mirror of EUR-Lex, not on
-EUR-Lex itself (see Honest limits in `docs/overview.md`).
+These entries come from #14. Their provisions were checked on 11 November
+2026 against the Official Journal texts pinned in `sources/`, after a first
+check in a GitHub mirror of EUR-Lex; the claim ledger records each. The two
+Art. 50 Commission sources could not be opened and keep
+`[noch zu verifizieren]`.
 
 #### Added
 
@@ -288,9 +291,13 @@ EUR-Lex itself (see Honest limits in `docs/overview.md`).
   without a notified body, `review_required`) instead of
   `high-risk.provider.44` (Art. 44 certificate). Integrations that read
   `high-risk.provider.44` for these systems will no longer find it. Where the
-  Chapter III duties apply, Annex III point 1, `III.unsure` and every system
-  that `annex_i_safety_component` marks as an Annex I product keep the Art. 44
-  item. The new item is dated like the other Section 5 items: 2026-08-02 with
+  Chapter III duties apply, Annex III point 1, `III.unsure` and an Annex I
+  product in Section A, or whose section is not given, keep the Art. 44 item:
+  the last subparagraph of Art. 43(3), as replaced by Regulation (EU)
+  2026/1744, sends a system covered by Section A legislation that also falls
+  under Annex III to that legislation's procedure. It names Section A only, so
+  a Section B product on the Art. 6(1) route in points 2 to 8 gets the
+  Art. 43(2) item. The new item is dated like the other Section 5 items: 2026-08-02 with
   "Literal reading, confirm with counsel".
 - The profiling rule is cited as "Art. 6(3), third subparagraph, AIA"
   instead of "Art. 6(3) subpara. 2 AIA".

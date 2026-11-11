@@ -586,6 +586,35 @@ def test_notified_body_item_stays_where_a_notified_body_can_be_involved() -> Non
         assert "Art. 43(2) AIA" not in articles
 
 
+@pytest.mark.parametrize(
+    ("section", "third_party", "internal_control"),
+    [
+        ("A", True, False),
+        (None, True, False),
+        ("B", True, True),
+        # Without the Art. 6(1) route the section is not used, so it stays unknown.
+        ("B", False, False),
+    ],
+    ids=["section-a", "section-not-given", "section-b", "section-b-not-on-the-route"],
+)
+def test_art_43_3_keeps_the_notified_body_item_for_section_a_only(
+    section: str | None, third_party: bool, internal_control: bool
+) -> None:
+    # Art. 43(3), last subparagraph (OJ L, 2026/1744, Art. 1, point (19)): "Where a
+    # high-risk AI system is both covered by the Union harmonisation legislation listed
+    # in Section A of Annex I and it falls within one of the categories listed in
+    # Annex III", the Section A procedure applies. A Section B product in Annex III
+    # points 2 to 8 follows Art. 43(2); an unknown section may be Section A.
+    articles = _provider_graph_articles(
+        annex_iii_area=AnnexIII.CREDITWORTHINESS,
+        annex_i_safety_component=True,
+        annex_i_third_party_assessment=third_party,
+        annex_i_section=section,
+    )
+    assert ("Art. 43(2) AIA" in articles) is internal_control
+    assert ("Art. 44 AIA" in articles) is not internal_control
+
+
 def test_report_cites_the_ai_act_as_amended_by_regulation_2026_1744() -> None:
     report = classify(SystemProfile(name="x"))
     assert report.regulation.startswith("Regulation (EU) 2024/1689 ")

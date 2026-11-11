@@ -34,6 +34,7 @@ from .citations import (
 )
 from .models import (
     AnnexIII,
+    AnnexISection,
     Obligation,
     ObligationGraphItem,
     ReviewStatus,
@@ -44,6 +45,7 @@ from .models import (
 )
 from .transitions import (
     ANNEX_X_CARVE_OUT,
+    annex_i_route,
     before,
     chapter_iii_date,
     cut_off_flag,
@@ -928,11 +930,19 @@ def _internal_control_route(profile: SystemProfile) -> bool:
 
     Art. 43(2) covers Annex III points 2 to 8. Point 1 (biometrics) can involve a
     notified body under Art. 43(1), an unsettled Annex III point could be point 1,
-    and an Annex III system that is also an Annex I product follows the Annex I
-    procedure (Art. 43(3), last subparagraph), whether or not that procedure
-    involves a third party. Those cases keep the review_required Art. 44 item.
+    and an Annex III system also covered by the legislation in Annex I, Section A,
+    follows that legislation's procedure (Art. 43(3), last subparagraph, as replaced
+    by Regulation (EU) 2026/1744, Art. 1, point (19)), whether or not that procedure
+    involves a third party. Those cases keep the review_required Art. 44 item, and
+    so does an Annex I product whose section is not given, which may be Section A.
+    That subparagraph names Section A only, so a Section B product in points 2 to 8
+    takes the Art. 43(2) route like any other Annex III system. The section counts
+    only on the Art. 6(1) route, where the profile gives it (elsewhere the engine
+    reports it as not used, HIGHRISK.6.1.section_unused).
     """
     area = profile.annex_iii_area
     if area is None or area is AnnexIII.UNSURE or area in _ANNEX_III_POINT_1:
         return False
-    return not profile.annex_i_safety_component
+    return not profile.annex_i_safety_component or (
+        annex_i_route(profile) and profile.annex_i_section is AnnexISection.SECTION_B
+    )
