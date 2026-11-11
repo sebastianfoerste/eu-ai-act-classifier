@@ -17,6 +17,7 @@ import hashlib
 import http.client
 import importlib.util
 import json
+import re
 import urllib.error
 from pathlib import Path
 
@@ -278,3 +279,33 @@ def test_eurlex_uris_name_the_document() -> None:
     assert _eurlex_uris("32026R1744") == {"CELEX:32026R1744", "OJ:L_202601744"}
     assert _eurlex_uris("32011L0093") == {"CELEX:32011L0093"}
     assert _eurlex_uris("02024R1689-20260727") == {"CELEX:02024R1689-20260727"}
+
+
+# --- The claim ledger quotes the snapshots it cites --------------------------
+
+LEDGER = ROOT / "docs" / "REGULATORY_CLAIM_LEDGER.md"
+_SNAPSHOT_PATH = re.compile(r"sources/((?:oj|consolidated)/[\w.-]+\.xhtml)")
+_QUOTE = re.compile(r'"([^"]{25,})"')
+
+
+def _verified_rows_citing_snapshots() -> list[tuple[str, list[str], list[str]]]:
+    rows = []
+    for line in LEDGER.read_text(encoding="utf-8").splitlines():
+        if line.startswith("| VERIFIED |") and (files := _SNAPSHOT_PATH.findall(line)):
+            rows.append((line[:90], sorted(set(files)), _QUOTE.findall(line)))
+    return rows
+
+
+def test_verified_ledger_rows_quote_the_snapshots_they_cite_verbatim() -> None:
+    rows = _verified_rows_citing_snapshots()
+    assert rows, "no VERIFIED ledger row cites a snapshot"
+    texts = {
+        name: compare_sources.body_text((SOURCES / name).read_bytes())
+        for name in {f for _, files, _ in rows for f in files}
+    }
+    for row, files, quotes in rows:
+        assert quotes, f"{row}: cites a snapshot but quotes nothing from it"
+        for quote in quotes:
+            # "..." marks an omission; every part must appear in one cited snapshot.
+            for part in filter(None, (p.strip(" .,;") for p in quote.split("..."))):
+                assert any(part in texts[f] for f in files), (row, part)
