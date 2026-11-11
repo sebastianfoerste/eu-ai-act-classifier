@@ -285,7 +285,8 @@ def test_eurlex_uris_name_the_document() -> None:
 
 LEDGER = ROOT / "docs" / "REGULATORY_CLAIM_LEDGER.md"
 _SNAPSHOT_PATH = re.compile(r"sources/((?:oj|consolidated)/[\w.-]+\.xhtml)")
-_QUOTE = re.compile(r'"([^"]{25,})"')
+_QUOTE = re.compile(r'["\u201c]([^"\u201c\u201d]{25,})["\u201d]')
+_MIN_PART = 15
 
 
 def _verified_rows_citing_snapshots() -> list[tuple[str, list[str], list[str]]]:
@@ -306,6 +307,33 @@ def test_verified_ledger_rows_quote_the_snapshots_they_cite_verbatim() -> None:
     for row, files, quotes in rows:
         assert quotes, f"{row}: cites a snapshot but quotes nothing from it"
         for quote in quotes:
-            # "..." marks an omission; every part must appear in one cited snapshot.
-            for part in filter(None, (p.strip(" .,;") for p in quote.split("..."))):
-                assert any(part in texts[f] for f in files), (row, part)
+            # "..." marks an omission: every part must be long enough to mean something
+            # and appear, in the quoted order, in one cited snapshot.
+            parts = [p for p in (p.strip(" .,;") for p in quote.split("...")) if p]
+            assert all(len(part) >= _MIN_PART for part in parts), (row, parts)
+            assert any(_in_order(parts, texts[f]) for f in files), (row, quote)
+
+
+def _in_order(parts: list[str], text: str) -> bool:
+    position = 0
+    for part in parts:
+        position = text.find(part, position)
+        if position < 0:
+            return False
+        position += len(part)
+    return True
+
+
+def test_quote_check_rejects_reordered_and_missing_parts() -> None:
+    text = "alpha beta gamma delta epsilon"
+    assert _in_order(["alpha beta", "delta epsilon"], text)
+    assert not _in_order(["delta epsilon", "alpha beta"], text)
+    assert not _in_order(["alpha beta", "zeta"], text)
+
+
+def test_verified_rows_checked_in_the_snapshots_cite_them() -> None:
+    # A row dated after the snapshots landed was checked in them, so it names the file
+    # and the quote test above reaches it.
+    for line in LEDGER.read_text(encoding="utf-8").splitlines():
+        if line.startswith("| VERIFIED |") and "| 11 November 2026 |" in line:
+            assert _SNAPSHOT_PATH.search(line), line[:90]

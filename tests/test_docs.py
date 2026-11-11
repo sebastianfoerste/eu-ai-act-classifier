@@ -579,3 +579,13 @@ def test_overview_example_count_matches_the_bundled_examples() -> None:
     count = re.search(r"pick one of the (\d+) synthetic examples", overview)
     assert count, "docs/overview.md no longer says how many synthetic examples there are"
     assert int(count.group(1)) == len(examples)
+
+
+def test_worked_examples_limit_the_art_43_3_exclusion_to_section_a() -> None:
+    # Art. 43(3), last subparagraph, as replaced by Regulation (EU) 2026/1744, names
+    # Annex I, Section A only; a Section B product in points 2 to 8 takes Art. 43(2).
+    for page in Path("docs/worked-examples").glob("*.md"):
+        text = " ".join(page.read_text(encoding="utf-8").split())
+        assert "also an Annex I product (Art. 43(3)" not in text, page
+        if "Art. 43(3), last subparagraph" in text:
+            assert "Section A" in text, page

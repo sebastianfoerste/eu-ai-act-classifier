@@ -281,11 +281,13 @@ Changes since 0.2.2.
 
 ### Legal mapping corrections (#14)
 
-These entries come from #14. Their provisions were checked on 11 November
-2026 against the Official Journal texts pinned in `sources/`, after a first
-check in a GitHub mirror of EUR-Lex; the claim ledger records each. The two
-Art. 50 Commission sources could not be opened and keep
-`[noch zu verifizieren]`.
+These entries come from #14. The provisions they cite were checked on 11
+November 2026 against the Official Journal texts pinned in `sources/`, after a
+first check in a GitHub mirror of EUR-Lex; the claim ledger records each check
+in a VERIFIED row of that date. The check confirms wording, pinpoints and
+dates; no lawyer has adopted the conclusions, so confirm them with counsel
+before reliance. The two Art. 50 Commission sources could not be opened and
+keep `[noch zu verifizieren]`.
 
 #### Added
 
@@ -313,7 +315,9 @@ Art. 50 Commission sources could not be opened and keep
   `high-risk.provider.44` (Art. 44 certificate). Integrations that read
   `high-risk.provider.44` for these systems will no longer find it. Where the
   Chapter III duties apply, Annex III point 1, `III.unsure` and an Annex I
-  product in Section A, or whose section is not given, keep the Art. 44 item:
+  product in Section A, or whose section is not given (also an Annex I
+  safety component off the Art. 6(1) route, where the section is not asked),
+  keep the Art. 44 item:
   the last subparagraph of Art. 43(3), as replaced by Regulation (EU)
   2026/1744, sends a system covered by Section A legislation that also falls
   under Annex III to that legislation's procedure. It names Section A only, so

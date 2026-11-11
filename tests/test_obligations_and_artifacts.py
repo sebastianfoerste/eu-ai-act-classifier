@@ -580,6 +580,21 @@ def test_notified_body_item_stays_where_a_notified_body_can_be_involved() -> Non
         {"annex_iii_area": AnnexIII.CRITICAL_INFRASTRUCTURE, "annex_i_safety_component": True},
         {"annex_iii_area": AnnexIII.CREDITWORTHINESS, "annex_i_safety_component": True},
         {"annex_iii_area": AnnexIII.INSURANCE_LIFE_HEALTH, "annex_i_safety_component": True},
+        # A Section B product on the Art. 6(1) route takes Art. 43(2) only in points
+        # 2 to 8: point 1 and an unsettled point keep the notified-body item.
+        *(
+            {
+                "annex_iii_area": area,
+                "annex_i_safety_component": True,
+                "annex_i_third_party_assessment": True,
+                "annex_i_section": "B",
+            }
+            for area in (
+                AnnexIII.BIOMETRICS_REMOTE_ID,
+                AnnexIII.BIOMETRICS_EMOTION,
+                AnnexIII.UNSURE,
+            )
+        ),
     ):
         articles = _provider_graph_articles(**facts)
         assert "Art. 44 AIA" in articles
