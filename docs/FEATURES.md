@@ -66,7 +66,7 @@ Implementation:
 
 ## Guided Intake
 
-Collects characterised facts one question per page in the browser playground, with the article under each question and a check-answers page that lists every defaulted value. Questions, order and skip conditions are defined once in Python. "I don't know" never becomes "no": it records an unconfirmed value that routes the result to review, marks the Annex III point as unsettled, or pauses the run until counsel answers.
+Collects characterised facts one question per page in the browser playground, with the article under each question and a check-answers page that lists every defaulted value. Questions, order and skip conditions are defined once in Python. "I don't know" never becomes "no": it records an unconfirmed value that routes the result to review, marks the Annex III point as unsettled, or pauses the run until counsel answers. The one number answer, training compute in FLOP, takes a decimal with an optional exponent, such as `2e25`, written with the digits 0 to 9; only ASCII whitespace around it (space, tab, line feed, vertical tab, form feed, carriage return) is ignored. Any other character, a no-break space or a fullwidth digit included, makes the answer invalid in both interpreters: the browser asks for a number again, and the Python intake lists the question as missing. An empty answer means "not given"; one of whitespace only is invalid.
 
 Implementation:
 

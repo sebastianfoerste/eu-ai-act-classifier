@@ -363,8 +363,9 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "number",
         "field": "training_flops",
         "title": "What was the cumulative training compute, in FLOP?",
-        "hint": "For example 2e25. Leave blank if not disclosed; the systemic-risk status then "
-        "goes to review unless the model is designated.",
+        "hint": "For example 2e25, with the digits 0 to 9 (other digit forms and special "
+        "spaces such as a no-break space are not accepted). Leave blank if not disclosed; the "
+        "systemic-risk status then goes to review unless the model is designated.",
         "article": "Art. 51(2) AIA",
         "show_if": {"all": [IN_SCOPE, {"field": "is_gpai_model", "is": True}]},
     },

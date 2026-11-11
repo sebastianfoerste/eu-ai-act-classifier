@@ -54,7 +54,10 @@ Changes since 0.2.2.
   fullwidth digits, each side trimmed characters the other kept (a byte
   order mark in the browser, `\x1c` to `\x1f` and `\x85` in Python), and
   Python raised `ValueError` on `"\x1c5"` instead of reporting the answer as
-  missing. The generated fixtures cover these inputs.
+  missing. The generated fixtures cover these inputs. An answer padded with
+  a no-break space (`"\xa05"`), which both accepted before, is now invalid:
+  the browser asks for a number again and the Python intake lists the
+  question as missing. The question's hint and `docs/FEATURES.md` say so.
 
 #### Decisions
 
@@ -68,6 +71,8 @@ owner has not reviewed the detail. The claim ledger records them too.
   but does not add it to `unverified_citations`, which would send every
   report's source status to review. With the citation verified, neither
   applies.
+- Number answers stay strict in both interpreters: digits 0 to 9, ASCII
+  whitespace trimmed, anything else invalid.
 - `HIGHRISK.6.1c` and `HIGHRISK.2.13` stay findings of their own.
 - The ledger's "Stand" date stays 18 October 2026, with a dated note for
   the reading of 11 November 2026.
