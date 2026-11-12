@@ -40,6 +40,19 @@ def test_chatbot_gets_the_art_50_guidelines_but_not_the_marking_code() -> None:
     assert "art-50-code-of-practice" not in source_ids
 
 
+def test_emotion_or_biometric_use_gets_the_art_50_guidelines_but_not_the_marking_code() -> None:
+    # The code of practice concerns the marking and labelling duties in Art. 50(2) and (4)
+    # (Art. 50(7) AIA), not the Art. 50(3) duty to inform the persons exposed.
+    report = classify(
+        SystemProfile(name="emotion", deploys_emotion_or_biometric_categorisation=True),
+        include_advisory=True,
+    )
+    source_ids = {note.source_id for note in report.advisory_notes}
+
+    assert "art-50-guidelines" in source_ids
+    assert "art-50-code-of-practice" not in source_ids
+
+
 def test_synthetic_content_gets_both_art_50_instruments() -> None:
     for facts in ({"generates_synthetic_content": True}, {"generates_deepfakes": True}):
         report = classify(SystemProfile(name="gen", **facts), include_advisory=True)
