@@ -23,6 +23,7 @@ from pathlib import Path
 
 import pytest
 
+from eu_ai_act_classifier.citations import REGULATION
 from eu_ai_act_classifier.verify_sources import BotChallengeError
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -285,8 +286,13 @@ def test_eurlex_uris_name_the_document() -> None:
 
 LEDGER = ROOT / "docs" / "REGULATORY_CLAIM_LEDGER.md"
 _SNAPSHOT_PATH = re.compile(r"sources/((?:oj|consolidated)/[\w.-]+\.xhtml)")
-_QUOTE = re.compile(r'["\u201c]([^"\u201c\u201d]{25,})["\u201d]')
+# Straight quotes and the typographic double and single quotes the Official Journal uses
+# around replacement text. A part of an elided quote must be long enough to mean something.
+_QUOTE = re.compile(r'["\u201c\u2018]([^"\u201c\u201d\u2018\u2019]{25,})["\u201d\u2019]')
 _MIN_PART = 15
+# The snapshots' text was confirmed identical to EUR-Lex on this date, so a VERIFIED row
+# read on or after it was read in them.
+_SNAPSHOTS_CONFIRMED = datetime.date(2026, 11, 10)
 
 
 def _verified_rows_citing_snapshots() -> list[tuple[str, list[str], list[str]]]:
@@ -307,11 +313,16 @@ def test_verified_ledger_rows_quote_the_snapshots_they_cite_verbatim() -> None:
     for row, files, quotes in rows:
         assert quotes, f"{row}: cites a snapshot but quotes nothing from it"
         for quote in quotes:
-            # "..." marks an omission: every part must be long enough to mean something
-            # and appear, in the quoted order, in one cited snapshot.
-            parts = [p for p in (p.strip(" .,;") for p in quote.split("...")) if p]
-            assert all(len(part) >= _MIN_PART for part in parts), (row, parts)
+            # "..." marks an omission: every part must appear, in the quoted order, in
+            # one cited snapshot.
+            parts = _quote_parts(quote)
             assert any(_in_order(parts, texts[f]) for f in files), (row, quote)
+
+
+def _quote_parts(quote: str) -> list[str]:
+    parts = [p for p in (p.strip(" .,;") for p in quote.split("...")) if p]
+    assert parts and all(len(part) >= _MIN_PART for part in parts), parts
+    return parts
 
 
 def _in_order(parts: list[str], text: str) -> bool:
@@ -329,11 +340,40 @@ def test_quote_check_rejects_reordered_and_missing_parts() -> None:
     assert _in_order(["alpha beta", "delta epsilon"], text)
     assert not _in_order(["delta epsilon", "alpha beta"], text)
     assert not _in_order(["alpha beta", "zeta"], text)
+    assert not _in_order(["alpha beta", "alpha beta"], text)
+
+
+def test_quote_check_reads_typographic_quotes_and_rejects_short_parts() -> None:
+    body = "x" * 30
+    for opening, closing in ('""', "\u201c\u201d", "\u2018\u2019", '"\u201d'):
+        assert _QUOTE.findall(f"a {opening}{body}{closing} b") == [body]
+    assert _QUOTE.findall('"too short"') == []
+    assert _quote_parts("the first part is long ... the second part too") == [
+        "the first part is long",
+        "the second part too",
+    ]
+    with pytest.raises(AssertionError):
+        _quote_parts("the first part is long ... short")
+
+
+def _access_date(row: str) -> datetime.date:
+    # Columns: Status, Claim, Actor, Primary source, Provision, Access date, Review note.
+    return datetime.datetime.strptime(row.split(" | ")[5].strip(), "%d %B %Y").date()
 
 
 def test_verified_rows_checked_in_the_snapshots_cite_them() -> None:
-    # A row dated after the snapshots landed was checked in them, so it names the file
-    # and the quote test above reaches it.
-    for line in LEDGER.read_text(encoding="utf-8").splitlines():
-        if line.startswith("| VERIFIED |") and "| 11 November 2026 |" in line:
-            assert _SNAPSHOT_PATH.search(line), line[:90]
+    # A row read once the snapshots were confirmed was read in them, so it names the
+    # file and the quote test above reaches it.
+    rows = [
+        r for r in LEDGER.read_text(encoding="utf-8").splitlines() if r.startswith("| VERIFIED |")
+    ]
+    recent = [r for r in rows if _access_date(r) >= _SNAPSHOTS_CONFIRMED]
+    assert recent, "no VERIFIED row was read in the snapshots"
+    for row in recent:
+        assert _SNAPSHOT_PATH.search(row), row[:90]
+
+
+def test_ledger_row_quotes_the_regulation_string_exactly() -> None:
+    assert f"| VERIFIED | The report names the AI Act as `{REGULATION}`. |" in LEDGER.read_text(
+        encoding="utf-8"
+    )

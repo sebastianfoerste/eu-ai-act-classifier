@@ -281,13 +281,17 @@ Changes since 0.2.2.
 
 ### Legal mapping corrections (#14)
 
-These entries come from #14. The provisions they cite were checked on 11
-November 2026 against the Official Journal texts pinned in `sources/`, after a
-first check in a GitHub mirror of EUR-Lex; the claim ledger records each check
-in a VERIFIED row of that date. The check confirms wording, pinpoints and
-dates; no lawyer has adopted the conclusions, so confirm them with counsel
-before reliance. The two Art. 50 Commission sources could not be opened and
-keep `[noch zu verifizieren]`.
+These entries come from #14. After a first check in a GitHub mirror of
+EUR-Lex, these provisions were checked on 11 November 2026 against the
+Official Journal texts pinned in `sources/`, each in a VERIFIED row of the
+claim ledger of that date: Art. 6(3), third subparagraph; Annex III, point
+5(b) and (c); Art. 43(2) and (3); Art. 50(7); Art. 96(1)(d); and the titles
+and dates in the regulation string. The check confirms wording and pinpoints.
+The 2026-08-02 dating of the new Art. 43(2) item rests on the reading of
+Art. 113 of 18 October 2026 (the CORRECTED and PENDING Section 5 rows). No
+lawyer has adopted the conclusions, so confirm them with counsel before
+reliance. The two Art. 50 Commission sources could not be opened and keep
+`[noch zu verifizieren]`.
 
 #### Added
 
