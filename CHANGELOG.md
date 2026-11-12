@@ -328,6 +328,8 @@ reliance. The two Art. 50 Commission sources could not be opened and keep
   a Section B product on the Art. 6(1) route in points 2 to 8 gets the
   Art. 43(2) item. The new item is dated like the other Section 5 items: 2026-08-02 with
   "Literal reading, confirm with counsel".
+- CI's coverage floor rises from 94 % to 95 % (`--cov-fail-under=95`), the
+  integer part of the measured total of 95.02 %.
 - The profiling rule is cited as "Art. 6(3), third subparagraph, AIA"
   instead of "Art. 6(3) subpara. 2 AIA".
 - Art. 50 sources: the placeholder "Transparency guidance tracker" is
