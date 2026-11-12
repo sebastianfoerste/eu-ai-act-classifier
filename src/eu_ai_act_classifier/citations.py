@@ -20,8 +20,8 @@ sees precisely which pinpoints are not yet locked, instead of trusting a
 citation that was guessed.
 
 The changes of 2026-10-14 (Art. 6(3), third subparagraph; the Annex III point
-5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and (3))
-were checked on 2026-11-11 against the Official Journal texts pinned in
+5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and Art. 43(3),
+last subparagraph) were checked on 2026-11-11 against the Official Journal texts pinned in
 sources/ (VERIFIED rows in docs/REGULATORY_CLAIM_LEDGER.md). That check confirms
 wording and pinpoints; no lawyer has adopted the conclusions.
 """

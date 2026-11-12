@@ -586,9 +586,18 @@ def test_worked_examples_limit_the_art_43_3_exclusion_to_section_a() -> None:
     # Annex I, Section A only; a Section B product in points 2 to 8 takes Art. 43(2).
     pages = sorted((Path(__file__).resolve().parents[1] / "docs" / "worked-examples").glob("*.md"))
     assert pages
+    citing = []
     for page in pages:
         text = " ".join(page.read_text(encoding="utf-8").split())
+        assert not re.search(r"Annex I product \(Art\. 43\(3\)", text), page.name
         for sentence in re.split(r"(?<=\.) (?=[A-Z])", text):
-            if "Art. 43(3), last subparagraph" in sentence:
-                assert "Section A" in sentence, (page.name, sentence)
-                assert "Annex I product (Art. 43(3)" not in sentence, (page.name, sentence)
+            if re.search(r"Art\. 43\(3\), (?:last|final) subparagraph", sentence):
+                citing.append(page.name)
+                if "conformity" in sentence or "unless" in sentence:
+                    assert "Section A" in sentence, (page.name, sentence)
+    # The life-insurer page states the route, and the Section B consequence with it.
+    assert "life-insurer-pricing.md" in citing
+    life = " ".join(
+        (pages[0].parent / "life-insurer-pricing.md").read_text(encoding="utf-8").split()
+    )
+    assert "a Section B product on the Art. 6(1) route in points 2 to 8 also gets this item" in life

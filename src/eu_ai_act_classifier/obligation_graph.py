@@ -34,7 +34,6 @@ from .citations import (
 )
 from .models import (
     AnnexIII,
-    AnnexISection,
     Obligation,
     ObligationGraphItem,
     ReviewStatus,
@@ -45,7 +44,6 @@ from .models import (
 )
 from .transitions import (
     ANNEX_X_CARVE_OUT,
-    annex_i_route,
     before,
     chapter_iii_date,
     cut_off_flag,
@@ -943,6 +941,4 @@ def _internal_control_route(profile: SystemProfile) -> bool:
     area = profile.annex_iii_area
     if area is None or area is AnnexIII.UNSURE or area in _ANNEX_III_POINT_1:
         return False
-    return not profile.annex_i_safety_component or (
-        annex_i_route(profile) and profile.annex_i_section is AnnexISection.SECTION_B
-    )
+    return not profile.annex_i_safety_component or section_b_product(profile)

@@ -285,7 +285,7 @@ These entries come from #14. After a first check in a GitHub mirror of
 EUR-Lex, these provisions were checked on 11 November 2026 against the
 Official Journal texts pinned in `sources/`, each in a VERIFIED row of the
 claim ledger of that date: Art. 6(3), third subparagraph; Annex III, point
-5(b) and (c); Art. 43(2) and (3); Art. 50(7); Art. 96(1)(d); and the titles
+5(b) and (c); Art. 43(2) and Art. 43(3), last subparagraph; Art. 50(7); Art. 96(1)(d); and the titles
 and dates in the regulation string. The check confirms wording and pinpoints.
 The 2026-08-02 dating of the new Art. 43(2) item rests on the reading of
 Art. 113 of 18 October 2026 (the CORRECTED and PENDING Section 5 rows). No

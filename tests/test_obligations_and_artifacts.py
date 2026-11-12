@@ -539,18 +539,28 @@ def _provider_graph_articles(**facts) -> set[str]:
     return {item.article for item in report.obligation_graph}
 
 
-def test_annex_iii_points_2_to_8_use_internal_control_without_notified_body() -> None:
+@pytest.mark.parametrize("area", list(AnnexIII), ids=lambda area: area.value)
+@pytest.mark.parametrize("section_b", [False, True], ids=["annex-iii-only", "section-b-route"])
+def test_every_annex_iii_point_takes_the_route_its_number_gives(
+    area: AnnexIII, section_b: bool
+) -> None:
     # Art. 43(2) AIA: points 2 to 8 of Annex III follow internal control (Annex VI).
-    for area in (
-        AnnexIII.CRITICAL_INFRASTRUCTURE,
-        AnnexIII.EMPLOYMENT_SELECTION,
-        AnnexIII.CREDITWORTHINESS,
-        AnnexIII.INSURANCE_LIFE_HEALTH,
-        AnnexIII.JUSTICE,
-    ):
-        articles = _provider_graph_articles(annex_iii_area=area)
-        assert "Art. 43(2) AIA" in articles
-        assert "Art. 44 AIA" not in articles
+    # Point 1 (Art. 43(1)) and an unsettled point keep the notified-body item, also for
+    # a Section B product on the Art. 6(1) route. Derived from the point's number, not
+    # from the engine's own set, so a point dropped from that set is caught.
+    route = (
+        {
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_i_section": "B",
+        }
+        if section_b
+        else {}
+    )
+    articles = _provider_graph_articles(annex_iii_area=area, **route)
+    notified_body = area is AnnexIII.UNSURE or area.value.startswith("III.1.")
+    assert ("Art. 44 AIA" in articles) is notified_body
+    assert ("Art. 43(2) AIA" in articles) is not notified_body
 
 
 def test_internal_control_item_is_review_required_and_names_annex_vi() -> None:
