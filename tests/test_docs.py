@@ -581,23 +581,34 @@ def test_overview_example_count_matches_the_bundled_examples() -> None:
     assert int(count.group(1)) == len(examples)
 
 
+_UNQUALIFIED_ANNEX_I = re.compile(r"Annex I\b(?!, Section A)")
+_LIFE_ROUTE = (
+    "unless the system is also covered by Union harmonisation legislation listed in "
+    "Annex I, Section A (Art. 43(3), last subparagraph, as replaced by Regulation (EU) "
+    "2026/1744, Art. 1, point (19)). That subparagraph names Section A only, so a "
+    "Section B product on the Art. 6(1) route in points 2 to 8 also gets this item."
+)
+
+
 def test_worked_examples_limit_the_art_43_3_exclusion_to_section_a() -> None:
     # Art. 43(3), last subparagraph, as replaced by Regulation (EU) 2026/1744, names
     # Annex I, Section A only; a Section B product in points 2 to 8 takes Art. 43(2).
-    pages = sorted((Path(__file__).resolve().parents[1] / "docs" / "worked-examples").glob("*.md"))
+    folder = Path(__file__).resolve().parents[1] / "docs" / "worked-examples"
+    pages = sorted(folder.glob("*.md"))
     assert pages
-    citing = []
     for page in pages:
-        text = " ".join(page.read_text(encoding="utf-8").split())
-        assert not re.search(r"Annex I product \(Art\. 43\(3\)", text), page.name
-        for sentence in re.split(r"(?<=\.) (?=[A-Z])", text):
-            if re.search(r"Art\. 43\(3\), (?:last|final) subparagraph", sentence):
-                citing.append(page.name)
-                if "conformity" in sentence or "unless" in sentence:
-                    assert "Section A" in sentence, (page.name, sentence)
-    # The life-insurer page states the route, and the Section B consequence with it.
-    assert "life-insurer-pricing.md" in citing
-    life = " ".join(
-        (pages[0].parent / "life-insurer-pricing.md").read_text(encoding="utf-8").split()
-    )
-    assert "a Section B product on the Art. 6(1) route in points 2 to 8 also gets this item" in life
+        # Each line is one paragraph or bullet; a sentence citing Art. 43(3) names
+        # Annex I only as "Annex I, Section A".
+        for line in page.read_text(encoding="utf-8").splitlines():
+            for sentence in re.split(r"(?<=\.) (?=[A-Z])", line):
+                if "Art. 43(3)" in sentence:
+                    assert not _UNQUALIFIED_ANNEX_I.search(sentence), (page.name, sentence)
+    # The life-insurer page states the route with its citation and the Section B
+    # consequence, in its conformity-route bullet.
+    route = [
+        " ".join(line.split())
+        for line in (folder / "life-insurer-pricing.md").read_text(encoding="utf-8").splitlines()
+        if line.startswith("- **Conformity route:**")
+    ]
+    assert len(route) == 1
+    assert _LIFE_ROUTE in route[0]

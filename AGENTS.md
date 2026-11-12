@@ -12,7 +12,7 @@ Run on the feature branch what CI runs (`.github/workflows/ci.yml`):
 uv sync --locked --extra dev --extra mcp
 uv run ruff check .
 uv run ruff format --check .
-uv run pytest --cov=eu_ai_act_classifier --cov-report=term --cov-fail-under=94
+uv run pytest --cov=eu_ai_act_classifier --cov-report=term --cov-fail-under=95
 for file in docs/playground/*.mjs; do node --check "$file"; done
 node --test tests/playground/*.test.mjs
 (cd web && npm ci && npm test && npm run build)

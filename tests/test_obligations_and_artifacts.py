@@ -575,7 +575,9 @@ def test_internal_control_item_is_review_required_and_names_annex_vi() -> None:
 
 def test_notified_body_item_stays_where_a_notified_body_can_be_involved() -> None:
     # Annex III point 1 (Art. 43(1)), an unsettled Annex III point, the Annex I route,
-    # and an Annex III system that is also an Annex I product (Art. 43(3)).
+    # and an Annex III system that is also an Annex I product in Section A (Art. 43(3),
+    # last subparagraph) or whose section is not given (a design choice: it may be
+    # Section A).
     for facts in (
         {"annex_iii_area": AnnexIII.BIOMETRICS_REMOTE_ID},
         {"annex_iii_area": AnnexIII.BIOMETRICS_EMOTION},
