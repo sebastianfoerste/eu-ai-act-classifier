@@ -84,10 +84,11 @@ def test_interpretation_is_labelled_in_the_output(
     case_id: str, data: dict[str, Any], case: dict[str, Any]
 ) -> None:
     """docs/methodology.md promises that every interpretation choice a result turns
-    on is labelled "interpretation" in a finding or open question; the fixtures name
-    the choice each case rests on."""
+    on is labelled "interpretation" in a finding, an open question or the obligation-graph
+    item it shapes; the fixtures name the choice each case rests on."""
     report = classify(SystemProfile.model_validate(_merge(data["base_profile"], case["profile"])))
     texts = [f.detail for f in report.findings] + report.open_questions
+    texts += [item.requirement for item in report.obligation_graph]
     assert any("interpretation" in text.lower() for text in texts), (case["interpretation"], texts)
 
 
@@ -137,6 +138,14 @@ def test_fixture(case_id: str, data: dict[str, Any], case: dict[str, Any]) -> No
         assert item is not None, f"no graph item for {expected['article']}"
         for key, value in expected.items():
             assert getattr(item, key) == value, (key, getattr(item, key), value)
+    for article, fragments in expect.get("graph_requirement_contains", {}).items():
+        assert article in graph, f"no graph item for {article}"
+        for fragment in fragments:
+            assert fragment in graph[article].requirement, (article, fragment)
+    for article, fragments in expect.get("graph_requirement_excludes", {}).items():
+        assert article in graph, f"no graph item for {article}"
+        for fragment in fragments:
+            assert fragment not in graph[article].requirement, (article, fragment)
     for prefix in expect.get("graph_absent_prefix", []):
         assert not any(item.obligation_id.startswith(prefix) for item in report.obligation_graph)
 

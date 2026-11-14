@@ -21,8 +21,8 @@ after one.
 - `sources`: `source_id` from `sources/manifest.json` and the pinpoint read.
 - `interpretations`: reading choices the text does not settle, keyed to the
   owner's answers C1 to C10 (docs/methodology.md). They are the reviewer's to
-  confirm. A case that names one must find "interpretation" in a finding or
-  open question of its report.
+  confirm. A case that names one must find "interpretation" in a finding, an
+  open question or an obligation-graph requirement of its report.
 - `base_profile`: merged into every case's `profile` (nested objects merge key
   by key; `null` overrides).
 - `cases[].matrix`: one of `applies`, `element_fails`, `unknown_input`,
@@ -42,6 +42,7 @@ after one.
 | `obligations_include`, `obligations_exclude` | Articles in obligations or documentation |
 | `transparency_articles` | Exact list of transparency obligation articles |
 | `graph` | Obligation-graph items matched by `article`; listed keys must be equal |
+| `graph_requirement_contains`, `graph_requirement_excludes` | Map of `article` to substrings that must, or must not, occur in that graph item's `requirement` |
 | `graph_absent_prefix` | No obligation-graph item id starts with these prefixes |
 | `timeline_includes` | Timeline rows by `applies_from` and a substring of `provision` |
 | `validation_error_loc` | The profile is rejected with an error at this location |

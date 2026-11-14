@@ -1,0 +1,217 @@
+{
+  "rule": "Art. 40(1) and Art. 43(1) AIA read with Commission Implementing Decision (EU) 2026/2274 (reference of EN 18286:2026 published in the Official Journal)",
+  "sources": [
+    {
+      "source_id": "oj-dec-impl-2026-2274",
+      "pinpoint": "Art. 1 and Annex, point 1 (EN 18286:2026, Artificial intelligence - Quality management system for EU AI Act regulatory purposes); Art. 2 (entry into force on the day of publication, 14.10.2026); recitals 1, 3 and 6"
+    },
+    {
+      "source_id": "oj-reg-2024-1689",
+      "pinpoint": "Art. 40(1) (presumption of conformity with the requirements set out in Section 2 of Chapter III or the Chapter V obligations); Art. 17 (Chapter III, Section 3); Art. 43(1), first and second subparagraphs; Art. 43(2)"
+    },
+    {
+      "source_id": "oj-reg-2026-1744",
+      "pinpoint": "Art. 1, point (19): Art. 43(3) replaced, last subparagraph"
+    }
+  ],
+  "interpretations": [
+    {
+      "id": "S1-en-18286-presumption",
+      "text": "Art. 40(1) presumes conformity with the requirements set out in Section 2 of Chapter III (Arts. 8 to 15) or the Chapter V obligations. The quality management system is Art. 17, in Section 3, and Decision (EU) 2026/2274 names no AI Act article: its recital 1 speaks of 'the requirements covered by those standards'. Whether EN 18286:2026 gives a presumption for Art. 17 is left to review; the classifier names the standard and does not apply a presumption."
+    },
+    {
+      "id": "S2-annex-vi-for-point-1",
+      "text": "Art. 43(1) opens internal control (Annex VI) for an Annex III, point 1 system only where the provider has applied harmonised standards or common specifications in demonstrating compliance with the Section 2 requirements, and requires Annex VII where none exist or the provider applied only part of one. EN 18286:2026 is by its title a quality management system standard, so the classifier reads it as not covering the Section 2 requirements: applying it alone does not open Annex VI."
+    }
+  ],
+  "base_profile": {
+    "name": "Synthetic conformity route system",
+    "roles": [
+      "provider"
+    ]
+  },
+  "cases": [
+    {
+      "id": "art40-provider-names-en-18286",
+      "matrix": "applies",
+      "facts": "A provider of a credit-scoring system (Annex III, point 5(b)). The Art. 40 item names the published standard and leaves its reach to review.",
+      "profile": {
+        "annex_iii_area": "III.5.b"
+      },
+      "interpretation": "S1-en-18286-presumption",
+      "expect": {
+        "risk_tier": "high_risk",
+        "graph": [
+          {
+            "article": "Art. 40 AIA",
+            "review_status": "review_required"
+          }
+        ],
+        "graph_requirement_contains": {
+          "Art. 40 AIA": [
+            "EN 18286:2026",
+            "Implementing Decision (EU) 2026/2274",
+            "Quality management system for EU AI Act regulatory purposes",
+            "14.10.2026",
+            "Art. 17",
+            "Interpretation"
+          ]
+        }
+      }
+    },
+    {
+      "id": "art43-1-point-1-remote-identification",
+      "matrix": "applies",
+      "facts": "A provider of a remote biometric identification system (Annex III, point 1(a)). Art. 43(1) decides between Annex VI and Annex VII, and EN 18286:2026 alone does not open Annex VI.",
+      "profile": {
+        "annex_iii_area": "III.1.a"
+      },
+      "interpretation": "S2-annex-vi-for-point-1",
+      "expect": {
+        "risk_tier": "high_risk",
+        "graph": [
+          {
+            "article": "Art. 44 AIA",
+            "review_status": "review_required"
+          }
+        ],
+        "graph_requirement_contains": {
+          "Art. 43 AIA": [
+            "Art. 43(1)",
+            "Annex VI",
+            "Annex VII",
+            "Section 2",
+            "EN 18286:2026",
+            "Interpretation"
+          ]
+        },
+        "graph_requirement_excludes": {
+          "Art. 43 AIA": [
+            "If the system falls"
+          ]
+        }
+      }
+    },
+    {
+      "id": "art43-1-point-1-emotion-recognition",
+      "matrix": "applies",
+      "facts": "A provider of an emotion recognition system (Annex III, point 1(c)).",
+      "profile": {
+        "annex_iii_area": "III.1.c"
+      },
+      "expect": {
+        "risk_tier": "high_risk",
+        "graph_requirement_contains": {
+          "Art. 43 AIA": [
+            "Art. 43(1)",
+            "Annex VII",
+            "EN 18286:2026"
+          ]
+        }
+      }
+    },
+    {
+      "id": "art43-2-point-5-no-point-1-note",
+      "matrix": "element_fails",
+      "facts": "A provider of a credit-scoring system (Annex III, point 5(b)). Art. 43(2) fixes internal control; the Art. 43(1) choice does not arise.",
+      "profile": {
+        "annex_iii_area": "III.5.b"
+      },
+      "expect": {
+        "graph": [
+          {
+            "article": "Art. 43 AIA",
+            "requirement": "Complete the applicable conformity assessment."
+          }
+        ],
+        "obligations_include": [
+          "Art. 43 AIA"
+        ]
+      }
+    },
+    {
+      "id": "art43-1-annex-iii-point-unsettled",
+      "matrix": "unknown_input",
+      "facts": "A provider of a system in an Annex III area whose point is unsettled; it may be point 1.",
+      "profile": {
+        "annex_iii_area": "III.unsure"
+      },
+      "expect": {
+        "disposition": "requires_review",
+        "graph_requirement_contains": {
+          "Art. 43 AIA": [
+            "If the system falls in Annex III, point 1",
+            "Art. 43(1)"
+          ]
+        }
+      }
+    },
+    {
+      "id": "art43-3-point-1-with-section-a-product",
+      "matrix": "element_fails",
+      "facts": "A remote biometric identification system (Annex III, point 1(a)) that is also a safety component of a medical device (Annex I, Section A, point 11) needing third-party conformity assessment. Art. 43(3), last subparagraph, as replaced by Regulation (EU) 2026/1744, sends it to the medical-device procedure, so the Art. 43(1) choice does not arise.",
+      "profile": {
+        "annex_iii_area": "III.1.a",
+        "annex_i_safety_component": true,
+        "annex_i_third_party_assessment": true,
+        "annex_i_legislation": "I.A.11"
+      },
+      "expect": {
+        "graph": [
+          {
+            "article": "Art. 43 AIA",
+            "requirement": "Complete the applicable conformity assessment."
+          }
+        ]
+      }
+    },
+    {
+      "id": "art43-1-point-1-with-section-b-product",
+      "matrix": "applies",
+      "facts": "A remote biometric identification system (Annex III, point 1(a)) that is also a safety component of a motor vehicle (Annex I, Section B, point 18). Art. 43(3) names Section A only, so the Annex III duties kept for review include the Art. 43(1) choice.",
+      "profile": {
+        "annex_iii_area": "III.1.a",
+        "annex_i_safety_component": true,
+        "annex_i_third_party_assessment": true,
+        "annex_i_legislation": "I.B.18"
+      },
+      "expect": {
+        "graph_requirement_contains": {
+          "Art. 43 AIA": [
+            "Art. 43(1)",
+            "Annex VII"
+          ]
+        }
+      }
+    },
+    {
+      "id": "art40-deployer-only",
+      "matrix": "element_fails",
+      "facts": "A deployer, not the provider, of a remote biometric identification system. Arts. 40 and 43 are provider duties.",
+      "profile": {
+        "roles": [
+          "deployer"
+        ],
+        "annex_iii_area": "III.1.a"
+      },
+      "expect": {
+        "risk_tier": "high_risk",
+        "graph_absent_prefix": [
+          "high-risk.provider."
+        ]
+      }
+    },
+    {
+      "id": "art40-not-high-risk",
+      "matrix": "irrelevant_input",
+      "facts": "A provider of a system that is in no Annex III area and no Annex I product.",
+      "profile": {},
+      "expect": {
+        "graph_absent_prefix": [
+          "high-risk.provider.40",
+          "high-risk.provider.43"
+        ]
+      }
+    }
+  ]
+}
