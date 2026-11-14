@@ -573,7 +573,11 @@ def _is_number(value: Any) -> bool:
     if isinstance(value, bool):
         return False
     if isinstance(value, int | float):
-        return math.isfinite(value)
+        try:
+            return math.isfinite(value)
+        except OverflowError:
+            # An int beyond the float range: JSON.parse reads that literal as Infinity.
+            return False
     if not isinstance(value, str):
         return False
     text = _number_text(value)

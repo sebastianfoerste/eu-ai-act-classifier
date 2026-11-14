@@ -651,6 +651,21 @@ def test_a_long_text_that_is_not_a_number_is_refused_in_linear_time() -> None:
     assert time.perf_counter() - started < 2
 
 
+def test_an_integer_beyond_the_float_range_is_not_a_number_answer() -> None:
+    # json.loads reads such a literal as an int, and math.isfinite() raises on it. The
+    # browser reads the same literal as Infinity and reports the question as missing.
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    model = {"name": "x", "roles": ["gpai_provider"], "is_gpai_model": True}
+    answers = {**profile_to_answers(model), question["id"]: 10**400}
+
+    profile, asked, blocked, missing = answers_to_profile(answers)
+
+    assert question["id"] in asked and not blocked
+    assert not is_answered(question, answers)
+    assert question["id"] in missing
+    assert profile[question["field"]] is None
+
+
 def test_a_question_of_an_unknown_kind_is_never_answered() -> None:
     # A definition newer than the interpreter must not pass silently (isAnswered's default).
     assert not is_answered({"id": "q", "kind": "slider"}, {"q": 5})

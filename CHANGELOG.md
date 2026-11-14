@@ -92,12 +92,17 @@ Changes since 0.2.2.
   `tests/playground/wizard.test.mjs` drives the wizard's number page.
 - Guided intake: a long text that is not a number was refused in time that
   grew with the square of its length, in the browser's whitespace trim
-  (added by the entry above) and in the number pattern of both interpreters
-  (already so on `main`). A share link can hold such a text: one of 200
-  characters kept the playground busy for 1.8 seconds on opening, and the
-  limit is 8,000 characters. The trim now scans from each end and the
-  pattern reads a run of digits in one way only; it takes and refuses the
-  same texts as before. Each interpreter has a test with a long text.
+  (added by the number-grammar entry, two above) and in the number pattern
+  of both interpreters (already so on `main`). A share link can hold such a
+  text: one of 200 characters kept the playground busy for about two
+  seconds on opening, and the limit is 8,000 characters. The trim now scans
+  from each end and the pattern reads a run of digits in one way only; it
+  takes and refuses the same texts as before. Each interpreter has a test
+  with a long text.
+- Guided intake in Python: a number answer given as an integer beyond the
+  float range (above about 1.8e308, which a JSON integer literal can be)
+  raised `OverflowError`. It is now reported as missing, as in the browser,
+  where `JSON.parse` reads the literal as Infinity.
 
 #### Decisions
 
