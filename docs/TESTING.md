@@ -5,7 +5,7 @@
 ```bash
 uv run ruff check .
 uv run ruff format --check .
-uv run pytest --cov=eu_ai_act_classifier --cov-report=term --cov-fail-under=94
+uv run pytest --cov=eu_ai_act_classifier --cov-report=term --cov-fail-under=95
 ```
 
 CI also runs the suite on Python 3.14, at the lowest declared dependency versions

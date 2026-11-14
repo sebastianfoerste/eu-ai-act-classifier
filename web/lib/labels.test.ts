@@ -4,7 +4,7 @@ import { formatLabel, labelFor } from "./labels";
 describe("labelFor", () => {
   it("uses the classifier's catalog for Annex III points", () => {
     expect(labelFor("annex_iii_area", "III.5.b")).toBe(
-      "Annex III(5)(b): Creditworthiness evaluation and credit scoring",
+      "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons",
     );
   });
 

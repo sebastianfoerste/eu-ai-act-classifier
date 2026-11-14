@@ -110,7 +110,8 @@ def _short(ref: str) -> str:
 
 
 def annex_iii_label(area: AnnexIII) -> str:
-    """``III.5.b`` -> ``Annex III(5)(b): Creditworthiness evaluation and credit scoring``."""
+    """``III.5.b`` -> ``Annex III(5)(b): Creditworthiness evaluation and credit scoring
+    of natural persons``."""
 
     citation, title = ANNEX_III[area]
     if area is AnnexIII.UNSURE:

@@ -59,14 +59,19 @@ def test_timeline_uses_published_binding_sources() -> None:
 
 
 # Chapter III, Section 5 and Chapter IX: outside the Art. 113, point (c) deferral.
-UNDEFERRED_ARTICLES = {f"Art. {n} AIA" for n in (40, 41, 42, 43, 44, 47, 48, 49, 72, 73)}
+# Art. 43(2) (internal control) and Art. 44 (certificates) are alternative Section 5
+# items: Annex III points 2 to 8 get the first, other high-risk routes the second.
+UNDEFERRED_ARTICLES = {
+    *(f"Art. {n} AIA" for n in (40, 41, 42, 43, 44, 47, 48, 49, 72, 73)),
+    "Art. 43(2) AIA",
+}
 # Chapter III, Sections 1 to 3 (Arts. 6-27): deferred by Art. 113, point (c).
 DEFERRED_ARTICLES = {f"Art. {n} AIA" for n in range(6, 28)}
 HIGH_RISK_ROUTES = [
     pytest.param(
         {"annex_iii_area": AnnexIII.CREDITWORTHINESS},
         "2027-12-02",
-        UNDEFERRED_ARTICLES,
+        UNDEFERRED_ARTICLES - {"Art. 44 AIA"},
         id="annex-iii",
     ),
     # Art. 49(1) AIA registers only Annex III systems, so an Annex I product has no
@@ -74,7 +79,7 @@ HIGH_RISK_ROUTES = [
     pytest.param(
         {"annex_i_safety_component": True, "annex_i_third_party_assessment": True},
         "2028-08-02",
-        UNDEFERRED_ARTICLES - {"Art. 49 AIA"},
+        UNDEFERRED_ARTICLES - {"Art. 49 AIA", "Art. 43(2) AIA"},
         id="annex-i",
     ),
     # Still "classified as high-risk pursuant to Article 6(2) and Annex III", so
@@ -86,7 +91,7 @@ HIGH_RISK_ROUTES = [
             "annex_iii_area": AnnexIII.CREDITWORTHINESS,
         },
         "2027-12-02",
-        UNDEFERRED_ARTICLES,
+        UNDEFERRED_ARTICLES - {"Art. 43(2) AIA"},
         id="annex-i-and-annex-iii",
     ),
 ]
@@ -440,10 +445,12 @@ def test_market_dates_accept_iso_dates_and_null(field: str) -> None:
 def test_counsel_flag_is_visible_in_text_report_dossier_and_artifacts() -> None:
     report = classify(SystemProfile(name="x", annex_iii_area=AnnexIII.CREDITWORTHINESS))
     flag = "Literal reading, confirm with counsel"
+    # Annex III point 5(b) takes the Art. 43(2) item, not the Art. 44 item.
+    flagged = len(UNDEFERRED_ARTICLES - {"Art. 44 AIA"})
 
-    assert render_report(report).count(flag) == len(UNDEFERRED_ARTICLES)
+    assert render_report(report).count(flag) == flagged
     dossier = render_review_dossier_markdown(build_review_dossier(report))
-    assert dossier.count(flag) == len(UNDEFERRED_ARTICLES)
+    assert dossier.count(flag) == flagged
     assert flag in render_artifact("post-market-monitoring-plan", report)
 
 
@@ -525,6 +532,120 @@ def test_cli_sources_outputs_source_manifest(capsys) -> None:
 
     assert any(source["source_id"] == "ai-act-2024-1689" for source in data)
     assert any(source["source_id"] == "ai-act-amendment-2026-1744" for source in data)
+
+
+def _provider_graph_articles(**facts) -> set[str]:
+    report = classify(SystemProfile(name="x", roles=[Role.PROVIDER], **facts))
+    return {item.article for item in report.obligation_graph}
+
+
+@pytest.mark.parametrize("area", list(AnnexIII), ids=lambda area: area.value)
+@pytest.mark.parametrize("section_b", [False, True], ids=["annex-iii-only", "section-b-route"])
+def test_every_annex_iii_point_takes_the_route_its_number_gives(
+    area: AnnexIII, section_b: bool
+) -> None:
+    # Art. 43(2) AIA: points 2 to 8 of Annex III follow internal control (Annex VI).
+    # Point 1 (Art. 43(1)) and an unsettled point keep the notified-body item, also for
+    # a Section B product on the Art. 6(1) route. Derived from the point's number, not
+    # from the engine's own set, so a point dropped from that set is caught.
+    route = (
+        {
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_i_section": "B",
+        }
+        if section_b
+        else {}
+    )
+    articles = _provider_graph_articles(annex_iii_area=area, **route)
+    notified_body = area is AnnexIII.UNSURE or area.value.startswith("III.1.")
+    assert ("Art. 44 AIA" in articles) is notified_body
+    assert ("Art. 43(2) AIA" in articles) is not notified_body
+
+
+def test_internal_control_item_is_review_required_and_names_annex_vi() -> None:
+    report = classify(
+        SystemProfile(name="x", roles=[Role.PROVIDER], annex_iii_area=AnnexIII.CREDITWORTHINESS)
+    )
+    item = next(item for item in report.obligation_graph if item.article == "Art. 43(2) AIA")
+    assert item.obligation_id == "high-risk.provider.43.2"
+    assert "Annex VI" in item.requirement
+    assert item.review_status.value == "review_required"
+
+
+def test_notified_body_item_stays_where_a_notified_body_can_be_involved() -> None:
+    # Annex III point 1 (Art. 43(1)), an unsettled Annex III point, the Annex I route,
+    # and an Annex III system that is also an Annex I product whose section is not
+    # given (a design choice: it may be Section A, which Art. 43(3), last subparagraph,
+    # sends to its own procedure; Section A itself is tested below).
+    for facts in (
+        {"annex_iii_area": AnnexIII.BIOMETRICS_REMOTE_ID},
+        {"annex_iii_area": AnnexIII.BIOMETRICS_EMOTION},
+        {"annex_iii_area": AnnexIII.UNSURE},
+        {"annex_i_safety_component": True, "annex_i_third_party_assessment": True},
+        {
+            "annex_iii_area": AnnexIII.CREDITWORTHINESS,
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+        },
+        # Art. 43(3), last subparagraph, does not depend on a third-party assessment.
+        {"annex_iii_area": AnnexIII.CRITICAL_INFRASTRUCTURE, "annex_i_safety_component": True},
+        {"annex_iii_area": AnnexIII.CREDITWORTHINESS, "annex_i_safety_component": True},
+        {"annex_iii_area": AnnexIII.INSURANCE_LIFE_HEALTH, "annex_i_safety_component": True},
+        # A Section B product on the Art. 6(1) route takes Art. 43(2) only in points
+        # 2 to 8: point 1 and an unsettled point keep the notified-body item.
+        *(
+            {
+                "annex_iii_area": area,
+                "annex_i_safety_component": True,
+                "annex_i_third_party_assessment": True,
+                "annex_i_section": "B",
+            }
+            for area in (
+                AnnexIII.BIOMETRICS_REMOTE_ID,
+                AnnexIII.BIOMETRICS_EMOTION,
+                AnnexIII.UNSURE,
+            )
+        ),
+    ):
+        articles = _provider_graph_articles(**facts)
+        assert "Art. 44 AIA" in articles
+        assert "Art. 43(2) AIA" not in articles
+
+
+@pytest.mark.parametrize(
+    ("section", "third_party", "internal_control"),
+    [
+        ("A", True, False),
+        (None, True, False),
+        ("B", True, True),
+        # Without the Art. 6(1) route the section is not used, so it stays unknown.
+        ("B", False, False),
+    ],
+    ids=["section-a", "section-not-given", "section-b", "section-b-not-on-the-route"],
+)
+def test_art_43_3_keeps_the_notified_body_item_for_section_a_only(
+    section: str | None, third_party: bool, internal_control: bool
+) -> None:
+    # Art. 43(3), last subparagraph (OJ L, 2026/1744, Art. 1, point (19)): "Where a
+    # high-risk AI system is both covered by the Union harmonisation legislation listed
+    # in Section A of Annex I and it falls within one of the categories listed in
+    # Annex III", the Section A procedure applies. A Section B product in Annex III
+    # points 2 to 8 follows Art. 43(2); an unknown section may be Section A.
+    articles = _provider_graph_articles(
+        annex_iii_area=AnnexIII.CREDITWORTHINESS,
+        annex_i_safety_component=True,
+        annex_i_third_party_assessment=third_party,
+        annex_i_section=section,
+    )
+    assert ("Art. 43(2) AIA" in articles) is internal_control
+    assert ("Art. 44 AIA" in articles) is not internal_control
+
+
+def test_report_cites_the_ai_act_as_amended_by_regulation_2026_1744() -> None:
+    report = classify(SystemProfile(name="x"))
+    assert report.regulation.startswith("Regulation (EU) 2024/1689 ")
+    assert report.regulation.endswith(", as amended by Regulation (EU) 2026/1744")
 
 
 # --- Art. 111(2) AIA: high-risk systems already on the market ------------------------

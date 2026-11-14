@@ -509,6 +509,20 @@ def test_annex_iii_unknown_is_unsettled_point() -> None:
     assert _report(profile)["disposition"] == "requires_review"
 
 
+def test_an_unknown_fraud_purpose_is_recorded_as_unknown() -> None:
+    # "I don't know" on the Annex III(5)(b) fraud question records null. True would go to
+    # review as well, but the report would then say that the profile states the purpose.
+    answers = profile_to_answers(EXAMPLES["credit_scoring"])
+    answers["used_for_financial_fraud_detection"] = "unknown"
+    profile, asked, blocked, _missing = answers_to_profile(answers)
+    assert "used_for_financial_fraud_detection" in asked and not blocked
+    assert read_field(profile, "used_for_financial_fraud_detection") is None
+    report = _report(profile)
+    assert report["disposition"] == "requires_review"
+    (question,) = [q for q in report["open_questions"] if "financial fraud" in q]
+    assert "the profile states" not in question
+
+
 def test_definition_is_json_and_defaults_match_the_model() -> None:
     definition = json.loads(json.dumps(intake_definition()))
     defaults = SystemProfile(name="x").model_dump(mode="json")

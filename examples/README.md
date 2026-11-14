@@ -1,6 +1,6 @@
 # Example Systems
 
-Each file is a `SystemProfile`. The 18 base examples double as fixtures in
+Each file is a `SystemProfile`. The 19 base examples double as fixtures in
 `tests/test_examples.py`; expected classification is asserted on every run.
 
 ## Base Eval Set
@@ -25,7 +25,14 @@ III(5)(b) AIA.
 III(3)(d) AIA.
 
 `credit_scoring_deployer.json`: High-risk, determined. Deployer of Annex
-III(5)(b); FRIA required under Art. 27 AIA.
+III(5)(b); FRIA required under Art. 27 AIA. Worked example:
+[bank-credit-scoring.md](../docs/worked-examples/bank-credit-scoring.md).
+
+`life_insurer_pricing.json`: High-risk, determined. A synthetic German life
+insurer that builds and uses its own term-life pricing model: provider and
+deployer under Annex III(5)(c) AIA, with profiling, the Art. 43(2) internal-control
+route and an Art. 27 FRIA. Worked example:
+[life-insurer-pricing.md](../docs/worked-examples/life-insurer-pricing.md).
 
 `law_enforcement.json`: High-risk, determined. Reoffending risk under Annex
 III(6)(d) AIA.

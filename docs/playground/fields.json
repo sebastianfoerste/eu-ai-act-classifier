@@ -342,11 +342,11 @@
             },
             {
               "value": "III.5.b",
-              "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring"
+              "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons"
             },
             {
               "value": "III.5.c",
-              "label": "Annex III(5)(c): Risk assessment and pricing in life and health insurance"
+              "label": "Annex III(5)(c): Risk assessment and pricing for natural persons in life and health insurance"
             },
             {
               "value": "III.5.d",
@@ -401,6 +401,12 @@
               "label": "Annex III, point unsettled: An Annex III area is implicated but the specific point is unsettled"
             }
           ]
+        },
+        {
+          "name": "used_for_financial_fraud_detection",
+          "type": "boolean or null",
+          "default": false,
+          "hint": "Annex III(5)(b) AIA excepts financial-fraud detection. True or null on a III.5.b profile raises a review question."
         },
         {
           "name": "derogation",

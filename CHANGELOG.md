@@ -114,7 +114,8 @@ owner has not reviewed the detail. The claim ledger records them too.
   deployer of an Annex III point 5(b) system with no public-authority use
   and no public law body, for one, a missing status reads like "no" and
   raises no review question, so `credit_scoring_deployer.json` still opens
-  with it unanswered.
+  with it unanswered, and so does `life_insurer_pricing.json` (#14), a
+  point 5(c) provider and deployer.
 - The engine reads `deployer_public_authority` only for a profile that holds
   the deployer role. For any other profile, the Art. 111(2) caveat on
   systems intended to be used by public authorities turns on
@@ -351,6 +352,71 @@ owner has not reviewed the detail. The claim ledger records them too.
   guides already did for this package's server. eu-reg-mcp, the linter and
   this classifier require Python 3.13 or later; without the flag, uvx fails
   with `No solution found` when the default Python is older.
+
+### Legal mapping corrections (#14)
+
+These entries come from #14. After a first check in a GitHub mirror of
+EUR-Lex, these provisions were checked on 11 November 2026 against the
+Official Journal texts pinned in `sources/`, each in a VERIFIED row of the
+claim ledger of that date: Art. 6(3), third subparagraph; Annex III, point
+5(b) and (c); Art. 43(2) and Art. 43(3), last subparagraph; Art. 50(7); Art. 96(1)(d); and the titles
+and dates in the regulation string. The check confirms wording and pinpoints.
+The 2026-08-02 dating of the new Art. 43(2) item rests on the reading of
+Art. 113 of 18 October 2026 (the CORRECTED and PENDING Section 5 rows). No
+lawyer has adopted the conclusions, so confirm them with counsel before
+reliance. The two Art. 50 Commission sources could not be opened and keep
+`[noch zu verifizieren]`.
+
+#### Added
+
+- `used_for_financial_fraud_detection` (default `false`): point 5(b) excepts
+  AI systems used for the purpose of detecting financial fraud. On a point
+  5(b) profile, `true` or `null` adds an open question and the system stays
+  high-risk, so the disposition is `REQUIRES_REVIEW` and `--strict` exits 1.
+  The guided intake asks it only for a point 5(b) profile; "I don't know"
+  records `null`.
+- New example `examples/life_insurer_pricing.json` (Annex III point 5(c),
+  provider and deployer, with profiling) and two worked examples in
+  `docs/worked-examples/`, a bank's credit-scoring model and a life insurer's
+  pricing model.
+
+#### Changed
+
+- Annex III labels as in Annex III: point 5(b) is "Creditworthiness
+  evaluation and credit scoring of natural persons" and point 5(c) "Risk
+  assessment and pricing for natural persons in life and health insurance".
+  The 5(b) and 5(c) finding titles and the display labels from `labels.py`
+  (#31) change with them.
+- For Annex III points 2 to 8 the provider graph has
+  `high-risk.provider.43.2` (Art. 43(2) AIA, internal control under Annex VI
+  without a notified body, `review_required`) instead of
+  `high-risk.provider.44` (Art. 44 certificate). Integrations that read
+  `high-risk.provider.44` for these systems will no longer find it. Where the
+  Chapter III duties apply, Annex III point 1, `III.unsure` and an Annex I
+  product in Section A, or whose section is not given (also an Annex I
+  safety component off the Art. 6(1) route, where the section is not asked),
+  keep the Art. 44 item:
+  the last subparagraph of Art. 43(3), as replaced by Regulation (EU)
+  2026/1744, sends a system covered by Section A legislation that also falls
+  under Annex III to that legislation's procedure. It names Section A only, so
+  a Section B product on the Art. 6(1) route in points 2 to 8 gets the
+  Art. 43(2) item. The new item is dated like the other Section 5 items: 2026-08-02 with
+  "Literal reading, confirm with counsel".
+- CI's coverage floor rises from 94 % to 95 % (`--cov-fail-under=95`), the
+  integer part of the measured total of 95.02 %.
+- The profiling rule is cited as "Art. 6(3), third subparagraph, AIA"
+  instead of "Art. 6(3) subpara. 2 AIA".
+- Art. 50 sources: the placeholder "Transparency guidance tracker" is
+  replaced by the Code of Practice on marking and labelling of AI-generated
+  content (Art. 50(7) AIA, `art-50-code-of-practice`) and the Commission
+  guidelines on the Art. 50 transparency obligations (Art. 96(1)(d) AIA,
+  `art-50-guidelines`). Their titles, dates and URLs come from search results
+  only, so both carry `[noch zu verifizieren]`. With `--advisory`, every
+  Art. 50 profile gets the note `guidance.transparency-guidelines` (was
+  `guidance.transparency`), and profiles under Art. 50(2) or (4) also get
+  `guidance.transparency-code-of-practice`.
+- The regulation named in every report ends with "as amended by Regulation
+  (EU) 2026/1744".
 
 ## 0.2.2 (2026-10-23)
 
