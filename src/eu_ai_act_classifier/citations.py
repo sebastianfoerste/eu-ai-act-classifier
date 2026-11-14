@@ -54,28 +54,29 @@ AI_SYSTEM_DEFINITION_GUIDELINES_URL = (
     "commission-publishes-guidelines-ai-system-definition-facilitate-first-ai-acts-rules-application"
 )
 GPAI_CODE_URL = "https://digital-strategy.ec.europa.eu/en/policies/contents-code-gpai"
-GPAI_PROVIDER_GUIDELINES_URL = "https://digital-strategy.ec.europa.eu/en/node/13982/printable/pdf"
-# The two Art. 50 instruments are separate: a voluntary code of practice under
-# Art. 50(7) AIA and Commission guidelines under Art. 96(1)(d) AIA. Their URLs,
-# titles and dates come from search results and secondary reports; the Commission
-# pages were unreachable from the checking environment, so both sources carry
-# ``[noch zu verifizieren]`` until someone opens the official pages.
+GPAI_PROVIDER_GUIDELINES_URL = (
+    "https://digital-strategy.ec.europa.eu/en/library/"
+    "guidelines-scope-obligations-providers-general-purpose-ai-models-under-ai-act"
+)
+# The two Art. 50 instruments are separate: the Code of Practice on Transparency of
+# AI-generated Content and the Commission guidelines issued under Art. 96(1)(d) AIA.
+# Their pages were opened on 12 and 14 November 2026 and their documents read on
+# 14 November 2026 (claim ledger). The guidelines URL is the library page that holds
+# the document.
 ART_50_CODE_OF_PRACTICE_URL = (
     "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content"
 )
 ART_50_GUIDELINES_URL = (
-    "https://digital-strategy.ec.europa.eu/en/policies/guidelines-ai-transparency-obligations"
+    "https://digital-strategy.ec.europa.eu/en/library/"
+    "guidelines-transparency-obligations-providers-and-deployers-ai-systems"
 )
 
 
 BINDING_SOURCE_RETRIEVED_ON = "2026-10-18"
 ADVISORY_SOURCE_RETRIEVED_ON = "2026-06-18"
-ART_50_SOURCES_RETRIEVED_ON = "2026-10-14 (search results only)"
-_NOT_PRIMARY_VERIFIED = (
-    "Not primary-verified: the title, date and URL come from search results and "
-    "secondary reports, because the Commission page was unreachable from the checking "
-    "environment on 14 October 2026. Recheck on the official page before reliance."
-)
+# The Art. 50 sources were read later than the other advisory sources, so they carry
+# their own date. `verify_sources --update` moves all three dates together.
+ART_50_SOURCES_RETRIEVED_ON = "2026-11-14"
 
 
 def source_manifest() -> list[RegulatorySource]:
@@ -150,7 +151,10 @@ def source_manifest() -> list[RegulatorySource]:
         ),
         RegulatorySource(
             source_id="gpai-provider-guidelines",
-            title="Guidelines for providers of general-purpose AI models",
+            title=(
+                "Guidelines on the scope of obligations for providers of general-purpose AI "
+                "models under the AI Act"
+            ),
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=GPAI_PROVIDER_GUIDELINES_URL,
             retrieved_on=ADVISORY_SOURCE_RETRIEVED_ON,
@@ -159,32 +163,39 @@ def source_manifest() -> list[RegulatorySource]:
         ),
         RegulatorySource(
             source_id="art-50-code-of-practice",
-            title="Code of Practice on marking and labelling of AI-generated content",
+            title="Code of Practice on Transparency of AI-generated Content",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=ART_50_CODE_OF_PRACTICE_URL,
             retrieved_on=ART_50_SOURCES_RETRIEVED_ON,
-            citation_label="Art. 50 marking and labelling Code of Practice [noch zu verifizieren]",
+            citation_label="Art. 50 marking and labelling Code of Practice",
             implementation_note=(
-                "Voluntary code of practice under Art. 50(7) AIA for the marking and "
-                "labelling duties in Art. 50(2) and (4) AIA, reported as final on 10 June "
-                "2026. The Commission policy page is indexed as 'Code of Practice on "
-                "Transparency of AI-generated Content'. " + _NOT_PRIMARY_VERIFIED
+                "Voluntary code, final text of 10 June 2026, with rules for the marking and "
+                "detection duties of providers (Art. 50(2) and (5) AIA) and the labelling "
+                "duties of deployers (Art. 50(4) and (5) AIA). The Commission's page states "
+                "that the Commission and the AI Board have confirmed it as an adequate "
+                "voluntary tool to demonstrate compliance. The Commission's Art. 50 "
+                "guidelines (C(2026) 7702 final, points (146) and (147)) refer to it as a code "
+                "of practice assessed as adequate pursuant to Art. 50(7) AIA and to a "
+                "Commission Opinion on that assessment; the code itself does not cite that "
+                "provision."
             ),
         ),
         RegulatorySource(
             source_id="art-50-guidelines",
             title=(
-                "Commission guidelines on transparency obligations for providers and "
-                "deployers of certain AI systems (Art. 50 AIA)"
+                "Commission Guidelines on the implementation of the transparency obligations "
+                "for certain AI systems under Article 50 of Regulation (EU) 2024/1689, "
+                "C(2026) 7702 final"
             ),
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=ART_50_GUIDELINES_URL,
             retrieved_on=ART_50_SOURCES_RETRIEVED_ON,
-            citation_label="Commission Art. 50 transparency guidelines [noch zu verifizieren]",
+            citation_label="Commission Art. 50 transparency guidelines",
             implementation_note=(
-                "Nonbinding Commission guidelines under Art. 96(1)(d) AIA on the practical "
-                "implementation of Art. 50, reported as published on 20 July 2026. A separate "
-                "instrument from the code of practice. " + _NOT_PRIMARY_VERIFIED
+                "Nonbinding Commission guidelines issued under Art. 96(1)(d) AIA on the "
+                "transparency obligations in Art. 50, Communication of 5 November 2026; the "
+                "Commission's page dates their publication to 20 July 2026. A separate "
+                "instrument from the code of practice."
             ),
         ),
     ]

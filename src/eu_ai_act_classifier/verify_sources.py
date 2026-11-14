@@ -182,8 +182,9 @@ def verify_sources(
     ``fetch`` returns a URL's HTTP status, raises BotChallengeError for a challenge page and
     raises otherwise when there is no answer (fetch_status by default). A URL that answered
     202 or with a challenge is unverified: reported, but not a failure. With ``update``, and
-    only when every URL was verified, write dist/verified_sources.json and set both retrieval
-    dates in citations.py to today; otherwise nothing is written and the result is False.
+    only when every URL was verified, write dist/verified_sources.json and set every source
+    retrieval date in citations.py to today; otherwise nothing is written and the result is
+    False.
     ``root`` is the checkout to update (CHECKOUT_ROOT by default); if it is not a source
     checkout, ``update`` raises NotASourceCheckoutError before any request is made.
     """
@@ -265,13 +266,11 @@ def verify_sources(
         json.dump(meta_data, f, indent=2)
     print(f"Wrote verification metadata to {meta_file}")
 
-    # Every configured URL was verified, so both source retrieval dates move to today.
+    # Every configured URL was verified, so every source retrieval date moves to today.
     content = citations_file.read_text(encoding="utf-8")
     new_content = re.sub(
-        r'(?:BINDING|ADVISORY)_SOURCE_RETRIEVED_ON\s*=\s*"[^"]+"',
-        lambda match: (
-            f'{match.group(0).split("_SOURCE_")[0]}_SOURCE_RETRIEVED_ON = "{retrieved_on}"'
-        ),
+        r'(BINDING_SOURCE|ADVISORY_SOURCE|ART_50_SOURCES)_RETRIEVED_ON\s*=\s*"[^"]+"',
+        lambda match: f'{match.group(1)}_RETRIEVED_ON = "{retrieved_on}"',
         content,
     )
     citations_file.write_text(new_content, encoding="utf-8")

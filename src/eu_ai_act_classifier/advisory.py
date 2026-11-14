@@ -125,9 +125,9 @@ def build_advisory_notes(profile: SystemProfile) -> list[AdvisoryNote]:
                 title="Commission Art. 50 transparency guidelines",
                 detail=(
                     "The Commission guidelines on the Art. 50 transparency obligations "
-                    "(Art. 96(1)(d) AIA), reported as published on 20 July 2026, can support "
-                    "the review of who must inform, mark or disclose, and of the exceptions. "
-                    "Not primary-verified. Nonbinding; they do not change the classification."
+                    "(Art. 96(1)(d) AIA; C(2026) 7702 final) can support the review of who "
+                    "must inform, mark or disclose, and of the exceptions. Nonbinding; they "
+                    "do not change the classification."
                 ),
                 source_id="art-50-guidelines",
                 source_url=ART_50_GUIDELINES_URL,
@@ -135,15 +135,17 @@ def build_advisory_notes(profile: SystemProfile) -> list[AdvisoryNote]:
         )
 
     if profile.generates_synthetic_content or profile.generates_deepfakes:
+        # The code covers the Art. 50(2) marking and detection and the Art. 50(4)
+        # labelling duties, not Art. 50(1) and (3).
         notes.append(
             AdvisoryNote(
                 note_id="guidance.transparency-code-of-practice",
                 title="Art. 50 marking and labelling Code of Practice",
                 detail=(
-                    "The Code of Practice on marking and labelling of AI-generated content "
-                    "(Art. 50(7) AIA), reported as final on 10 June 2026, sets out voluntary "
-                    "measures for the Art. 50(2) and (4) AIA duties. Not primary-verified. "
-                    "Adherence is voluntary and does not change the classification."
+                    "The Code of Practice on Transparency of AI-generated Content (final "
+                    "text of 10 June 2026) sets out voluntary measures for the Art. 50(2) "
+                    "and (4) AIA duties. Adherence is voluntary and does not change the "
+                    "classification."
                 ),
                 source_id="art-50-code-of-practice",
                 source_url=ART_50_CODE_OF_PRACTICE_URL,

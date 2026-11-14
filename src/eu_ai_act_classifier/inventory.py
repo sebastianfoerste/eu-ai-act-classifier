@@ -11,6 +11,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from .artifacts import ARTIFACT_NAMES
+from .catalog import ART_4
 from .engine import classify
 from .models import ClassificationReport, Disposition, RegulatorySource, RiskTier, SystemProfile
 
@@ -273,8 +274,18 @@ def _next_action(report: ClassificationReport) -> str:
         return "Stop or redesign the use case before deployment."
     if report.open_questions:
         return "Resolve open facts and rerun the deterministic classifier."
-    if report.obligations or report.documentation_required or report.transparency_obligations:
+    if (
+        any(item.article != ART_4 for item in report.obligations)
+        or report.documentation_required
+        or report.transparency_obligations
+    ):
         return "Prepare draft artifacts for reviewer sign-off."
+    if report.obligations:
+        # Only the Art. 4 AI literacy duty, which no draft artifact covers.
+        return (
+            "Record the determination, keep the Art. 4 AI literacy measures record and "
+            "monitor source updates."
+        )
     return "Record the determination and monitor source updates."
 
 

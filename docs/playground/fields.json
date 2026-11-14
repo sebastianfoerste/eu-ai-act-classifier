@@ -113,13 +113,13 @@
           "name": "placing_on_market_date",
           "type": "string or null",
           "default": null,
-          "hint": "YYYY-MM-DD, the AI system's date. Drives Art. 111(2) and (4) AIA; for a GPAI model without its own date, also Art. 111(3)."
+          "hint": "YYYY-MM-DD, the AI system's date. Drives Art. 111(2) and (4) AIA; for a GPAI model without its own date, also Art. 111(3). For Art. 111(2) the first unit of that type and model decides (recital 39 of Regulation (EU) 2026/1744)."
         },
         {
           "name": "putting_into_service_date",
           "type": "string or null",
           "default": null,
-          "hint": "YYYY-MM-DD. Drives Art. 111(2) AIA."
+          "hint": "YYYY-MM-DD. Drives Art. 111(2) AIA; the first unit of that type and model decides (recital 39 of Regulation (EU) 2026/1744)."
         },
         {
           "name": "significant_change_after_application_date",

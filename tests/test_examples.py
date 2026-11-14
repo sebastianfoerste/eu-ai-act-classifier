@@ -73,9 +73,11 @@ def test_classification_packet_is_the_current_credit_scoring_output() -> None:
     assert packet.with_suffix(".md").read_text(encoding="utf-8") == render_report(report) + "\n"
 
 
-def test_prohibited_lists_no_obligations() -> None:
+def test_prohibited_lists_only_the_flagged_art_4_duty() -> None:
+    # Art. 4 AIA names no exception for a prohibited practice; the duty is kept, flagged.
     report = classify(_load("social_scoring.json"))
-    assert report.obligations == []
+    assert [ob.article for ob in report.obligations] == ["Art. 4 AIA"]
+    assert "Literal reading, confirm with counsel" in report.obligations[0].requirement
     assert any(f.severity.value == "blocker" for f in report.findings)
 
 
@@ -84,8 +86,14 @@ def test_credit_deployer_requires_fria() -> None:
     articles = {ob.article for ob in report.obligations}
     assert "Art. 26 AIA" in articles
     assert "Art. 27 AIA" in articles
-    # docs/worked-examples/bank-credit-scoring.md states the date of both graph items.
-    assert [item.application_date for item in report.obligation_graph] == ["2027-12-02"] * 2
+    assert "Art. 4 AIA" in articles
+    # docs/worked-examples/bank-credit-scoring.md states the date of each graph item: the
+    # Art. 4 item (Chapter I) first, then the Art. 26 and Art. 27 items (Section 3).
+    assert [(item.article, item.application_date) for item in report.obligation_graph] == [
+        ("Art. 4 AIA", "2025-02-02"),
+        ("Art. 26 AIA", "2027-12-02"),
+        ("Art. 27 AIA", "2027-12-02"),
+    ]
 
 
 def test_life_insurer_carries_provider_and_deployer_duties() -> None:
@@ -97,14 +105,19 @@ def test_life_insurer_carries_provider_and_deployer_duties() -> None:
     assert "Art. 44 AIA" not in graph
     # Dates and counts stated in docs/worked-examples/life-insurer-pricing.md: the
     # Section 5 and Chapter IX items, the Art. 43(2) item among them, carry the literal
-    # Art. 113 date; the Section 3 items carry the point (c)(i) date.
+    # Art. 113 date; the Section 3 items carry the point (c)(i) date; the two Art. 4 items
+    # (provider and deployer) carry the Chapter I date.
     literal = {f"Art. {n} AIA" for n in (40, 41, 42, 43, 47, 48, 49, 72, 73)} | {"Art. 43(2) AIA"}
     for item in report.obligation_graph:
-        expected = "2026-08-02" if item.article in literal else "2027-12-02"
+        if item.article == "Art. 4 AIA":
+            expected = "2025-02-02"
+        else:
+            expected = "2026-08-02" if item.article in literal else "2027-12-02"
         assert item.application_date == expected, item.obligation_id
-    assert len([ob for ob in report.obligations if ob.applies_to.value == "provider"]) == 14
+    assert len([ob for ob in report.obligations if ob.applies_to.value == "provider"]) == 15
+    assert len([ob for ob in report.obligations if ob.applies_to.value == "deployer"]) == 3
     assert len(report.documentation_required) == 5
-    assert len(report.obligation_graph) == 18
+    assert len(report.obligation_graph) == 20
     assert (
         sum(item.review_status.value == "review_required" for item in report.obligation_graph) == 13
     )

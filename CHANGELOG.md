@@ -7,6 +7,115 @@ pull requests.
 
 Changes since 0.2.2.
 
+### MCP tools: typed input schema and read-only annotations
+
+#### Changed
+
+- `classify_ai_system` and `classify_ai_system_text` type their `profile`
+  parameter as the `SystemProfile` model instead of `dict`, so `list_tools`
+  returns the profile's JSON Schema (field names, the `prohibited_practices`
+  and `annex_iii_area` codes, date patterns) and the SDK validates the
+  argument before the tool runs; an invalid profile is still a `ToolError`
+  naming the field, now as `profile.<field>`. Both tools carry
+  `readOnlyHint`/`idempotentHint` true and `destructiveHint`/`openWorldHint`
+  false. Verified on the locked mcp (1.30.0) and on the 1.21.1 floor. The
+  MCP guide notes that SDK v2 renamed `FastMCP` to `MCPServer` and that v1
+  receives critical bug fixes and security patches only; the migration is the
+  owner's call.
+
+### Readable CLI validation errors
+
+#### Fixed
+
+- An invalid profile no longer prints pydantic's raw report with
+  `errors.pydantic.dev` links. The CLI prints one line per error as
+  `field: message`: an enum error lists the allowed values and the value
+  given, an unknown field says so and points at `--schema profile`, and a
+  date error shows the validator's own message. Exit code stays 2.
+  `tests/test_cli.py` covers every error path and the `--strict` exit codes.
+
+### Precision notes from Regulation (EU) 2026/1744
+
+#### Changed
+
+- `placing_on_market_date` and `putting_into_service_date` carry a
+  description in the JSON Schema, the field guide and the guided intake: ISO
+  dates, and for Art. 111(2) AIA the date the first unit of that type and
+  model was placed on the Union market or put into service decides
+  (recital 39 of Regulation (EU) 2026/1744).
+- The Art. 73 obligation and graph item name both reporting routes: the
+  market surveillance authorities of the Member States where the incident
+  occurred (Art. 73(1)), or the AI Office where it is exclusively competent
+  for the system under Art. 75(1) (Art. 75(1a), inserted by Art. 1,
+  point (31)).
+- The Art. 72 obligation and graph item say that the post-market monitoring
+  plan is part of the Annex IV technical documentation and that the
+  Commission's guidance and template are due by 2 September 2027
+  (Art. 72(3) as replaced by Art. 1, point (30)).
+- The playground footer links the consolidated text of 27 July 2026 instead
+  of the 2024 text.
+- The provisions above were checked on 14 November 2026 in the Official
+  Journal texts pinned in `sources/` (VERIFIED rows of that date in the claim
+  ledger).
+
+### Art. 50 Commission documents read
+
+#### Changed
+
+- The two Art. 50 sources that #14 added from search results were read on
+  the Commission's site: the pages on 12 and 14 November 2026, the documents
+  on 14 November 2026. Both lose `[noch zu verifizieren]` and carry the
+  retrieval date 2026-11-14 (`ART_50_SOURCES_RETRIEVED_ON`). The code is
+  named as on the Commission's policy page, "Code of Practice on
+  Transparency of AI-generated Content" (final text of 10 June 2026;
+  Art. 50(2), (4) and (5)). The
+  guidelines are the Communication C(2026) 7702 final of 5 November 2026,
+  issued under Art. 96(1)(d), and the source links the Commission's library
+  page that holds them. The code does not cite Art. 50(7); the guidelines
+  refer to it, in points (146) and (147), as a code of practice assessed as
+  adequate pursuant to Art. 50(7), and the source note says so. The advisory
+  notes drop
+  "reported as" and "Not primary-verified". The claim ledger has a CORRECTED
+  row of 14 November 2026 with the documents' SHA-256 digests.
+- The GPAI provider guidelines source points to the Commission's library page
+  for the guidelines instead of an on-the-fly printable PDF link and carries
+  the page's title; its retrieval date is unchanged, as the page's last update
+  (20 April 2026) predates it.
+- `--verify-sources --update` moves all three retrieval dates together, still
+  only when every URL is verified.
+
+### Art. 4 AI literacy duty
+
+#### Added
+
+- Every report whose scope is not outside the AI Act lists an Art. 4 AIA
+  obligation and a graph item (`literacy.provider.4`, `literacy.deployer.4`,
+  dated 2025-02-02) once per provider or deployer role the profile holds,
+  whatever the tier: take measures to support the AI literacy of staff and
+  other persons operating or using the system on the operator's behalf, in the
+  words of Art. 4(1) as replaced by Art. 1, point (5) of Regulation (EU)
+  2026/1744 (in force 27 July 2026). A minimal-risk run, such as
+  `examples/spam_filter.json`, listed no obligation at all. Importers,
+  distributors, authorised representatives and a general-purpose AI model
+  provider as such get none. For a Section B product and for a legacy
+  high-risk system the item is kept, flagged "Literal reading, confirm with
+  counsel" and sent to review, as the Art. 50 items are. So it is for a system
+  classified as prohibited: Art. 4 names no exception for it, and a
+  prohibition can apply from a later date or be subject to an exception. The
+  claim ledger has a VERIFIED row
+  (Art. 4(1) and its date, checked on 14 November 2026 in the Official Journal
+  texts pinned in `sources/`) and a PENDING row for the Section B reading.
+
+#### Changed
+
+- The limited-risk tier label reads "transparency duties (Art. 50 AIA)"
+  instead of "transparency only", in the text report and the playground,
+  since a limited-risk report also lists the Art. 4 duty.
+- The system inventory's next action for a system whose only obligation is
+  the Art. 4 duty reads "Record the determination, keep the Art. 4 AI
+  literacy measures record and monitor source updates." No draft artifact
+  covers Art. 4, so such a system is not sent to prepare draft artifacts.
+
 ### Pinned source texts
 
 #### Added
@@ -384,8 +493,9 @@ and dates in the regulation string. The check confirms wording and pinpoints.
 The 2026-08-02 dating of the new Art. 43(2) item rests on the reading of
 Art. 113 of 18 October 2026 (the CORRECTED and PENDING Section 5 rows). No
 lawyer has adopted the conclusions, so confirm them with counsel before
-reliance. The two Art. 50 Commission sources could not be opened and keep
-`[noch zu verifizieren]`.
+reliance. The two Art. 50 Commission sources could not be opened then and
+kept `[noch zu verifizieren]` until their documents were read on 14 November
+2026 ("Art. 50 Commission documents read", above).
 
 #### Added
 
@@ -430,8 +540,9 @@ reliance. The two Art. 50 Commission sources could not be opened and keep
   replaced by the Code of Practice on marking and labelling of AI-generated
   content (Art. 50(7) AIA, `art-50-code-of-practice`) and the Commission
   guidelines on the Art. 50 transparency obligations (Art. 96(1)(d) AIA,
-  `art-50-guidelines`). Their titles, dates and URLs come from search results
-  only, so both carry `[noch zu verifizieren]`. With `--advisory`, every
+  `art-50-guidelines`). Their titles, dates and URLs came from search results
+  only, so both carried `[noch zu verifizieren]` until the entry "Art. 50
+  Commission documents read", above. With `--advisory`, every
   Art. 50 profile gets the note `guidance.transparency-guidelines` (was
   `guidance.transparency`), and profiles under Art. 50(2) or (4) also get
   `guidance.transparency-code-of-practice`.

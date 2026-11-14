@@ -42,7 +42,7 @@ The page installs a wheel of this package, so it applies the same rules as the C
 uv run python scripts/build_playground.py
 ```
 
-[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
+[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards; captured before the Art. 4 AI literacy item was added, which the live playground now lists first](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
 ## MCP and local API
 
@@ -82,7 +82,7 @@ The inventory payload includes a system review table with classifier-backed rows
 
 ## Optional web cockpit
 
-![Full-page screenshot of the web cockpit in its single-column layout with the CreditSightScore sample: the sample inventory, a guided intake, the review panel (requires_review, high risk, one Art. 111(2) open question), reviewer notes, the AI systems inventory and system review tables, the obligation tracker with 17 graph items, source provenance and a draft export pack](cockpit.png)
+![Full-page screenshot of the web cockpit in its single-column layout with the CreditSightScore sample: the sample inventory, a guided intake, the review panel (requires_review, high risk, one Art. 111(2) open question), reviewer notes, the AI systems inventory and system review tables, the obligation tracker with 17 graph items (captured before the Art. 4 AI literacy item was added; the cockpit now shows 18), source provenance and a draft export pack](cockpit.png)
 
 *Full-page capture of the local web cockpit (`web/`, production build, 1180 px wide) with its CreditSightScore sample loaded, reduced to 256 colours; the steps are in [TESTING.md](TESTING.md#generated-files). The cockpit's sample gives a placing-on-market date of 2026-10-01 and `examples/credit_scoring.json` gives none, so only the cockpit raises the Art. 111(2) question.*
 
