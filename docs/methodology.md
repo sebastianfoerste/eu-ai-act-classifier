@@ -435,6 +435,40 @@ applies on the assessment date, "on or after" its application date. It is null
 without an assessment date. Where the application date itself is open (null),
 it is known only if both possible dates give the same answer.
 
+### Harmonised standards
+
+Read on 14 November 2026 in the Official Journal snapshot
+`sources/oj/32026D2274.en.xhtml`, fetched again that day and identical byte
+for byte, and in Art. 40(1), Art. 17 and Art. 43(1) of Regulation (EU)
+2024/1689. Commission Implementing Decision (EU) 2026/2274 publishes the
+reference of one harmonised standard, EN 18286:2026, titled "Quality
+management system for EU AI Act regulatory purposes" after the words
+"Artificial intelligence", and enters
+into force on the day of publication, 14 October 2026 (Art. 2). It names no
+AI Act article. The Art. 40 graph item of every high-risk provider names the
+standard. For an Annex III, point 1 system the Art. 43 item states the
+Art. 43(1) choice: internal control (Annex VI) only where harmonised standards
+or common specifications were applied for the Section 2 requirements, Annex
+VII otherwise; an unsettled Annex III point gets the same sentence as a
+condition, and a product under Annex I, Section A legislation, which follows
+that legislation's procedure (Art. 43(3), last subparagraph), does not. The
+Decision is not in the report's source manifest, whose `binding_level_1`
+status covers the AI Act and its amendments only. Fixture:
+`tests/legal/fixtures/art40_art43_1_harmonised_standards.json`.
+
+Two readings are the classifier's own and not yet answered by the owner. The
+graph items label them "Interpretation (S1)" and "Interpretation (S2)".
+
+- S1: Art. 40(1) presumes conformity with the requirements in Chapter III,
+  Section 2 (Arts. 8 to 15) and the Chapter V obligations. The quality
+  management system is Art. 17, in Section 3, and the Decision's recital 1
+  speaks only of "the requirements covered by those standards". The item
+  names the standard and leaves to review whether it gives a presumption for
+  Art. 17.
+- S2: EN 18286:2026 is by its title a quality management system standard, so
+  the classifier reads it as not covering the Section 2 requirements:
+  applying it alone does not open Annex VI under Art. 43(1).
+
 ### Interpretation choices
 
 These are the answers given on 10 November 2026 under the owner's delegation

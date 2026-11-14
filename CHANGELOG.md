@@ -28,6 +28,43 @@ Changes since 0.2.2.
   a bot challenge. The byte digests of the Publications Office responses have
   not been recomputed against a fresh download (see `sources/README.md`).
 
+### Art. 5(1)(ba) and (bb) element by element, assessment date, Annex I acts
+
+Ported from #34 onto the models on `main`; the cases in `tests/legal/fixtures/`
+were written from the snapshots in `sources/` before the rules.
+
+#### Added
+
+- `intimate_imagery` and `child_sexual_abuse_material` take the element facts of
+  Art. 5(1)(ba) and (bb) AIA (true, false or null each). The classifier applies
+  Art. 5(1a)(a)(i) and (ii) to placing on the market and putting into service,
+  Art. 5(1a)(b) to use and, for point (ba), Art. 5(1b), and reports a point as
+  met, not met or UNKNOWN with the facts it turns on. A declared `5.1.ba` or
+  `5.1.bb` still stands for the elements; a distributor-only profile stays
+  UNKNOWN with review. The interim screen question of #63 stays for generators
+  that give neither a code nor the facts.
+- `assessment_date` decides whether a rule with a later date applies. Before
+  2 December 2026 a met point (ba) or (bb) reads "prohibited from 2 December
+  2026" and goes to review; with no date the prohibited tier is kept, with
+  review. Each obligation-graph item carries `applies_on_assessment_date`.
+- `annex_i_legislation` names the Annex I act (`I.B.21` is machinery under
+  Regulation (EU) 2023/1230, Section B, point 21 since Regulation (EU)
+  2026/1744) and decides the section. The guided intake asks it and the
+  assessment date.
+- The Art. 40 graph item names EN 18286:2026, published by Implementing
+  Decision (EU) 2026/2274; for an Annex III, point 1 system the Art. 43 item
+  states the Art. 43(1) choice between Annex VI and Annex VII. Both readings
+  are labelled interpretations (S1, S2) and the items stay review_required.
+
+#### Changed
+
+- An obligation-graph item's `application_date` is null where it turns on an
+  unknown placing date (Art. 111(3) and (4)); an open question asks for the
+  date unless the assessment date settles it.
+- An Art. 6(1) product with neither the Annex I act nor the section keeps the
+  Section A duties and goes to review instead of being treated as Section A.
+- Art. 50 for a Section B product raises an open question, as Art. 5 does.
+
 ### Audit fixes on commits merged after verification
 
 #### Fixed
