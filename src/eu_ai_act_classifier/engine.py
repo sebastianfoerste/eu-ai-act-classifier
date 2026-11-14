@@ -5,6 +5,7 @@ from __future__ import annotations
 from .advisory import build_advisory_notes
 from .catalog import (
     ANNEX_III,
+    ART_50_2,
     eu_database_registration_applies,
     gpai_obligations,
     high_risk_authorized_representative_obligations,
@@ -23,6 +24,10 @@ from .citations import (
     AMENDING_APPLICATION_DATES,
     APPLICATION_DATES,
     ART_111_1,
+    ART_111_3_DEADLINE,
+    ART_111_4_DEADLINE,
+    GENERAL_APPLICATION_DATE,
+    POINT_B_DATE,
     REGULATION,
     source_manifest,
 )
@@ -44,6 +49,7 @@ from .transitions import (
     ANNEX_X_CARVE_OUT,
     before,
     chapter_iii_date,
+    date_open,
     derogation_asserted,
     derogation_note,
     describe_dates,
@@ -158,6 +164,9 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
     if is_gpai and final_tier is not RiskTier.PROHIBITED:
         obligations += gpai_obligations(systemic_risk=gpai_systemic)
         open_questions += _gpai_date_questions(profile)
+
+    if final_tier is not RiskTier.PROHIBITED:
+        open_questions += _art_111_4_questions(profile, transparency_obligations)
 
     disposition = Disposition.REQUIRES_REVIEW if open_questions else Disposition.DETERMINED
 
@@ -305,10 +314,41 @@ def _art_49_3_questions(profile: SystemProfile, registration: bool) -> list[str]
     return []
 
 
+def _art_111_4_questions(
+    profile: SystemProfile, transparency_obligations: list[Obligation]
+) -> list[str]:
+    """C9: Art. 111(4) AIA dates Art. 50(2) by the system's placing on the market, so an
+    unknown placing date is asked where the assessment date does not settle it."""
+
+    if profile.placing_on_market_date is not None or not any(
+        ob.article == ART_50_2 for ob in transparency_obligations
+    ):
+        return []
+    if not date_open(profile.assessment_date, GENERAL_APPLICATION_DATE, ART_111_4_DEADLINE):
+        return []
+    return [
+        "Art. 111(4) AIA: placing_on_market_date is not given. A system generating synthetic "
+        f"content placed on the market before {GENERAL_APPLICATION_DATE} complies with "
+        f"Art. 50(2) by {ART_111_4_DEADLINE}; a later one is bound from "
+        f"{GENERAL_APPLICATION_DATE}. Give the date the system was placed on the market "
+        "(placing_on_market_date)."
+    ]
+
+
 def _gpai_date_questions(profile: SystemProfile) -> list[str]:
     """Art. 111(3) AIA dates a general-purpose AI model by its own placing on the market."""
 
     model_date, fallback = gpai_model_date(profile)
+    if model_date is None:
+        if not date_open(profile.assessment_date, POINT_B_DATE, ART_111_3_DEADLINE):
+            return []
+        # C9: the Art. 111(3) date turns on the model's placing date, so it is asked.
+        return [
+            "Art. 111(3) AIA: neither gpai_model_placing_on_market_date nor "
+            "placing_on_market_date is given. A model placed on the market before "
+            f"{POINT_B_DATE} complies by {ART_111_3_DEADLINE}; a later one is bound from "
+            f"{POINT_B_DATE}. Give the model's own date (gpai_model_placing_on_market_date)."
+        ]
     if fallback:
         return [
             "Art. 111(3) AIA: no gpai_model_placing_on_market_date is given, so the model is "

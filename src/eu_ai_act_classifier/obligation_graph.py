@@ -42,6 +42,7 @@ from .models import (
     SourceStatus,
     SystemProfile,
 )
+from .rules.base import on_or_after
 from .transitions import (
     ANNEX_X_CARVE_OUT,
     before,
@@ -251,7 +252,8 @@ def build_obligation_graph(
 
     legacy_flag = legacy_transparency_flag(profile) if final_tier is RiskTier.HIGH else None
     for index, obligation in enumerate(transparency_obligations, start=1):
-        applies_from, note = GENERAL_APPLICATION_DATE, None
+        applies_from: str | None = GENERAL_APPLICATION_DATE
+        note: str | None = None
         if obligation.article == ART_50_2:
             applies_from, note = _art_111_dating(
                 profile.placing_on_market_date,
@@ -261,7 +263,7 @@ def build_obligation_graph(
             )
         # Art. 2(2) lists Art. 50 for no Section B product, Annex III area or not.
         section_b_flag = _SECTION_B_TRANSPARENCY_FLAG if section_b_product(profile) else None
-        flagged = bool(section_b_flag or legacy_flag)
+        flagged = bool(section_b_flag or legacy_flag) or applies_from is None
         note = " ".join(part for part in (section_b_flag, note, legacy_flag) if part) or None
         items.append(
             _item(
@@ -278,7 +280,12 @@ def build_obligation_graph(
             )
         )
 
-    return items
+    return [
+        item.model_copy(
+            update={"applies_on_assessment_date": applies_on(profile.assessment_date, item)}
+        )
+        for item in items
+    ]
 
 
 def _high_risk_provider_graph(
@@ -707,7 +714,7 @@ def _actor_slug(actor: Role) -> str:
     return actor.value.replace("_", "-")
 
 
-def _gpai_dating(profile: SystemProfile) -> tuple[str, str | None, bool]:
+def _gpai_dating(profile: SystemProfile) -> tuple[str | None, str | None, bool]:
     """Art. 111(3) AIA dating from the model's own date, or from the AI system's
     placing_on_market_date when only that is given, with a note, and whether it is that
     fallback, which sends every item to review."""
@@ -728,8 +735,10 @@ def _gpai_dating(profile: SystemProfile) -> tuple[str, str | None, bool]:
 
 def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphItem]:
     application_date, note, fallback = _gpai_dating(profile)
-    # The fallback date is not the model's own: nothing dated by it is determined.
-    status = ReviewStatus.REVIEW_REQUIRED if fallback else ReviewStatus.DETERMINED
+    # The fallback date is not the model's own, and an open date is no date: nothing dated
+    # by either is determined.
+    open_date = application_date is None
+    status = ReviewStatus.REVIEW_REQUIRED if fallback or open_date else ReviewStatus.DETERMINED
     # Every Chapter V item takes the same date and Art. 111(3) AIA note (_art_111_dating).
     items = [
         _item(
@@ -847,7 +856,7 @@ def _item(
     trigger: str,
     requirement: str,
     evidence_artifact: str,
-    application_date: str,
+    application_date: str | None,
     review_status: ReviewStatus = ReviewStatus.DETERMINED,
     application_date_note: str | None = None,
 ) -> ObligationGraphItem:
@@ -895,16 +904,48 @@ def _undeferred_item(
 
 def _art_111_dating(
     placed_on: str | None, cut_off: str, deadline: str, note: str
-) -> tuple[str, str | None]:
+) -> tuple[str | None, str | None]:
     """Application date and note under Art. 111(3) or (4) AIA. The duty applies from
-    ``cut_off``; what was placed on the market before that date has until ``deadline``."""
+    ``cut_off``; what was placed on the market before that date has until ``deadline``.
+    With the placing date unknown the date is open (None) and the note says why (C9)."""
 
     if placed_on is None:
-        # Placing date unknown: the cut-off date, with the transition as a condition.
-        return cut_off, note
+        return None, f"{note} {unknown_placing_note(cut_off, deadline)}"
     if before(placed_on, cut_off):
         return deadline, note
     return cut_off, None
+
+
+def unknown_placing_note(cut_off: str, deadline: str) -> str:
+    return (
+        f"The placing date is not given, so the application date is open: {cut_off} for "
+        f"placing on the market on or after {cut_off}, {deadline} for placing before it."
+    )
+
+
+def dating_window(item: ObligationGraphItem) -> tuple[str, str] | None:
+    """The two dates an item with an unknown Art. 111(3) or (4) AIA date can take."""
+
+    if item.application_date is not None:
+        return None
+    if item.obligation_id.startswith("gpai."):
+        return POINT_B_DATE, ART_111_3_DEADLINE
+    if item.article == ART_50_2:
+        return GENERAL_APPLICATION_DATE, ART_111_4_DEADLINE
+    return None
+
+
+def applies_on(assessment_date: str | None, item: ObligationGraphItem) -> bool | None:
+    """Whether ``item`` applies on ``assessment_date``: on or after its application date.
+    For an open date, known only where both possible dates give the same answer."""
+
+    if item.application_date is not None:
+        return on_or_after(assessment_date, item.application_date)
+    window = dating_window(item)
+    if window is None:
+        return None
+    first, last = (on_or_after(assessment_date, day) for day in window)
+    return first if first == last else None
 
 
 def _literal_reading_note(location: str, deferred_date: str) -> str:
