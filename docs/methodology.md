@@ -87,6 +87,12 @@ asserted. An asserted derogation keeps the tier high-risk and changes the
 disposition to `requires_review`, because Art. 6(4) requires documentation and
 registration. Profiling of natural persons forecloses the derogation.
 
+Annex III point 5(b) excepts AI systems used for the purpose of detecting
+financial fraud. The exception is not applied silently: on a point 5(b)
+profile, `used_for_financial_fraud_detection: true` or `null` keeps the tier
+high-risk and adds an open question, so the disposition is `requires_review`.
+The default, `false`, adds none.
+
 The residual `AnnexIII.UNSURE` value is conservative. It marks the system
 high-risk and records an unverified citation for review.
 
