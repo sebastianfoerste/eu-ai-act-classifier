@@ -26,11 +26,14 @@ from .citations import (
     ART_111_2_PUBLIC_AUTHORITY_DEADLINE,
     ART_111_3_DEADLINE,
     ART_111_4_DEADLINE,
+    EN_18286,
+    EN_18286_TITLE,
     GENERAL_APPLICATION_DATE,
     POINT_B_DATE,
     POINT_C_ANNEX_I,
     POINT_C_ANNEX_III,
     POINT_D_DATE,
+    STANDARDS_DECISION_2026_2274,
 )
 from .models import (
     AnnexIII,
@@ -64,6 +67,17 @@ from .transitions import (
 )
 
 _SECTION_5 = "Chapter III, Section 5"
+# Interpretation (S1, docs/methodology.md): Art. 40(1) AIA presumes conformity with the
+# Section 2 requirements and the Chapter V obligations; the Decision names no article.
+_ART_40_REQUIREMENT = (
+    "Track applicable harmonised standards and standardisation deliverables. "
+    f"{STANDARDS_DECISION_2026_2274} published the reference of {EN_18286} "
+    f'("{EN_18286_TITLE}"). Interpretation (S1): Art. 40(1) presumes conformity with the '
+    "requirements in Chapter III, Section 2, and the quality management system is Art. 17, "
+    "in Section 3; the Decision names no article, so whether the standard gives a "
+    "presumption for Art. 17 is for review."
+)
+_ART_43_REQUIREMENT = "Complete the applicable conformity assessment."
 _CHAPTER_IX = "Chapter IX"
 _ART_111_3_NOTE = (
     "Art. 111(3) AIA: providers of general-purpose AI models placed on the market before "
@@ -356,7 +370,7 @@ def _high_risk_provider_graph(
             "high-risk.provider.40",
             "Art. 40 AIA",
             "High-risk requirements where harmonised standards are available.",
-            "Track applicable harmonised standards and standardisation deliverables.",
+            _ART_40_REQUIREMENT,
             "Standards applicability matrix.",
             _SECTION_5,
             application_date,
@@ -386,7 +400,7 @@ def _high_risk_provider_graph(
             "high-risk.provider.43",
             "Art. 43 AIA",
             "Before placing high-risk AI system on the market or putting into service.",
-            "Complete the applicable conformity assessment.",
+            _art_43_requirement(profile),
             "Conformity assessment file.",
             _SECTION_5,
             application_date,
@@ -962,6 +976,38 @@ _ANNEX_III_POINT_1 = {
     AnnexIII.BIOMETRICS_CATEGORISATION,
     AnnexIII.BIOMETRICS_EMOTION,
 }
+
+
+def _art_43_requirement(profile: SystemProfile) -> str:
+    """The Art. 43 item, with the Art. 43(1) AIA choice for an Annex III, point 1 system.
+
+    Art. 43(1) lets such a provider choose internal control (Annex VI) only where it has
+    applied harmonised standards or common specifications for the Section 2 requirements,
+    and requires Annex VII otherwise. An unsettled Annex III point may be point 1, so it
+    gets the sentence as a condition. A product under Annex I, Section A legislation
+    follows that legislation's procedure (Art. 43(3), last subparagraph, as replaced by
+    Regulation (EU) 2026/1744, Art. 1, point (19)), as _internal_control_route reads it.
+    """
+
+    area = profile.annex_iii_area
+    if area not in _ANNEX_III_POINT_1 and area is not AnnexIII.UNSURE:
+        return _ART_43_REQUIREMENT
+    if profile.annex_i_safety_component and not section_b_product(profile):
+        return _ART_43_REQUIREMENT
+    scope = (
+        "If the system falls in Annex III, point 1, internal"
+        if area is AnnexIII.UNSURE
+        else "Annex III, point 1: internal"
+    )
+    return (
+        f"{_ART_43_REQUIREMENT} {scope} control (Annex VI) is open only where the provider has "
+        "applied harmonised standards or, where applicable, common specifications in "
+        "demonstrating compliance with the requirements in Chapter III, Section 2; where none "
+        "exist, or the provider has applied only part of a harmonised standard, Annex VII "
+        "applies, with a notified body (Art. 43(1) AIA). Interpretation (S2): "
+        f"{EN_18286} is a quality management system standard and does not by its title cover "
+        "the Section 2 requirements, so applying it alone does not open Annex VI."
+    )
 
 
 def _internal_control_route(profile: SystemProfile) -> bool:
