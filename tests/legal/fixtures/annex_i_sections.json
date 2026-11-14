@@ -1,0 +1,276 @@
+{
+  "rule": "Art. 6(1) AIA with Annex I, Sections A and B, and Art. 2(2) AIA, as amended by Regulation (EU) 2026/1744 (machinery moved to Section B)",
+  "sources": [
+    {
+      "source_id": "oj-reg-2024-1689",
+      "pinpoint": "Art. 6(1)(a), (b); Annex I, Sections A and B (original lists)"
+    },
+    {
+      "source_id": "oj-reg-2026-1744",
+      "pinpoint": "Art. 1, point (2)(a): Art. 2(2) replaced"
+    },
+    {
+      "source_id": "oj-reg-2026-1744",
+      "pinpoint": "Art. 1, point (41)(a): Annex I, Section A, point 1 deleted; Art. 1, point (41)(b): Section B, point 21 (Regulation (EU) 2023/1230) added; Art. 4"
+    },
+    {
+      "source_id": "oj-reg-2026-1744",
+      "pinpoint": "Art. 1, point (40)(b): Art. 113, third paragraph, point (c)(ii)"
+    },
+    {
+      "source_id": "consolidated-ai-act-2026-07-27",
+      "pinpoint": "Art. 2(2); Annex I (cross-check only)"
+    }
+  ],
+  "interpretations": [
+    {
+      "id": "C6-section-b-art-5-and-50",
+      "text": "Art. 2(2) read literally lists neither Art. 5 nor Art. 50 for a Section B product. Dropping a hard stop on a contested reading is the costlier error, so the report keeps both findings and raises an open question for each."
+    },
+    {
+      "id": "C7-section-unknown",
+      "text": "Where the Art. 6(1) conditions are asserted but neither the Annex I legislation nor the section is given, the report keeps the Section A duties and goes to review; it does not silently treat the product as Section A."
+    },
+    {
+      "id": "C8-machinery",
+      "text": "Regulation (EU) 2026/1744, Art. 1, point (41), deleted Annex I, Section A, point 1 and added Regulation (EU) 2023/1230 as Section B, point 21. Its Art. 4 sets entry into force on the third day after publication (OJ of 24 July 2026), so 27 July 2026, and no later date for point (41). Machinery is a Section B act; no Chapter III date changes, as the Annex I duties start on 2 August 2028."
+    }
+  ],
+  "base_profile": {
+    "name": "Synthetic safety controller",
+    "roles": [
+      "provider"
+    ],
+    "annex_i_safety_component": true,
+    "annex_i_third_party_assessment": true
+  },
+  "cases": [
+    {
+      "id": "annex-i-section-a-toys",
+      "matrix": "applies",
+      "facts": "A safety component of a toy (Directive 2009/48/EC, Annex I, Section A, point 2) that needs third-party conformity assessment.",
+      "profile": {
+        "annex_i_legislation": "I.A.2"
+      },
+      "expect": {
+        "risk_tier": "high_risk",
+        "disposition": "determined",
+        "findings": {
+          "HIGHRISK.6.1": "high",
+          "HIGHRISK.2.13": "info"
+        },
+        "obligations_include": [
+          "Art. 9 AIA",
+          "Art. 43 AIA"
+        ],
+        "obligations_exclude": [
+          "Art. 2(2) AIA"
+        ],
+        "graph": [
+          {
+            "article": "Art. 16 AIA",
+            "application_date": "2028-08-02"
+          }
+        ],
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "annex-i-section-b-machinery",
+      "matrix": "applies",
+      "facts": "A safety component of machinery under Regulation (EU) 2023/1230 that needs third-party conformity assessment: Section B, point 21, so Art. 2(2) applies.",
+      "profile": {
+        "annex_i_legislation": "I.B.21"
+      },
+      "expect": {
+        "risk_tier": "high_risk",
+        "disposition": "determined",
+        "findings": {
+          "HIGHRISK.6.1": "high"
+        },
+        "findings_absent": [
+          "HIGHRISK.2.13"
+        ],
+        "obligations_include": [
+          "Art. 2(2) AIA"
+        ],
+        "obligations_exclude": [
+          "Art. 9 AIA",
+          "Art. 16 AIA",
+          "Art. 43 AIA"
+        ],
+        "graph_absent_prefix": [
+          "high-risk.provider.16"
+        ],
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "annex-i-section-b-motor-vehicles",
+      "matrix": "applies",
+      "facts": "A safety component of a motor vehicle under Regulation (EU) 2018/858 (Section B, point 18).",
+      "profile": {
+        "annex_i_legislation": "I.B.18"
+      },
+      "expect": {
+        "risk_tier": "high_risk",
+        "disposition": "determined",
+        "obligations_include": [
+          "Art. 2(2) AIA"
+        ],
+        "obligations_exclude": [
+          "Art. 9 AIA"
+        ]
+      }
+    },
+    {
+      "id": "annex-i-section-b-given-as-section",
+      "matrix": "applies",
+      "facts": "The profile gives Section B without naming the act; the section decides as before.",
+      "profile": {
+        "annex_i_section": "B"
+      },
+      "expect": {
+        "risk_tier": "high_risk",
+        "disposition": "determined",
+        "obligations_include": [
+          "Art. 2(2) AIA"
+        ],
+        "obligations_exclude": [
+          "Art. 9 AIA"
+        ]
+      }
+    },
+    {
+      "id": "annex-i-section-b-keeps-art-50-for-review",
+      "matrix": "conflict",
+      "facts": "A Section B machinery component that also interacts with natural persons. Art. 2(2) read literally lists no Art. 50; the report keeps the Art. 50(1) duty and raises the question.",
+      "profile": {
+        "annex_i_legislation": "I.B.21",
+        "interacts_with_natural_persons": true
+      },
+      "expect": {
+        "risk_tier": "high_risk",
+        "disposition": "requires_review",
+        "transparency_articles": [
+          "Art. 50(1) AIA"
+        ],
+        "findings": {
+          "TRANSPARENCY.50": "medium"
+        },
+        "open_question_contains": [
+          "Art. 2(2) AIA and Art. 50 AIA"
+        ]
+      }
+    },
+    {
+      "id": "annex-i-legislation-unknown",
+      "matrix": "unknown_input",
+      "facts": "The Art. 6(1) conditions are asserted, but neither the Annex I legislation nor the section is given.",
+      "profile": {},
+      "expect": {
+        "risk_tier": "high_risk",
+        "disposition": "requires_review",
+        "findings": {
+          "HIGHRISK.6.1": "high"
+        },
+        "open_question_contains": [
+          "annex_i_legislation"
+        ],
+        "obligations_include": [
+          "Art. 9 AIA"
+        ],
+        "graph": [
+          {
+            "article": "Art. 16 AIA",
+            "application_date": "2028-08-02"
+          }
+        ]
+      }
+    },
+    {
+      "id": "annex-i-legislation-contradicts-section",
+      "matrix": "invalid_input",
+      "facts": "The profile names machinery (Section B, point 21) but gives Section A.",
+      "profile": {
+        "annex_i_legislation": "I.B.21",
+        "annex_i_section": "A"
+      },
+      "expect": {
+        "validation_error_loc": ""
+      }
+    },
+    {
+      "id": "annex-i-no-third-party-assessment",
+      "matrix": "element_fails",
+      "facts": "Machinery that needs no third-party conformity assessment does not meet Art. 6(1)(b); the act is reported as not used.",
+      "profile": {
+        "annex_i_legislation": "I.B.21",
+        "annex_i_third_party_assessment": false
+      },
+      "expect": {
+        "risk_tier": "minimal_risk",
+        "disposition": "determined",
+        "findings": {
+          "HIGHRISK.6.1.section_unused": "info"
+        },
+        "findings_absent": [
+          "HIGHRISK.6.1"
+        ],
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "annex-i-section-b-and-annex-iii",
+      "matrix": "conflict",
+      "facts": "A Section B motor-vehicle component that is also a remote biometric identification system (Annex III, point 1(a)).",
+      "profile": {
+        "annex_i_legislation": "I.B.18",
+        "annex_iii_area": "III.1.a"
+      },
+      "expect": {
+        "risk_tier": "high_risk",
+        "findings": {
+          "HIGHRISK.6.1": "high",
+          "HIGHRISK.III.1.a": "high"
+        },
+        "obligations_include": [
+          "Art. 9 AIA",
+          "Art. 2(2) AIA"
+        ]
+      }
+    },
+    {
+      "id": "annex-i-section-b-and-prohibited-practice",
+      "matrix": "conflict",
+      "facts": "A Section B machinery component that performs emotion recognition in the workplace (Art. 5(1)(f)). The prohibition is kept and the Art. 2(2) question raised.",
+      "profile": {
+        "annex_i_legislation": "I.B.21",
+        "prohibited_practices": [
+          "5.1.f"
+        ]
+      },
+      "expect": {
+        "risk_tier": "prohibited",
+        "disposition": "requires_review",
+        "findings": {
+          "PROHIBITED.5.1.f": "blocker"
+        },
+        "open_question_contains": [
+          "Art. 2(2) AIA and Art. 5 AIA"
+        ]
+      }
+    },
+    {
+      "id": "annex-i-deleted-machinery-directive",
+      "matrix": "invalid_input",
+      "facts": "Annex I, Section A, point 1 (Directive 2006/42/EC) was deleted by Regulation (EU) 2026/1744 and is not a valid act.",
+      "profile": {
+        "annex_i_legislation": "I.A.1"
+      },
+      "expect": {
+        "validation_error_loc": "annex_i_legislation"
+      }
+    }
+  ]
+}
