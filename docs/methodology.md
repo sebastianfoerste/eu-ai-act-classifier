@@ -363,6 +363,8 @@ Art. 1, point (7). Their findings quote the point and the Art. 5(1a)
 conditions (and, for point (ba), Art. 5(1b)) and say that the ban applies
 from 2 December 2026 (Art. 113, third paragraph, point (a)). The sentence
 does not depend on the date of the run, so the output stays deterministic.
+Whether the ban applies on the date assessed is decided from the profile's
+`assessment_date`, never from the clock (next section).
 
 The binding timeline also lists the point (a) exception (Art. 5(1), first
 subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b), from
@@ -372,6 +374,110 @@ VII and XII except Art. 101, and Art. 78, from 2 August 2025), point (d)
 2 August 2027 for general-purpose AI models already on the market before
 2 August 2025, and the Art. 111(2) deadline of 2 August 2030 for high-risk
 systems intended to be used by public authorities.
+
+## Art. 5(1)(ba) and (bb), Annex I Acts And Open Dates
+
+Read on 14 November 2026 in the Official Journal snapshots in `sources/`:
+Regulation (EU) 2026/1744, Art. 1, points (2)(a), (7), (39)(b), (40) and (41),
+Art. 4 and Recitals 11 to 13; Regulation (EU) 2024/1689, Art. 3, points (3),
+(4), (6), (7), (9) and (11), Art. 111(3), Art. 113 and Annex I; Directive
+2011/93/EU, Art. 2, points (c) and (e), and Art. 5(1). The legal fixtures in
+`tests/legal/fixtures/` cite the same pinpoints.
+
+### Points (ba) and (bb)
+
+A profile reaches points (ba) and (bb) in one of two ways.
+
+- It declares `5.1.ba` or `5.1.bb`. The declaration stands for every element:
+  the reviewer has characterised the facts.
+- It gives the element facts in `intimate_imagery` or
+  `child_sexual_abuse_material`, each true, false or null. The engine subsumes
+  them under Art. 5(1a)(a)(i) (intended purpose), Art. 5(1a)(a)(ii)
+  (reasonably foreseeable and reproducible outcome without reasonable and
+  adequate safeguards), Art. 5(1a)(b) (use for that purpose) and, for point
+  (ba), Art. 5(1b) (manipulation counts only where it increases exposure or
+  alters the depicted activity). Unknown facts use three-valued logic: a null
+  that could change the result keeps the point UNKNOWN, with an open question
+  that names the facts; a null that cannot change it does not hold it open.
+
+A point that is not met gives an `info` finding (`PROHIBITED.5.1.ba.not_met`),
+an UNKNOWN point a `medium` finding (`.unknown`) and an open question. A met
+point is dated by `assessment_date`, the date of the placing on the market,
+putting into service or use under assessment:
+
+- on or after 2 December 2026, the tier is prohibited (`PROHIBITED.5.1.ba`);
+- before 2 December 2026, a `high` finding says the point applies from that
+  date (`.not_yet_applicable`), the tier is not raised, and an open question
+  sends the result to review (C4);
+- with no assessment date, the prohibited tier is kept and an open question
+  asks for the date (C4).
+
+A system that generates synthetic content or deep fakes and neither declares
+nor screens a point is asked about it, as the interim screen of #63 does; a
+system already prohibited is not, because a further point cannot change its
+result. A declaration that the element facts contradict is kept, with an open
+question. The guided intake does not ask the element facts, so a guided
+generator always gets the screen question.
+
+### Annex I acts
+
+`annex_i_legislation` names the Annex I act, as a locator (`I.B.21` is
+Section B, point 21), and decides the section. Regulation (EU) 2026/1744,
+Art. 1, point (41), deleted Section A, point 1 (Directive 2006/42/EC) and added
+Regulation (EU) 2023/1230 on machinery as Section B, point 21, so `I.A.1` is
+rejected and machinery is Section B. `annex_i_section` stays for profiles that
+give only the section; a section that contradicts the act is rejected.
+
+### Open dates and the assessment date
+
+`applies_on_assessment_date` on an obligation-graph item says whether the item
+applies on the assessment date, "on or after" its application date. It is null
+without an assessment date. Where the application date itself is open (null),
+it is known only if both possible dates give the same answer.
+
+### Interpretation choices
+
+These are the answers given on 10 November 2026 under the owner's delegation
+(continuation of the GitHub profile plan, section 2). They are Claude's
+answers, recorded as such, and not a lawyer's sign-off. Where a result turns
+on C1, C2, C3 or C10, the finding or open question says "Interpretation (Cn)".
+
+- C1, consent in point (ba): read at system level for placing on the market
+  and putting into service. Art. 5(1a)(a) frames its conditions at system
+  level ("design, training, architecture, capabilities"), and Recital 12 asks
+  for means to collect and demonstrate consent. Consent stays a reviewer fact.
+- C2, the use limb: Art. 5(1a)(b) is read literally. Use is prohibited only
+  where the deployer uses the system for the purpose of generating or
+  manipulating the material; the content element stays and the Art. 5(1a)(a)
+  conditions do not apply to use.
+- C3, roles: providers (Art. 3(3)) and importers (Art. 3(6)) place on the
+  market or put into service; deployers (Art. 3(4)) use. A distributor makes
+  available (Art. 3(7)), which is not the first making available that
+  Art. 3(9) calls placing on the market, so a distributor-only profile stays
+  UNKNOWN with review, whether the point is declared or screened.
+- C4, dates: before 2 December 2026 the result reads "applies from
+  2 December 2026" and goes to review; with no assessment date the stricter
+  result is kept, with review. This is a routing choice, not a reading of the
+  text, so the output does not label it an interpretation.
+- C6, Section B products: Art. 2(2) read literally lists neither Art. 5 nor
+  Art. 50. The report keeps both and raises an open question for each.
+- C7, an Art. 6(1) product with neither the act nor the section given: the
+  report keeps the Section A duties and goes to review.
+- C8, machinery: Section B, point 21 from 27 July 2026, the entry into force
+  under Art. 4 of Regulation (EU) 2026/1744, which sets no later date for
+  Art. 1, point (41). No Chapter III date changes, because the Annex I duties
+  start on 2 August 2028. Limit: the engine applies the amended list on every
+  assessment date; for a date before 27 July 2026, machinery was Section A.
+- C9, Art. 111(3) and (4): "comply by" a date is read as applying from that
+  date, inclusive; "before" a cut-off excludes the cut-off date; Art. 111(4)
+  is triggered by placing on the market only, and the general-purpose AI
+  model keeps its own date (`gpai_model_placing_on_market_date`). An unknown
+  placing date leaves the item's `application_date` null and raises an open
+  question, unless the assessment date falls on or after both possible dates
+  or before both.
+- C10, the "without right" defence in point (bb): a fact the reviewer
+  establishes under national law (Directive 2011/93/EU, Art. 5(1); Recital 13
+  of Regulation (EU) 2026/1744). The engine does not evaluate national law.
 
 ## Draft Work Products
 

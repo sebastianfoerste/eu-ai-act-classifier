@@ -67,8 +67,10 @@ challenge. `--offline` compares nothing with EUR-Lex: it reports "recorded"
 when a snapshot still has its digests and exits 1 when one does not. The
 script never writes to this folder and is not part of CI.
 
-The `relied_on_for` lists name the provisions that the rules in pull request
-#34 rest on; the classifier does not read these files.
+The `relied_on_for` lists name the provisions that the rules and the legal
+fixtures in `tests/legal/fixtures/` rest on (the Art. 5(1)(ba) and (bb) gate,
+the Annex I acts and the Art. 111(3) and (4) dating); the classifier does not
+read these files at run time.
 
 ## Rules
 
