@@ -148,7 +148,9 @@ def test_art_111_1_carve_out_is_stated_without_a_flag(placing_on_market_date: st
     assert "Art. 111(1) AIA" not in report.unverified_citations
     rendered = render_report(report)
     assert f"{ANNEX_X_TEXT}." in rendered
-    assert FLAG not in rendered
+    # Every report's source manifest lists the two Art. 50 Commission sources, which keep
+    # the flag until their pages are opened (#14). No line that states Art. 111(1) has it.
+    assert not [line for line in rendered.splitlines() if "Art. 111(1)" in line and FLAG in line]
 
 
 def test_art_111_1_is_stated_without_a_flag_in_the_binding_timeline() -> None:

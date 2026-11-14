@@ -601,6 +601,48 @@ def test_number_answers_take_ascii_digits_and_ascii_whitespace_only(text: str) -
         assert profile[question["field"]] is None
 
 
+@pytest.mark.parametrize(
+    ("answer", "usable"),
+    [
+        (10, True),
+        (2e25, True),
+        (True, False),  # bool is an int in Python; a JSON true is not a number in either
+        (False, False),
+        (float("inf"), False),
+        (float("nan"), False),
+        ([10], False),
+        ({"value": 10}, False),
+    ],
+    ids=repr,
+)
+def test_number_answers_that_are_not_text_count_only_as_finite_numbers(
+    answer: object, usable: bool
+) -> None:
+    # A caller of the Python intake passes JSON values, not only the text a browser field
+    # holds. isNumber in intake.mjs takes a finite number and no other non-text value.
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    model = {"name": "x", "roles": ["gpai_provider"], "is_gpai_model": True}
+    answers = {**profile_to_answers(model), question["id"]: answer}
+
+    profile, asked, blocked, missing = answers_to_profile(answers)
+
+    assert question["id"] in asked and not blocked
+    assert is_answered(question, answers) is usable
+    assert (question["id"] in missing) is not usable
+    assert profile[question["field"]] == (float(answer) if usable else None)
+
+
+def test_a_question_of_an_unknown_kind_is_never_answered() -> None:
+    # A definition newer than the interpreter must not pass silently (isAnswered's default).
+    assert not is_answered({"id": "q", "kind": "slider"}, {"q": 5})
+
+
+def test_an_unknown_condition_is_an_error_not_a_pass() -> None:
+    # holds() in intake.mjs throws on the same input.
+    with pytest.raises(ValueError, match="unknown condition"):
+        holds({"field": "name", "matches": "x"}, {"name": "x"})
+
+
 def test_question_articles_are_citations_the_engine_already_makes() -> None:
     """The intake adds no pinpoint of its own (claim ledger rule)."""
 
