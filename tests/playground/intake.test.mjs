@@ -116,9 +116,9 @@ test("the change question is asked only before the Chapter III date", () => {
   assert.equal(ask({ ...annexIII, placing_on_market_date: "2027-12-02" }), false);
   assert.equal(ask(annexIII), false);
   assert.equal(ask({ ...annexIII, prohibited_practices: ["5.1.c"], placing_on_market_date: "2025-01-01" }), false);
-  const annexI = { name: "x", annex_i_safety_component: true, annex_i_third_party_assessment: true, annex_i_section: "A" };
+  const annexI = { name: "x", annex_i_safety_component: true, annex_i_third_party_assessment: true, annex_i_legislation: "I.A.11" };
   assert.equal(ask({ ...annexI, placing_on_market_date: "2028-01-01" }), true);
-  assert.equal(ask({ ...annexI, annex_i_section: "B", placing_on_market_date: "2028-01-01" }), false);
+  assert.equal(ask({ ...annexI, annex_i_legislation: "I.B.21", placing_on_market_date: "2028-01-01" }), false);
 });
 
 test("opening a profile reports values the questions would drop", () => {
@@ -140,14 +140,14 @@ test("opening a profile reports values the questions would drop", () => {
 });
 
 test("a single question without a none option does not accept none", () => {
-  const section = definition.questions.find(q => q.id === "annex_i_section");
-  assert.equal(section.none_label, undefined);
-  assert.equal(isAnswered(section, "none"), false);
-  assert.equal(isAnswered(section, "B"), true);
+  const act = definition.questions.find(q => q.id === "annex_i_legislation");
+  assert.equal(act.none_label, undefined);
+  assert.equal(isAnswered(act, "none"), false);
+  assert.equal(isAnswered(act, "I.B.21"), true);
   const route = { name: "x", annex_i_safety_component: true, annex_i_third_party_assessment: true };
-  assert.equal(profileToAnswers(definition, route).annex_i_section, undefined);
-  const answers = { ...profileToAnswers(definition, route), annex_i_section: "none" };
-  assert.ok(answersToProfile(definition, answers).missing.includes("annex_i_section"));
+  assert.equal(profileToAnswers(definition, route).annex_i_legislation, undefined);
+  const answers = { ...profileToAnswers(definition, route), annex_i_legislation: "none" };
+  assert.ok(answersToProfile(definition, answers).missing.includes("annex_i_legislation"));
 });
 
 test("numbers use the same grammar as the Python interpreter", () => {

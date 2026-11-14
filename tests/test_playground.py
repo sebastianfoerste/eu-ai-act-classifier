@@ -100,7 +100,8 @@ def test_section_b_guidance_does_not_settle_the_contested_art_2_2_reading() -> N
     # Art. 50 and the Annex III duties of a Section B product, and the report keeps them.
     # The intake hint and the field guide say so rather than "only Art. 2(2) applies".
     intake = json.loads((PLAYGROUND / "intake.json").read_text(encoding="utf-8"))
-    (question,) = [q for q in intake["questions"] if q["id"] == "annex_i_section"]
+    # The intake asks the act and derives the section (intake.NOT_ASKED).
+    (question,) = [q for q in intake["questions"] if q["id"] == "annex_i_legislation"]
     fields = json.loads((PLAYGROUND / "fields.json").read_text(encoding="utf-8"))
     (entry,) = [f for g in fields["groups"] for f in g["fields"] if f["name"] == "annex_i_section"]
     for hint in (question["hint"], entry["hint"]):

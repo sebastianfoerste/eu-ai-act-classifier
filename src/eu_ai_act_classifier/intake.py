@@ -31,6 +31,7 @@ from .citations import POINT_C_ANNEX_I, POINT_C_ANNEX_III
 from .labels import DEROGATION_LABELS, option_label
 from .models import (
     AnnexIII,
+    AnnexILegislation,
     AnnexISection,
     ExcludedUse,
     ProhibitedPractice,
@@ -111,6 +112,13 @@ def _dated_before(cut_off: str) -> dict[str, Any]:
     }
 
 
+# A Section B product: the intake asks the act, never annex_i_section (NOT_ASKED), so the
+# act alone decides the section here (SystemProfile.effective_annex_i_section).
+SECTION_B = {
+    "field": "annex_i_legislation",
+    "in": [act.value for act in AnnexILegislation if act.section is AnnexISection.SECTION_B],
+}
+
 # Art. 111(2) AIA reads a significant change only for a high-risk system placed on the
 # market or put into service before its Chapter III date (transitions.change_used): the
 # Annex III date for an Annex III area, else the Annex I date, never for a Section B
@@ -125,7 +133,7 @@ CHANGE_OPEN = {
                 {
                     "all": [
                         {"not": ANNEX_III_ANY},
-                        {"not": {"field": "annex_i_section", "is": AnnexISection.SECTION_B.value}},
+                        {"not": SECTION_B},
                         _dated_before(POINT_C_ANNEX_I),
                     ]
                 },
@@ -231,20 +239,23 @@ QUESTIONS: list[dict[str, Any]] = [
         "unknown": BLOCK,
     },
     {
-        "id": "annex_i_section",
+        "id": "annex_i_legislation",
         "kind": "single",
-        "field": "annex_i_section",
-        "title": "Which section of Annex I lists that legislation?",
-        # Whether Art. 2(2) also displaces Art. 5, Art. 50 and Annex III duties is open (PENDING
-        # rows in docs/REGULATORY_CLAIM_LEDGER.md), so the hint does not state it as settled.
-        "hint": "Art. 2(2) AIA limits a Section B product to the provisions it lists; the report "
-        "keeps Art. 5, Art. 50 and any Annex III duties for review.",
+        "field": "annex_i_legislation",
+        "title": "Which Union harmonisation legislation in Annex I covers that product?",
+        # The engine derives the section from the act, so the intake asks the act and never
+        # annex_i_section: machinery is Section B since Regulation (EU) 2026/1744. Whether
+        # Art. 2(2) also displaces Art. 5, Art. 50 and Annex III duties is open (PENDING rows
+        # in docs/REGULATORY_CLAIM_LEDGER.md), so the hint does not state it as settled.
+        "hint": "The legislation decides the Annex I section. Art. 2(2) AIA limits a Section B "
+        "product, machinery included, to the provisions it lists; the report keeps Art. 5, "
+        "Art. 50 and any Annex III duties for review.",
         "article": "Art. 6(1) AIA",
-        "options": _options(AnnexISection),
-        # Off the Art. 6(1) route the engine reports a given section as unused.
+        "options": _options(AnnexILegislation),
+        # Off the Art. 6(1) route the engine reports a given act as unused.
         "show_if": {"all": [IN_SCOPE, ANNEX_I_ROUTE]},
-        # A missing section is treated as Section A without routing to review.
-        "unknown": BLOCK,
+        # Not known: the report keeps the Section A duties and goes to review.
+        "unknown": {"value": None},
     },
     {
         "id": "annex_iii_area",
@@ -430,10 +441,15 @@ QUESTIONS: list[dict[str, Any]] = [
     {
         "id": "dates",
         "kind": "details",
-        "title": "Market dates",
-        "hint": "YYYY-MM-DD, the AI system's dates. Leave blank if not yet placed on the "
-        "market or put into service. A general-purpose AI model's own date is asked next.",
+        "title": "Dates",
+        "hint": "YYYY-MM-DD. The assessment date is the date of the placing on the market, "
+        "putting into service or use under assessment; blank leaves date-dependent results "
+        "open, for review. Leave a market date blank if the system was not yet placed on the "
+        "market or put into service, or if the date is not known; for a system generating "
+        "synthetic content a blank placing date goes to review (Art. 111(4) AIA). A "
+        "general-purpose AI model's own date is asked next.",
         "fields": [
+            {"field": "assessment_date", "label": "Assessed on", "type": "date"},
             {"field": "placing_on_market_date", "label": "Placed on the market", "type": "date"},
             {"field": "putting_into_service_date", "label": "Put into service", "type": "date"},
         ],
@@ -443,8 +459,8 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "details",
         "title": "General-purpose AI model date",
         "hint": "YYYY-MM-DD. Leave blank if not given: the model is then dated by the AI "
-        "system's placing-on-market date, for review, or, if none is given, its obligations "
-        "note the Art. 111(3) transition.",
+        "system's placing-on-market date, for review, or, if none is given, the Art. 111(3) "
+        "date of its obligations is open and goes to review.",
         "article": "Art. 111(3) AIA",
         "fields": [
             {
@@ -485,6 +501,13 @@ QUESTIONS: list[dict[str, Any]] = [
         "unknown": BLOCK,
     },
 ]
+
+
+# Profile fields the intake does not ask. annex_i_section is derived from the act the
+# intake asks (annex_i_legislation). The Art. 5(1)(ba) and (bb) element screens are given
+# in a JSON profile; a guided profile leaves them unscreened, so a generator goes to review
+# with rules.prohibited.LATER_SCREEN_QUESTION.
+NOT_ASKED = ("annex_i_section", "intimate_imagery", "child_sexual_abuse_material")
 
 
 def intake_definition() -> dict[str, Any]:

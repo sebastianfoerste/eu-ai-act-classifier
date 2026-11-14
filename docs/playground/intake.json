@@ -17,6 +17,7 @@
     "intended_purpose_source": "",
     "eu_nexus": true,
     "excluded_use_flags": [],
+    "assessment_date": null,
     "placing_on_market_date": null,
     "putting_into_service_date": null,
     "significant_change_after_application_date": null,
@@ -33,8 +34,11 @@
     "gpai_systemic_risk_designated": false,
     "gpai_model_placing_on_market_date": null,
     "prohibited_practices": [],
+    "intimate_imagery": null,
+    "child_sexual_abuse_material": null,
     "annex_i_safety_component": false,
     "annex_i_third_party_assessment": false,
+    "annex_i_legislation": null,
     "annex_i_section": null,
     "annex_iii_area": null,
     "used_for_financial_fraud_detection": false,
@@ -290,20 +294,92 @@
       "unknown": "block"
     },
     {
-      "id": "annex_i_section",
+      "id": "annex_i_legislation",
       "kind": "single",
-      "field": "annex_i_section",
-      "title": "Which section of Annex I lists that legislation?",
-      "hint": "Art. 2(2) AIA limits a Section B product to the provisions it lists; the report keeps Art. 5, Art. 50 and any Annex III duties for review.",
+      "field": "annex_i_legislation",
+      "title": "Which Union harmonisation legislation in Annex I covers that product?",
+      "hint": "The legislation decides the Annex I section. Art. 2(2) AIA limits a Section B product, machinery included, to the provisions it lists; the report keeps Art. 5, Art. 50 and any Annex III duties for review.",
       "article": "Art. 6(1) AIA",
       "options": [
         {
-          "value": "A",
-          "label": "Section A"
+          "value": "I.A.2",
+          "label": "Section A, point 2: Directive 2009/48/EC (toys)"
         },
         {
-          "value": "B",
-          "label": "Section B"
+          "value": "I.A.3",
+          "label": "Section A, point 3: Directive 2013/53/EU (recreational craft and personal watercraft)"
+        },
+        {
+          "value": "I.A.4",
+          "label": "Section A, point 4: Directive 2014/33/EU (lifts)"
+        },
+        {
+          "value": "I.A.5",
+          "label": "Section A, point 5: Directive 2014/34/EU (equipment for potentially explosive atmospheres)"
+        },
+        {
+          "value": "I.A.6",
+          "label": "Section A, point 6: Directive 2014/53/EU (radio equipment)"
+        },
+        {
+          "value": "I.A.7",
+          "label": "Section A, point 7: Directive 2014/68/EU (pressure equipment)"
+        },
+        {
+          "value": "I.A.8",
+          "label": "Section A, point 8: Regulation (EU) 2016/424 (cableway installations)"
+        },
+        {
+          "value": "I.A.9",
+          "label": "Section A, point 9: Regulation (EU) 2016/425 (personal protective equipment)"
+        },
+        {
+          "value": "I.A.10",
+          "label": "Section A, point 10: Regulation (EU) 2016/426 (appliances burning gaseous fuels)"
+        },
+        {
+          "value": "I.A.11",
+          "label": "Section A, point 11: Regulation (EU) 2017/745 (medical devices)"
+        },
+        {
+          "value": "I.A.12",
+          "label": "Section A, point 12: Regulation (EU) 2017/746 (in vitro diagnostic medical devices)"
+        },
+        {
+          "value": "I.B.13",
+          "label": "Section B, point 13: Regulation (EC) No 300/2008 (civil aviation security)"
+        },
+        {
+          "value": "I.B.14",
+          "label": "Section B, point 14: Regulation (EU) No 168/2013 (two- or three-wheel vehicles and quadricycles)"
+        },
+        {
+          "value": "I.B.15",
+          "label": "Section B, point 15: Regulation (EU) No 167/2013 (agricultural and forestry vehicles)"
+        },
+        {
+          "value": "I.B.16",
+          "label": "Section B, point 16: Directive 2014/90/EU (marine equipment)"
+        },
+        {
+          "value": "I.B.17",
+          "label": "Section B, point 17: Directive (EU) 2016/797 (interoperability of the rail system)"
+        },
+        {
+          "value": "I.B.18",
+          "label": "Section B, point 18: Regulation (EU) 2018/858 (motor vehicles and their trailers)"
+        },
+        {
+          "value": "I.B.19",
+          "label": "Section B, point 19: Regulation (EU) 2019/2144 (motor vehicle general safety)"
+        },
+        {
+          "value": "I.B.20",
+          "label": "Section B, point 20: Regulation (EU) 2018/1139 (civil aviation, as regards unmanned aircraft)"
+        },
+        {
+          "value": "I.B.21",
+          "label": "Section B, point 21: Regulation (EU) 2023/1230 (machinery)"
         }
       ],
       "show_if": {
@@ -338,7 +414,9 @@
           }
         ]
       },
-      "unknown": "block"
+      "unknown": {
+        "value": null
+      }
     },
     {
       "id": "annex_iii_area",
@@ -1065,9 +1143,14 @@
     {
       "id": "dates",
       "kind": "details",
-      "title": "Market dates",
-      "hint": "YYYY-MM-DD, the AI system's dates. Leave blank if not yet placed on the market or put into service. A general-purpose AI model's own date is asked next.",
+      "title": "Dates",
+      "hint": "YYYY-MM-DD. The assessment date is the date of the placing on the market, putting into service or use under assessment; blank leaves date-dependent results open, for review. Leave a market date blank if the system was not yet placed on the market or put into service, or if the date is not known; for a system generating synthetic content a blank placing date goes to review (Art. 111(4) AIA). A general-purpose AI model's own date is asked next.",
       "fields": [
+        {
+          "field": "assessment_date",
+          "label": "Assessed on",
+          "type": "date"
+        },
         {
           "field": "placing_on_market_date",
           "label": "Placed on the market",
@@ -1084,7 +1167,7 @@
       "id": "gpai_date",
       "kind": "details",
       "title": "General-purpose AI model date",
-      "hint": "YYYY-MM-DD. Leave blank if not given: the model is then dated by the AI system's placing-on-market date, for review, or, if none is given, its obligations note the Art. 111(3) transition.",
+      "hint": "YYYY-MM-DD. Leave blank if not given: the model is then dated by the AI system's placing-on-market date, for review, or, if none is given, the Art. 111(3) date of its obligations is open and goes to review.",
       "article": "Art. 111(3) AIA",
       "fields": [
         {
@@ -1209,8 +1292,18 @@
                   },
                   {
                     "not": {
-                      "field": "annex_i_section",
-                      "is": "B"
+                      "field": "annex_i_legislation",
+                      "in": [
+                        "I.B.13",
+                        "I.B.14",
+                        "I.B.15",
+                        "I.B.16",
+                        "I.B.17",
+                        "I.B.18",
+                        "I.B.19",
+                        "I.B.20",
+                        "I.B.21"
+                      ]
                     }
                   },
                   {
