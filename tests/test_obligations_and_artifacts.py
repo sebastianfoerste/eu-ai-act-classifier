@@ -1634,7 +1634,7 @@ def test_art_2_13_note_states_both_conditions() -> None:
                 annex_i_section="A",
             )
         ).findings
-        if f.rule_id == "HIGHRISK.6.1"
+        if f.rule_id == "HIGHRISK.2.13"
     ]
 
     assert "equivalent or higher level of protection" in finding.detail

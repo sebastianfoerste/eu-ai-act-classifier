@@ -155,9 +155,10 @@ class ProhibitedPractice(StrEnum):
 class AnnexISection(StrEnum):
     """Annex I sections for the Art. 6(1) AIA product route.
 
-    For a Section B product only Art. 6(1), Art. 60a and Arts. 102 to 112 apply,
-    and Arts. 57 to 59 only in so far as the high-risk requirements have been
-    integrated in the sectoral legislation (Art. 2(2) AIA). Regulation (EU)
+    For a Section B product Art. 2(2) AIA lists only Art. 6(1), Art. 60a and
+    Arts. 102 to 112, and Arts. 57 to 59 only in so far as the high-risk
+    requirements have been integrated in the sectoral legislation; the report
+    keeps Art. 5, Art. 50 and any Annex III duties for review. Regulation (EU)
     2026/1744 moved machinery to Section B:
     Section A, point 1 is deleted and Regulation (EU) 2023/1230 is Section B,
     point 21.
@@ -301,9 +302,12 @@ class SystemProfile(BaseModel):
     annex_i_third_party_assessment: bool = False  # Art. 6(1)(b): third-party conformity assessment
     annex_i_section: AnnexISection | None = Field(
         default=None,
+        # Whether Art. 2(2) also displaces Art. 5, Art. 50 and Annex III duties is open (PENDING
+        # rows in docs/REGULATORY_CLAIM_LEDGER.md), so the schema does not state it as settled.
         description=(
-            "Annex I section of the Art. 6(1) AIA product. For Section B only the Art. 2(2) "
-            "provisions apply. Null: treated as Section A."
+            "Annex I section of the Art. 6(1) AIA product. For Section B, Art. 2(2) AIA limits "
+            "it to the provisions it lists; the report keeps Art. 5, Art. 50 and any Annex III "
+            "duties for review. Null: treated as Section A."
         ),
     )
     annex_iii_area: AnnexIII | None = None  # Art. 6(2) + Annex III

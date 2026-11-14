@@ -28,6 +28,100 @@ Changes since 0.2.2.
   a bot challenge. The byte digests of the Publications Office responses have
   not been recomputed against a fresh download (see `sources/README.md`).
 
+### Audit fixes on commits merged after verification
+
+#### Fixed
+
+- Art. 6(1c) and Art. 2(13) AIA, which #30 added to the Art. 6(1) finding,
+  were shown as verified although no primary source was recorded for them.
+  They were read on 11 November 2026 in the Official Journal text of
+  Regulation (EU) 2026/1744 (Art. 1, points (8) and (3)), in the snapshot
+  pinned with its SHA-256 digest in #40, and the claim ledger now records
+  that source. Each is now an `info` finding of its own, `HIGHRISK.6.1c` on
+  every Annex I route and `HIGHRISK.2.13` for Section A, with
+  `citation_verified` true. Their wording is unchanged; the `HIGHRISK.6.1`
+  detail no longer states them, so an Annex I profile has one more finding
+  (two for Section A).
+- The Art. 111(1) carve-out for Annex X components and its two dates
+  (placed on the market or put into service before 2 August 2027, brought
+  into compliance by 31 December 2030) had no recorded source either. They
+  were read on 11 November 2026 in the Official Journal text of Regulation
+  (EU) 2024/1689; Regulation (EU) 2026/1744 amends Art. 111 only in
+  paragraphs 2 and 4. The text and the dates are unchanged. Should one of
+  the three citations be set back to `verified=False` in `citations.py`, the
+  output flags it again: its finding's `citation_verified` turns false, and
+  for Art. 111(1) the scope text, the Art. 111(2) graph notes and the
+  timeline carry "[noch zu verifizieren]" and `unverified_citations` lists it
+  where the scope text or a graph note states the carve-out.
+  `tests/test_reread_pinpoints.py` checks this on a copy of the package with
+  the three citations set to `verified=False`.
+- The claim ledger has a VERIFIED row for each of the three, with the
+  Official Journal text, the pinpoint, the access date (11 November 2026)
+  and what was read. Each row points to the ledger's list "Sources read on
+  11 November 2026", which gives each snapshot's file, request URL,
+  retrieval date and SHA-256 digest. EUR-Lex itself could not be read
+  from the session (2 and 11 November 2026), so the snapshot is the source;
+  the "Stand" date stays 18 October 2026 with a dated note. Before that
+  reading this branch showed all three as unverified (PENDING); that state
+  was never released.
+- Guided intake, playground field guide and the system-profile schema
+  (`annex_i_section` and `AnnexISection` descriptions): the Annex I section
+  text no longer states the contested literal reading of Art. 2(2) as
+  settled. It says that the report keeps Art. 5, Art. 50 and any Annex III
+  duties of a Section B product for review, as the PENDING ledger rows on
+  Art. 2(2) record.
+- The #31 entry below said "I don't know" pauses the run on all three new
+  intake questions; the model-date question offers no "I don't know", and a
+  blank model date means "not given".
+- Guided intake: the number answer (training compute) takes the same inputs
+  in the Python and the browser interpreter. Both accept ASCII digits only
+  and trim only ASCII whitespace; before, Python also took Arabic-Indic or
+  fullwidth digits, each side trimmed characters the other kept (a byte
+  order mark in the browser, `\x1c` to `\x1f` and `\x85` in Python), and
+  Python raised `ValueError` on `"\x1c5"` instead of reporting the answer as
+  missing. The generated fixtures cover these inputs. An answer padded with
+  a no-break space (`"\xa05"`), which both accepted before, is now invalid:
+  the browser asks for a number again and the Python intake lists the
+  question as missing. The question's hint and `docs/FEATURES.md` say so.
+- Guided intake in the browser: the wizard passed a typed number through
+  `String.prototype.trim()` before the interpreter saw it. An answer padded
+  with a no-break space was therefore still accepted there, and one of
+  whitespace only was read as blank, although the entry above and
+  `docs/FEATURES.md` say that the browser asks for a number again. The
+  wizard now hands the text over as typed, so the one grammar decides.
+  `tests/playground/wizard.test.mjs` drives the wizard's number page.
+- Guided intake: a long text that is not a number was refused in time that
+  grew with the square of its length, in the browser's whitespace trim
+  (added by the number-grammar entry, two above) and in the number pattern
+  of both interpreters (already so on `main`). A share link can hold such a
+  text: one of 200 characters kept the playground busy for about two
+  seconds on opening, and the limit is 8,000 characters. The trim now scans
+  from each end and the pattern reads a run of digits in one way only; it
+  takes and refuses the same texts as before. Each interpreter has a test
+  with a long text.
+- Guided intake in Python: a number answer given as an integer beyond the
+  float range (above about 1.8e308, which a JSON integer literal can be)
+  raised `OverflowError`. It is now reported as missing, as in the browser,
+  where `JSON.parse` reads the literal as Infinity.
+
+#### Decisions
+
+Taken in a Claude Code session on the owner's instruction of 10 November
+2026 to answer the open decisions, and applied on 11 November 2026; the
+owner has not reviewed the detail. The claim ledger records them too.
+
+- Art. 6(1c), Art. 2(13) and Art. 111(1) are verified on the Official
+  Journal snapshots pinned in #40, read on 11 November 2026.
+- While Art. 111(1) is unverified, the binding timeline flags it in its note
+  but does not add it to `unverified_citations`, which would send every
+  report's source status to review. With the citation verified, neither
+  applies.
+- Number answers stay strict in both interpreters: digits 0 to 9, ASCII
+  whitespace trimmed, anything else invalid.
+- `HIGHRISK.6.1c` and `HIGHRISK.2.13` stay findings of their own.
+- The ledger's "Stand" date stays 18 October 2026, with a dated note for
+  the reading of 11 November 2026.
+
 ### Art. 49(3) public-authority status asked only of deployers (#54)
 
 #### Changed
@@ -614,7 +708,7 @@ checked against the consolidated AI Act of 27 July 2026 and Regulation (EU)
 #### Added
 
 - Guided intake in the browser playground: one question per page, an "I don't know" answer that routes to review or pauses the run for counsel, and a check-answers page listing every defaulted value. Questions, order and skip conditions come from `src/eu_ai_act_classifier/intake.py`; the JSON editor remains as a second mode.
-- The guided intake also asks the fields the entries above add: the Annex I section on the Art. 6(1) route, the general-purpose AI model's own date, and the deployer's public-authority status (Art. 49(3)) on a high-risk route. "I don't know" pauses the run on all three.
+- The guided intake also asks the fields the entries above add: the Annex I section on the Art. 6(1) route, the general-purpose AI model's own date, and the deployer's public-authority status (Art. 49(3)) on a high-risk route. "I don't know" pauses the run on the Annex I section and the deployer's status; a blank model date means "not given" (dated by the system's date for review, or noting the Art. 111(3) transition).
 - `labels.py`: one display-label catalog for the playground field guide and the cockpit, using the pinpoints and titles in `catalog.py`.
 - Competitive research, a feature matrix, a design teardown and an adaptation plan in `docs/research/`, and architecture decision records in `docs/adr/`.
 

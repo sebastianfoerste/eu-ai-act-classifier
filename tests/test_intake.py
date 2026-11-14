@@ -18,6 +18,7 @@ import copy
 import itertools
 import json
 import re
+import time
 from pathlib import Path
 
 import pytest
@@ -32,6 +33,7 @@ from eu_ai_act_classifier.intake import (
     answers_to_profile,
     holds,
     intake_definition,
+    is_answered,
     profile_to_answers,
     question_fields,
     read_field,
@@ -555,6 +557,124 @@ def test_text_answers_are_trimmed() -> None:
     answers["system"] = {"name": "  Padded name  "}
     profile, _asked, _blocked, _missing = answers_to_profile(answers)
     assert profile["name"] == "Padded name"
+
+
+# The same inputs as "numbers use the same grammar as the Python interpreter" in
+# tests/playground/intake.test.mjs; the generated fixtures hold both interpreters to the
+# same profile for each. Only ASCII digits, and only ASCII whitespace is trimmed:
+# str.strip() and String.prototype.trim() each remove characters the other keeps.
+NUMBERS_ACCEPTED = ["2e25", " 2e25 ", ".5e3", "10", "\t10\n", "\v10\f\r"]
+NUMBERS_ACCEPTED += ["5.", "+5", "-0", "1.e5", "5.5e-3"]
+NUMBERS_REJECTED = [
+    "0x10",
+    "1_000",
+    "1e",
+    " ",
+    "   ",  # whitespace alone is not a blank answer
+    ".",
+    "e5",
+    "5..",
+    "1e+",
+    "Infinity",
+    "\u0661\u0662",  # Arabic-Indic digits: Python's \d and float() take them
+    "\uff11\uff12",  # fullwidth digits
+    "\ufeff5",  # byte order mark: trim() removes it, strip() does not
+    "\xa05",  # no-break space: both remove it
+    "5\u2028",  # line separator
+    "\u30005",  # ideographic space
+    "\x1c5",  # file separator: strip() removes it, trim() does not
+    "5\x1f",  # unit separator
+    "5\x85",  # next line
+]
+
+
+@pytest.mark.parametrize("text", NUMBERS_ACCEPTED + NUMBERS_REJECTED, ids=ascii)
+def test_number_answers_take_ascii_digits_and_ascii_whitespace_only(text: str) -> None:
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    model = {"name": "x", "roles": ["gpai_provider"], "is_gpai_model": True}
+    answers = {**profile_to_answers(model), question["id"]: text}
+
+    # Never raises, whatever the text.
+    profile, asked, blocked, missing = answers_to_profile(answers)
+
+    assert question["id"] in asked and not blocked
+    if text in NUMBERS_ACCEPTED:
+        assert is_answered(question, answers)
+        assert question["id"] not in missing
+        assert profile[question["field"]] == float(text.strip(" \t\n\v\f\r"))
+    else:
+        assert not is_answered(question, answers)
+        assert question["id"] in missing
+        assert profile[question["field"]] is None
+
+
+@pytest.mark.parametrize(
+    ("answer", "usable"),
+    [
+        (10, True),
+        (2e25, True),
+        (True, False),  # bool is an int in Python; a JSON true is not a number in either
+        (False, False),
+        (float("inf"), False),
+        (float("nan"), False),
+        ([10], False),
+        ({"value": 10}, False),
+    ],
+    ids=repr,
+)
+def test_number_answers_that_are_not_text_count_only_as_finite_numbers(
+    answer: object, usable: bool
+) -> None:
+    # A caller of the Python intake passes JSON values, not only the text a browser field
+    # holds. isNumber in intake.mjs takes a finite number and no other non-text value.
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    model = {"name": "x", "roles": ["gpai_provider"], "is_gpai_model": True}
+    answers = {**profile_to_answers(model), question["id"]: answer}
+
+    profile, asked, blocked, missing = answers_to_profile(answers)
+
+    assert question["id"] in asked and not blocked
+    assert is_answered(question, answers) is usable
+    assert (question["id"] in missing) is not usable
+    assert profile[question["field"]] == (float(answer) if usable else None)
+
+
+def test_a_long_text_that_is_not_a_number_is_refused_in_linear_time() -> None:
+    # A caller can pass any text. While the pattern could read a run of digits in two
+    # ways, each of the first two checks took seconds at this length.
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    run = 20_000
+    texts = ["1" * run + "x", "1" * run + "." + "1" * run + "x", "5" + " " * run + "5"]
+    started = time.perf_counter()
+    for text in texts:
+        assert not is_answered(question, {question["id"]: text})
+    assert time.perf_counter() - started < 2
+
+
+def test_an_integer_beyond_the_float_range_is_not_a_number_answer() -> None:
+    # json.loads reads such a literal as an int, and math.isfinite() raises on it. The
+    # browser reads the same literal as Infinity and reports the question as missing.
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    model = {"name": "x", "roles": ["gpai_provider"], "is_gpai_model": True}
+    answers = {**profile_to_answers(model), question["id"]: 10**400}
+
+    profile, asked, blocked, missing = answers_to_profile(answers)
+
+    assert question["id"] in asked and not blocked
+    assert not is_answered(question, answers)
+    assert question["id"] in missing
+    assert profile[question["field"]] is None
+
+
+def test_a_question_of_an_unknown_kind_is_never_answered() -> None:
+    # A definition newer than the interpreter must not pass silently (isAnswered's default).
+    assert not is_answered({"id": "q", "kind": "slider"}, {"q": 5})
+
+
+def test_an_unknown_condition_is_an_error_not_a_pass() -> None:
+    # holds() in intake.mjs throws on the same input.
+    with pytest.raises(ValueError, match="unknown condition"):
+        holds({"field": "name", "matches": "x"}, {"name": "x"})
 
 
 def test_question_articles_are_citations_the_engine_already_makes() -> None:

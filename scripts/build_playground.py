@@ -175,8 +175,9 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             (
                 "annex_i_section",
                 "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): "
-                "only Art. 6(1), 60a and 102-112 apply, and 57-59 as far as integrated in the "
-                "sectoral legislation (Art. 2(2) AIA). Unset: Section A.",
+                "Art. 2(2) AIA limits it to Art. 6(1), 60a and 102-112, and 57-59 as far as "
+                "integrated in the sectoral legislation; the report keeps Art. 5, Art. 50 and any "
+                "Annex III duties for review. Unset: Section A.",
             ),
             (
                 "annex_iii_area",
@@ -353,7 +354,14 @@ def build_intake_fixtures() -> dict:
             cases[f"edge+public-authority:{label}:{answer}"] = {
                 "answers": {**held, "deployer_public_authority": answer}
             }
-    for flops in ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", ""):
+    # Unicode digits and whitespace beyond ASCII: str.strip() and String.prototype.trim()
+    # remove different sets, so both interpreters trim ASCII whitespace only.
+    unicode_numbers = ("\u0661\u0662", "\uff11\uff12", "\ufeff5", "\xa05", "5\u2028", "\u30005")
+    unicode_numbers += ("\x1c5", "5\x1f", "5\x85", "\t10\n", "\v10\f\r")
+    # The edges of the grammar, and whitespace alone, which is not a blank answer.
+    forms = ("5.", "+5", "-0", "1.e5", "5.5e-3", ".", "e5", "5..", "1e+", "   ")
+    plain = ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", "")
+    for flops in (*plain, *forms, *unicode_numbers):
         cases[f"edge+training-flops:{flops!r}"] = {"answers": {**model, "training_flops": flops}}
     for case in cases.values():
         profile, asked, blocked, missing = answers_to_profile(case["answers"])

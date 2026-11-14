@@ -235,7 +235,10 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "single",
         "field": "annex_i_section",
         "title": "Which section of Annex I lists that legislation?",
-        "hint": "For a Section B product only the provisions in Art. 2(2) AIA apply.",
+        # Whether Art. 2(2) also displaces Art. 5, Art. 50 and Annex III duties is open (PENDING
+        # rows in docs/REGULATORY_CLAIM_LEDGER.md), so the hint does not state it as settled.
+        "hint": "Art. 2(2) AIA limits a Section B product to the provisions it lists; the report "
+        "keeps Art. 5, Art. 50 and any Annex III duties for review.",
         "article": "Art. 6(1) AIA",
         "options": _options(AnnexISection),
         # Off the Art. 6(1) route the engine reports a given section as unused.
@@ -375,8 +378,9 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "number",
         "field": "training_flops",
         "title": "What was the cumulative training compute, in FLOP?",
-        "hint": "For example 2e25. Leave blank if not disclosed; the systemic-risk status then "
-        "goes to review unless the model is designated.",
+        "hint": "For example 2e25, with the digits 0 to 9 (other digit forms and special "
+        "spaces such as a no-break space are not accepted). Leave blank if not disclosed; the "
+        "systemic-risk status then goes to review unless the model is designated.",
         "article": "Art. 51(2) AIA",
         "show_if": {"all": [IN_SCOPE, {"field": "is_gpai_model", "is": True}]},
     },
@@ -552,19 +556,37 @@ def _base_profile() -> dict[str, Any]:
 
 # One grammar for both interpreters (NUMBER in intake.mjs): a decimal with an
 # optional exponent, so "2e25" passes and "0x10" or "1_000" do not, in either.
-_NUMBER = re.compile(r"^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$")
+# ASCII digits only, and only ASCII whitespace is trimmed (NUMBER_SPACE in
+# intake.mjs): str.strip() and String.prototype.trim() each remove characters the
+# other keeps, and Python's \d and float() also take other Unicode digits. The
+# pattern reads a run of digits in one way only, so a long text that is not a
+# number is refused in time proportional to its length.
+_NUMBER = re.compile(r"^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$", re.ASCII)
+_NUMBER_SPACE = " \t\n\v\f\r"
+
+
+def _number_text(value: str) -> str:
+    return value.strip(_NUMBER_SPACE)
 
 
 def _is_number(value: Any) -> bool:
     if isinstance(value, bool):
         return False
     if isinstance(value, int | float):
-        return math.isfinite(value)
-    return (
-        isinstance(value, str)
-        and bool(_NUMBER.match(value.strip()))
-        and (math.isfinite(float(value)))
-    )
+        try:
+            return math.isfinite(value)
+        except OverflowError:
+            # An int beyond the float range: JSON.parse reads that literal as Infinity.
+            return False
+    if not isinstance(value, str):
+        return False
+    text = _number_text(value)
+    if not _NUMBER.match(text):
+        return False
+    try:
+        return math.isfinite(float(text))
+    except (ValueError, OverflowError):
+        return False
 
 
 def is_answered(question: dict[str, Any], answers: dict[str, Any]) -> bool:
@@ -645,7 +667,11 @@ def answers_to_profile(
             for option in question["options"]:
                 write_field(profile, option["field"], option["field"] in answer)
         elif kind == "number":
-            write_field(profile, question["field"], None if answer in ("", None) else float(answer))
+            if answer in ("", None):
+                number = None
+            else:
+                number = float(_number_text(answer) if isinstance(answer, str) else answer)
+            write_field(profile, question["field"], number)
     return profile, asked, blocked, missing
 
 

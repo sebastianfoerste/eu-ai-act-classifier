@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 
 import pytest
 
+import eu_ai_act_classifier.collaboration_workspace as collaboration_module
 import eu_ai_act_classifier.inventory as inventory_module
 from eu_ai_act_classifier import __version__
 from eu_ai_act_classifier.collaboration_workspace import (
@@ -90,21 +91,41 @@ def test_comments_and_overrides_persist_without_changing_deterministic_baseline(
 
 def test_actions_given_one_clock_build_the_same_inventory(tmp_path, monkeypatch) -> None:
     # A second boundary between two inventory builds used to make the saved workspace stale.
+    # The inventory's own clock ticks on another day, so only the injected `now` can give
+    # the inventory each action builds the same timestamp. The digest leaves the timestamp
+    # out (#33), so the collaboration payloads alone would not show which clock was used.
     ticks = iter(range(60))
     monkeypatch.setattr(
-        inventory_module, "_now", lambda: f"2026-07-13T00:00:{next(ticks):02d}+00:00"
+        inventory_module, "_now", lambda: f"2026-07-14T00:00:{next(ticks):02d}+00:00"
     )
+    built = []
+
+    def recording_inventory(*args, **kwargs):
+        inventory = build_example_inventory(*args, **kwargs)
+        built.append(inventory)
+        return inventory
+
+    monkeypatch.setattr(collaboration_module, "build_example_inventory", recording_inventory)
     now = datetime(2026, 7, 13, tzinfo=UTC)
     runtime_path = tmp_path / "workspace.json"
     target = build_collaboration_state(build_example_inventory()).cells[0].target_id
-    reviewed = apply_workspace_action(
-        {"action": "review", "targetId": target, "expectedRevision": 1, "actor": "Reviewer"},
-        runtime_path,
-        now=now,
+
+    def act(payload: dict[str, object]):
+        # The first inventory an action builds is the one it loads the workspace against.
+        first = len(built)
+        snapshot = apply_workspace_action(payload, runtime_path, now=now)
+        return snapshot, built[first]
+
+    reviewed, review_inventory = act(
+        {"action": "review", "targetId": target, "expectedRevision": 1, "actor": "Reviewer"}
     )
-    imported = apply_workspace_action(
-        {"action": "import", "workspace": reviewed["collaboration"]}, runtime_path, now=now
-    )
+    imported, import_inventory = act({"action": "import", "workspace": reviewed["collaboration"]})
+
+    stamp = "2026-07-13T00:00:00+00:00"
+    for inventory in (review_inventory, import_inventory):
+        assert inventory.generatedAt == stamp
+        assert inventory.reviewTable.generatedAt == stamp
+    assert import_inventory == review_inventory
     assert imported["collaboration"] == reviewed["collaboration"]
 
 

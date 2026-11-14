@@ -211,6 +211,24 @@ def cite(ref: str, *, verified: bool = True) -> Citation:
     return Citation(ref=ref, verified=verified)
 
 
+# Pinpoints #30 added. They were read on 11 November 2026 in the Official Journal texts
+# pinned with their SHA-256 digests in pull request #40: Art. 6(1c) and Art. 2(13) as
+# inserted by Regulation (EU) 2026/1744, Art. 1, points (8) and (3), and Art. 111(1) in
+# Regulation (EU) 2024/1689, which Regulation (EU) 2026/1744 does not amend (VERIFIED rows
+# in docs/REGULATORY_CLAIM_LEDGER.md). An output that states one of them carries the flag
+# only while its citation is unverified, so setting verified=False here restores it.
+UNVERIFIED_FLAG = "[noch zu verifizieren]"
+ART_6_1C = cite("Art. 6(1c) AIA")
+ART_2_13 = cite("Art. 2(13) AIA")
+ART_111_1 = cite("Art. 111(1) AIA")
+
+
+def flag_unless_verified(citation: Citation) -> str:
+    """The flag that follows a pinpoint stated in prose: empty once it is verified."""
+
+    return "" if citation.verified else f" {UNVERIFIED_FLAG}"
+
+
 # --- Application timeline (Art. 113 AIA) -----------------------------------
 # Entry into force 1.8.2024; staggered application thereafter. Checked on
 # 2026-10-18 against Art. 113 and Art. 111 in the consolidated text of
@@ -390,7 +408,7 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
             "by 2 August 2030 in any case (Art. 111(2) AIA as replaced by Art. 1, point (39)(a) "
             "of Regulation (EU) 2026/1744). Components of the Annex X large-scale IT systems "
             "placed on the market or put into service before 2 August 2027 follow Art. 111(1) "
-            "instead."
+            f"instead{flag_unless_verified(ART_111_1)}."
         ),
         SourceStatus.BINDING_LEVEL_1,
         "ai-act-amendment-2026-1744",

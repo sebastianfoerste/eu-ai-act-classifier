@@ -146,7 +146,9 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
       input.inputMode = "decimal";
       input.autocomplete = "off";
       input.value = answer ?? "";
-      input.addEventListener("input", () => setAnswer(question.id, input.value.trim()));
+      // The text goes to the interpreter as typed: its grammar decides which whitespace
+      // around a number is ignored (isNumber in intake.mjs).
+      input.addEventListener("input", () => setAnswer(question.id, input.value));
       fieldset.append(label, input);
     } else if (question.kind === "boolean" || question.kind === "single") {
       const options = question.kind === "boolean"
