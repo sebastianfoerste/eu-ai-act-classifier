@@ -95,6 +95,14 @@ machinery is a Section B product. An unset section is treated as Section A
 (the full Chapter III set), and the Art. 6(1) finding says that a Section B
 product, machinery included, gets only the Art. 2(2) provisions.
 
+Two statements on the Art. 6(1) route are `info` findings of their own:
+`HIGHRISK.6.1c`, Art. 6(1c) (a third-party conformity assessment required
+solely for risks other than risks to health and safety does not meet
+Art. 6(1)(b)), on every Annex I route, and, for Section A, `HIGHRISK.2.13`,
+the Art. 2(13) note on delegated acts. Both citations were read in the
+Official Journal text of Regulation (EU) 2026/1744 on 11 November 2026 and
+are verified; the claim ledger records the source.
+
 On its wording, Art. 2(2) covers any AI system
 "classified as high-risk AI systems in accordance with Article 6(1)" for a
 Section B product, and it lists no Chapter III provision other than
@@ -120,6 +128,12 @@ Annex III systems are treated as high-risk unless an Art. 6(3) derogation is
 asserted. An asserted derogation keeps the tier high-risk and changes the
 disposition to `requires_review`, because Art. 6(4) requires documentation and
 registration. Profiling of natural persons forecloses the derogation.
+
+Annex III point 5(b) excepts AI systems used for the purpose of detecting
+financial fraud. The exception is not applied silently: on a point 5(b)
+profile, `used_for_financial_fraud_detection: true` or `null` keeps the tier
+high-risk and adds an open question, so the disposition is `requires_review`.
+The default, `false`, adds none.
 
 The residual `AnnexIII.UNSURE` value is conservative. It marks the system
 high-risk and records an unverified citation for review.
@@ -266,6 +280,11 @@ counts only if it was made on or after that date. Only the provider and deployer
 2 August 2030 sentence. With `public_authority_use` they also carry
 2030-08-02, unless a significant change is asserted; with only a
 public-authority deployer they ask the reviewer to confirm the intended use.
+A public-authority deployer counts only where the profile holds the deployer
+role, as `deployer_public_authority` describes that role; it then counts for
+the provider items too where the profile also holds the provider role, never
+for importer, distributor or authorised-representative items. For a profile
+without the deployer role the intended use is `public_authority_use` alone.
 
 Art. 113 gives Chapter III no single date. Point (b) applies Section 4 from
 2 August 2025, but Section 4 ("Notifying authorities and notified bodies")
@@ -287,7 +306,9 @@ the point (c) date. For a system whose earliest date falls on or after
 2 August 2026 but before the point (c) date, it says that on the general-date
 reading the system is not a legacy system and the condition does not apply.
 An undated check states both. The item's note also
-states the Art. 111(1) carve-out for the Annex X large-scale IT systems, and
+states the Art. 111(1) carve-out for the Annex X large-scale IT systems
+with its dates (read in the Official Journal text on 11 November 2026; VERIFIED
+in the claim ledger), and
 that the first unit of the type and model decides (recital (39) of
 Regulation (EU) 2026/1744).
 
@@ -305,15 +326,21 @@ The scope gate's transitional status states the same comparison in words:
 which dates were given, the Chapter III date and its point, whether the system
 predates it, the significant-change position, for a legacy system the
 Art. 111(1) carve-out, and the 2030 deadline for public-authority use. Where
-the profile gives no date but `public_authority_use` or
-`deployer_public_authority`, it names the date to compare with; where it
+the profile gives no date but `public_authority_use` or, for a profile that
+holds the deployer role, `deployer_public_authority`, it names the date to
+compare with; where it
 gives a date but no high-risk route, it says there is no Chapter III date to
 compare with. A `significant_change_after_application_date` answer counts
 only for a high-risk system, with no prohibited practice screened, placed on
 the market or put into service before its Chapter III date; elsewhere the
-check states that the answer is not used. It also states the Art. 111(3)
+check states that the answer is not used. In the same way it states that a
+`deployer_public_authority` answer is not used unless the profile holds the
+deployer role for a high-risk system with no prohibited practice screened. It
+also states the Art. 111(3)
 check for a general-purpose AI model and the Art. 111(4) check for a system
 generating synthetic content where the profile gives the date they turn on.
+Outside the AI Act's scope there is no transitional status, so none of these
+statements appears.
 
 Art. 50 items (Chapter IV) carry 2 August 2026, subject to the Art. 50(2) rule
 that follows. Under Art. 111(4), providers of generative systems placed on the
@@ -401,7 +428,12 @@ The artifacts are:
 Citations are pinpoint, for example `Art. 6(2) AIA` and `Annex III(5)(b) AIA`.
 
 Unconfirmed pinpoints are flagged `noch zu verifizieren` and carried in
-`report.unverified_citations`. Nothing is invented.
+`report.unverified_citations`. Nothing is invented. A pinpoint stated in prose,
+such as the Art. 111(1) carve-out, carries the flag in the text while its
+citation is unverified; the binding timeline, the same in every report, flags
+it in its note only and does not add it to `report.unverified_citations`. A
+pinpoint becomes verified only with a claim-ledger row that names the source,
+the pinpoint and the access date.
 
 ## Boundaries
 

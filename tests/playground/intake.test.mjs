@@ -127,6 +127,13 @@ test("opening a profile reports values the questions would drop", () => {
   const skipped = { name: "x", annex_iii_area: "III.4.a", derogation: { performs_profiling: true, narrow_procedural_task: true } };
   assert.deepEqual(droppedFields(definition, skipped), { skipped: ["derogation.narrow_procedural_task"], unsupported: [] });
   assert.deepEqual(droppedFields(definition, { name: "  padded  " }), none);
+  // A public-authority status saved for a high-risk provider before the question
+  // was narrowed to the deployer role; a deployer still carries it.
+  for (const status of [true, false]) {
+    const provider = { name: "x", annex_iii_area: "III.5.b", deployer_public_authority: status };
+    assert.deepEqual(droppedFields(definition, provider), { skipped: ["deployer_public_authority"], unsupported: [] });
+    assert.deepEqual(droppedFields(definition, { ...provider, roles: ["provider", "deployer"] }), none);
+  }
   // Asked, but not expressible as an answer: a cause other than skipping.
   assert.deepEqual(droppedFields(definition, { name: "x", roles: [] }), { skipped: [], unsupported: ["roles"] });
   assert.deepEqual(droppedFields(definition, { name: "x", annex_iii_area: "III.9" }), { skipped: [], unsupported: ["annex_iii_area"] });
@@ -144,7 +151,22 @@ test("a single question without a none option does not accept none", () => {
 });
 
 test("numbers use the same grammar as the Python interpreter", () => {
-  for (const ok of ["2e25", " 2e25 ", ".5e3", "10", 2e25]) assert.equal(isNumber(ok), true, String(ok));
-  for (const bad of ["0x10", "1_000", "1e", "", " ", "Infinity", NaN]) assert.equal(isNumber(bad), false, String(bad));
+  // The same inputs as NUMBERS_ACCEPTED and NUMBERS_REJECTED in tests/test_intake.py: ASCII
+  // digits only, and only ASCII whitespace is trimmed.
+  const forms = ["5.", "+5", "-0", "1.e5", "5.5e-3"];
+  for (const ok of ["2e25", " 2e25 ", ".5e3", "10", "\t10\n", "\v10\f\r", ...forms, 2e25]) assert.equal(isNumber(ok), true, JSON.stringify(ok));
+  const unicode = ["\u0661\u0662", "\uff11\uff12", "\ufeff5", "\u00a05", "5\u2028", "\u30005", "\x1c5", "5\x1f", "5\x85"];
+  const edges = ["   ", ".", "e5", "5..", "1e+"];
+  for (const bad of ["0x10", "1_000", "1e", "", " ", ...edges, "Infinity", NaN, ...unicode]) assert.equal(isNumber(bad), false, JSON.stringify(bad));
 });
 
+test("a long text that is not a number is refused in time that grows with its length", () => {
+  // A profile opened from a share link or a file can hold any text. At this length the
+  // earlier pattern took seconds on the first two texts and the earlier trim on the third.
+  const run = 100_000;
+  const digits = "1".repeat(run);
+  const texts = [`${digits}x`, `${digits}.${digits}x`, `5${" ".repeat(run)}5`];
+  const started = performance.now();
+  for (const text of texts) assert.equal(isNumber(text), false);
+  assert.ok(performance.now() - started < 2000);
+});

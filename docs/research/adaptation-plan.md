@@ -73,7 +73,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 
 | | Verdict | Evidence |
 |---|---|---|
-| H1 Guided questionnaire | **Confirmed, built.** Modified: three unknown policies (null routed to review, `III.unsure`, block); `significant_change_after_application_date` blocks on "I don't know", and its model-default null opens unanswered | GOV.UK (Observed); peers' unknown handling (Observed); checks in `tests/test_intake.py` |
+| H1 Guided questionnaire | **Confirmed, built.** Modified: three unknown policies (null routed to review, `III.unsure`, block); `significant_change_after_application_date` is asked only where the engine reads it and records null on "I don't know" (owner decision 1), and `deployer_public_authority` is asked only of a deployer on a high-risk route (item 9) | GOV.UK (Observed); peers' unknown handling (Observed); checks in `tests/test_intake.py` |
 | H2 Label catalog EN/DE | **Confirmed; EN built.** DE parked: German legal terms cannot be checked against the DE Official Journal text from this environment | EuConform, AbdelStark DE terms (Observed); IATE and EUR-Lex not reachable |
 | H3 DOCX/PDF export | **Modified, specified.** Print stylesheet first (no dependency); DOCX as an optional Python extra; rename `wordExportPackage` until real DOCX exists | No peer keeps draft status (Observed); `@page` margin boxes Chrome only (Observed) |
 | H4 Cockpit styling, then dark mode | **Styling confirmed and built** without Tailwind ([ADR 0004](../adr/0004-cockpit-styling-without-tailwind.md)). Dark mode specified, not built | Baseline captures |
@@ -89,13 +89,13 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **User story.** As counsel without the schema in my head, I answer one plain question at a time and see every answer, and every value I was not asked about, before I classify.
 - **References.** GOV.UK question pages and check answers (`alphagov/govuk-design-system@2508866a`); DanielHuette generated flow and parity script; AbdelStark as the counter-example of drifting trees.
 - **Adapted versus different.** One question per page, question as heading, article under it, error summary with focus, check-answers page with Change links. Different: questions, order and skip rules are Python data; the browser only interprets them; "I don't know" never becomes false and can block the run.
-- **Acceptance.** All 18 examples round-trip; every fail-closed unknown yields `requires_review`; every answer to each skipped question is tried over two grids of intake-reachable states (1,041 and 1,656 distinct states) without changing the classification report, apart from the engine's own "not used" statements, and, in scope, without changing the advisory notes; the browser interpreter matches Python on the generated fixtures, including padded text and unanswered questions; every question article is a pinpoint the engine already cites; a profile whose values the questions would drop is refused; no new axe violations.
+- **Acceptance.** All 19 examples round-trip; every fail-closed unknown yields `requires_review`; every answer to each skipped question is tried over two grids of intake-reachable states (1,041 and 1,656 distinct states) without changing the classification report, apart from the engine's own "not used" statements, and, in scope, without changing the advisory notes; the browser interpreter matches Python on the generated fixtures, including padded text and unanswered questions; every question article is a pinpoint the engine already cites; a profile whose values the questions would drop is refused; no new axe violations.
 - **Files.** `src/eu_ai_act_classifier/intake.py`, `scripts/build_playground.py`, `docs/playground/{intake.json,intake.mjs,wizard.mjs,app.mjs,index.html,styles.css}`, `tests/test_intake.py`, `tests/playground/{intake.test.mjs,intake-fixtures.json}`.
 - **Risk.** Rule 10 (no legal logic outside Python): the conditions are data and their effect is tested in Python. Rule 5: covered by tests. Follow-ups: split the 26-option Annex III page into area then point; map `/self-assessment` and the cockpit toggles onto the same definition; update `document.title` per page.
 
 ### S2. Label catalog (built, EN)
 
-- **Story.** As a reviewer I read "Annex III(5)(b): Creditworthiness evaluation and credit scoring", not "III 5 B".
+- **Story.** As a reviewer I read "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons", not "III 5 B".
 - **References.** EuConform and AbdelStark dictionaries (Observed); IATE (not reachable).
 - **Adapted.** One generated catalog (`labels.py` to `web/lib/labels.json` and `fields.json`) with titles taken from `catalog.py`. Different: no new citation is introduced by a label.
 - **Acceptance.** Every enum value labelled; generated file current; no raw value as a label. DE: add `locale: "de"` entries only after each term has a `PENDING` ledger row and a lawyer confirms it.
@@ -135,7 +135,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Tests.** `tests/playground/share.test.mjs`: round trip for every example, version prefix, size cap, invalid input; Playwright check that loading a share link does not classify automatically.
 - **Risk.** Privacy: links persist in history and chat logs, so the warning is required and the feature stays opt-in. Rule 9: no server, no build step.
 
-### S7. Source content hash (next)
+### S7. Source content hash (partly built)
 
 - **Story.** As a legal engineer I can tell whether the consolidated text changed since the ledger was reviewed.
 - **References.** Lexbeam `@efcbae2:law/manifest.json` (Observed).
@@ -144,6 +144,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Files.** `src/eu_ai_act_classifier/citations.py`, `src/eu_ai_act_classifier/verify_sources.py`, `docs/REGULATORY_CLAIM_LEDGER.md` (a `PENDING` row per recorded hash).
 - **Tests.** `tests/test_verify_sources.py` with a stubbed fetch: same content passes, changed content flags review, network failure is reported and does not pass.
 - **Risk.** Rule 3: the check stays outside the classification path and is never required for a result. Recording the first hashes needs EUR-Lex access.
+- **Status.** `sources/` pins byte-exact Official Journal snapshots with their SHA-256 in `sources/manifest.json`, and `tests/test_sources.py` fails on drift. Each snapshot's text and element structure were confirmed identical to EUR-Lex on 10 November 2026; the manifest records digests of both and of the EUR-Lex response, and `scripts/compare_sources.py` repeats the comparison on request ("text changed, review required", exit 1; a bot challenge, network failure or incomplete answer is unverified, exit 2). Open: the byte digests of the Publications Office responses have not been recomputed against a fresh download, and `--verify-sources` itself still checks only that each URL answers.
 
 ### S8. Draft PDF via print stylesheet, then DOCX (next)
 
@@ -222,7 +223,7 @@ D2 and D4 are built; the others are specified.
 
 ## Needs owner decision
 
-1. **Unknown on `significant_change_after_application_date`.** Resolved (owner decision, 28 October 2026): the intake asks the question only for a high-risk system with a date before its Chapter III date, where a null value already raises the engine's Art. 111(2) open question, so "I don't know" records null and the run proceeds to review. Elsewhere the engine reports a given answer as not used, and the bundled examples, which give no date, no longer open with the question unanswered. The Art. 49(3) public-authority deployer question still blocks on "I don't know" for high-risk examples (item 2).
+1. **Unknown on `significant_change_after_application_date`.** Resolved (owner decision, 28 October 2026): the intake asks the question only for a high-risk system with a date before its Chapter III date, where a null value already raises the engine's Art. 111(2) open question, so "I don't know" records null and the run proceeds to review. Elsewhere the engine reports a given answer as not used, and the bundled examples, which give no date, no longer open with the question unanswered.
 2. **Nullable screens.** Most screens are non-nullable booleans, so the intake blocks on "I don't know". Making more fields nullable with engine-side review questions would let more runs proceed ([ADR 0007](../adr/0007-systemprofile-change-proposals.md)).
 3. **Art. 50(2) grace period.** Secondary sources disagree (2 December 2026 versus 2 December 2027, both Claimed). The engine and ledger use 2026-12-02; please re-check against the consolidated text. Nothing was changed.
 4. **Art. 5(1)(ba)/(bb), Art. 5(1a)/(1b) and Art. 4 screens (H7).** Parked until the wording can be checked on EUR-Lex; each needs a `PENDING` ledger row and a test. Update 2026-10-31: the Art. 4 AI literacy duty is encoded for every provider and deployer, with a `CORRECTED` ledger row and `tests/test_ai_literacy.py`; the Section B reading is a `PENDING` row.
@@ -230,6 +231,7 @@ D2 and D4 are built; the others are specified.
 6. **Positioning wording** for the overview (see above).
 7. **Token convergence** between playground and cockpit.
 8. **Optional natural-language intake.** Rejected for the core; acceptable only as an optional extra that drafts a profile a human confirms field by field.
+9. **Art. 49(3) public-authority status (#54).** Resolved (owner decision, 1 November 2026): the intake asks `deployer_public_authority` only of a deployer on a high-risk route, and the engine reads it only for the profile's own deployer role: for a profile without that role the Art. 111(2) public-authority caveat turns on `public_authority_use` alone. So the provider examples no longer open with the question unanswered. "I don't know" still blocks, because a missing status reaches review only in some contexts (some Annex III points, public-authority use or a body governed by public law); `credit_scoring_deployer.json` and `life_insurer_pricing.json` open with it unanswered (item 2).
 
 ## Rejected
 

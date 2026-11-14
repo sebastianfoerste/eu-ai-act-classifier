@@ -6,10 +6,10 @@ from pathlib import Path
 from eu_ai_act_classifier import AnnexIII, SourceStatus, SystemProfile, classify, render_report
 from eu_ai_act_classifier.citations import (
     ADVISORY_SOURCE_RETRIEVED_ON,
-    AI_CONTENT_CODE_URL,
+    ART_50_CODE_OF_PRACTICE_URL,
+    ART_50_GUIDELINES_URL,
+    ART_50_SOURCES_RETRIEVED_ON,
     GPAI_PROVIDER_GUIDELINES_URL,
-    TRANSPARENCY_GUIDELINES_URL,
-    TRANSPARENCY_SOURCE_RETRIEVED_ON,
     source_manifest,
 )
 from eu_ai_act_classifier.models import ProhibitedPractice
@@ -17,6 +17,8 @@ from eu_ai_act_classifier.verify_sources import URLS
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
 STALE = ("placeholder", "when published", "tracker")
+# Wording the two Art. 50 sources carried until their pages and documents were read.
+UNREAD = ("noch zu verifizieren", "primary-verified", "reported as", "search results")
 
 
 def test_advisory_overlay_is_opt_in() -> None:
@@ -35,26 +37,34 @@ def _example(name: str) -> SystemProfile:
     return SystemProfile.model_validate_json((EXAMPLES / name).read_text(encoding="utf-8"))
 
 
-def test_manifest_lists_the_final_art_50_guidelines_and_the_code_with_their_own_date() -> None:
+def test_art_50_sources_are_two_separate_guidance_instruments_with_their_own_date() -> None:
     sources = {source.source_id: source for source in source_manifest()}
-    guidelines = sources["transparency-guidelines-2026"]
-    code = sources["ai-content-code-of-practice"]
+    guidelines = sources["art-50-guidelines"]
+    code = sources["art-50-code-of-practice"]
 
     assert "transparency-guidance" not in sources
     for source in (guidelines, code):
         assert source.legal_status is SourceStatus.NONBINDING_GUIDANCE
-        assert source.retrieved_on == TRANSPARENCY_SOURCE_RETRIEVED_ON == "2026-10-31"
+        assert source.retrieved_on == ART_50_SOURCES_RETRIEVED_ON == "2026-11-14"
         assert source.retrieved_on != ADVISORY_SOURCE_RETRIEVED_ON
-    assert guidelines.url == TRANSPARENCY_GUIDELINES_URL
-    assert "20 July 2026" in guidelines.implementation_note
-    assert code.url == AI_CONTENT_CODE_URL
+        text = f"{source.title} {source.citation_label} {source.implementation_note}".lower()
+        for unread in UNREAD:
+            assert unread not in text, (source.source_id, unread)
+    assert guidelines.url == ART_50_GUIDELINES_URL
+    assert code.url == ART_50_CODE_OF_PRACTICE_URL
+    assert guidelines.url != code.url
+    # The guidelines state their legal basis; the code does not, so the note says whose
+    # reading the Art. 50(7) link is.
+    assert "Art. 96(1)(d)" in guidelines.implementation_note
+    assert "C(2026) 7702 final" in guidelines.title
     assert "10 June 2026" in code.implementation_note
     assert "Art. 50(2)" in code.implementation_note and "Art. 50(4)" in code.implementation_note
+    assert "does not cite" in code.implementation_note
     assert sources["gpai-provider-guidelines"].url == GPAI_PROVIDER_GUIDELINES_URL
     assert "printable" not in GPAI_PROVIDER_GUIDELINES_URL
-    assert {TRANSPARENCY_GUIDELINES_URL, AI_CONTENT_CODE_URL, GPAI_PROVIDER_GUIDELINES_URL} <= set(
-        URLS.values()
-    )
+    checked = set(URLS.values())
+    for url in (ART_50_GUIDELINES_URL, ART_50_CODE_OF_PRACTICE_URL, GPAI_PROVIDER_GUIDELINES_URL):
+        assert url in checked
 
 
 def test_no_placeholder_wording_remains_for_art_50() -> None:
@@ -65,24 +75,53 @@ def test_no_placeholder_wording_remains_for_art_50() -> None:
         assert stale not in text.lower(), stale
 
 
-def test_art_50_triggers_add_the_guidelines_and_synthetic_content_adds_the_code() -> None:
-    deepfake = classify(_example("deepfake_generator.json"), include_advisory=True)
-    chatbot = classify(_example("support_chatbot.json"), include_advisory=True)
+def test_chatbot_gets_the_art_50_guidelines_but_not_the_marking_code() -> None:
+    report = classify(
+        SystemProfile(name="bot", interacts_with_natural_persons=True), include_advisory=True
+    )
+    source_ids = {note.source_id for note in report.advisory_notes}
 
-    deepfake_ids = [note.note_id for note in deepfake.advisory_notes]
-    chatbot_ids = [note.note_id for note in chatbot.advisory_notes]
-    assert "guidance.transparency" in deepfake_ids and "guidance.ai-content-code" in deepfake_ids
-    assert "guidance.transparency" in chatbot_ids and "guidance.ai-content-code" not in chatbot_ids
-    guidelines = next(n for n in deepfake.advisory_notes if n.note_id == "guidance.transparency")
-    code = next(n for n in deepfake.advisory_notes if n.note_id == "guidance.ai-content-code")
-    assert guidelines.source_id == "transparency-guidelines-2026"
-    assert guidelines.source_url == TRANSPARENCY_GUIDELINES_URL
-    assert "20 July 2026" in guidelines.detail
-    assert code.source_id == "ai-content-code-of-practice"
-    assert code.source_url == AI_CONTENT_CODE_URL
-    assert "Art. 50(2)" in code.detail and "Art. 50(4)" in code.detail
+    assert "art-50-guidelines" in source_ids
+    assert "art-50-code-of-practice" not in source_ids
+
+
+def test_emotion_or_biometric_use_gets_the_art_50_guidelines_but_not_the_marking_code() -> None:
+    # The code of practice concerns the marking and labelling duties in Art. 50(2) and (4)
+    # (Art. 50(7) AIA), not the Art. 50(3) duty to inform the persons exposed.
+    report = classify(
+        SystemProfile(name="emotion", deploys_emotion_or_biometric_categorisation=True),
+        include_advisory=True,
+    )
+    source_ids = {note.source_id for note in report.advisory_notes}
+
+    assert "art-50-guidelines" in source_ids
+    assert "art-50-code-of-practice" not in source_ids
+
+
+def test_synthetic_content_gets_both_art_50_instruments() -> None:
+    for facts in ({"generates_synthetic_content": True}, {"generates_deepfakes": True}):
+        report = classify(SystemProfile(name="gen", **facts), include_advisory=True)
+        source_ids = {note.source_id for note in report.advisory_notes}
+        assert {"art-50-guidelines", "art-50-code-of-practice"} <= source_ids
+
+
+def test_art_50_notes_name_their_source_and_stay_nonbinding() -> None:
+    report = classify(_example("deepfake_generator.json"), include_advisory=True)
+    notes = {note.note_id: note for note in report.advisory_notes}
+    guidelines = notes["guidance.transparency-guidelines"]
+    code = notes["guidance.transparency-code-of-practice"]
+
+    assert guidelines.source_id == "art-50-guidelines"
+    assert guidelines.source_url == ART_50_GUIDELINES_URL
+    assert "Art. 96(1)(d)" in guidelines.detail
+    assert code.source_id == "art-50-code-of-practice"
+    assert code.source_url == ART_50_CODE_OF_PRACTICE_URL
+    assert "Art. 50(2)" in code.detail and "(4)" in code.detail
+    for note in (guidelines, code):
+        for unread in UNREAD:
+            assert unread not in note.detail.lower(), (note.note_id, unread)
     assert all(
-        note.source_status is SourceStatus.NONBINDING_GUIDANCE for note in deepfake.advisory_notes
+        note.source_status is SourceStatus.NONBINDING_GUIDANCE for note in report.advisory_notes
     )
 
 

@@ -102,6 +102,184 @@ Changes since 0.2.2.
   item is kept, flagged "Literal reading, confirm with counsel" and sent to
   review, as the Art. 50 items are. The claim ledger has a CORRECTED row and a
   PENDING row for the Section B reading.
+### Pinned source texts
+
+#### Added
+
+- `sources/` holds byte-exact copies of Regulation (EU) 2026/1744, Regulation
+  (EU) 2024/1689 (original and the consolidated version of 27 July 2026),
+  Directive 2011/93/EU and Implementing Decision (EU) 2026/2274, with each
+  file's request URL, retrieval date and SHA-256 in `sources/manifest.json`.
+  `tests/test_sources.py` fails if a file no longer matches its digest. The
+  classifier does not read these files.
+- Each snapshot was compared with its EUR-Lex rendition on 10 November 2026.
+  The renditions differ in presentation only (meta tags, scripts, link and
+  image targets, a table class); the body text and the element structure are
+  identical. The manifest records the EUR-Lex URL, the date, the digest of
+  the EUR-Lex response and SHA-256 digests of the text and the structure,
+  which the test recomputes offline. `scripts/compare_sources.py` repeats the
+  comparison on request: it exits 1 when a text or structure differs and 2
+  when a source could not be compared, for example when EUR-Lex answers with
+  a bot challenge. The byte digests of the Publications Office responses have
+  not been recomputed against a fresh download (see `sources/README.md`).
+
+### Audit fixes on commits merged after verification
+
+#### Fixed
+
+- Art. 6(1c) and Art. 2(13) AIA, which #30 added to the Art. 6(1) finding,
+  were shown as verified although no primary source was recorded for them.
+  They were read on 11 November 2026 in the Official Journal text of
+  Regulation (EU) 2026/1744 (Art. 1, points (8) and (3)), in the snapshot
+  pinned with its SHA-256 digest in #40, and the claim ledger now records
+  that source. Each is now an `info` finding of its own, `HIGHRISK.6.1c` on
+  every Annex I route and `HIGHRISK.2.13` for Section A, with
+  `citation_verified` true. Their wording is unchanged; the `HIGHRISK.6.1`
+  detail no longer states them, so an Annex I profile has one more finding
+  (two for Section A).
+- The Art. 111(1) carve-out for Annex X components and its two dates
+  (placed on the market or put into service before 2 August 2027, brought
+  into compliance by 31 December 2030) had no recorded source either. They
+  were read on 11 November 2026 in the Official Journal text of Regulation
+  (EU) 2024/1689; Regulation (EU) 2026/1744 amends Art. 111 only in
+  paragraphs 2 and 4. The text and the dates are unchanged. Should one of
+  the three citations be set back to `verified=False` in `citations.py`, the
+  output flags it again: its finding's `citation_verified` turns false, and
+  for Art. 111(1) the scope text, the Art. 111(2) graph notes and the
+  timeline carry "[noch zu verifizieren]" and `unverified_citations` lists it
+  where the scope text or a graph note states the carve-out.
+  `tests/test_reread_pinpoints.py` checks this on a copy of the package with
+  the three citations set to `verified=False`.
+- The claim ledger has a VERIFIED row for each of the three, with the
+  Official Journal text, the pinpoint, the access date (11 November 2026)
+  and what was read. Each row points to the ledger's list "Sources read on
+  11 November 2026", which gives each snapshot's file, request URL,
+  retrieval date and SHA-256 digest. EUR-Lex itself could not be read
+  from the session (2 and 11 November 2026), so the snapshot is the source;
+  the "Stand" date stays 18 October 2026 with a dated note. Before that
+  reading this branch showed all three as unverified (PENDING); that state
+  was never released.
+- Guided intake, playground field guide and the system-profile schema
+  (`annex_i_section` and `AnnexISection` descriptions): the Annex I section
+  text no longer states the contested literal reading of Art. 2(2) as
+  settled. It says that the report keeps Art. 5, Art. 50 and any Annex III
+  duties of a Section B product for review, as the PENDING ledger rows on
+  Art. 2(2) record.
+- The #31 entry below said "I don't know" pauses the run on all three new
+  intake questions; the model-date question offers no "I don't know", and a
+  blank model date means "not given".
+- Guided intake: the number answer (training compute) takes the same inputs
+  in the Python and the browser interpreter. Both accept ASCII digits only
+  and trim only ASCII whitespace; before, Python also took Arabic-Indic or
+  fullwidth digits, each side trimmed characters the other kept (a byte
+  order mark in the browser, `\x1c` to `\x1f` and `\x85` in Python), and
+  Python raised `ValueError` on `"\x1c5"` instead of reporting the answer as
+  missing. The generated fixtures cover these inputs. An answer padded with
+  a no-break space (`"\xa05"`), which both accepted before, is now invalid:
+  the browser asks for a number again and the Python intake lists the
+  question as missing. The question's hint and `docs/FEATURES.md` say so.
+- Guided intake in the browser: the wizard passed a typed number through
+  `String.prototype.trim()` before the interpreter saw it. An answer padded
+  with a no-break space was therefore still accepted there, and one of
+  whitespace only was read as blank, although the entry above and
+  `docs/FEATURES.md` say that the browser asks for a number again. The
+  wizard now hands the text over as typed, so the one grammar decides.
+  `tests/playground/wizard.test.mjs` drives the wizard's number page.
+- Guided intake: a long text that is not a number was refused in time that
+  grew with the square of its length, in the browser's whitespace trim
+  (added by the number-grammar entry, two above) and in the number pattern
+  of both interpreters (already so on `main`). A share link can hold such a
+  text: one of 200 characters kept the playground busy for about two
+  seconds on opening, and the limit is 8,000 characters. The trim now scans
+  from each end and the pattern reads a run of digits in one way only; it
+  takes and refuses the same texts as before. Each interpreter has a test
+  with a long text.
+- Guided intake in Python: a number answer given as an integer beyond the
+  float range (above about 1.8e308, which a JSON integer literal can be)
+  raised `OverflowError`. It is now reported as missing, as in the browser,
+  where `JSON.parse` reads the literal as Infinity.
+
+#### Decisions
+
+Taken in a Claude Code session on the owner's instruction of 10 November
+2026 to answer the open decisions, and applied on 11 November 2026; the
+owner has not reviewed the detail. The claim ledger records them too.
+
+- Art. 6(1c), Art. 2(13) and Art. 111(1) are verified on the Official
+  Journal snapshots pinned in #40, read on 11 November 2026.
+- While Art. 111(1) is unverified, the binding timeline flags it in its note
+  but does not add it to `unverified_citations`, which would send every
+  report's source status to review. With the citation verified, neither
+  applies.
+- Number answers stay strict in both interpreters: digits 0 to 9, ASCII
+  whitespace trimmed, anything else invalid.
+- `HIGHRISK.6.1c` and `HIGHRISK.2.13` stay findings of their own.
+- The ledger's "Stand" date stays 18 October 2026, with a dated note for
+  the reading of 11 November 2026.
+
+### Art. 49(3) public-authority status asked only of deployers (#54)
+
+#### Changed
+
+- The guided intake asks whether the deployer is, or acts on behalf of, a
+  public authority (`deployer_public_authority`, Art. 49(3) AIA) only where
+  the profile holds the deployer role on a high-risk route. The six bundled
+  high-risk examples that name only a provider no longer open with the
+  question unanswered. It still stops the run on "I don't know": for a
+  deployer of an Annex III point 5(b) system with no public-authority use
+  and no public law body, for one, a missing status reads like "no" and
+  raises no review question, so `credit_scoring_deployer.json` still opens
+  with it unanswered, and so does `life_insurer_pricing.json` (#14), a
+  point 5(c) provider and deployer.
+- The engine reads `deployer_public_authority` only for a profile that holds
+  the deployer role. For any other profile, the Art. 111(2) caveat on
+  systems intended to be used by public authorities turns on
+  `public_authority_use` alone. Where a profile in scope gives a status that
+  is not used (no deployer role, or a deployer with no high-risk route or
+  with a prohibited practice screened), the scope check now says so:
+  "deployer_public_authority is given, but it is not used".
+- For a profile without the deployer role that gave `true` and does not
+  assert public-authority use, the report no longer shows the text the
+  status triggered, as for a profile that leaves it unset:
+  - with a date before the Chapter III date, the caveat "A public-authority
+    deployer is asserted: confirm whether the system is intended to be used
+    by public authorities", with the conditional Art. 111(2)
+    public-authority deadline that follows it, in the transitional status,
+    the Art. 111(2) open question and the Art. 111(2) graph items, and,
+    with an Art. 50 trigger, in the `TRANSPARENCY.50` finding and the
+    Art. 50 item notes; the legacy notes on the other high-risk items lose
+    their clause on that deadline ("as the public-authority deployer
+    suggests");
+  - with no date, the whole Art. 111(2) paragraph of the transitional
+    status: the Chapter III date to compare with, the significant-change
+    condition and the "Literal reading, confirm with counsel" flag, or, for
+    an Annex I, Section B product without an Annex III area, the Section B
+    Art. 111(2) statement.
+
+  No profile's tier, disposition, obligations, finding rule ids or
+  severities, graph item ids, dates or review statuses, or number of open
+  questions changes (compared over 221,184 synthetic profiles).
+- A high-risk profile without the deployer role that gives the status, as
+  share links and drafts saved from the guided mode before this change do
+  (the guided mode required an answer), now opens only in the JSON editor:
+  the guided mode would drop the answer. There it classifies as described
+  above.
+
+### CI trust signals and dependency floors
+
+#### Changed
+
+- CI runs the Python suite on 3.13 and 3.14, gates statement coverage at 94 %
+  (the integer part of the measured total; `pytest-cov` joins the `dev`
+  extra), runs the suite at the lowest declared dependency versions
+  (`uv run --isolated --resolution lowest-direct`) and installs the built
+  wheel into a clean environment to run the CLI, expecting exit 1 for
+  `examples/social_scoring.json --strict`. Each job has a timeout, checkouts
+  do not persist credentials, and a new push cancels the superseded run of a
+  pull request.
+- The declared `pydantic` floor rises from `>=2.6` to `>=2.11`, the lowest
+  version the lowest-direct job passes with on Python 3.13; the `mcp` extra
+  floor (1.21.1) passes there too. The package classifiers add Python 3.14.
 
 ### Art. 111(2) change answer asked only where it is used (#43)
 
@@ -289,6 +467,71 @@ Changes since 0.2.2.
   guides already did for this package's server. eu-reg-mcp, the linter and
   this classifier require Python 3.13 or later; without the flag, uvx fails
   with `No solution found` when the default Python is older.
+
+### Legal mapping corrections (#14)
+
+These entries come from #14. After a first check in a GitHub mirror of
+EUR-Lex, these provisions were checked on 11 November 2026 against the
+Official Journal texts pinned in `sources/`, each in a VERIFIED row of the
+claim ledger of that date: Art. 6(3), third subparagraph; Annex III, point
+5(b) and (c); Art. 43(2) and Art. 43(3), last subparagraph; Art. 50(7); Art. 96(1)(d); and the titles
+and dates in the regulation string. The check confirms wording and pinpoints.
+The 2026-08-02 dating of the new Art. 43(2) item rests on the reading of
+Art. 113 of 18 October 2026 (the CORRECTED and PENDING Section 5 rows). No
+lawyer has adopted the conclusions, so confirm them with counsel before
+reliance. The two Art. 50 Commission sources could not be opened and keep
+`[noch zu verifizieren]`.
+
+#### Added
+
+- `used_for_financial_fraud_detection` (default `false`): point 5(b) excepts
+  AI systems used for the purpose of detecting financial fraud. On a point
+  5(b) profile, `true` or `null` adds an open question and the system stays
+  high-risk, so the disposition is `REQUIRES_REVIEW` and `--strict` exits 1.
+  The guided intake asks it only for a point 5(b) profile; "I don't know"
+  records `null`.
+- New example `examples/life_insurer_pricing.json` (Annex III point 5(c),
+  provider and deployer, with profiling) and two worked examples in
+  `docs/worked-examples/`, a bank's credit-scoring model and a life insurer's
+  pricing model.
+
+#### Changed
+
+- Annex III labels as in Annex III: point 5(b) is "Creditworthiness
+  evaluation and credit scoring of natural persons" and point 5(c) "Risk
+  assessment and pricing for natural persons in life and health insurance".
+  The 5(b) and 5(c) finding titles and the display labels from `labels.py`
+  (#31) change with them.
+- For Annex III points 2 to 8 the provider graph has
+  `high-risk.provider.43.2` (Art. 43(2) AIA, internal control under Annex VI
+  without a notified body, `review_required`) instead of
+  `high-risk.provider.44` (Art. 44 certificate). Integrations that read
+  `high-risk.provider.44` for these systems will no longer find it. Where the
+  Chapter III duties apply, Annex III point 1, `III.unsure` and an Annex I
+  product in Section A, or whose section is not given (also an Annex I
+  safety component off the Art. 6(1) route, where the section is not asked),
+  keep the Art. 44 item:
+  the last subparagraph of Art. 43(3), as replaced by Regulation (EU)
+  2026/1744, sends a system covered by Section A legislation that also falls
+  under Annex III to that legislation's procedure. It names Section A only, so
+  a Section B product on the Art. 6(1) route in points 2 to 8 gets the
+  Art. 43(2) item. The new item is dated like the other Section 5 items: 2026-08-02 with
+  "Literal reading, confirm with counsel".
+- CI's coverage floor rises from 94 % to 95 % (`--cov-fail-under=95`), the
+  integer part of the measured total of 95.02 %.
+- The profiling rule is cited as "Art. 6(3), third subparagraph, AIA"
+  instead of "Art. 6(3) subpara. 2 AIA".
+- Art. 50 sources: the placeholder "Transparency guidance tracker" is
+  replaced by the Code of Practice on marking and labelling of AI-generated
+  content (Art. 50(7) AIA, `art-50-code-of-practice`) and the Commission
+  guidelines on the Art. 50 transparency obligations (Art. 96(1)(d) AIA,
+  `art-50-guidelines`). Their titles, dates and URLs come from search results
+  only, so both carry `[noch zu verifizieren]`. With `--advisory`, every
+  Art. 50 profile gets the note `guidance.transparency-guidelines` (was
+  `guidance.transparency`), and profiles under Art. 50(2) or (4) also get
+  `guidance.transparency-code-of-practice`.
+- The regulation named in every report ends with "as amended by Regulation
+  (EU) 2026/1744".
 
 ## 0.2.2 (2026-10-23)
 
@@ -560,7 +803,7 @@ checked against the consolidated AI Act of 27 July 2026 and Regulation (EU)
 #### Added
 
 - Guided intake in the browser playground: one question per page, an "I don't know" answer that routes to review or pauses the run for counsel, and a check-answers page listing every defaulted value. Questions, order and skip conditions come from `src/eu_ai_act_classifier/intake.py`; the JSON editor remains as a second mode.
-- The guided intake also asks the fields the entries above add: the Annex I section on the Art. 6(1) route, the general-purpose AI model's own date, and the deployer's public-authority status (Art. 49(3)) on a high-risk route. "I don't know" pauses the run on all three.
+- The guided intake also asks the fields the entries above add: the Annex I section on the Art. 6(1) route, the general-purpose AI model's own date, and the deployer's public-authority status (Art. 49(3)) on a high-risk route. "I don't know" pauses the run on the Annex I section and the deployer's status; a blank model date means "not given" (dated by the system's date for review, or noting the Art. 111(3) transition).
 - `labels.py`: one display-label catalog for the playground field guide and the cockpit, using the pinpoints and titles in `catalog.py`.
 - Competitive research, a feature matrix, a design teardown and an adaptation plan in `docs/research/`, and architecture decision records in `docs/adr/`.
 

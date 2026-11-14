@@ -155,9 +155,10 @@ class ProhibitedPractice(StrEnum):
 class AnnexISection(StrEnum):
     """Annex I sections for the Art. 6(1) AIA product route.
 
-    For a Section B product only Art. 6(1), Art. 60a and Arts. 102 to 112 apply,
-    and Arts. 57 to 59 only in so far as the high-risk requirements have been
-    integrated in the sectoral legislation (Art. 2(2) AIA). Regulation (EU)
+    For a Section B product Art. 2(2) AIA lists only Art. 6(1), Art. 60a and
+    Arts. 102 to 112, and Arts. 57 to 59 only in so far as the high-risk
+    requirements have been integrated in the sectoral legislation; the report
+    keeps Art. 5, Art. 50 and any Annex III duties for review. Regulation (EU)
     2026/1744 moved machinery to Section B:
     Section A, point 1 is deleted and Regulation (EU) 2023/1230 is Section B,
     point 21.
@@ -173,8 +174,7 @@ class Derogation(BaseModel):
     An Annex III system is *not* high-risk if it does not pose a significant
     risk of harm, but only where one of the four conditions holds AND the
     system does not perform profiling of natural persons. Profiling always
-    keeps the system high-risk (Art. 6(3), third subparagraph, AIA; the
-    conditions are in the second subparagraph).
+    keeps the system high-risk (Art. 6(3), third subparagraph, AIA).
     """
 
     narrow_procedural_task: bool = False
@@ -274,14 +274,16 @@ class SystemProfile(BaseModel):
     # A system intended to be used by public authorities (Art. 111(2) AIA).
     public_authority_use: bool = False
     # The deployer is a public authority, Union institution, body, office or agency, or
-    # acts on behalf of one (Art. 49(3) AIA). None: not established.
+    # acts on behalf of one (Art. 49(3) AIA). None: not established. Read only for a
+    # profile that holds the deployer role.
     deployer_public_authority: bool | None = Field(
         default=None,
         description=(
             "Art. 49(3) AIA: the deployer is a public authority, Union institution, body, office "
-            "or agency, or acts on behalf of one. Null: not established, so the registration of "
-            "use is inferred, for review, where the system is intended to be used by public "
-            "authorities or its Annex III point (5(a), 6 or 7) describes such use."
+            "or agency, or acts on behalf of one. Read only where the profile holds the deployer "
+            "role. Null: not established, so the registration of use is inferred, for review, "
+            "where the system is intended to be used by public authorities or its Annex III "
+            "point (5(a), 6 or 7) describes such use."
         ),
     )
     deployer_public_law_body: bool | None = None
@@ -317,12 +319,23 @@ class SystemProfile(BaseModel):
     annex_i_third_party_assessment: bool = False  # Art. 6(1)(b): third-party conformity assessment
     annex_i_section: AnnexISection | None = Field(
         default=None,
+        # Whether Art. 2(2) also displaces Art. 5, Art. 50 and Annex III duties is open (PENDING
+        # rows in docs/REGULATORY_CLAIM_LEDGER.md), so the schema does not state it as settled.
         description=(
-            "Annex I section of the Art. 6(1) AIA product. For Section B only the Art. 2(2) "
-            "provisions apply. Null: treated as Section A."
+            "Annex I section of the Art. 6(1) AIA product. For Section B, Art. 2(2) AIA limits "
+            "it to the provisions it lists; the report keeps Art. 5, Art. 50 and any Annex III "
+            "duties for review. Null: treated as Section A."
         ),
     )
     annex_iii_area: AnnexIII | None = None  # Art. 6(2) + Annex III
+    used_for_financial_fraud_detection: bool | None = Field(
+        default=False,
+        description=(
+            "Annex III point 5(b) AIA excepts AI systems used for the purpose of detecting "
+            "financial fraud. On a III.5.b profile, true (asserted) or null (unknown) raises a "
+            "review question; the system stays high-risk until it is answered."
+        ),
+    )
     derogation: Derogation = Field(default_factory=Derogation)
 
     # Transparency screens (Art. 50 AIA)

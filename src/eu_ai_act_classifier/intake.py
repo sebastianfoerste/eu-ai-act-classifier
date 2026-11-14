@@ -94,6 +94,13 @@ FRIA_OPEN = {
     ]
 }
 
+# Art. 49(3) AIA and the public-authority deployer in Art. 111(2) read the profile's own
+# deployer role, and only on a high-risk route (transitions.public_authority_status_used).
+# Elsewhere, for a profile in scope, the engine reports a given status as not used.
+PUBLIC_AUTHORITY_STATUS_OPEN = {
+    "all": [HIGH_RISK_ROUTE, {"field": "roles", "has": Role.DEPLOYER.value}]
+}
+
 
 def _dated_before(cut_off: str) -> dict[str, Any]:
     return {
@@ -228,7 +235,10 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "single",
         "field": "annex_i_section",
         "title": "Which section of Annex I lists that legislation?",
-        "hint": "For a Section B product only the provisions in Art. 2(2) AIA apply.",
+        # Whether Art. 2(2) also displaces Art. 5, Art. 50 and Annex III duties is open (PENDING
+        # rows in docs/REGULATORY_CLAIM_LEDGER.md), so the hint does not state it as settled.
+        "hint": "Art. 2(2) AIA limits a Section B product to the provisions it lists; the report "
+        "keeps Art. 5, Art. 50 and any Annex III duties for review.",
         "article": "Art. 6(1) AIA",
         "options": _options(AnnexISection),
         # Off the Art. 6(1) route the engine reports a given section as unused.
@@ -248,6 +258,21 @@ QUESTIONS: list[dict[str, Any]] = [
         "none_label": "None of these",
         "show_if": IN_SCOPE,
         "unknown": {"value": AnnexIII.UNSURE.value},
+    },
+    {
+        "id": "used_for_financial_fraud_detection",
+        "kind": "boolean",
+        "field": "used_for_financial_fraud_detection",
+        "title": "Is the system used for the purpose of detecting financial fraud?",
+        "hint": "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting "
+        "financial fraud. Yes or I don't know raises a review question; the system stays "
+        "high-risk until it is answered.",
+        "article": "Annex III(5)(b) AIA",
+        # The engine reads the field only for an Annex III point 5(b) profile.
+        "show_if": {
+            "all": [IN_SCOPE, {"field": "annex_iii_area", "is": AnnexIII.CREDITWORTHINESS.value}]
+        },
+        "unknown": {"value": None},
     },
     {
         "id": "performs_profiling",
@@ -353,8 +378,9 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "number",
         "field": "training_flops",
         "title": "What was the cumulative training compute, in FLOP?",
-        "hint": "For example 2e25. Leave blank if not disclosed; the systemic-risk status then "
-        "goes to review unless the model is designated.",
+        "hint": "For example 2e25, with the digits 0 to 9 (other digit forms and special "
+        "spaces such as a no-break space are not accepted). Leave blank if not disclosed; the "
+        "systemic-risk status then goes to review unless the model is designated.",
         "article": "Art. 51(2) AIA",
         "show_if": {"all": [IN_SCOPE, {"field": "is_gpai_model", "is": True}]},
     },
@@ -455,12 +481,10 @@ QUESTIONS: list[dict[str, Any]] = [
         "title": "Is the deployer a public authority or a Union institution, body, office or "
         "agency, or does it act on behalf of one?",
         "article": "Art. 49(3) AIA",
-        # Art. 49(3) and the Art. 111(2) deployer items read it only for a high-risk
-        # route. Elsewhere it changes nothing: without a high-risk route the Art. 111(2)
-        # check ignores it, and for a prohibited practice that check turns on a date or
-        # on public-authority use instead.
-        "show_if": HIGH_RISK_ROUTE,
-        # A missing status is inferred for review only in some contexts, so it blocks.
+        "show_if": PUBLIC_AUTHORITY_STATUS_OPEN,
+        # A missing status raises a review question only in some contexts
+        # (engine._art_49_3_questions); for a point 5(b) deployer without public-authority
+        # use or a public law body, for one, null reads like false, so it blocks.
         "unknown": BLOCK,
     },
 ]
@@ -535,19 +559,37 @@ def _base_profile() -> dict[str, Any]:
 
 # One grammar for both interpreters (NUMBER in intake.mjs): a decimal with an
 # optional exponent, so "2e25" passes and "0x10" or "1_000" do not, in either.
-_NUMBER = re.compile(r"^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$")
+# ASCII digits only, and only ASCII whitespace is trimmed (NUMBER_SPACE in
+# intake.mjs): str.strip() and String.prototype.trim() each remove characters the
+# other keeps, and Python's \d and float() also take other Unicode digits. The
+# pattern reads a run of digits in one way only, so a long text that is not a
+# number is refused in time proportional to its length.
+_NUMBER = re.compile(r"^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$", re.ASCII)
+_NUMBER_SPACE = " \t\n\v\f\r"
+
+
+def _number_text(value: str) -> str:
+    return value.strip(_NUMBER_SPACE)
 
 
 def _is_number(value: Any) -> bool:
     if isinstance(value, bool):
         return False
     if isinstance(value, int | float):
-        return math.isfinite(value)
-    return (
-        isinstance(value, str)
-        and bool(_NUMBER.match(value.strip()))
-        and (math.isfinite(float(value)))
-    )
+        try:
+            return math.isfinite(value)
+        except OverflowError:
+            # An int beyond the float range: JSON.parse reads that literal as Infinity.
+            return False
+    if not isinstance(value, str):
+        return False
+    text = _number_text(value)
+    if not _NUMBER.match(text):
+        return False
+    try:
+        return math.isfinite(float(text))
+    except (ValueError, OverflowError):
+        return False
 
 
 def is_answered(question: dict[str, Any], answers: dict[str, Any]) -> bool:
@@ -628,7 +670,11 @@ def answers_to_profile(
             for option in question["options"]:
                 write_field(profile, option["field"], option["field"] in answer)
         elif kind == "number":
-            write_field(profile, question["field"], None if answer in ("", None) else float(answer))
+            if answer in ("", None):
+                number = None
+            else:
+                number = float(_number_text(answer) if isinstance(answer, str) else answer)
+            write_field(profile, question["field"], number)
     return profile, asked, blocked, missing
 
 

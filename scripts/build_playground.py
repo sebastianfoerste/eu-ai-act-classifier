@@ -41,7 +41,7 @@ from eu_ai_act_classifier.models import (  # noqa: E402
     Role,
 )
 
-# The 18 base examples, grouped by the outcome tests/test_examples.py asserts.
+# The 19 base examples, grouped by the outcome tests/test_examples.py asserts.
 SAMPLE_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
     (
         "Prohibited",
@@ -56,6 +56,7 @@ SAMPLE_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
         [
             ("credit_scoring", "Credit scoring, provider"),
             ("credit_scoring_deployer", "Credit scoring, deployer"),
+            ("life_insurer_pricing", "Life insurance pricing, provider and deployer"),
             ("cv_screening", "CV screening"),
             ("proctoring_education", "Exam proctoring"),
             ("law_enforcement", "Reoffending risk"),
@@ -134,8 +135,9 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             (
                 "deployer_public_authority",
                 "The deployer is, or acts on behalf of, a public authority or Union institution, "
-                "body, office or agency: Art. 49(3) AIA registration of use. Unset: inferred for "
-                "review from public-authority use or Annex III points 5(a), 6 and 7.",
+                "body, office or agency: Art. 49(3) AIA registration of use. Read only for the "
+                "deployer role. Unset: inferred for review from public-authority use or Annex III "
+                "points 5(a), 6 and 7.",
             ),
             ("deployer_public_law_body", "Art. 27 AIA: fundamental rights impact assessment."),
             (
@@ -178,13 +180,19 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             (
                 "annex_i_section",
                 "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): "
-                "only Art. 6(1), 60a and 102-112 apply, and 57-59 as far as integrated in the "
-                "sectoral legislation (Art. 2(2) AIA). Unset: Section A.",
+                "Art. 2(2) AIA limits it to Art. 6(1), 60a and 102-112, and 57-59 as far as "
+                "integrated in the sectoral legislation; the report keeps Art. 5, Art. 50 and any "
+                "Annex III duties for review. Unset: Section A.",
             ),
             (
                 "annex_iii_area",
                 "Art. 6(2) and Annex III. III.unsure: an area is implicated but the point is "
                 "unsettled; treated as high-risk and routed to review.",
+            ),
+            (
+                "used_for_financial_fraud_detection",
+                "Annex III(5)(b) AIA excepts financial-fraud detection. True or null on a "
+                "III.5.b profile raises a review question.",
             ),
             (
                 "derogation",
@@ -339,7 +347,26 @@ def build_intake_fixtures() -> dict:
             cases[f"edge+change:{label}:{answer}"] = {
                 "answers": {**legacy, "significant_change": answer}
             }
-    for flops in ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", ""):
+    # The Art. 49(3) status is asked only of the profile's own deployer role.
+    for label, roles in {
+        "provider": ["provider"],
+        "deployer": ["deployer"],
+        "provider-deployer": ["provider", "deployer"],
+        "importer": ["importer"],
+    }.items():
+        held = profile_to_answers({"name": "x", "roles": roles, "annex_iii_area": "III.5.b"})
+        for answer in ("yes", "no", "unknown"):
+            cases[f"edge+public-authority:{label}:{answer}"] = {
+                "answers": {**held, "deployer_public_authority": answer}
+            }
+    # Unicode digits and whitespace beyond ASCII: str.strip() and String.prototype.trim()
+    # remove different sets, so both interpreters trim ASCII whitespace only.
+    unicode_numbers = ("\u0661\u0662", "\uff11\uff12", "\ufeff5", "\xa05", "5\u2028", "\u30005")
+    unicode_numbers += ("\x1c5", "5\x1f", "5\x85", "\t10\n", "\v10\f\r")
+    # The edges of the grammar, and whitespace alone, which is not a blank answer.
+    forms = ("5.", "+5", "-0", "1.e5", "5.5e-3", ".", "e5", "5..", "1e+", "   ")
+    plain = ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", "")
+    for flops in (*plain, *forms, *unicode_numbers):
         cases[f"edge+training-flops:{flops!r}"] = {"answers": {**model, "training_flops": flops}}
     for case in cases.values():
         profile, asked, blocked, missing = answers_to_profile(case["answers"])

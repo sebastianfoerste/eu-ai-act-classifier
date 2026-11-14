@@ -426,14 +426,8 @@ def _high_risk_provider_graph(
             _SECTION_5,
             application_date,
         ),
-        _undeferred_item(
-            "high-risk.provider.44",
-            "Art. 44 AIA",
-            "Certificate issued by notified body where applicable.",
-            "Track certificate validity, changes and renewal obligations.",
-            "Certificate register.",
-            _SECTION_5,
-            application_date,
+        _conformity_route_item(
+            application_date, internal_control_route=_internal_control_route(profile)
         ),
         _undeferred_item(
             "high-risk.provider.47",
@@ -473,6 +467,37 @@ def _high_risk_provider_graph(
             application_date,
         ),
     ]
+
+
+def _conformity_route_item(
+    application_date: str, *, internal_control_route: bool
+) -> ObligationGraphItem:
+    """The Art. 43(2) internal-control item for Annex III points 2 to 8, else the Art. 44
+    certificate item. Both are Chapter III, Section 5 duties, dated like the other
+    Section 5 items (_undeferred_item)."""
+
+    if internal_control_route:
+        return _undeferred_item(
+            "high-risk.provider.43.2",
+            "Art. 43(2) AIA",
+            "High-risk AI system referred to in points 2 to 8 of Annex III.",
+            (
+                "Follow the conformity assessment procedure based on internal control "
+                "(Annex VI), which does not involve a notified body."
+            ),
+            "Annex VI internal-control assessment record.",
+            _SECTION_5,
+            application_date,
+        )
+    return _undeferred_item(
+        "high-risk.provider.44",
+        "Art. 44 AIA",
+        "Certificate issued by notified body where applicable.",
+        "Track certificate validity, changes and renewal obligations.",
+        "Certificate register.",
+        _SECTION_5,
+        application_date,
+    )
 
 
 def _registration_items(profile: SystemProfile) -> list[ObligationGraphItem]:
@@ -931,3 +956,31 @@ def _literal_reading_note(location: str, deferred_date: str) -> str:
         f"from {GENERAL_APPLICATION_DATE} (Art. 113, second paragraph). If it is read as "
         f"following that deferral, {deferred_date} applies."
     )
+
+
+_ANNEX_III_POINT_1 = {
+    AnnexIII.BIOMETRICS_REMOTE_ID,
+    AnnexIII.BIOMETRICS_CATEGORISATION,
+    AnnexIII.BIOMETRICS_EMOTION,
+}
+
+
+def _internal_control_route(profile: SystemProfile) -> bool:
+    """Whether Art. 43(2) AIA fixes internal control (Annex VI) as the route.
+
+    Art. 43(2) covers Annex III points 2 to 8. Point 1 (biometrics) can involve a
+    notified body under Art. 43(1), an unsettled Annex III point could be point 1,
+    and an Annex III system also covered by the legislation in Annex I, Section A,
+    follows that legislation's procedure (Art. 43(3), last subparagraph, as replaced
+    by Regulation (EU) 2026/1744, Art. 1, point (19)), whether or not that procedure
+    involves a third party. Those cases keep the review_required Art. 44 item, and
+    so does an Annex I product whose section is not given, which may be Section A.
+    That subparagraph names Section A only, so a Section B product in points 2 to 8
+    takes the Art. 43(2) route like any other Annex III system. The section counts
+    only on the Art. 6(1) route, where the profile gives it (elsewhere the engine
+    reports it as not used, HIGHRISK.6.1.section_unused).
+    """
+    area = profile.annex_iii_area
+    if area is None or area is AnnexIII.UNSURE or area in _ANNEX_III_POINT_1:
+        return False
+    return not profile.annex_i_safety_component or section_b_product(profile)

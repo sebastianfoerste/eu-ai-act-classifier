@@ -3,10 +3,7 @@
 Two routes to high-risk: the Annex I product-safety route (Art. 6(1)) and the
 Annex III use-case route (Art. 6(2)). The Annex III route is subject to the
 Art. 6(3) derogation, but profiling of natural persons forecloses the
-derogation entirely (Art. 6(3), third subparagraph: "Notwithstanding the first
-subparagraph, an AI system referred to in Annex III shall always be considered
-to be high-risk where the AI system performs profiling of natural persons"; the
-second subparagraph holds the conditions (a) to (d)). An asserted-but-unconfirmed
+derogation entirely (Art. 6(3), third subparagraph). An asserted-but-unconfirmed
 derogation is not silently applied: the system stays high-risk and the call is
 handed to review, because Art. 6(3)/(4) require a documented assessment before
 a system leaves the high-risk tier.
@@ -15,26 +12,30 @@ a system leaves the high-risk tier.
 from __future__ import annotations
 
 from ..catalog import ANNEX_III, SECTION_B_PROVISIONS, section_b_annex_iii_flag
+from ..citations import ART_2_13, ART_6_1C, Citation
 from ..models import AnnexIII, AnnexISection, Finding, RiskTier, Severity
 from ..transitions import annex_i_route, derogation_asserted, section_b_product
 from .base import GateOutput
 
-# Art. 6(1c) AIA, inserted by Regulation (EU) 2026/1744, Art. 1, point (8).
+# Art. 6(1c) AIA, inserted by Regulation (EU) 2026/1744, Art. 1, point (8). Its own finding,
+# whose citation_verified follows ART_6_1C (VERIFIED ledger row, read 11 November 2026).
 _ART_6_1C = (
     "A third-party conformity assessment required solely for risks other than risks to "
     "health and safety, such as radio spectrum or electromagnetic interference, does not "
     "meet Art. 6(1)(b) (Art. 6(1c) AIA)."
 )
+# Art. 2(13), added by Regulation (EU) 2026/1744, Art. 1, point (3), lets delegated acts
+# limit some duties for Section A. Its own finding too (VERIFIED ledger row).
+_ART_2_13 = (
+    "Delegated acts under Art. 2(13) AIA, due by 2 August 2027, may limit Arts. 9 to 15 and "
+    "17 to 25 where the Section A legislation gives an equivalent or higher level of "
+    "protection and the limitation does not reduce the overall level of protection provided "
+    "for by the AI Act."
+)
 # Art. 2(2) AIA limits a Section B product; Regulation (EU) 2026/1744, Art. 1, point (41)
-# moved machinery there (Section A, point 1 deleted; Section B, point 21 added). Art. 2(13),
-# added by its Art. 1, point (3), lets delegated acts limit some duties for Section A.
+# moved machinery there (Section A, point 1 deleted; Section B, point 21 added).
 _ANNEX_I_SECTION_NOTE: dict[AnnexISection | None, str] = {
-    AnnexISection.SECTION_A: (
-        "Annex I, Section A: the Chapter III duties apply. Delegated acts under Art. 2(13) "
-        "AIA, due by 2 August 2027, may limit Arts. 9 to 15 and 17 to 25 where the Section A "
-        "legislation gives an equivalent or higher level of protection and the limitation "
-        "does not reduce the overall level of protection provided for by the AI Act."
-    ),
+    AnnexISection.SECTION_A: "Annex I, Section A: the Chapter III duties apply.",
     AnnexISection.SECTION_B: (
         f"Annex I, Section B: {SECTION_B_PROVISIONS} (Art. 2(2) AIA), so no Chapter III "
         "duty attaches through this route."
@@ -47,6 +48,20 @@ _ANNEX_I_SECTION_NOTE: dict[AnnexISection | None, str] = {
 }
 
 
+def _pinpoint_note(rule_id: str, citation: Citation, title: str, detail: str) -> Finding:
+    """A statement on the Annex I route with a pinpoint of its own: its own finding, so the
+    citation's verification status shows in every output."""
+
+    return Finding(
+        rule_id=rule_id,
+        citation=citation.ref,
+        citation_verified=citation.verified,
+        title=title,
+        detail=detail,
+        severity=Severity.INFO,
+    )
+
+
 def evaluate(profile) -> GateOutput:
     out = GateOutput()
 
@@ -55,7 +70,7 @@ def evaluate(profile) -> GateOutput:
         out.tier_vote = RiskTier.HIGH
         detail = (
             "Safety component of, or itself, a product covered by Annex I harmonisation "
-            f"legislation requiring third-party conformity assessment. {_ART_6_1C} "
+            "legislation requiring third-party conformity assessment. "
             f"{_ANNEX_I_SECTION_NOTE[profile.annex_i_section]}"
         )
         if section_b_product(profile) and profile.annex_iii_area is not None:
@@ -70,6 +85,17 @@ def evaluate(profile) -> GateOutput:
                 tier=RiskTier.HIGH,
             )
         )
+        out.findings.append(
+            _pinpoint_note(
+                "HIGHRISK.6.1c", ART_6_1C, "Annex I route: assessment for other risks", _ART_6_1C
+            )
+        )
+        if profile.annex_i_section is AnnexISection.SECTION_A:
+            out.findings.append(
+                _pinpoint_note(
+                    "HIGHRISK.2.13", ART_2_13, "Annex I, Section A: delegated acts", _ART_2_13
+                )
+            )
 
     elif profile.annex_i_section is not None:
         # The section only sorts an Art. 6(1) product; say so rather than drop it silently.
@@ -112,6 +138,11 @@ def evaluate(profile) -> GateOutput:
             "as high-risk until the point is settled."
         )
         return out
+
+    if area is AnnexIII.CREDITWORTHINESS:
+        question = _fraud_exception_question(profile.used_for_financial_fraud_detection)
+        if question:
+            out.open_questions.append(question)
 
     derog = profile.derogation
     if derog.performs_profiling:
@@ -181,3 +212,25 @@ def evaluate(profile) -> GateOutput:
         )
     )
     return out
+
+
+def _fraud_exception_question(used_for_fraud_detection: bool | None) -> str | None:
+    """Review question for the financial-fraud exception in Annex III(5)(b) AIA.
+
+    The exception is not applied silently: an asserted or unknown fraud-detection
+    purpose keeps the system high-risk and hands the characterisation to review.
+    """
+    if used_for_fraud_detection is False:
+        return None
+    if used_for_fraud_detection is None:
+        return (
+            "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting "
+            "financial fraud. Confirm whether that exception applies to this system; it is "
+            "treated as high-risk until that is settled."
+        )
+    return (
+        "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting financial "
+        "fraud, and the profile states that this system is used for that purpose. Confirm "
+        "whether it also evaluates the creditworthiness of natural persons or establishes "
+        "their credit score; it is treated as high-risk until that is settled."
+    )

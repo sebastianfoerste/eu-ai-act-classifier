@@ -137,7 +137,7 @@
           "name": "deployer_public_authority",
           "type": "boolean or null",
           "default": null,
-          "hint": "The deployer is, or acts on behalf of, a public authority or Union institution, body, office or agency: Art. 49(3) AIA registration of use. Unset: inferred for review from public-authority use or Annex III points 5(a), 6 and 7."
+          "hint": "The deployer is, or acts on behalf of, a public authority or Union institution, body, office or agency: Art. 49(3) AIA registration of use. Read only for the deployer role. Unset: inferred for review from public-authority use or Annex III points 5(a), 6 and 7."
         },
         {
           "name": "deployer_public_law_body",
@@ -278,7 +278,7 @@
           "name": "annex_i_section",
           "type": "choice",
           "default": null,
-          "hint": "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): only Art. 6(1), 60a and 102-112 apply, and 57-59 as far as integrated in the sectoral legislation (Art. 2(2) AIA). Unset: Section A.",
+          "hint": "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): Art. 2(2) AIA limits it to Art. 6(1), 60a and 102-112, and 57-59 as far as integrated in the sectoral legislation; the report keeps Art. 5, Art. 50 and any Annex III duties for review. Unset: Section A.",
           "options": [
             {
               "value": "A",
@@ -342,11 +342,11 @@
             },
             {
               "value": "III.5.b",
-              "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring"
+              "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons"
             },
             {
               "value": "III.5.c",
-              "label": "Annex III(5)(c): Risk assessment and pricing in life and health insurance"
+              "label": "Annex III(5)(c): Risk assessment and pricing for natural persons in life and health insurance"
             },
             {
               "value": "III.5.d",
@@ -401,6 +401,12 @@
               "label": "Annex III, point unsettled: An Annex III area is implicated but the specific point is unsettled"
             }
           ]
+        },
+        {
+          "name": "used_for_financial_fraud_detection",
+          "type": "boolean or null",
+          "default": false,
+          "hint": "Annex III(5)(b) AIA excepts financial-fraud detection. True or null on a III.5.b profile raises a review question."
         },
         {
           "name": "derogation",

@@ -23,11 +23,12 @@ EXPECTATIONS: dict[str, tuple[RiskTier, Disposition]] = {
     "credit_scoring.json": (RiskTier.HIGH, Disposition.DETERMINED),
     "proctoring_education.json": (RiskTier.HIGH, Disposition.DETERMINED),
     "credit_scoring_deployer.json": (RiskTier.HIGH, Disposition.DETERMINED),
+    "life_insurer_pricing.json": (RiskTier.HIGH, Disposition.DETERMINED),
     "law_enforcement.json": (RiskTier.HIGH, Disposition.DETERMINED),
     "ambiguous_use_case.json": (RiskTier.HIGH, Disposition.REQUIRES_REVIEW),
     "employment_derogation.json": (RiskTier.HIGH, Disposition.REQUIRES_REVIEW),
     "support_chatbot.json": (RiskTier.LIMITED, Disposition.DETERMINED),
-    "deepfake_generator.json": (RiskTier.LIMITED, Disposition.DETERMINED),
+    "deepfake_generator.json": (RiskTier.LIMITED, Disposition.REQUIRES_REVIEW),
     "spam_filter.json": (RiskTier.MINIMAL, Disposition.DETERMINED),
     "foundation_model_systemic.json": (RiskTier.MINIMAL, Disposition.DETERMINED),
     "foundation_model_unknown_compute.json": (RiskTier.MINIMAL, Disposition.REQUIRES_REVIEW),
@@ -83,6 +84,41 @@ def test_credit_deployer_requires_fria() -> None:
     articles = {ob.article for ob in report.obligations}
     assert "Art. 26 AIA" in articles
     assert "Art. 27 AIA" in articles
+    assert "Art. 4 AIA" in articles
+    # docs/worked-examples/bank-credit-scoring.md states the date of each graph item: the
+    # Art. 4 item (Chapter I) first, then the Art. 26 and Art. 27 items (Section 3).
+    assert [(item.article, item.application_date) for item in report.obligation_graph] == [
+        ("Art. 4 AIA", "2025-02-02"),
+        ("Art. 26 AIA", "2027-12-02"),
+        ("Art. 27 AIA", "2027-12-02"),
+    ]
+
+
+def test_life_insurer_carries_provider_and_deployer_duties() -> None:
+    report = classify(_load("life_insurer_pricing.json"))
+    articles = {ob.article for ob in report.obligations}
+    assert {"Art. 9 AIA", "Art. 43 AIA", "Art. 26 AIA", "Art. 27 AIA"} <= articles
+    graph = {item.article for item in report.obligation_graph}
+    assert "Art. 43(2) AIA" in graph
+    assert "Art. 44 AIA" not in graph
+    # Dates and counts stated in docs/worked-examples/life-insurer-pricing.md: the
+    # Section 5 and Chapter IX items, the Art. 43(2) item among them, carry the literal
+    # Art. 113 date; the Section 3 items carry the point (c)(i) date; the two Art. 4 items
+    # (provider and deployer) carry the Chapter I date.
+    literal = {f"Art. {n} AIA" for n in (40, 41, 42, 43, 47, 48, 49, 72, 73)} | {"Art. 43(2) AIA"}
+    for item in report.obligation_graph:
+        if item.article == "Art. 4 AIA":
+            expected = "2025-02-02"
+        else:
+            expected = "2026-08-02" if item.article in literal else "2027-12-02"
+        assert item.application_date == expected, item.obligation_id
+    assert len([ob for ob in report.obligations if ob.applies_to.value == "provider"]) == 15
+    assert len([ob for ob in report.obligations if ob.applies_to.value == "deployer"]) == 3
+    assert len(report.documentation_required) == 5
+    assert len(report.obligation_graph) == 20
+    assert (
+        sum(item.review_status.value == "review_required" for item in report.obligation_graph) == 13
+    )
 
 
 def test_systemic_gpai_carries_article_55() -> None:

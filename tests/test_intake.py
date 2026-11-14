@@ -18,6 +18,7 @@ import copy
 import itertools
 import json
 import re
+import time
 from pathlib import Path
 
 import pytest
@@ -27,17 +28,19 @@ from eu_ai_act_classifier.intake import (
     BLOCK,
     CHANGE_OPEN,
     IN_SCOPE,
+    PUBLIC_AUTHORITY_STATUS_OPEN,
     QUESTIONS,
     answers_to_profile,
     holds,
     intake_definition,
+    is_answered,
     profile_to_answers,
     question_fields,
     read_field,
     write_field,
 )
 from eu_ai_act_classifier.models import AnnexIII, Derogation, ProhibitedPractice
-from eu_ai_act_classifier.transitions import change_used
+from eu_ai_act_classifier.transitions import change_used, public_authority_status_used
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = {
@@ -180,11 +183,12 @@ def _distinct(profiles: list[dict]) -> list[dict]:
 GRID = _distinct([_reachable(p) for p in _grid()])
 
 # The Art. 111 transitions, the Annex I section and Art. 49(3) read facts the grid
-# above holds fixed, so a second grid varies them. The transparency flags stay fixed:
-# the transparency question is skipped only outside scope, where its own check varies
-# them.
+# above holds fixed, so a second grid varies them. Of the transparency flags only the
+# Art. 50(2) one varies, as a legacy high-risk system's Art. 50 finding and item repeat
+# the Art. 111(2) public-authority caveat; the transparency question is skipped only
+# outside scope, where its own check varies them all.
 _TRANSITION_AXES = {
-    "roles": [["provider"], ["deployer"]],
+    "roles": [["provider"], ["deployer"], ["importer"]],
     "scope": [(True, True), (False, True)],
     "prohibited_practices": [[], ["5.1.c"]],
     "annex_i": [(False, False, None), (True, False, None), (True, True, None), (True, True, "B")],
@@ -194,13 +198,16 @@ _TRANSITION_AXES = {
     "significant_change": [False, True],
     "gpai": [(False, None), (True, "2025-01-01")],
     "deployer_public_authority": [False, True],
+    "generates_synthetic_content": [False, True],
 }
 
 
 def _transition_grid() -> list[dict]:
     profiles = []
     for combo in itertools.product(*_TRANSITION_AXES.values()):
-        roles, scope, prohibited, annex_i, annex_iii, authority, dates, change, gpai, dpa = combo
+        roles, scope, prohibited, annex_i, annex_iii, authority, dates, change, gpai, dpa, art50 = (
+            combo
+        )
         profiles.append(
             {
                 "name": "Grid system",
@@ -221,6 +228,7 @@ def _transition_grid() -> list[dict]:
                 "deployer_public_law_body": False,
                 "deployer_private_public_service": False,
                 "deployer_public_authority": dpa,
+                "generates_synthetic_content": art50,
             }
         )
     return profiles
@@ -230,8 +238,9 @@ TRANSITION_GRID = _distinct([_reachable(p) for p in _transition_grid()])
 
 # A skipped question may change the report only by the engine's own statement that the
 # value is not used: a section without the Art. 6(1) route, a model date without a
-# general-purpose AI model, a change answer without an Art. 111(2) legacy system.
-# Everything else, the disposition included, must match.
+# general-purpose AI model, a change answer without an Art. 111(2) legacy system, a
+# deployer status without the deployer role on a high-risk route. Everything else, the
+# disposition included, must match.
 _SECTION_UNUSED = "HIGHRISK.6.1.section_unused"
 _GPAI_DATE_UNUSED = (
     "Article 111(3) check: gpai_model_placing_on_market_date is given, but no general-purpose "
@@ -242,7 +251,12 @@ _CHANGE_UNUSED = (
     "used: it matters only for a high-risk system, with no prohibited practice screened, "
     "placed on the market or put into service before its Chapter III date."
 )
-_UNUSED_SENTENCES = (_GPAI_DATE_UNUSED, _CHANGE_UNUSED)
+_PUBLIC_AUTHORITY_STATUS_UNUSED = (
+    "Article 111(2) check: deployer_public_authority is given, but it is not used: it "
+    "describes the profile's own deployer role, so it matters only where the profile holds "
+    "that role for a high-risk system with no prohibited practice screened."
+)
+_UNUSED_SENTENCES = (_GPAI_DATE_UNUSED, _CHANGE_UNUSED, _PUBLIC_AUTHORITY_STATUS_UNUSED)
 _NO_TRANSITION = "No transitional limitation identified from the submitted facts."
 
 
@@ -399,6 +413,65 @@ def test_the_change_answer_is_reported_as_not_used_exactly_where_it_is_not_used(
     assert checked
 
 
+def test_the_public_authority_question_follows_the_engines_deployer_test() -> None:
+    # The intake asks for the deployer's public-authority status exactly where the
+    # engine reads it: the profile's own deployer role on a high-risk route.
+    routes = [
+        {"annex_iii_area": None},
+        {"annex_iii_area": "III.2"},
+        {"annex_iii_area": "III.5.b"},
+        {"annex_iii_area": "III.unsure"},
+        {"annex_i_safety_component": True},
+        {"annex_i_safety_component": True, "annex_i_third_party_assessment": True},
+        {
+            "annex_i_safety_component": True,
+            "annex_i_third_party_assessment": True,
+            "annex_i_section": "B",
+        },
+    ]
+    roles = [
+        ["provider"],
+        ["deployer"],
+        ["provider", "deployer"],
+        ["importer", "distributor"],
+        ["gpai_provider"],
+    ]
+    checked = 0
+    for route, held, prohibited, in_scope in itertools.product(
+        routes, roles, ([], ["5.1.c"]), (True, False)
+    ):
+        profile = _normalised(
+            {
+                "name": "x",
+                **route,
+                "roles": held,
+                "prohibited_practices": prohibited,
+                "is_ai_system": in_scope,
+            }
+        )
+        used = public_authority_status_used(SystemProfile.model_validate(profile))
+        expected = in_scope and used
+        assert holds(PUBLIC_AUTHORITY_STATUS_OPEN, profile) is expected, profile
+        checked += expected
+    assert checked
+
+
+def test_the_public_authority_status_is_reported_as_not_used_exactly_where_it_is_skipped() -> None:
+    # As for the change answer: the sentence appears for a given status wherever the
+    # engine's deployer test fails, and so the intake skips the question, never otherwise.
+    checked = 0
+    for profile in GRID + TRANSITION_GRID:
+        if not holds(IN_SCOPE, profile):
+            continue
+        used = public_authority_status_used(SystemProfile.model_validate(profile))
+        for status in (True, False, None):
+            changed = {**profile, "deployer_public_authority": status}
+            text = _report(changed)["scope"]["transitional_status"]
+            assert (_PUBLIC_AUTHORITY_STATUS_UNUSED in text) is (status is not None and not used)
+            checked += 1
+    assert checked
+
+
 def test_an_unknown_change_answer_survives_a_compact_round_trip() -> None:
     legacy = {
         "name": "x",
@@ -437,6 +510,20 @@ def test_annex_iii_unknown_is_unsettled_point() -> None:
     assert _report(profile)["disposition"] == "requires_review"
 
 
+def test_an_unknown_fraud_purpose_is_recorded_as_unknown() -> None:
+    # "I don't know" on the Annex III(5)(b) fraud question records null. True would go to
+    # review as well, but the report would then say that the profile states the purpose.
+    answers = profile_to_answers(EXAMPLES["credit_scoring"])
+    answers["used_for_financial_fraud_detection"] = "unknown"
+    profile, asked, blocked, _missing = answers_to_profile(answers)
+    assert "used_for_financial_fraud_detection" in asked and not blocked
+    assert read_field(profile, "used_for_financial_fraud_detection") is None
+    report = _report(profile)
+    assert report["disposition"] == "requires_review"
+    (question,) = [q for q in report["open_questions"] if "financial fraud" in q]
+    assert "the profile states" not in question
+
+
 def test_definition_is_json_and_defaults_match_the_model() -> None:
     definition = json.loads(json.dumps(intake_definition()))
     defaults = SystemProfile(name="x").model_dump(mode="json")
@@ -470,6 +557,124 @@ def test_text_answers_are_trimmed() -> None:
     answers["system"] = {"name": "  Padded name  "}
     profile, _asked, _blocked, _missing = answers_to_profile(answers)
     assert profile["name"] == "Padded name"
+
+
+# The same inputs as "numbers use the same grammar as the Python interpreter" in
+# tests/playground/intake.test.mjs; the generated fixtures hold both interpreters to the
+# same profile for each. Only ASCII digits, and only ASCII whitespace is trimmed:
+# str.strip() and String.prototype.trim() each remove characters the other keeps.
+NUMBERS_ACCEPTED = ["2e25", " 2e25 ", ".5e3", "10", "\t10\n", "\v10\f\r"]
+NUMBERS_ACCEPTED += ["5.", "+5", "-0", "1.e5", "5.5e-3"]
+NUMBERS_REJECTED = [
+    "0x10",
+    "1_000",
+    "1e",
+    " ",
+    "   ",  # whitespace alone is not a blank answer
+    ".",
+    "e5",
+    "5..",
+    "1e+",
+    "Infinity",
+    "\u0661\u0662",  # Arabic-Indic digits: Python's \d and float() take them
+    "\uff11\uff12",  # fullwidth digits
+    "\ufeff5",  # byte order mark: trim() removes it, strip() does not
+    "\xa05",  # no-break space: both remove it
+    "5\u2028",  # line separator
+    "\u30005",  # ideographic space
+    "\x1c5",  # file separator: strip() removes it, trim() does not
+    "5\x1f",  # unit separator
+    "5\x85",  # next line
+]
+
+
+@pytest.mark.parametrize("text", NUMBERS_ACCEPTED + NUMBERS_REJECTED, ids=ascii)
+def test_number_answers_take_ascii_digits_and_ascii_whitespace_only(text: str) -> None:
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    model = {"name": "x", "roles": ["gpai_provider"], "is_gpai_model": True}
+    answers = {**profile_to_answers(model), question["id"]: text}
+
+    # Never raises, whatever the text.
+    profile, asked, blocked, missing = answers_to_profile(answers)
+
+    assert question["id"] in asked and not blocked
+    if text in NUMBERS_ACCEPTED:
+        assert is_answered(question, answers)
+        assert question["id"] not in missing
+        assert profile[question["field"]] == float(text.strip(" \t\n\v\f\r"))
+    else:
+        assert not is_answered(question, answers)
+        assert question["id"] in missing
+        assert profile[question["field"]] is None
+
+
+@pytest.mark.parametrize(
+    ("answer", "usable"),
+    [
+        (10, True),
+        (2e25, True),
+        (True, False),  # bool is an int in Python; a JSON true is not a number in either
+        (False, False),
+        (float("inf"), False),
+        (float("nan"), False),
+        ([10], False),
+        ({"value": 10}, False),
+    ],
+    ids=repr,
+)
+def test_number_answers_that_are_not_text_count_only_as_finite_numbers(
+    answer: object, usable: bool
+) -> None:
+    # A caller of the Python intake passes JSON values, not only the text a browser field
+    # holds. isNumber in intake.mjs takes a finite number and no other non-text value.
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    model = {"name": "x", "roles": ["gpai_provider"], "is_gpai_model": True}
+    answers = {**profile_to_answers(model), question["id"]: answer}
+
+    profile, asked, blocked, missing = answers_to_profile(answers)
+
+    assert question["id"] in asked and not blocked
+    assert is_answered(question, answers) is usable
+    assert (question["id"] in missing) is not usable
+    assert profile[question["field"]] == (float(answer) if usable else None)
+
+
+def test_a_long_text_that_is_not_a_number_is_refused_in_linear_time() -> None:
+    # A caller can pass any text. While the pattern could read a run of digits in two
+    # ways, each of the first two checks took seconds at this length.
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    run = 20_000
+    texts = ["1" * run + "x", "1" * run + "." + "1" * run + "x", "5" + " " * run + "5"]
+    started = time.perf_counter()
+    for text in texts:
+        assert not is_answered(question, {question["id"]: text})
+    assert time.perf_counter() - started < 2
+
+
+def test_an_integer_beyond_the_float_range_is_not_a_number_answer() -> None:
+    # json.loads reads such a literal as an int, and math.isfinite() raises on it. The
+    # browser reads the same literal as Infinity and reports the question as missing.
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    model = {"name": "x", "roles": ["gpai_provider"], "is_gpai_model": True}
+    answers = {**profile_to_answers(model), question["id"]: 10**400}
+
+    profile, asked, blocked, missing = answers_to_profile(answers)
+
+    assert question["id"] in asked and not blocked
+    assert not is_answered(question, answers)
+    assert question["id"] in missing
+    assert profile[question["field"]] is None
+
+
+def test_a_question_of_an_unknown_kind_is_never_answered() -> None:
+    # A definition newer than the interpreter must not pass silently (isAnswered's default).
+    assert not is_answered({"id": "q", "kind": "slider"}, {"q": 5})
+
+
+def test_an_unknown_condition_is_an_error_not_a_pass() -> None:
+    # holds() in intake.mjs throws on the same input.
+    with pytest.raises(ValueError, match="unknown condition"):
+        holds({"field": "name", "matches": "x"}, {"name": "x"})
 
 
 def test_question_articles_are_citations_the_engine_already_makes() -> None:

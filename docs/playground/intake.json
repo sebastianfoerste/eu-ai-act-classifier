@@ -37,6 +37,7 @@
     "annex_i_third_party_assessment": false,
     "annex_i_section": null,
     "annex_iii_area": null,
+    "used_for_financial_fraud_detection": false,
     "derogation": {
       "narrow_procedural_task": false,
       "improves_prior_human_activity": false,
@@ -293,7 +294,7 @@
       "kind": "single",
       "field": "annex_i_section",
       "title": "Which section of Annex I lists that legislation?",
-      "hint": "For a Section B product only the provisions in Art. 2(2) AIA apply.",
+      "hint": "Art. 2(2) AIA limits a Section B product to the provisions it lists; the report keeps Art. 5, Art. 50 and any Annex III duties for review.",
       "article": "Art. 6(1) AIA",
       "options": [
         {
@@ -393,11 +394,11 @@
         },
         {
           "value": "III.5.b",
-          "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring"
+          "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons"
         },
         {
           "value": "III.5.c",
-          "label": "Annex III(5)(c): Risk assessment and pricing in life and health insurance"
+          "label": "Annex III(5)(c): Risk assessment and pricing for natural persons in life and health insurance"
         },
         {
           "value": "III.5.d",
@@ -471,6 +472,41 @@
       },
       "unknown": {
         "value": "III.unsure"
+      }
+    },
+    {
+      "id": "used_for_financial_fraud_detection",
+      "kind": "boolean",
+      "field": "used_for_financial_fraud_detection",
+      "title": "Is the system used for the purpose of detecting financial fraud?",
+      "hint": "Annex III(5)(b) AIA excepts AI systems used for the purpose of detecting financial fraud. Yes or I don't know raises a review question; the system stays high-risk until it is answered.",
+      "article": "Annex III(5)(b) AIA",
+      "show_if": {
+        "all": [
+          {
+            "all": [
+              {
+                "not": {
+                  "field": "is_ai_system",
+                  "is": false
+                }
+              },
+              {
+                "not": {
+                  "field": "eu_nexus",
+                  "is": false
+                }
+              }
+            ]
+          },
+          {
+            "field": "annex_iii_area",
+            "is": "III.5.b"
+          }
+        ]
+      },
+      "unknown": {
+        "value": null
       }
     },
     {
@@ -918,7 +954,7 @@
       "kind": "number",
       "field": "training_flops",
       "title": "What was the cumulative training compute, in FLOP?",
-      "hint": "For example 2e25. Leave blank if not disclosed; the systemic-risk status then goes to review unless the model is designated.",
+      "hint": "For example 2e25, with the digits 0 to 9 (other digit forms and special spaces such as a no-break space are not accepted). Leave blank if not disclosed; the systemic-risk status then goes to review unless the model is designated.",
       "article": "Art. 51(2) AIA",
       "show_if": {
         "all": [
@@ -1211,44 +1247,52 @@
           {
             "all": [
               {
-                "not": {
-                  "field": "is_ai_system",
-                  "is": false
-                }
-              },
-              {
-                "not": {
-                  "field": "eu_nexus",
-                  "is": false
-                }
-              }
-            ]
-          },
-          {
-            "field": "prohibited_practices",
-            "empty": true
-          },
-          {
-            "any": [
-              {
-                "not": {
-                  "field": "annex_iii_area",
-                  "is": null
-                }
-              },
-              {
                 "all": [
                   {
-                    "field": "annex_i_safety_component",
-                    "is": true
+                    "not": {
+                      "field": "is_ai_system",
+                      "is": false
+                    }
                   },
                   {
-                    "field": "annex_i_third_party_assessment",
-                    "is": true
+                    "not": {
+                      "field": "eu_nexus",
+                      "is": false
+                    }
+                  }
+                ]
+              },
+              {
+                "field": "prohibited_practices",
+                "empty": true
+              },
+              {
+                "any": [
+                  {
+                    "not": {
+                      "field": "annex_iii_area",
+                      "is": null
+                    }
+                  },
+                  {
+                    "all": [
+                      {
+                        "field": "annex_i_safety_component",
+                        "is": true
+                      },
+                      {
+                        "field": "annex_i_third_party_assessment",
+                        "is": true
+                      }
+                    ]
                   }
                 ]
               }
             ]
+          },
+          {
+            "field": "roles",
+            "has": "deployer"
           }
         ]
       },

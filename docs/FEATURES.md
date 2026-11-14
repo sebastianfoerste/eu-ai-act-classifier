@@ -17,11 +17,13 @@ Implementation:
 | AI literacy (Art. 4) | The Art. 4 duty for every provider and deployer of an in-scope system, whatever the tier, except a prohibited one; kept and flagged for a Section B product and for a legacy high-risk system, as Art. 50 is | `examples/spam_filter.json` |
 | Scope and intake | AI-system status, EU nexus, and the Art. 111 transitions: placing-on-market and putting-into-service dates compared with the Chapter III date (Art. 111(2), with the Art. 111(1) carve-out named), the model date (Art. 111(3)) and Art. 50(2) for systems already on the market (Art. 111(4)) | `examples/ambiguous_use_case.json` |
 | Prohibited practices (Art. 5) | Flags prohibited use cases, including Art. 5(1)(ba) and (bb) from 2 December 2026 | `examples/social_scoring.json`, `examples/emotion_hiring.json`, `examples/intimate_imagery_generator.json` |
-| High-risk (Art. 6, Annex I, Annex III) | Risk tier and provider/deployer obligations. An Annex I, Section B product with no Annex III area gets the Art. 2(2) provisions instead of the Chapter III duties; with an Annex III area it keeps the Annex III duties. Every Section B product keeps Art. 5 and Art. 50, which Art. 2(2) does not list. Each kept position is the conservative reading, flagged "Literal reading, confirm with counsel": the Annex III duties on the Art. 6(1) finding and the Art. 2(2) item, Art. 5 on its finding and an open question, Art. 50 on the `TRANSPARENCY.50` finding and each Art. 50 item | `examples/credit_scoring.json`, `examples/cv_screening.json` |
+| High-risk (Art. 6, Annex I, Annex III) | Risk tier and provider/deployer obligations. An Annex I, Section B product with no Annex III area gets the Art. 2(2) provisions instead of the Chapter III duties; with an Annex III area it keeps the Annex III duties. Every Section B product keeps Art. 5 and Art. 50, which Art. 2(2) does not list. Each kept position is the conservative reading, flagged "Literal reading, confirm with counsel": the Annex III duties on the Art. 6(1) finding and the Art. 2(2) item, Art. 5 on its finding and an open question, Art. 50 on the `TRANSPARENCY.50` finding and each Art. 50 item. On an Annex III point 5(b) profile, an asserted or unknown financial-fraud purpose (`used_for_financial_fraud_detection` true or null) raises an open question and the system stays high-risk | `examples/credit_scoring.json`, `examples/cv_screening.json` |
 | GPAI | Systemic-risk status and compute scale | `examples/gpai_systemic_by_flops.json` |
 | Transparency | Limited-risk cases | `examples/deepfake_generator.json`, `examples/support_chatbot.json` |
 
 Which example lands in which tier is asserted in `tests/test_examples.py`. See [examples/README.md](../examples/README.md).
+
+Two worked examples show a run end to end, with what the classifier decided and what a lawyer still has to decide: [a bank's credit-scoring model](worked-examples/bank-credit-scoring.md) and [a life insurer's pricing model](worked-examples/life-insurer-pricing.md).
 
 Which Annex III points the classifier covers, with the citation each emits and the examples and tests behind it: [docs/coverage.md](coverage.md), generated from the code.
 
@@ -67,7 +69,7 @@ Implementation:
 
 ## Guided Intake
 
-Collects characterised facts one question per page in the browser playground, with the article under each question and a check-answers page that lists every defaulted value. Questions, order and skip conditions are defined once in Python. "I don't know" never becomes "no": it records an unconfirmed value that routes the result to review, marks the Annex III point as unsettled, or pauses the run until counsel answers.
+Collects characterised facts one question per page in the browser playground, with the article under each question and a check-answers page that lists every defaulted value. Questions, order and skip conditions are defined once in Python. "I don't know" never becomes "no": it records an unconfirmed value that routes the result to review, marks the Annex III point as unsettled, or pauses the run until counsel answers. The one number answer, training compute in FLOP, takes a decimal with an optional exponent, such as `2e25`, written with the digits 0 to 9; only ASCII whitespace around it (space, tab, line feed, vertical tab, form feed, carriage return) is ignored. Any other character, a no-break space or a fullwidth digit included, makes the answer invalid in both interpreters: the browser asks for a number again, and the Python intake lists the question as missing. An empty answer means "not given"; one of whitespace only is invalid.
 
 Implementation:
 

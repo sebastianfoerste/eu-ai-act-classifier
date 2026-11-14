@@ -1,9 +1,10 @@
 """Single source of truth for EU AI Act citations.
 
 All references are to Regulation (EU) 2024/1689 (Artificial Intelligence Act),
-OJ L, 2024/1689, 12.7.2024 ("AIA"). Pinpoint citations follow the German
-convention: ``Art. <article> Abs. <paragraph> lit. <letter> AIA``, rendered
-here in the shorter ``Art. 5(1)(f) AIA`` form for readability.
+OJ L, 2024/1689, 12.7.2024, as amended by Regulation (EU) 2026/1744 ("AIA").
+Pinpoint citations follow the German convention:
+``Art. <article> Abs. <paragraph> lit. <letter> AIA``, rendered here in the
+shorter ``Art. 5(1)(f) AIA`` form for readability.
 
 A citation carries a ``verified`` flag. ``verified=False`` means the exact
 sub-point lettering is pending confirmation against the consolidated EUR-Lex
@@ -17,6 +18,12 @@ specific point is unsettled on the facts — carries the ``noch zu verifizieren`
 flag. The engine propagates this flag into its output so a reviewing lawyer
 sees precisely which pinpoints are not yet locked, instead of trusting a
 citation that was guessed.
+
+The changes of 2026-10-14 (Art. 6(3), third subparagraph; the Annex III point
+5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and Art. 43(3),
+last subparagraph) were checked on 2026-11-11 against the Official Journal texts pinned in
+sources/ (VERIFIED rows in docs/REGULATORY_CLAIM_LEDGER.md). That check confirms
+wording and pinpoints; no lawyer has adopted the conclusions.
 """
 
 from __future__ import annotations
@@ -27,8 +34,8 @@ from .models import RegulatorySource, SourceStatus
 
 REGULATION = (
     "Regulation (EU) 2024/1689 of the European Parliament and of the Council "
-    "of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, as amended by "
-    "Regulation (EU) 2026/1744 (consolidated version of 27 July 2026)"
+    "of 13 June 2024 (Artificial Intelligence Act), OJ L, 2024/1689, 12.7.2024, "
+    "as amended by Regulation (EU) 2026/1744"
 )
 SHORT = "AIA"
 AI_ACT_URL = "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng"
@@ -51,15 +58,16 @@ GPAI_PROVIDER_GUIDELINES_URL = (
     "https://digital-strategy.ec.europa.eu/en/library/"
     "guidelines-scope-obligations-providers-general-purpose-ai-models-under-ai-act"
 )
-# Commission guidelines on the transparency obligations under Art. 50 AIA, published
-# 20 July 2026, and the final Code of Practice on marking and labelling of AI-generated
-# content (Art. 50(2) and (4)), published 10 June 2026. Both nonbinding.
-TRANSPARENCY_GUIDELINES_URL = (
+# The two Art. 50 instruments are separate: the Code of Practice on Transparency of
+# AI-generated Content and the Commission guidelines issued under Art. 96(1)(d) AIA.
+# Their pages and documents were read on the Commission's site on 12 and 14 November
+# 2026 (claim ledger). The guidelines URL is the library page that holds the document.
+ART_50_CODE_OF_PRACTICE_URL = (
+    "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content"
+)
+ART_50_GUIDELINES_URL = (
     "https://digital-strategy.ec.europa.eu/en/library/"
     "guidelines-transparency-obligations-providers-and-deployers-ai-systems"
-)
-AI_CONTENT_CODE_URL = (
-    "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content"
 )
 
 
@@ -67,7 +75,7 @@ BINDING_SOURCE_RETRIEVED_ON = "2026-10-18"
 ADVISORY_SOURCE_RETRIEVED_ON = "2026-06-18"
 # The Art. 50 sources were read later than the other advisory sources, so they carry
 # their own date. `verify_sources --update` moves all three dates together.
-TRANSPARENCY_SOURCE_RETRIEVED_ON = "2026-10-31"
+ART_50_SOURCES_RETRIEVED_ON = "2026-11-14"
 
 
 def source_manifest() -> list[RegulatorySource]:
@@ -152,28 +160,38 @@ def source_manifest() -> list[RegulatorySource]:
             implementation_note="Nonbinding scope and compliance support for GPAI model providers.",
         ),
         RegulatorySource(
-            source_id="transparency-guidelines-2026",
-            title="Commission guidelines on the transparency obligations under Art. 50 AIA",
+            source_id="art-50-code-of-practice",
+            title="Code of Practice on Transparency of AI-generated Content",
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
-            url=TRANSPARENCY_GUIDELINES_URL,
-            retrieved_on=TRANSPARENCY_SOURCE_RETRIEVED_ON,
-            citation_label="Art. 50 transparency guidelines",
+            url=ART_50_CODE_OF_PRACTICE_URL,
+            retrieved_on=ART_50_SOURCES_RETRIEVED_ON,
+            citation_label="Art. 50 marking and labelling Code of Practice",
             implementation_note=(
-                "Nonbinding Commission guidance on Art. 50(1) to (4), published 20 July 2026; "
-                "advisory overlay only."
+                "Voluntary code, final text of 10 June 2026, with rules for the marking and "
+                "detection duties of providers (Art. 50(2) and (5) AIA) and the labelling "
+                "duties of deployers (Art. 50(4) and (5) AIA). The Commission's page states "
+                "that the Commission and the AI Board have confirmed it as an adequate "
+                "voluntary tool to demonstrate compliance. The classifier reads it as the "
+                "code of practice that Art. 50(7) AIA provides for; the code itself does not "
+                "cite that provision."
             ),
         ),
         RegulatorySource(
-            source_id="ai-content-code-of-practice",
-            title="Code of Practice on marking and labelling of AI-generated content",
+            source_id="art-50-guidelines",
+            title=(
+                "Commission Guidelines on the implementation of the transparency obligations "
+                "for certain AI systems under Article 50 of Regulation (EU) 2024/1689, "
+                "C(2026) 7702 final"
+            ),
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
-            url=AI_CONTENT_CODE_URL,
-            retrieved_on=TRANSPARENCY_SOURCE_RETRIEVED_ON,
-            citation_label="Code of Practice on AI-generated content",
+            url=ART_50_GUIDELINES_URL,
+            retrieved_on=ART_50_SOURCES_RETRIEVED_ON,
+            citation_label="Commission Art. 50 transparency guidelines",
             implementation_note=(
-                "Voluntary code, final text published 10 June 2026, on the Art. 50(2) marking "
-                "and detection and Art. 50(4) labelling duties. The Commission's page states "
-                "that the Commission and the Board confirmed it as an adequate voluntary tool."
+                "Nonbinding Commission guidelines issued under Art. 96(1)(d) AIA on the "
+                "transparency obligations in Art. 50, Communication of 5 November 2026; the "
+                "Commission's page dates their publication to 20 July 2026. A separate "
+                "instrument from the code of practice."
             ),
         ),
     ]
@@ -198,6 +216,24 @@ class Citation:
 
 def cite(ref: str, *, verified: bool = True) -> Citation:
     return Citation(ref=ref, verified=verified)
+
+
+# Pinpoints #30 added. They were read on 11 November 2026 in the Official Journal texts
+# pinned with their SHA-256 digests in pull request #40: Art. 6(1c) and Art. 2(13) as
+# inserted by Regulation (EU) 2026/1744, Art. 1, points (8) and (3), and Art. 111(1) in
+# Regulation (EU) 2024/1689, which Regulation (EU) 2026/1744 does not amend (VERIFIED rows
+# in docs/REGULATORY_CLAIM_LEDGER.md). An output that states one of them carries the flag
+# only while its citation is unverified, so setting verified=False here restores it.
+UNVERIFIED_FLAG = "[noch zu verifizieren]"
+ART_6_1C = cite("Art. 6(1c) AIA")
+ART_2_13 = cite("Art. 2(13) AIA")
+ART_111_1 = cite("Art. 111(1) AIA")
+
+
+def flag_unless_verified(citation: Citation) -> str:
+    """The flag that follows a pinpoint stated in prose: empty once it is verified."""
+
+    return "" if citation.verified else f" {UNVERIFIED_FLAG}"
 
 
 # --- Application timeline (Art. 113 AIA) -----------------------------------
@@ -379,7 +415,7 @@ AMENDING_APPLICATION_DATES: tuple[ApplicationDate, ...] = (
             "by 2 August 2030 in any case (Art. 111(2) AIA as replaced by Art. 1, point (39)(a) "
             "of Regulation (EU) 2026/1744). Components of the Annex X large-scale IT systems "
             "placed on the market or put into service before 2 August 2027 follow Art. 111(1) "
-            "instead."
+            f"instead{flag_unless_verified(ART_111_1)}."
         ),
         SourceStatus.BINDING_LEVEL_1,
         "ai-act-amendment-2026-1744",
