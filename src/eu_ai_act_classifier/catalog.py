@@ -314,7 +314,8 @@ def ai_literacy_roles(roles: list[Role]) -> list[Role]:
 
 def ai_literacy_obligations(roles: list[Role], flag: str = "") -> list[Obligation]:
     """One Art. 4 AIA obligation per provider or deployer role held, with ``flag``
-    appended where Art. 2(2) AIA does not list Art. 4 (a Section B product)."""
+    appended where the report keeps the duty under a counsel flag (a Section B product,
+    a prohibited system)."""
 
     requirement = f"{AI_LITERACY_REQUIREMENT} {flag}" if flag else AI_LITERACY_REQUIREMENT
     return [

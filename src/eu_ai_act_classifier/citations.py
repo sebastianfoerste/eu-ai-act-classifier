@@ -176,7 +176,8 @@ def source_manifest() -> list[RegulatorySource]:
                 "voluntary tool to demonstrate compliance. The Commission's Art. 50 "
                 "guidelines (C(2026) 7702 final, points (146) and (147)) refer to it as a code "
                 "of practice assessed as adequate pursuant to Art. 50(7) AIA and to a "
-                "Commission Opinion on that assessment; the code itself does not cite that "
+                "Commission Opinion on that assessment, which was not read; the code itself "
+                "does not cite that "
                 "provision."
             ),
         ),

@@ -24,7 +24,9 @@ from eu_ai_act_classifier import (
 from eu_ai_act_classifier.catalog import ART_4, PROHIBITED_LITERACY_FLAG
 from eu_ai_act_classifier.citations import POINT_A_DATE
 from eu_ai_act_classifier.cli import main
+from eu_ai_act_classifier.engine import SECTION_B_LITERACY_FLAG
 from eu_ai_act_classifier.models import ProhibitedPractice
+from eu_ai_act_classifier.transitions import legacy_transparency_flag
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
 COUNSEL_FLAG = "Literal reading, confirm with counsel"
@@ -271,3 +273,54 @@ def test_asserted_change_drops_the_legacy_flag_from_art_4() -> None:
 
     assert item.review_status is ReviewStatus.DETERMINED
     assert item.application_date_note is None
+
+
+def test_a_prohibited_section_b_product_carries_both_flags_in_order() -> None:
+    # Section B first, then the prohibited reading, on the obligation text and the item.
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.PROVIDER, Role.DEPLOYER],
+            prohibited_practices=[ProhibitedPractice.SOCIAL_SCORING],
+            **SECTION_B,
+        )
+    )
+    joined = f"{SECTION_B_LITERACY_FLAG} {PROHIBITED_LITERACY_FLAG}"
+
+    assert report.risk_tier is RiskTier.PROHIBITED
+    obligations, items = _literacy(report)
+    assert [ob.applies_to for ob in obligations] == [Role.PROVIDER, Role.DEPLOYER]
+    assert all(ob.requirement.endswith(f" {joined}") for ob in obligations)
+    assert [item.application_date_note for item in items] == [joined, joined]
+    assert all(item.review_status is ReviewStatus.REVIEW_REQUIRED for item in items)
+
+
+def test_a_legacy_section_b_product_in_an_annex_iii_area_carries_both_graph_flags() -> None:
+    # The graph joins the Section B flag and the legacy flag, in that order; the
+    # obligation text carries the Section B flag only (docs/methodology.md).
+    profile = SystemProfile(
+        name="x",
+        roles=[Role.PROVIDER],
+        annex_iii_area=AnnexIII.CREDITWORTHINESS,
+        placing_on_market_date="2025-03-01",
+        **SECTION_B,
+    )
+    report = classify(profile)
+    legacy = legacy_transparency_flag(profile, "Art. 4")
+
+    assert report.risk_tier is RiskTier.HIGH
+    assert legacy
+    obligations, items = _literacy(report)
+    assert obligations[0].requirement.endswith(f" {SECTION_B_LITERACY_FLAG}")
+    assert items[0].application_date_note == f"{SECTION_B_LITERACY_FLAG} {legacy}"
+    assert items[0].review_status is ReviewStatus.REVIEW_REQUIRED
+
+
+def test_the_limited_risk_label_names_the_transparency_duties() -> None:
+    # A limited-risk report also lists the Art. 4 duty, so the label no longer says
+    # "transparency only".
+    report = classify(_example("support_chatbot.json"))
+
+    assert report.risk_tier is RiskTier.LIMITED
+    assert [ob.article for ob in report.obligations] == [ART_4]
+    assert "Risk tier: LIMITED RISK, transparency duties (Art. 50 AIA)" in render_report(report)

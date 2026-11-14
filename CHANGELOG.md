@@ -104,7 +104,8 @@ Changes since 0.2.2.
   prohibition can apply from a later date or be subject to an exception. The
   claim ledger has a VERIFIED row
   (Art. 4(1) and its date, checked on 14 November 2026 in the Official Journal
-  texts pinned in `sources/`) and a PENDING row for the Section B reading.
+  texts pinned in `sources/`) and PENDING rows for the Section B reading and
+  for a prohibited system.
 
 #### Changed
 
