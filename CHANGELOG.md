@@ -83,6 +83,21 @@ Changes since 0.2.2.
   a no-break space (`"\xa05"`), which both accepted before, is now invalid:
   the browser asks for a number again and the Python intake lists the
   question as missing. The question's hint and `docs/FEATURES.md` say so.
+- Guided intake in the browser: the wizard passed a typed number through
+  `String.prototype.trim()` before the interpreter saw it. An answer padded
+  with a no-break space was therefore still accepted there, and one of
+  whitespace only was read as blank, although the entry above and
+  `docs/FEATURES.md` say that the browser asks for a number again. The
+  wizard now hands the text over as typed, so the one grammar decides.
+  `tests/playground/wizard.test.mjs` drives the wizard's number page.
+- Guided intake: a long text that is not a number was refused in time that
+  grew with the square of its length, in the browser's whitespace trim
+  (added by the entry above) and in the number pattern of both interpreters
+  (already so on `main`). A share link can hold such a text: one of 200
+  characters kept the playground busy for 1.8 seconds on opening, and the
+  limit is 8,000 characters. The trim now scans from each end and the
+  pattern reads a run of digits in one way only; it takes and refuses the
+  same texts as before. Each interpreter has a test with a long text.
 
 #### Decisions
 

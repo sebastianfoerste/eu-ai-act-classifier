@@ -18,6 +18,7 @@ import copy
 import itertools
 import json
 import re
+import time
 from pathlib import Path
 
 import pytest
@@ -563,11 +564,17 @@ def test_text_answers_are_trimmed() -> None:
 # same profile for each. Only ASCII digits, and only ASCII whitespace is trimmed:
 # str.strip() and String.prototype.trim() each remove characters the other keeps.
 NUMBERS_ACCEPTED = ["2e25", " 2e25 ", ".5e3", "10", "\t10\n", "\v10\f\r"]
+NUMBERS_ACCEPTED += ["5.", "+5", "-0", "1.e5", "5.5e-3"]
 NUMBERS_REJECTED = [
     "0x10",
     "1_000",
     "1e",
     " ",
+    "   ",  # whitespace alone is not a blank answer
+    ".",
+    "e5",
+    "5..",
+    "1e+",
     "Infinity",
     "\u0661\u0662",  # Arabic-Indic digits: Python's \d and float() take them
     "\uff11\uff12",  # fullwidth digits
@@ -630,6 +637,18 @@ def test_number_answers_that_are_not_text_count_only_as_finite_numbers(
     assert is_answered(question, answers) is usable
     assert (question["id"] in missing) is not usable
     assert profile[question["field"]] == (float(answer) if usable else None)
+
+
+def test_a_long_text_that_is_not_a_number_is_refused_in_linear_time() -> None:
+    # A caller can pass any text. While the pattern could read a run of digits in two
+    # ways, each of the first two checks took seconds at this length.
+    (question,) = [q for q in QUESTIONS if q["kind"] == "number"]
+    run = 20_000
+    texts = ["1" * run + "x", "1" * run + "." + "1" * run + "x", "5" + " " * run + "5"]
+    started = time.perf_counter()
+    for text in texts:
+        assert not is_answered(question, {question["id"]: text})
+    assert time.perf_counter() - started < 2
 
 
 def test_a_question_of_an_unknown_kind_is_never_answered() -> None:

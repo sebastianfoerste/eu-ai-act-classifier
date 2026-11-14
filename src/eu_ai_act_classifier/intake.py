@@ -558,8 +558,10 @@ def _base_profile() -> dict[str, Any]:
 # optional exponent, so "2e25" passes and "0x10" or "1_000" do not, in either.
 # ASCII digits only, and only ASCII whitespace is trimmed (NUMBER_SPACE in
 # intake.mjs): str.strip() and String.prototype.trim() each remove characters the
-# other keeps, and Python's \d and float() also take other Unicode digits.
-_NUMBER = re.compile(r"^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$", re.ASCII)
+# other keeps, and Python's \d and float() also take other Unicode digits. The
+# pattern reads a run of digits in one way only, so a long text that is not a
+# number is refused in time proportional to its length.
+_NUMBER = re.compile(r"^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$", re.ASCII)
 _NUMBER_SPACE = " \t\n\v\f\r"
 
 

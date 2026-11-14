@@ -10,11 +10,19 @@ export const UNKNOWN = "unknown";
 // optional exponent, so "2e25" passes and "0x10" or "1_000" do not, in either.
 // ASCII digits only, and only ASCII whitespace is trimmed (_NUMBER_SPACE in
 // intake.py): String.prototype.trim() and str.strip() each remove characters the
-// other keeps.
-const NUMBER = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/;
-const NUMBER_SPACE = /^[ \t\n\v\f\r]+|[ \t\n\v\f\r]+$/g;
+// other keeps. A profile opened from a share link or a file can hold any text, so
+// the check takes time in proportion to its length: the pattern reads a run of
+// digits in one way only, and the trim scans from each end.
+const NUMBER = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
+const NUMBER_SPACE = " \t\n\v\f\r";
 
-const numberText = value => value.replace(NUMBER_SPACE, "");
+function numberText(value) {
+  let start = 0;
+  let end = value.length;
+  while (start < end && NUMBER_SPACE.includes(value[start])) start += 1;
+  while (end > start && NUMBER_SPACE.includes(value[end - 1])) end -= 1;
+  return value.slice(start, end);
+}
 
 export function isNumber(value) {
   if (typeof value === "number") return Number.isFinite(value);

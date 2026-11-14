@@ -358,7 +358,10 @@ def build_intake_fixtures() -> dict:
     # remove different sets, so both interpreters trim ASCII whitespace only.
     unicode_numbers = ("\u0661\u0662", "\uff11\uff12", "\ufeff5", "\xa05", "5\u2028", "\u30005")
     unicode_numbers += ("\x1c5", "5\x1f", "5\x85", "\t10\n", "\v10\f\r")
-    for flops in ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", "", *unicode_numbers):
+    # The edges of the grammar, and whitespace alone, which is not a blank answer.
+    forms = ("5.", "+5", "-0", "1.e5", "5.5e-3", ".", "e5", "5..", "1e+", "   ")
+    plain = ("2e25", " 2e25 ", "0x10", "1_000", ".5e3", "1e", "")
+    for flops in (*plain, *forms, *unicode_numbers):
         cases[f"edge+training-flops:{flops!r}"] = {"answers": {**model, "training_flops": flops}}
     for case in cases.values():
         profile, asked, blocked, missing = answers_to_profile(case["answers"])

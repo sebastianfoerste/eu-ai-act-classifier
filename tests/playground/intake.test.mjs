@@ -153,8 +153,20 @@ test("a single question without a none option does not accept none", () => {
 test("numbers use the same grammar as the Python interpreter", () => {
   // The same inputs as NUMBERS_ACCEPTED and NUMBERS_REJECTED in tests/test_intake.py: ASCII
   // digits only, and only ASCII whitespace is trimmed.
-  for (const ok of ["2e25", " 2e25 ", ".5e3", "10", "\t10\n", "\v10\f\r", 2e25]) assert.equal(isNumber(ok), true, JSON.stringify(ok));
+  const forms = ["5.", "+5", "-0", "1.e5", "5.5e-3"];
+  for (const ok of ["2e25", " 2e25 ", ".5e3", "10", "\t10\n", "\v10\f\r", ...forms, 2e25]) assert.equal(isNumber(ok), true, JSON.stringify(ok));
   const unicode = ["\u0661\u0662", "\uff11\uff12", "\ufeff5", "\u00a05", "5\u2028", "\u30005", "\x1c5", "5\x1f", "5\x85"];
-  for (const bad of ["0x10", "1_000", "1e", "", " ", "Infinity", NaN, ...unicode]) assert.equal(isNumber(bad), false, JSON.stringify(bad));
+  const edges = ["   ", ".", "e5", "5..", "1e+"];
+  for (const bad of ["0x10", "1_000", "1e", "", " ", ...edges, "Infinity", NaN, ...unicode]) assert.equal(isNumber(bad), false, JSON.stringify(bad));
 });
 
+test("a long text that is not a number is refused in time that grows with its length", () => {
+  // A profile opened from a share link or a file can hold any text. At this length the
+  // earlier pattern took seconds on the first two texts and the earlier trim on the third.
+  const run = 100_000;
+  const digits = "1".repeat(run);
+  const texts = [`${digits}x`, `${digits}.${digits}x`, `5${" ".repeat(run)}5`];
+  const started = performance.now();
+  for (const text of texts) assert.equal(isNumber(text), false);
+  assert.ok(performance.now() - started < 2000);
+});
