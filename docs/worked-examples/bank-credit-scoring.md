@@ -23,7 +23,7 @@ A bank uses a credit-scoring model bought from a third party to decide consumer 
 uv run eu-ai-act-classify examples/credit_scoring_deployer.json
 ```
 
-Output (50 lines; only the nonbinding entries of the source manifest are cut):
+Output (52 lines; only the nonbinding entries of the source manifest are cut):
 
 ```text
 EU AI Act classification: BankCo loan underwriting
@@ -42,10 +42,12 @@ Findings:
       Annex III high-risk area (Art. 6(2) AIA); no derogation asserted.
 
 Obligations:
+  - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
   - Art. 26 AIA: Deployer obligations. Use per instructions, assign human oversight, monitor use, keep logs.
   - Art. 27 AIA: Fundamental rights impact assessment. Conduct a fundamental rights impact assessment before deployment.
 
 Obligation graph:
+  - literacy.deployer.4: Art. 4 AIA (deployer), evidence: AI literacy measures record: training plan, materials and participation by role., review: determined
   - high-risk.deployer.26: Art. 26 AIA (deployer), evidence: Deployer operating procedure and monitoring log., review: determined
   - high-risk.deployer.27: Art. 27 AIA (deployer), evidence: Draft FRIA and notification record., review: review_required
 
@@ -75,8 +77,8 @@ This is a screening tool, not legal advice. It does not produce a conformity ass
 
 - **Tier:** high-risk under Art. 6(2) AIA and Annex III(5)(b), creditworthiness evaluation and credit scoring of natural persons.
 - **Disposition:** `DETERMINED`. No rule raised an open question, so `--strict` exits 0.
-- **Duties:** the profile names only the deployer role, so the bank gets Art. 26 (use per instructions, human oversight, monitoring, logs) and the Art. 27 fundamental rights impact assessment (FRIA). Art. 27(1) and (2) require a FRIA from deployers of point 5(b) systems before first use. No provider duties attach on these facts.
-- **Date:** in the JSON report (`--json`) both obligation-graph items carry `"application_date": "2027-12-02"`. Art. 113, third paragraph, point (c)(i), as amended by Regulation (EU) 2026/1744, sets that date for Chapter III, Sections 1 to 3, for Annex III systems; Arts. 26 and 27 sit in Section 3.
+- **Duties:** the profile names only the deployer role, so the bank gets the Art. 4 AI literacy duty, which binds every provider and deployer, Art. 26 (use per instructions, human oversight, monitoring, logs) and the Art. 27 fundamental rights impact assessment (FRIA). Art. 27(1) and (2) require a FRIA from deployers of point 5(b) systems before first use. No provider duties attach on these facts.
+- **Date:** in the JSON report (`--json`) the Art. 26 and Art. 27 items carry `"application_date": "2027-12-02"`. Art. 113, third paragraph, point (c)(i), as amended by Regulation (EU) 2026/1744, sets that date for Chapter III, Sections 1 to 3, for Annex III systems; Arts. 26 and 27 sit in Section 3. The Art. 4 item carries `"application_date": "2025-02-02"`, the date from which Chapter I applies (Art. 113, third paragraph, point (a)).
 
 ## What a lawyer still has to decide
 
@@ -89,4 +91,4 @@ This is a screening tool, not legal advice. It does not produce a conformity ass
 
 ## Boundaries
 
-The profile and the bank are synthetic. This page is not legal advice. Drafted with AI assistance (Claude). The AI Act provisions cited in the prose of this page as it stood on 14 October 2026 were checked that day against the consolidated version of 27 July 2026 in the [legalize-dev/legalize-eu](https://github.com/legalize-dev/legalize-eu) GitHub mirror. As at 12 November 2026, no provision has been added to the prose above this section since that day. Annex III, point 5(b), including the financial-fraud exception, was checked again on 11 November 2026 against the Official Journal texts of Regulation (EU) 2024/1689 and Regulation (EU) 2026/1744 pinned in `sources/`, whose text matches EUR-Lex (see [`sources/README.md`](../../sources/README.md) and the VERIFIED rows of that date in the [regulatory claim ledger](../REGULATORY_CLAIM_LEDGER.md)); the other provisions in the prose were not rechecked there. The Art. 113 dating of the Chapter III, Section 3 items follows the repository's reading of Art. 113, which was also checked on EUR-Lex on 18 October 2026 (see [Application Dates](../methodology.md#application-dates) and the claim ledger). The claim ledger has a dated row for some of the citations in the quoted CLI output, not for all of them. The conclusions have not been adopted by a lawyer: confirm them with counsel before relying on them. The quoted output is the CLI's own; `tests/test_docs.py` fails if it drifts from what the CLI prints.
+The profile and the bank are synthetic. This page is not legal advice. Drafted with AI assistance (Claude). The AI Act provisions cited in the prose of this page as it stood on 14 October 2026 were checked that day against the consolidated version of 27 July 2026 in the [legalize-dev/legalize-eu](https://github.com/legalize-dev/legalize-eu) GitHub mirror. One provision has been added to the prose above this section since that day: Art. 4, on 14 November 2026. Annex III, point 5(b), including the financial-fraud exception, was checked again on 11 November 2026, and Art. 4(1), as replaced by Regulation (EU) 2026/1744, and its date of application (Art. 113, third paragraph, point (a)) were checked on 14 November 2026, against the Official Journal texts of Regulation (EU) 2024/1689 and Regulation (EU) 2026/1744 pinned in `sources/`, whose text matches EUR-Lex (see [`sources/README.md`](../../sources/README.md) and the VERIFIED rows of those dates in the [regulatory claim ledger](../REGULATORY_CLAIM_LEDGER.md)); the other provisions in the prose were not rechecked there. The Art. 113 dating of the Chapter III, Section 3 items follows the repository's reading of Art. 113, which was also checked on EUR-Lex on 18 October 2026 (see [Application Dates](../methodology.md#application-dates) and the claim ledger). The claim ledger has a dated row for some of the citations in the quoted CLI output, not for all of them. The conclusions have not been adopted by a lawyer: confirm them with counsel before relying on them. The quoted output is the CLI's own; `tests/test_docs.py` fails if it drifts from what the CLI prints.

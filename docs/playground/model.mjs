@@ -5,7 +5,7 @@ export const MAX_BYTES = 1024 * 1024;
 export const TIERS = {
   prohibited: { label: "Prohibited", basis: "Art. 5 AIA", tone: "red" },
   high_risk: { label: "High-risk", basis: "Art. 6 AIA", tone: "amber" },
-  limited_risk: { label: "Limited risk", basis: "Transparency only, Art. 50 AIA", tone: "blue" },
+  limited_risk: { label: "Limited risk", basis: "Transparency duties, Art. 50 AIA", tone: "blue" },
   minimal_risk: { label: "Minimal risk", basis: "No tier-specific obligations", tone: "green" },
   outside_scope: { label: "Outside AI Act scope", basis: "Scope and intake screens", tone: "grey" },
 };

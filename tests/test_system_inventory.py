@@ -204,3 +204,30 @@ def test_committed_example_inventory_has_no_load_warnings() -> None:
     inventory = build_example_inventory(generated_at="2026-06-27T10:00:00+00:00")
 
     assert not any("skipped" in warning for warning in inventory.warnings)
+
+
+def test_inventory_next_action_when_art_4_is_the_only_duty() -> None:
+    # No draft artifact covers Art. 4 AIA, so a determined system whose only obligation is
+    # the AI literacy duty is not sent to prepare draft artifacts.
+    spam_filter = SystemProfile.model_validate_json(
+        (Path(__file__).resolve().parent.parent / "examples" / "spam_filter.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    importer = spam_filter.model_copy(update={"name": "Imported filter", "roles": [Role.IMPORTER]})
+    inventory = build_system_inventory(
+        [spam_filter, importer], generated_at="2026-06-27T10:00:00+00:00"
+    )
+    rows = {row.name: row for row in inventory.systems}
+
+    literacy_only = rows[spam_filter.name]
+    assert literacy_only.risk_tier == "minimal_risk"
+    assert literacy_only.obligations == ["Art. 4 AIA: AI literacy"]
+    assert literacy_only.next_action == (
+        "Record the determination, keep the Art. 4 AI literacy measures record and "
+        "monitor source updates."
+    )
+    assert rows["Imported filter"].obligations == []
+    assert rows["Imported filter"].next_action == (
+        "Record the determination and monitor source updates."
+    )

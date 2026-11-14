@@ -17,7 +17,8 @@ def test_single_prohibited_practice() -> None:
     report = classify(profile)
     assert report.risk_tier is RiskTier.PROHIBITED
     assert report.disposition is Disposition.DETERMINED
-    assert report.obligations == []
+    # Only the Art. 4 AI literacy duty, which names no exception for a prohibited system.
+    assert [ob.article for ob in report.obligations] == ["Art. 4 AIA"]
 
 
 def test_prohibited_dominates_high_risk() -> None:
