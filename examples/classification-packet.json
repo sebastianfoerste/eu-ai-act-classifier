@@ -9,6 +9,7 @@
     "intended_purpose_source": "",
     "eu_nexus": true,
     "excluded_use_flags": [],
+    "assessment_date": null,
     "transitional_status": "No transitional limitation identified from the submitted facts.",
     "notes": []
   },
@@ -178,7 +179,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
       "review_status": "determined",
-      "application_date_note": null
+      "application_date_note": null,
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.17",
@@ -191,7 +193,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
       "review_status": "determined",
-      "application_date_note": null
+      "application_date_note": null,
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.18",
@@ -204,7 +207,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
       "review_status": "determined",
-      "application_date_note": null
+      "application_date_note": null,
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.19",
@@ -217,7 +221,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
       "review_status": "determined",
-      "application_date_note": null
+      "application_date_note": null,
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.20",
@@ -230,7 +235,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
       "review_status": "review_required",
-      "application_date_note": null
+      "application_date_note": null,
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.21",
@@ -243,7 +249,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2027-12-02",
       "review_status": "review_required",
-      "application_date_note": null
+      "application_date_note": null,
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.40",
@@ -256,7 +263,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
       "review_status": "review_required",
-      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.41",
@@ -269,7 +277,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
       "review_status": "review_required",
-      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.42",
@@ -282,7 +291,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
       "review_status": "review_required",
-      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.43",
@@ -295,7 +305,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
       "review_status": "review_required",
-      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.43.2",
@@ -308,7 +319,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
       "review_status": "review_required",
-      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.47",
@@ -321,7 +333,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
       "review_status": "review_required",
-      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.48",
@@ -334,7 +347,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
       "review_status": "review_required",
-      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.49",
@@ -347,7 +361,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
       "review_status": "review_required",
-      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.72",
@@ -360,7 +375,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
       "review_status": "review_required",
-      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter IX duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter IX duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.",
+      "applies_on_assessment_date": null
     },
     {
       "obligation_id": "high-risk.provider.73",
@@ -373,7 +389,8 @@
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
       "application_date": "2026-08-02",
       "review_status": "review_required",
-      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter IX duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies."
+      "application_date_note": "Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter IX duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.",
+      "applies_on_assessment_date": null
     }
   ],
   "timeline": [

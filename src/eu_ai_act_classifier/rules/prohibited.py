@@ -270,7 +270,8 @@ def _later_points(profile: SystemProfile, out: GateOutput) -> bool:
             notes = _interpretation_notes(facts, point, roles)
             for finding in out.findings[first:]:
                 finding.detail = " ".join([finding.detail, *notes])
-    if generative and unscreened:
+    # An unscreened point cannot change the result of a system already prohibited.
+    if generative and unscreened and out.tier_vote is not RiskTier.PROHIBITED:
         if len(unscreened) == len(_POINTS):
             out.open_questions.append(LATER_SCREEN_QUESTION)
         else:
