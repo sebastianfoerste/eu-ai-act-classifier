@@ -42,11 +42,12 @@ agreements. No provisional AI Omnibus source remains in the current manifest.
 Nonbinding guidance appears only as advisory overlay or eval context. The
 overlay can point reviewers to Commission materials, the AI Act Service Desk,
 the GPAI Code of Practice, the draft high-risk guidelines, the Commission
-guidelines on the transparency obligations under Art. 50 (published
-20 July 2026) and the final Code of Practice on marking and labelling of
-AI-generated content (published 10 June 2026; Art. 50(2) and (4)). It never
-changes the binding classification. The Art. 50 sources carry their own
-retrieval date, 31 October 2026; the other advisory sources keep theirs.
+guidelines on the transparency obligations under Art. 50 (Communication
+C(2026) 7702 final of 5 November 2026; the Commission's page dates their
+publication to 20 July 2026) and the Code of Practice on Transparency of
+AI-generated Content (final text of 10 June 2026; Art. 50(2), (4) and (5)).
+It never changes the binding classification. The Art. 50 sources carry their
+own retrieval date, 14 November 2026; the other advisory sources keep theirs.
 
 ## AI Literacy (Art. 4)
 
@@ -58,7 +59,10 @@ systems on their behalf", taking into account their technical knowledge,
 experience, education and training, the context of use and the persons the
 system is used on; no specific level of AI literacy of any individual has to
 be guaranteed. Chapter I applies from 2 February 2025 (Art. 113, third
-paragraph, point (a)).
+paragraph, point (a)), which is the item's date. The wording quoted applies
+since Regulation (EU) 2026/1744 entered into force on 27 July 2026; until then
+Art. 4 asked for measures "to ensure, to their best extent, a sufficient level
+of AI literacy".
 
 The report lists one Art. 4 obligation and one graph item (`literacy.provider.4`,
 `literacy.deployer.4`, dated 2025-02-02, `determined`) per provider or deployer

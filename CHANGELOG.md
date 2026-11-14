@@ -51,38 +51,34 @@ Changes since 0.2.2.
   plan is part of the Annex IV technical documentation and that the
   Commission's guidance and template are due by 2 September 2027
   (Art. 72(3) as replaced by Art. 1, point (30)).
-- The report footer names the amendment: "as amended by Regulation (EU)
-  2026/1744 (consolidated version of 27 July 2026)". The playground footer
-  links the consolidated text of 27 July 2026 instead of the 2024 text.
+- The playground footer links the consolidated text of 27 July 2026 instead
+  of the 2024 text.
+- The provisions above were checked on 14 November 2026 in the Official
+  Journal texts pinned in `sources/` (VERIFIED rows of that date in the claim
+  ledger).
 
-### Final Art. 50 guidance sources
+### Art. 50 Commission documents read
 
 #### Changed
 
-- The source manifest replaces the "Transparency guidance status tracker"
-  placeholder with the Commission guidelines on the transparency obligations
-  under Art. 50 (published 20 July 2026) and the final Code of Practice on
-  marking and labelling of AI-generated content (published 10 June 2026;
-  Art. 50(2) and (4)), both `nonbinding_guidance` with their own retrieval
-  date (`TRANSPARENCY_SOURCE_RETRIEVED_ON`, 2026-10-31). The advisory note for
-  an Art. 50 trigger points to the guidelines; a system generating synthetic
-  content or deepfakes also gets a note on the Code. The note no longer says
-  to "track" guidance "when published".
+- The two Art. 50 sources that #14 added from search results were read on
+  the Commission's site: the pages on 12 and 14 November 2026, the documents
+  on 14 November 2026. Both lose `[noch zu verifizieren]` and carry the
+  retrieval date 2026-11-14 (`ART_50_SOURCES_RETRIEVED_ON`). The code is
+  named as printed, "Code of Practice on Transparency of AI-generated
+  Content" (final text of 10 June 2026; Art. 50(2), (4) and (5)). The
+  guidelines are the Communication C(2026) 7702 final of 5 November 2026,
+  issued under Art. 96(1)(d), and the source links the Commission's library
+  page that holds them. The code does not cite Art. 50(7); the source note
+  gives that link as the classifier's reading. The advisory notes drop
+  "reported as" and "Not primary-verified". The claim ledger has a CORRECTED
+  row of 14 November 2026 with the documents' SHA-256 digests.
 - The GPAI provider guidelines source points to the Commission's library page
-  for the guidelines instead of an on-the-fly printable PDF link; its
-  retrieval date is unchanged, as the page's last update (20 April 2026)
-  predates it.
+  for the guidelines instead of an on-the-fly printable PDF link and carries
+  the page's title; its retrieval date is unchanged, as the page's last update
+  (20 April 2026) predates it.
 - `--verify-sources --update` moves all three retrieval dates together, still
   only when every URL is verified.
-
-### Art. 6(3) profiling rule cited to the third subparagraph
-
-#### Fixed
-
-- The finding for an Annex III system that performs profiling, the high-risk
-  rule docstring and the `Derogation` field description (JSON Schema and
-  field guide) cited "Art. 6(3) subpara. 2". The profiling rule is the third
-  subparagraph of Art. 6(3); the second holds the conditions (a) to (d).
 
 ### Art. 4 AI literacy duty
 
@@ -100,8 +96,10 @@ Changes since 0.2.2.
   provider as such get none; a prohibited system gets none either, as for the
   GPAI duties. For a Section B product and for a legacy high-risk system the
   item is kept, flagged "Literal reading, confirm with counsel" and sent to
-  review, as the Art. 50 items are. The claim ledger has a CORRECTED row and a
-  PENDING row for the Section B reading.
+  review, as the Art. 50 items are. The claim ledger has a VERIFIED row
+  (Art. 4(1) and its date, checked on 14 November 2026 in the Official Journal
+  texts pinned in `sources/`) and a PENDING row for the Section B reading.
+
 ### Pinned source texts
 
 #### Added
@@ -479,8 +477,9 @@ and dates in the regulation string. The check confirms wording and pinpoints.
 The 2026-08-02 dating of the new Art. 43(2) item rests on the reading of
 Art. 113 of 18 October 2026 (the CORRECTED and PENDING Section 5 rows). No
 lawyer has adopted the conclusions, so confirm them with counsel before
-reliance. The two Art. 50 Commission sources could not be opened and keep
-`[noch zu verifizieren]`.
+reliance. The two Art. 50 Commission sources could not be opened then and
+kept `[noch zu verifizieren]` until their documents were read on 14 November
+2026 ("Art. 50 Commission documents read", above).
 
 #### Added
 
@@ -525,8 +524,9 @@ reliance. The two Art. 50 Commission sources could not be opened and keep
   replaced by the Code of Practice on marking and labelling of AI-generated
   content (Art. 50(7) AIA, `art-50-code-of-practice`) and the Commission
   guidelines on the Art. 50 transparency obligations (Art. 96(1)(d) AIA,
-  `art-50-guidelines`). Their titles, dates and URLs come from search results
-  only, so both carry `[noch zu verifizieren]`. With `--advisory`, every
+  `art-50-guidelines`). Their titles, dates and URLs came from search results
+  only, so both carried `[noch zu verifizieren]` until the entry "Art. 50
+  Commission documents read", above. With `--advisory`, every
   Art. 50 profile gets the note `guidance.transparency-guidelines` (was
   `guidance.transparency`), and profiles under Art. 50(2) or (4) also get
   `guidance.transparency-code-of-practice`.
