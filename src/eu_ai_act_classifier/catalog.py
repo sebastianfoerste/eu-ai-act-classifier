@@ -9,7 +9,7 @@ provision a reviewer can open.
 from __future__ import annotations
 
 from .citations import Citation, cite
-from .models import AnnexIII, Obligation, ProhibitedPractice, Role
+from .models import AnnexIII, Obligation, ProhibitedPractice, RiskTier, Role
 
 # Article labels other modules match on. Use these constants, not copies of the
 # string, so a wording change cannot silently break the match.
@@ -285,6 +285,24 @@ AI_LITERACY_REQUIREMENT = (
     "27 July 2026."
 )
 _AI_LITERACY_ROLES = (Role.PROVIDER, Role.DEPLOYER)
+# Art. 4 AIA names no exception for a system under an Art. 5 AIA prohibition, and a
+# prohibition can apply from a later date (Art. 113, third paragraph, point (a): Art. 5(1),
+# first subparagraph, points (ba) and (bb), from 2 December 2026) or be subject to an
+# exception. The report keeps the duty for a prohibited system and flags it.
+PROHIBITED_LITERACY_FLAG = (
+    "Literal reading, confirm with counsel: Art. 4 AIA names no exception for a system "
+    "this report classifies as prohibited under Art. 5 AIA, so the report keeps the Art. 4 "
+    "duty. A prohibition can apply from a later date, as Art. 5(1), first subparagraph, "
+    "points (ba) and (bb) do from 2 December 2026, or be subject to an exception."
+)
+
+
+def ai_literacy_applies(final_tier: RiskTier) -> bool:
+    """Art. 4 AIA binds providers and deployers of every AI system within the Regulation's
+    scope, whatever its tier. A prohibited system keeps the duty, flagged
+    (PROHIBITED_LITERACY_FLAG). The engine and the obligation graph both ask this."""
+
+    return final_tier is not RiskTier.OUT_OF_SCOPE
 
 
 def ai_literacy_roles(roles: list[Role]) -> list[Role]:

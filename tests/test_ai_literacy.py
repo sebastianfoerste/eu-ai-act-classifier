@@ -21,7 +21,7 @@ from eu_ai_act_classifier import (
     classify,
     render_report,
 )
-from eu_ai_act_classifier.catalog import ART_4
+from eu_ai_act_classifier.catalog import ART_4, PROHIBITED_LITERACY_FLAG
 from eu_ai_act_classifier.citations import POINT_A_DATE
 from eu_ai_act_classifier.cli import main
 from eu_ai_act_classifier.models import ProhibitedPractice
@@ -120,14 +120,19 @@ def test_no_art_4_item_outside_scope_or_for_other_roles(profile: SystemProfile) 
     assert items == []
 
 
-def test_prohibited_system_gets_no_art_4_item() -> None:
-    # The convention for the GPAI duties: a system that may not be placed on the market,
-    # put into service or used has no staff to operate it. Pinned so a change is deliberate.
+def test_prohibited_system_keeps_the_art_4_item_flagged() -> None:
+    # Art. 4 AIA names no exception for a prohibited practice, and a prohibition can apply
+    # from a later date or be subject to an exception, so the duty is kept and flagged.
     report = classify(_example("social_scoring.json"))
 
     assert report.risk_tier is RiskTier.PROHIBITED
-    assert report.obligations == []
-    assert report.obligation_graph == []
+    obligations, items = _literacy(report)
+    assert [ob.applies_to for ob in obligations] == [Role.PROVIDER]
+    assert obligations[0].requirement.endswith(PROHIBITED_LITERACY_FLAG)
+    assert [item.obligation_id for item in items] == ["literacy.provider.4"]
+    assert items[0].application_date == POINT_A_DATE
+    assert items[0].review_status is ReviewStatus.REVIEW_REQUIRED
+    assert items[0].application_date_note == PROHIBITED_LITERACY_FLAG
     both = classify(
         SystemProfile(
             name="x",
@@ -136,7 +141,32 @@ def test_prohibited_system_gets_no_art_4_item() -> None:
             annex_iii_area=AnnexIII.CREDITWORTHINESS,
         )
     )
-    assert _literacy(both) == ([], [])
+    obligations, items = _literacy(both)
+    assert [ob.applies_to for ob in obligations] == [Role.PROVIDER, Role.DEPLOYER]
+    assert [item.obligation_id for item in items] == [
+        "literacy.provider.4",
+        "literacy.deployer.4",
+    ]
+    assert all(item.review_status is ReviewStatus.REVIEW_REQUIRED for item in items)
+
+
+def test_a_prohibition_that_applies_later_keeps_the_art_4_duty() -> None:
+    # Art. 5(1), first subparagraph, points (ba) and (bb) apply from 2 December 2026
+    # (Art. 113, third paragraph, point (a)); Art. 4 has applied since 2 February 2025.
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.PROVIDER, Role.DEPLOYER],
+            generates_synthetic_content=True,
+            prohibited_practices=[ProhibitedPractice.NON_CONSENSUAL_INTIMATE_IMAGERY],
+        )
+    )
+
+    assert report.risk_tier is RiskTier.PROHIBITED
+    obligations, items = _literacy(report)
+    assert [ob.applies_to for ob in obligations] == [Role.PROVIDER, Role.DEPLOYER]
+    assert all(PROHIBITED_LITERACY_FLAG in item.application_date_note for item in items)
+    assert "from 2 December 2026" in PROHIBITED_LITERACY_FLAG
 
 
 def test_scope_review_keeps_the_art_4_item() -> None:

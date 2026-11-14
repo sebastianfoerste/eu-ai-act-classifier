@@ -73,9 +73,11 @@ def test_classification_packet_is_the_current_credit_scoring_output() -> None:
     assert packet.with_suffix(".md").read_text(encoding="utf-8") == render_report(report) + "\n"
 
 
-def test_prohibited_lists_no_obligations() -> None:
+def test_prohibited_lists_only_the_flagged_art_4_duty() -> None:
+    # Art. 4 AIA names no exception for a prohibited practice; the duty is kept, flagged.
     report = classify(_load("social_scoring.json"))
-    assert report.obligations == []
+    assert [ob.article for ob in report.obligations] == ["Art. 4 AIA"]
+    assert "Literal reading, confirm with counsel" in report.obligations[0].requirement
     assert any(f.severity.value == "blocker" for f in report.findings)
 
 

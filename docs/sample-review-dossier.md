@@ -18,6 +18,8 @@ The table below summarizes the classification status, risk tier, number of direc
 | **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 9 | 2025-08-02 (Chapter V general-purpose AI models; 2027-08-02 under Art. 111(3) AIA if placed on the market before 2025-08-02) |
 | **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 15 | 2026-08-02 (Arts. 40-43, 43(2), 47-49, 72 and 73; "Literal reading, confirm with counsel"; 2027-12-02 if they follow the Sections 1 to 3 deferral), then 2027-12-02 (Annex III, Chapter III Sections 1 to 3) |
 
+Each profile above also has the Art. 4 AI literacy item, dated 2025-02-02, the date from which Chapter I applies; the deadline column leaves it out.
+
 ---
 
 ## 1. Minimal Risk (General-Purpose AI): `NexusLite-13B`

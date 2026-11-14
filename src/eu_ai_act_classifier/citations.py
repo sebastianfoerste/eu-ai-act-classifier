@@ -60,8 +60,9 @@ GPAI_PROVIDER_GUIDELINES_URL = (
 )
 # The two Art. 50 instruments are separate: the Code of Practice on Transparency of
 # AI-generated Content and the Commission guidelines issued under Art. 96(1)(d) AIA.
-# Their pages and documents were read on the Commission's site on 12 and 14 November
-# 2026 (claim ledger). The guidelines URL is the library page that holds the document.
+# Their pages were opened on 12 and 14 November 2026 and their documents read on
+# 14 November 2026 (claim ledger). The guidelines URL is the library page that holds
+# the document.
 ART_50_CODE_OF_PRACTICE_URL = (
     "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content"
 )
@@ -151,7 +152,8 @@ def source_manifest() -> list[RegulatorySource]:
         RegulatorySource(
             source_id="gpai-provider-guidelines",
             title=(
-                "Guidelines on the scope of obligations for providers of general-purpose AI models"
+                "Guidelines on the scope of obligations for providers of general-purpose AI "
+                "models under the AI Act"
             ),
             legal_status=SourceStatus.NONBINDING_GUIDANCE,
             url=GPAI_PROVIDER_GUIDELINES_URL,
@@ -171,9 +173,11 @@ def source_manifest() -> list[RegulatorySource]:
                 "detection duties of providers (Art. 50(2) and (5) AIA) and the labelling "
                 "duties of deployers (Art. 50(4) and (5) AIA). The Commission's page states "
                 "that the Commission and the AI Board have confirmed it as an adequate "
-                "voluntary tool to demonstrate compliance. The classifier reads it as the "
-                "code of practice that Art. 50(7) AIA provides for; the code itself does not "
-                "cite that provision."
+                "voluntary tool to demonstrate compliance. The Commission's Art. 50 "
+                "guidelines (C(2026) 7702 final, points (146) and (147)) refer to it as a code "
+                "of practice assessed as adequate pursuant to Art. 50(7) AIA and to a "
+                "Commission Opinion on that assessment; the code itself does not cite that "
+                "provision."
             ),
         ),
         RegulatorySource(

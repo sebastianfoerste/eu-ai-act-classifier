@@ -15,6 +15,8 @@ from .catalog import (
     ART_72_REQUIREMENT,
     ART_73_REQUIREMENT,
     ART_111_2,
+    PROHIBITED_LITERACY_FLAG,
+    ai_literacy_applies,
     ai_literacy_roles,
     eu_database_registration_applies,
     national_registration_for_public_authority_deployer,
@@ -286,8 +288,8 @@ def build_obligation_graph(
         )
 
     # Art. 4 AIA (Chapter I) heads the graph: every provider and deployer, whatever the
-    # tier. The engine applies the same condition to the obligation list.
-    if final_tier not in (RiskTier.OUT_OF_SCOPE, RiskTier.PROHIBITED):
+    # tier. The engine asks the same predicate for the obligation list.
+    if ai_literacy_applies(final_tier):
         items = _ai_literacy_items(profile, final_tier) + items
 
     return items
@@ -296,14 +298,17 @@ def build_obligation_graph(
 def _ai_literacy_items(profile: SystemProfile, final_tier: RiskTier) -> list[ObligationGraphItem]:
     """Art. 4 AIA, one item per provider or deployer role held, dated by Chapter I
     (Art. 113, third paragraph, point (a)). Art. 2(2) AIA does not list Art. 4 for a
-    Section B product, and Art. 111(2) AIA reaches it for a legacy high-risk system as it
-    reaches Art. 50: in both cases the item is kept, flagged and sent to review."""
+    Section B product, Art. 111(2) AIA reaches it for a legacy high-risk system as it
+    reaches Art. 50, and Art. 4 names no exception for a prohibited system: in each case
+    the item is kept, flagged and sent to review."""
 
     section_b_flag = _SECTION_B_LITERACY_FLAG if section_b_product(profile) else None
+    prohibited_flag = PROHIBITED_LITERACY_FLAG if final_tier is RiskTier.PROHIBITED else None
     legacy_flag = (
         legacy_transparency_flag(profile, "Art. 4") if final_tier is RiskTier.HIGH else None
     )
-    note = " ".join(part for part in (section_b_flag, legacy_flag) if part) or None
+    parts = (section_b_flag, prohibited_flag, legacy_flag)
+    note = " ".join(part for part in parts if part) or None
     return [
         _item(
             f"literacy.{_actor_slug(actor)}.4",

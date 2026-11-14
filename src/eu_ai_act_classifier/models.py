@@ -39,7 +39,7 @@ class RiskTier(StrEnum):
     OUT_OF_SCOPE = "outside_scope"
     PROHIBITED = "prohibited"
     HIGH = "high_risk"
-    LIMITED = "limited_risk"  # transparency obligations only (Art. 50 AIA)
+    LIMITED = "limited_risk"  # transparency obligations (Art. 50 AIA)
     MINIMAL = "minimal_risk"
 
 

@@ -26,6 +26,9 @@ Findings:
   [blocker] Art. 5(1)(c) AIA: Social scoring leading to detrimental or unfavourable treatment
       Prohibited practice under Art. 5 AIA. The system may not be placed on the market, put into service, or used.
 
+Obligations:
+  - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff ... Literal reading, confirm with counsel: Art. 4 AIA names no exception for a system this report classifies as prohibited under Art. 5 AIA, so the report keeps the Art. 4 duty. ...
+...
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
   ...

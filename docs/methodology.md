@@ -69,17 +69,18 @@ The report lists one Art. 4 obligation and one graph item (`literacy.provider.4`
 role the profile holds, for every report whose scope is not outside the AI
 Act, including a minimal-risk system and a system whose scope is under review.
 Importers, distributors, authorised representatives and the provider of a
-general-purpose AI model, as such, get none. A prohibited system gets none
-either, as for the GPAI duties: a system that may not be placed on the market,
-put into service or used (Art. 5) has no staff to operate it; the choice is
-pinned in `tests/test_ai_literacy.py`.
+general-purpose AI model, as such, get none. A system the report classifies
+as prohibited keeps the duty (below); `tests/test_ai_literacy.py` pins that.
 
-Two positions are flagged "Literal reading, confirm with counsel" and sent to
-review, as the same positions are for Art. 50: for a Section B product
-Art. 2(2) does not list Art. 4 (the obligation text and the item carry the
-flag), and for a legacy high-risk system Art. 111(2) applies the Regulation
-only after a significant change in design (the item keeps its date and carries
-the flag).
+Three positions are flagged "Literal reading, confirm with counsel" and sent
+to review. For a Section B product Art. 2(2) does not list Art. 4 (the
+obligation text and the item carry the flag). For a legacy high-risk system
+Art. 111(2) applies the Regulation only after a significant change in design
+(the item keeps its date and carries the flag). Both positions are the same
+for Art. 50. For a system the report classifies as prohibited, Art. 4 names no
+exception, and a prohibition can apply from a later date (Art. 5(1), first
+subparagraph, points (ba) and (bb), from 2 December 2026) or be subject to an
+exception (the obligation text and the item carry the flag).
 
 ## High-Risk Logic
 

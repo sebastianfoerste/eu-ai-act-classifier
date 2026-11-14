@@ -53,13 +53,15 @@ def test_art_50_sources_are_two_separate_guidance_instruments_with_their_own_dat
     assert guidelines.url == ART_50_GUIDELINES_URL
     assert code.url == ART_50_CODE_OF_PRACTICE_URL
     assert guidelines.url != code.url
-    # The guidelines state their legal basis; the code does not, so the note says whose
-    # reading the Art. 50(7) link is.
+    # The guidelines state their legal basis and, in points (146) and (147), call the code
+    # one assessed as adequate pursuant to Art. 50(7); the code itself does not cite it.
     assert "Art. 96(1)(d)" in guidelines.implementation_note
     assert "C(2026) 7702 final" in guidelines.title
     assert "10 June 2026" in code.implementation_note
     assert "Art. 50(2)" in code.implementation_note and "Art. 50(4)" in code.implementation_note
     assert "does not cite" in code.implementation_note
+    assert "points (146) and (147)" in code.implementation_note
+    assert "classifier reads" not in code.implementation_note
     assert sources["gpai-provider-guidelines"].url == GPAI_PROVIDER_GUIDELINES_URL
     assert "printable" not in GPAI_PROVIDER_GUIDELINES_URL
     checked = set(URLS.values())

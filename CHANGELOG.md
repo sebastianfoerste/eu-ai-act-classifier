@@ -20,7 +20,8 @@ Changes since 0.2.2.
   `readOnlyHint`/`idempotentHint` true and `destructiveHint`/`openWorldHint`
   false. Verified on the locked mcp (1.30.0) and on the 1.21.1 floor. The
   MCP guide notes that SDK v2 renamed `FastMCP` to `MCPServer` and that v1
-  receives security fixes only; the migration is the owner's call.
+  receives critical bug fixes and security patches only; the migration is the
+  owner's call.
 
 ### Readable CLI validation errors
 
@@ -65,12 +66,15 @@ Changes since 0.2.2.
   the Commission's site: the pages on 12 and 14 November 2026, the documents
   on 14 November 2026. Both lose `[noch zu verifizieren]` and carry the
   retrieval date 2026-11-14 (`ART_50_SOURCES_RETRIEVED_ON`). The code is
-  named as printed, "Code of Practice on Transparency of AI-generated
-  Content" (final text of 10 June 2026; Art. 50(2), (4) and (5)). The
+  named as on the Commission's policy page, "Code of Practice on
+  Transparency of AI-generated Content" (final text of 10 June 2026;
+  Art. 50(2), (4) and (5)). The
   guidelines are the Communication C(2026) 7702 final of 5 November 2026,
   issued under Art. 96(1)(d), and the source links the Commission's library
-  page that holds them. The code does not cite Art. 50(7); the source note
-  gives that link as the classifier's reading. The advisory notes drop
+  page that holds them. The code does not cite Art. 50(7); the guidelines
+  refer to it, in points (146) and (147), as a code of practice assessed as
+  adequate pursuant to Art. 50(7), and the source note says so. The advisory
+  notes drop
   "reported as" and "Not primary-verified". The claim ledger has a CORRECTED
   row of 14 November 2026 with the documents' SHA-256 digests.
 - The GPAI provider guidelines source points to the Commission's library page
@@ -93,12 +97,24 @@ Changes since 0.2.2.
   2026/1744 (in force 27 July 2026). A minimal-risk run, such as
   `examples/spam_filter.json`, listed no obligation at all. Importers,
   distributors, authorised representatives and a general-purpose AI model
-  provider as such get none; a prohibited system gets none either, as for the
-  GPAI duties. For a Section B product and for a legacy high-risk system the
-  item is kept, flagged "Literal reading, confirm with counsel" and sent to
-  review, as the Art. 50 items are. The claim ledger has a VERIFIED row
+  provider as such get none. For a Section B product and for a legacy
+  high-risk system the item is kept, flagged "Literal reading, confirm with
+  counsel" and sent to review, as the Art. 50 items are. So it is for a system
+  classified as prohibited: Art. 4 names no exception for it, and a
+  prohibition can apply from a later date or be subject to an exception. The
+  claim ledger has a VERIFIED row
   (Art. 4(1) and its date, checked on 14 November 2026 in the Official Journal
   texts pinned in `sources/`) and a PENDING row for the Section B reading.
+
+#### Changed
+
+- The limited-risk tier label reads "transparency duties (Art. 50 AIA)"
+  instead of "transparency only", in the text report and the playground,
+  since a limited-risk report also lists the Art. 4 duty.
+- The system inventory's next action for a system whose only obligation is
+  the Art. 4 duty reads "Record the determination, keep the Art. 4 AI
+  literacy measures record and monitor source updates." No draft artifact
+  covers Art. 4, so such a system is not sent to prepare draft artifacts.
 
 ### Pinned source texts
 

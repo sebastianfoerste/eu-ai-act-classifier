@@ -8,7 +8,7 @@ _TIER_LABEL = {
     RiskTier.OUT_OF_SCOPE: "OUTSIDE AI ACT SCOPE",
     RiskTier.PROHIBITED: "PROHIBITED (Art. 5 AIA)",
     RiskTier.HIGH: "HIGH-RISK (Art. 6 AIA)",
-    RiskTier.LIMITED: "LIMITED RISK, transparency only (Art. 50 AIA)",
+    RiskTier.LIMITED: "LIMITED RISK, transparency duties (Art. 50 AIA)",
     RiskTier.MINIMAL: "MINIMAL RISK",
 }
 

@@ -552,7 +552,7 @@
     },
     {
       "source_id": "gpai-provider-guidelines",
-      "title": "Guidelines on the scope of obligations for providers of general-purpose AI models",
+      "title": "Guidelines on the scope of obligations for providers of general-purpose AI models under the AI Act",
       "legal_status": "nonbinding_guidance",
       "url": "https://digital-strategy.ec.europa.eu/en/library/guidelines-scope-obligations-providers-general-purpose-ai-models-under-ai-act",
       "retrieved_on": "2026-06-18",
@@ -566,7 +566,7 @@
       "url": "https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content",
       "retrieved_on": "2026-11-14",
       "citation_label": "Art. 50 marking and labelling Code of Practice",
-      "implementation_note": "Voluntary code, final text of 10 June 2026, with rules for the marking and detection duties of providers (Art. 50(2) and (5) AIA) and the labelling duties of deployers (Art. 50(4) and (5) AIA). The Commission's page states that the Commission and the AI Board have confirmed it as an adequate voluntary tool to demonstrate compliance. The classifier reads it as the code of practice that Art. 50(7) AIA provides for; the code itself does not cite that provision."
+      "implementation_note": "Voluntary code, final text of 10 June 2026, with rules for the marking and detection duties of providers (Art. 50(2) and (5) AIA) and the labelling duties of deployers (Art. 50(4) and (5) AIA). The Commission's page states that the Commission and the AI Board have confirmed it as an adequate voluntary tool to demonstrate compliance. The Commission's Art. 50 guidelines (C(2026) 7702 final, points (146) and (147)) refer to it as a code of practice assessed as adequate pursuant to Art. 50(7) AIA and to a Commission Opinion on that assessment; the code itself does not cite that provision."
     },
     {
       "source_id": "art-50-guidelines",

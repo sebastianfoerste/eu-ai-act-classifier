@@ -5,6 +5,8 @@ from __future__ import annotations
 from .advisory import build_advisory_notes
 from .catalog import (
     ANNEX_III,
+    PROHIBITED_LITERACY_FLAG,
+    ai_literacy_applies,
     ai_literacy_obligations,
     eu_database_registration_applies,
     gpai_obligations,
@@ -166,8 +168,13 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
 
     if ai_literacy_applies(final_tier):
         # Art. 4 AIA (Chapter I) binds every provider and deployer of an AI system within
-        # the Regulation's scope, whatever the tier, so it heads the list.
-        literacy_flag = SECTION_B_LITERACY_FLAG if section_b_product(profile) else ""
+        # the Regulation's scope, whatever the tier, so it heads the list. A Section B
+        # product and a prohibited system keep it, flagged.
+        flags = (
+            SECTION_B_LITERACY_FLAG if section_b_product(profile) else "",
+            PROHIBITED_LITERACY_FLAG if final_tier is RiskTier.PROHIBITED else "",
+        )
+        literacy_flag = " ".join(flag for flag in flags if flag)
         obligations = ai_literacy_obligations(profile.roles, literacy_flag) + obligations
 
     disposition = Disposition.REQUIRES_REVIEW if open_questions else Disposition.DETERMINED
@@ -229,14 +236,6 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         open_questions=open_questions,
         unverified_citations=unverified,
     )
-
-
-def ai_literacy_applies(final_tier: RiskTier) -> bool:
-    """Art. 4 AIA attaches to every system within the Regulation's scope, whatever its
-    tier, except a prohibited one: as for the GPAI duties, a system that may not be placed
-    on the market, put into service or used (Art. 5 AIA) has no staff to operate it."""
-
-    return final_tier not in (RiskTier.OUT_OF_SCOPE, RiskTier.PROHIBITED)
 
 
 def _fria_required(profile: SystemProfile) -> bool:
