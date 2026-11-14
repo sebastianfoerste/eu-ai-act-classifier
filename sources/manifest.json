@@ -58,7 +58,8 @@
         "Art. 111(3): GPAI models placed on the market before 2 August 2025 comply by 2 August 2027 (not amended by Regulation (EU) 2026/1744)",
         "Art. 113, third paragraph, point (b): Chapter V applies from 2 August 2025 (not amended)",
         "Art. 3, points (3), (4), (6), (7), (9) and (11): the operator roles and acts that Art. 5(1)(ba) and (bb) turn on",
-        "Art. 50(2) and Art. 113, second paragraph: Art. 50 applies from 2 August 2026, the cut-off in Art. 111(4)"
+        "Art. 50(2) and Art. 113, second paragraph: Art. 50 applies from 2 August 2026, the cut-off in Art. 111(4)",
+        "Art. 17, Art. 40(1) and Art. 43(1): the presumption of conformity covers the Section 2 requirements, and the Annex VI or Annex VII choice for Annex III, point 1 (the Art. 40 and Art. 43 graph items)"
       ],
       "eurlex_check": {
         "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401689",
@@ -150,7 +151,8 @@
       "relied_on_for": [
         "Annex point 1: harmonised standard EN 18286:2026 (Artificial intelligence – Quality management system for EU AI Act regulatory purposes)",
         "Art. 1 and recitals 1 to 6: publication of the reference of EN 18286:2026 in the Official Journal, which under Art. 40 AIA confers a presumption of conformity with the requirements the standard covers; recital 3 names quality management systems for providers of AI systems, including post-market monitoring processes, and the Decision does not name the AI Act articles concerned",
-        "Recitals 2 and 3: standardisation request C(2025) 3871, Annex I point 9"
+        "Recitals 2 and 3: standardisation request C(2025) 3871, Annex I point 9",
+        "Art. 2: entry into force on the day of publication, 14 October 2026; the Art. 40 and Art. 43 graph items and tests/legal/fixtures/art40_art43_1_harmonised_standards.json (snapshot fetched again on 2026-11-14, identical byte for byte)"
       ],
       "eurlex_check": {
         "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202602274",

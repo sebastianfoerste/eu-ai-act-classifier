@@ -69,8 +69,9 @@ script never writes to this folder and is not part of CI.
 
 The `relied_on_for` lists name the provisions that the rules and the legal
 fixtures in `tests/legal/fixtures/` rest on (the Art. 5(1)(ba) and (bb) gate,
-the Annex I acts and the Art. 111(3) and (4) dating); the classifier does not
-read these files at run time.
+the Annex I acts, the Art. 111(3) and (4) dating and the EN 18286:2026 notes
+on the Art. 40 and Art. 43 items); the classifier does not read these files at
+run time.
 
 ## Rules
 
