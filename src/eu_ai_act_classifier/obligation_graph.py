@@ -279,20 +279,22 @@ def build_obligation_graph(
         section_b_flag = _SECTION_B_TRANSPARENCY_FLAG if section_b_product(profile) else None
         flagged = bool(section_b_flag or legacy_flag) or applies_from is None
         note = " ".join(part for part in (section_b_flag, note, legacy_flag) if part) or None
-        items.append(
-            _item(
-                f"transparency.{index}",
-                obligation.article,
-                obligation.applies_to,
-                "Art. 50 transparency trigger in the submitted profile.",
-                obligation.requirement,
-                "Transparency notice, label or disclosure record.",
-                applies_from,
-                # A counsel flag sends the item to review, like every other flagged item.
-                ReviewStatus.REVIEW_REQUIRED if flagged else ReviewStatus.DETERMINED,
-                note,
-            )
+        item = _item(
+            f"transparency.{index}",
+            obligation.article,
+            obligation.applies_to,
+            "Art. 50 transparency trigger in the submitted profile.",
+            obligation.requirement,
+            "Transparency notice, label or disclosure record.",
+            applies_from,
+            # A counsel flag sends the item to review, like every other flagged item.
+            ReviewStatus.REVIEW_REQUIRED if flagged else ReviewStatus.DETERMINED,
+            note,
         )
+        # On the wording of Art. 111(2) AIA Art. 50 reaches an unchanged legacy system only
+        # after a significant change; the report keeps the dating, not the answer.
+        item._after_significant_change = legacy_flag is not None
+        items.append(item)
 
     return [
         item.model_copy(
@@ -676,18 +678,16 @@ def _with_legacy_notes(
         if item.actor in _PROVIDER_OR_DEPLOYER:
             text += public_authority_clause(profile)
         text += f". {flag}"
-        out.append(
-            item.model_copy(
-                update={
-                    "application_date_note": (
-                        f"{item.application_date_note} {text}"
-                        if item.application_date_note
-                        else text
-                    ),
-                    "review_status": ReviewStatus.REVIEW_REQUIRED,
-                }
-            )
+        conditional = item.model_copy(
+            update={
+                "application_date_note": (
+                    f"{item.application_date_note} {text}" if item.application_date_note else text
+                ),
+                "review_status": ReviewStatus.REVIEW_REQUIRED,
+            }
         )
+        conditional._after_significant_change = True
+        out.append(conditional)
     return out
 
 
@@ -903,7 +903,7 @@ def _undeferred_item(
     """A duty outside the point (c) deferral: the literal general date, the deferred
     alternative in the note, and review."""
 
-    return _item(
+    item = _item(
         obligation_id,
         article,
         actor,
@@ -914,6 +914,8 @@ def _undeferred_item(
         ReviewStatus.REVIEW_REQUIRED,
         _literal_reading_note(location, deferred_date),
     )
+    item._deferred_date = deferred_date
+    return item
 
 
 def _art_111_dating(
@@ -951,15 +953,24 @@ def dating_window(item: ObligationGraphItem) -> tuple[str, str] | None:
 
 def applies_on(assessment_date: str | None, item: ObligationGraphItem) -> bool | None:
     """Whether ``item`` applies on ``assessment_date``: on or after its application date.
-    For an open date, known only where both possible dates give the same answer."""
+    For an open date, and for a contested one with a deferred alternative, known only where
+    both possible dates give the same answer. A duty that attaches only after a significant
+    change (Art. 111(2) AIA) is known only not to apply before its date."""
 
-    if item.application_date is not None:
-        return on_or_after(assessment_date, item.application_date)
-    window = dating_window(item)
-    if window is None:
+    if item.application_date is None:
+        window = dating_window(item)
+        if window is None:
+            return None
+        days = list(window)
+    else:
+        days = [item.application_date]
+        if item._deferred_date is not None:
+            days.append(item._deferred_date)
+    answers = {on_or_after(assessment_date, day) for day in days}
+    answer = answers.pop() if len(answers) == 1 else None
+    if item._after_significant_change and answer is not False:
         return None
-    first, last = (on_or_after(assessment_date, day) for day in window)
-    return first if first == last else None
+    return answer
 
 
 def _literal_reading_note(location: str, deferred_date: str) -> str:

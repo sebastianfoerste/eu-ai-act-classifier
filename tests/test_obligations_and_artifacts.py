@@ -1682,3 +1682,66 @@ def test_asserted_change_flag_says_which_changes_count_on_each_reading() -> None
         "On the date used here, the asserted change counts only if it was made on or after "
         "2027-12-02"
     ) in item.application_date_note
+
+
+# applies_on_assessment_date must not settle what the item's own note leaves open: the
+# Chapter III, Section 5 and Chapter IX date is contested between the general date and the
+# point (c) date (PENDING ledger row: "The classifier does not pick a side"), and under
+# Art. 111(2) AIA an unchanged legacy system's duties attach only after a significant
+# change in design.
+def _applies(profile: SystemProfile) -> dict[str, bool | None]:
+    return {
+        item.obligation_id: item.applies_on_assessment_date
+        for item in classify(profile).obligation_graph
+    }
+
+
+@pytest.mark.parametrize(
+    ("assessed", "art_40", "art_16"),
+    [
+        pytest.param("2026-08-01", False, False, id="before-both-readings"),
+        pytest.param("2026-11-14", None, False, id="between-the-readings"),
+        pytest.param("2027-12-02", True, True, id="on-the-deferred-date"),
+    ],
+)
+def test_section_5_items_apply_on_the_assessment_date_only_where_both_readings_agree(
+    assessed: str, art_40: bool | None, art_16: bool
+) -> None:
+    applies = _applies(
+        SystemProfile(
+            name="x",
+            roles=[Role.PROVIDER],
+            annex_iii_area=AnnexIII.CREDITWORTHINESS,
+            assessment_date=assessed,
+        )
+    )
+    assert applies["high-risk.provider.40"] is art_40
+    assert applies["high-risk.provider.73"] is art_40
+    assert applies["high-risk.provider.16"] is art_16
+
+
+@pytest.mark.parametrize(
+    ("change", "assessed", "expected"),
+    [
+        pytest.param(False, "2027-12-01", False, id="unchanged-before-the-date"),
+        pytest.param(False, "2028-01-01", None, id="unchanged-after-the-date"),
+        pytest.param(None, "2028-01-01", None, id="change-unknown"),
+        pytest.param(True, "2028-01-01", True, id="changed"),
+    ],
+)
+def test_a_legacy_systems_items_do_not_claim_to_apply_without_a_significant_change(
+    change: bool | None, assessed: str, expected: bool | None
+) -> None:
+    applies = _applies(
+        SystemProfile(
+            name="x",
+            roles=[Role.PROVIDER],
+            annex_iii_area=AnnexIII.CREDITWORTHINESS,
+            placing_on_market_date="2025-01-01",
+            significant_change_after_application_date=change,
+            interacts_with_natural_persons=True,
+            assessment_date=assessed,
+        )
+    )
+    assert applies["high-risk.provider.16"] is expected
+    assert applies["transparency.1"] is (True if change is True else None)

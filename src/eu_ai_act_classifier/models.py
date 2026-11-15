@@ -19,7 +19,14 @@ from datetime import date
 from enum import StrEnum
 from typing import Annotated, Any
 
-from pydantic import AfterValidator, BaseModel, Field, WithJsonSchema, model_validator
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    Field,
+    PrivateAttr,
+    WithJsonSchema,
+    model_validator,
+)
 
 
 class Role(StrEnum):
@@ -608,9 +615,15 @@ class ObligationGraphItem(BaseModel):
     # transitional rule in Art. 111 AIA.
     application_date_note: str | None = None
     # Whether the obligation applies on the profile's assessment_date ("on or after"). Null
-    # where the assessment date is not given, or where the unknown application date could
-    # fall either side of it.
+    # where the assessment date is not given, where the unknown or contested application
+    # date could fall either side of it, or where Art. 111(2) AIA makes the duty attach only
+    # after a significant change in design and the date has come.
     applies_on_assessment_date: bool | None = None
+    # Engine-internal, never reported: the deferred alternative of a contested application
+    # date (Chapter III, Section 5 and Chapter IX items), and whether the duty attaches only
+    # after a significant change under Art. 111(2) AIA. applies_on_assessment_date reads them.
+    _deferred_date: str | None = PrivateAttr(default=None)
+    _after_significant_change: bool = PrivateAttr(default=False)
 
 
 class AdvisoryNote(BaseModel):

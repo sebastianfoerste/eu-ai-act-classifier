@@ -75,6 +75,12 @@ were written from the snapshots in `sources/` before the rules.
   Where that denial decides the result, the point is now UNKNOWN with an open
   question (Recital 12 of Regulation (EU) 2026/1744), and the field
   descriptions say that a foreseeable outcome or a deployer's purpose counts.
+- `applies_on_assessment_date` was true for an unchanged legacy high-risk
+  system's Chapter III and Art. 50 items once their date had passed, although
+  the scope text and each item's note say that under Art. 111(2) the duties
+  attach only after a significant change in design; it is now null there. For
+  Chapter III, Section 5 and Chapter IX items it no longer takes the literal
+  date's side between 2 August 2026 and the point (c) date.
 
 ### Audit fixes on commits merged after verification
 

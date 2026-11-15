@@ -456,7 +456,14 @@ give only the section; a section that contradicts the act is rejected.
 `applies_on_assessment_date` on an obligation-graph item says whether the item
 applies on the assessment date, "on or after" its application date. It is null
 without an assessment date. Where the application date itself is open (null),
-it is known only if both possible dates give the same answer.
+it is known only if both possible dates give the same answer. The same holds
+for a Chapter III, Section 5 or Chapter IX item, whose literal date (2 August
+2026) is contested with the point (c) date the note names: the field does not
+pick a side. For an item that Art. 111(2) makes attach only after a significant
+change in design (an unchanged legacy high-risk system's Chapter III and
+Art. 50 items), the field is false before the item's date and null from then
+on, because whether the duty has attached turns on the change and on the
+contested cut-off.
 
 ### Harmonised standards
 
