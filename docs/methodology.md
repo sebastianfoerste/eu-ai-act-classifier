@@ -485,9 +485,13 @@ graph items label them "Interpretation (S1)" and "Interpretation (S2)".
 - S1: Art. 40(1) presumes conformity with the requirements in Chapter III,
   Section 2 (Arts. 8 to 15) and the Chapter V obligations. The quality
   management system is Art. 17, in Section 3, and the Decision's recital 1
-  speaks only of "the requirements covered by those standards". The item
-  names the standard and leaves to review whether it gives a presumption for
-  Art. 17.
+  speaks only of "the requirements covered by those standards". Against
+  that, Art. 40(2), third subparagraph, added by Regulation (EU) 2026/1744,
+  Art. 1, point (17), asks for standardisation deliverables "to facilitate the
+  joint compliance and presumption of conformity with the requirements or
+  obligations set out in Chapter III, Sections 2 and 3"; Art. 40(1) itself
+  was not amended. The item names the standard and leaves to review whether
+  it gives a presumption for Art. 17.
 - S2: EN 18286:2026 is by its title a quality management system standard, so
   the classifier reads it as not covering the Section 2 requirements:
   applying it alone does not open Annex VI under Art. 43(1).
