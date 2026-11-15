@@ -90,7 +90,11 @@ def test_profile_schema_describes_what_null_means_for_the_new_fields() -> None:
         "Null: the model is dated by placing_on_market_date"
         in (props["gpai_model_placing_on_market_date"]["description"])
     )
-    assert "Null: treated as Section A" in props["annex_i_section"]["description"]
+    assert (
+        "Null with no legislation: the report keeps the Section A duties and goes to review"
+        in props["annex_i_section"]["description"]
+    )
+    assert "Null: those results stay open" in props["assessment_date"]["description"]
     change = props["significant_change_after_application_date"]["description"]
     assert "2027-12-02" in change and "2026-08-02" in change
 

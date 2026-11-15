@@ -31,7 +31,10 @@ def evaluate(profile) -> GateOutput:
         detail = "Art. 50 AIA transparency duties are triggered."
         # Art. 2(2) AIA lists Art. 50 for no Section B product, Annex III area or not.
         if section_b_product(profile):
-            detail += f" {section_b_kept_flag('Art. 50', 'the Art. 50 duties')}"
+            flag = section_b_kept_flag("Art. 50", "the Art. 50 duties")
+            detail += f" {flag}"
+            # C6: raised as a question, as the Art. 5 gate does, so the report goes to review.
+            out.open_questions.append(f"Art. 2(2) AIA and Art. 50 AIA: {flag}")
         out.findings.append(
             Finding(
                 rule_id="TRANSPARENCY.50",

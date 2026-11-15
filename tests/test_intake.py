@@ -28,6 +28,7 @@ from eu_ai_act_classifier.intake import (
     BLOCK,
     CHANGE_OPEN,
     IN_SCOPE,
+    NOT_ASKED,
     PUBLIC_AUTHORITY_STATUS_OPEN,
     QUESTIONS,
     answers_to_profile,
@@ -76,7 +77,9 @@ def _condition_fields(condition) -> set[str]:
 
 def test_every_profile_field_is_asked_exactly_once() -> None:
     asked = [field for question in QUESTIONS for field in question_fields(question)]
-    expected = [name for name in SystemProfile.model_fields if name != "derogation"]
+    expected = [
+        name for name in SystemProfile.model_fields if name not in ("derogation", *NOT_ASKED)
+    ]
     expected += [f"derogation.{key}" for key in Derogation.model_fields]
     assert sorted(asked) == sorted(expected)
     assert len(asked) == len(set(asked))
@@ -191,7 +194,12 @@ _TRANSITION_AXES = {
     "roles": [["provider"], ["deployer"], ["importer"]],
     "scope": [(True, True), (False, True)],
     "prohibited_practices": [[], ["5.1.c"]],
-    "annex_i": [(False, False, None), (True, False, None), (True, True, None), (True, True, "B")],
+    "annex_i": [
+        (False, False, None),
+        (True, False, None),
+        (True, True, None),
+        (True, True, "I.B.21"),
+    ],
     "annex_iii_area": [None, "III.2", "III.6.a"],
     "public_authority_use": [False, True],
     "dates": [(None, None), ("2025-01-01", None), (None, "2028-01-01")],
@@ -217,7 +225,7 @@ def _transition_grid() -> list[dict]:
                 "prohibited_practices": prohibited,
                 "annex_i_safety_component": annex_i[0],
                 "annex_i_third_party_assessment": annex_i[1],
-                "annex_i_section": annex_i[2],
+                "annex_i_legislation": annex_i[2],
                 "annex_iii_area": annex_iii,
                 "public_authority_use": authority,
                 "placing_on_market_date": dates[0],
@@ -370,10 +378,10 @@ def test_the_change_question_follows_the_engines_legacy_test() -> None:
             {
                 "annex_i_safety_component": True,
                 "annex_i_third_party_assessment": True,
-                "annex_i_section": section,
+                "annex_i_legislation": act,
                 "annex_iii_area": area,
             }
-            for section in (None, "A", "B")
+            for act in (None, "I.A.11", "I.B.21")
             for area in (None, "III.2")
         ),
     ]

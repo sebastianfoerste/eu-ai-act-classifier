@@ -93,7 +93,8 @@ export type ObligationGraphItem = {
   evidence_artifact: string;
   source_status: string;
   source_url: string;
-  application_date: string;
+  application_date: string | null;
+  applies_on_assessment_date?: boolean | null;
   review_status: string;
   application_date_note?: string | null;
 };

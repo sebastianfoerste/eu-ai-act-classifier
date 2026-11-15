@@ -48,7 +48,14 @@ def annex_i_route(profile: SystemProfile) -> bool:
 def section_b_product(profile: SystemProfile) -> bool:
     """An Art. 6(1) high-risk system for a product listed in Annex I, Section B."""
 
-    return annex_i_route(profile) and profile.annex_i_section is AnnexISection.SECTION_B
+    return annex_i_route(profile) and profile.effective_annex_i_section is AnnexISection.SECTION_B
+
+
+def annex_i_section_unknown(profile: SystemProfile) -> bool:
+    """An Art. 6(1) product whose Annex I legislation and section are both not given. The
+    report keeps the Section A duties and goes to review (docs/methodology.md)."""
+
+    return annex_i_route(profile) and profile.effective_annex_i_section is None
 
 
 def section_b_only(profile: SystemProfile) -> bool:
@@ -131,6 +138,17 @@ def before(value: str, cut_off: str) -> bool:
     """Whether ``value`` is before ``cut_off``; "before" excludes the cut-off date."""
 
     return date.fromisoformat(value) < date.fromisoformat(cut_off)
+
+
+def start_date_open(assessment_date: str | None, last: str) -> bool:
+    """Whether the day a duty starts, ``last`` or an earlier date depending on a date not
+    given, is still open on ``assessment_date``. It is until ``last``, also before the
+    earlier date, where the duty applies under neither reading but its start still turns
+    on the missing date (C9, refined 15 November 2026); always so without one."""
+
+    if assessment_date is None:
+        return True
+    return before(assessment_date, last)
 
 
 def legacy_dates(profile: SystemProfile, cut_off: str) -> list[tuple[str, str]]:

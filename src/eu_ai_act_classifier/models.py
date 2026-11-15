@@ -19,7 +19,14 @@ from datetime import date
 from enum import StrEnum
 from typing import Annotated, Any
 
-from pydantic import AfterValidator, BaseModel, Field, WithJsonSchema, model_validator
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    Field,
+    PrivateAttr,
+    WithJsonSchema,
+    model_validator,
+)
 
 
 class Role(StrEnum):
@@ -168,6 +175,43 @@ class AnnexISection(StrEnum):
     SECTION_B = "B"
 
 
+class AnnexILegislation(StrEnum):
+    """Union harmonisation legislation listed in Annex I AIA, as amended.
+
+    Values are locators: ``I.A.2`` is Annex I, Section A, point 2. Regulation
+    (EU) 2026/1744, Art. 1, point (41), deleted Section A, point 1 (Directive
+    2006/42/EC, machinery) and added Section B, point 21 (Regulation (EU)
+    2023/1230, machinery), so machinery is a Section B act and ``I.A.1`` does
+    not exist. The engine derives the section from the point; the reviewer only
+    names the legislation that covers the product.
+    """
+
+    TOYS = "I.A.2"
+    RECREATIONAL_CRAFT = "I.A.3"
+    LIFTS = "I.A.4"
+    EXPLOSIVE_ATMOSPHERES_EQUIPMENT = "I.A.5"
+    RADIO_EQUIPMENT = "I.A.6"
+    PRESSURE_EQUIPMENT = "I.A.7"
+    CABLEWAY_INSTALLATIONS = "I.A.8"
+    PERSONAL_PROTECTIVE_EQUIPMENT = "I.A.9"
+    GAS_APPLIANCES = "I.A.10"
+    MEDICAL_DEVICES = "I.A.11"
+    IN_VITRO_DIAGNOSTIC_DEVICES = "I.A.12"
+    CIVIL_AVIATION_SECURITY = "I.B.13"
+    TWO_OR_THREE_WHEEL_VEHICLES = "I.B.14"
+    AGRICULTURAL_AND_FORESTRY_VEHICLES = "I.B.15"
+    MARINE_EQUIPMENT = "I.B.16"
+    RAIL_SYSTEM_INTEROPERABILITY = "I.B.17"
+    MOTOR_VEHICLES_TYPE_APPROVAL = "I.B.18"
+    MOTOR_VEHICLES_GENERAL_SAFETY = "I.B.19"
+    UNMANNED_AIRCRAFT = "I.B.20"
+    MACHINERY = "I.B.21"
+
+    @property
+    def section(self) -> AnnexISection:
+        return AnnexISection(self.value.split(".")[1])
+
+
 class Derogation(BaseModel):
     """Art. 6(3) AIA derogation facts for an Annex III system.
 
@@ -215,6 +259,105 @@ IsoDate = Annotated[
 ]
 
 
+class Article5aFacts(BaseModel):
+    """Facts for Art. 5(1a) AIA, shared by Art. 5(1)(ba) and (bb).
+
+    Every fact is three-valued: ``true``, ``false`` or ``null`` (not established). A
+    ``null`` that could change the result keeps the result UNKNOWN and routes it to
+    review; it is never read as ``false``.
+    """
+
+    model_config = {"extra": "forbid"}
+
+    intended_purpose: bool | None = Field(
+        default=None,
+        description=(
+            "The generation or manipulation is the intended purpose of the AI system "
+            "(Art. 5(1a)(a)(i) AIA)."
+        ),
+    )
+    foreseeable_and_reproducible: bool | None = Field(
+        default=None,
+        description=(
+            "The system's design, training, architecture, capabilities or user-facing "
+            "functionalities make the generation or manipulation a reasonably foreseeable and "
+            "reproducible outcome, without requiring significant technical modification "
+            "(Art. 5(1a)(a)(ii) AIA)."
+        ),
+    )
+    adequate_safeguards: bool | None = Field(
+        default=None,
+        description=(
+            "The system has reasonable and adequate technical safety measures and other "
+            "safeguards to reliably prevent the generation or manipulation, taking into account "
+            "reasonably foreseeable misuse, and to correct observed or reported misuse "
+            "(Art. 5(1a)(a)(ii) AIA)."
+        ),
+    )
+    deployer_uses_for_that_purpose: bool | None = Field(
+        default=None,
+        description=(
+            "The deployer uses the system for the purpose of generating or manipulating the "
+            "material or performance (Art. 5(1a)(b) AIA)."
+        ),
+    )
+
+
+class IntimateImageryScreen(Article5aFacts):
+    """Facts for Art. 5(1), first subparagraph, point (ba) AIA, with Art. 5(1a) and (1b),
+    which apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA)."""
+
+    generates_material: bool | None = Field(
+        default=None,
+        description=(
+            "The system generates realistic images, videos, audio or similar material of an "
+            "identifiable natural person's intimate parts, or of an identifiable natural person "
+            "engaged in sexually explicit activities. True also where that is not its purpose "
+            "but a reasonably foreseeable and reproducible outcome, or a deployer's purpose in "
+            "using it (Recital 12 of Regulation (EU) 2026/1744)."
+        ),
+    )
+    manipulates_material_increasing_exposure: bool | None = Field(
+        default=None,
+        description=(
+            "The system manipulates such material in a way that increases the exposure of any "
+            "depicted intimate parts or alters the nature of any depicted sexually explicit "
+            "activities. Other manipulation is not manipulation (Art. 5(1b) AIA)."
+        ),
+    )
+    consent_ensured: bool | None = Field(
+        default=None,
+        description=(
+            "The generation or manipulation takes place only with the depicted person's "
+            "freely-given, specific, informed, unambiguous and explicit consent for it. "
+            "Interpretation: read at system level for placing on the market and putting "
+            "into service (docs/methodology.md)."
+        ),
+    )
+
+
+class ChildSexualAbuseMaterialScreen(Article5aFacts):
+    """Facts for Art. 5(1), first subparagraph, point (bb) AIA, with Art. 5(1a), which
+    apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA)."""
+
+    generates_or_manipulates: bool | None = Field(
+        default=None,
+        description=(
+            "The system generates or manipulates material or performance within the meaning "
+            "of Art. 2, points (c) and (e), of Directive 2011/93/EU. True also where that is "
+            "not its purpose but a reasonably foreseeable and reproducible outcome, or a "
+            "deployer's purpose in using it (Recital 12 of Regulation (EU) 2026/1744)."
+        ),
+    )
+    without_right_defence_applies: bool | None = Field(
+        default=None,
+        description=(
+            'A "without right" defence applies under national law. A fact the reviewer '
+            "establishes; the engine does not evaluate national law."
+        ),
+    )
+
+
 class SystemProfile(BaseModel):
     """Structured description of an AI system with characterised facts."""
 
@@ -241,6 +384,15 @@ class SystemProfile(BaseModel):
     intended_purpose_source: str = ""
     eu_nexus: bool | None = True
     excluded_use_flags: list[ExcludedUse] = Field(default_factory=list)
+    assessment_date: IsoDate | None = Field(
+        default=None,
+        description=(
+            "The date of the placing on the market, putting into service or use under "
+            "assessment. It decides whether a rule with a later application date applies "
+            "(Art. 5(1)(ba) and (bb) AIA from 2026-12-02) and sets applies_on_assessment_date "
+            "in the obligation graph. Null: those results stay open and go to review."
+        ),
+    )
     # The AI system's dates: Art. 111(2) and, for placing on the market, Art. 111(4) AIA.
     placing_on_market_date: IsoDate | None = Field(
         default=None,
@@ -313,18 +465,47 @@ class SystemProfile(BaseModel):
 
     # Prohibited-practice screens (Art. 5(1) AIA)
     prohibited_practices: list[ProhibitedPractice] = Field(default_factory=list)
+    # Element facts for Art. 5(1)(ba) and (bb) AIA, from 2 December 2026. Null: not screened;
+    # a declared 5.1.ba or 5.1.bb stands for the elements, and a system that generates
+    # synthetic content or deep fakes with neither goes to review.
+    intimate_imagery: IntimateImageryScreen | None = Field(
+        default=None,
+        description=(
+            "Element facts for Art. 5(1)(ba) AIA read with Art. 5(1a) and (1b). Null: not "
+            "screened; for a system that generates synthetic content or deep fakes and does not "
+            "declare 5.1.ba, that goes to review."
+        ),
+    )
+    child_sexual_abuse_material: ChildSexualAbuseMaterialScreen | None = Field(
+        default=None,
+        description=(
+            "Element facts for Art. 5(1)(bb) AIA read with Art. 5(1a). Null: not screened; for "
+            "a system that generates synthetic content or deep fakes and does not declare "
+            "5.1.bb, that goes to review."
+        ),
+    )
 
     # High-risk screens
     annex_i_safety_component: bool = False  # Art. 6(1)(a): product / safety component
     annex_i_third_party_assessment: bool = False  # Art. 6(1)(b): third-party conformity assessment
+    annex_i_legislation: AnnexILegislation | None = Field(
+        default=None,
+        description=(
+            "The Annex I AIA legislation covering the Art. 6(1) product, as a locator "
+            "(I.B.21 is Annex I, Section B, point 21, machinery under Regulation (EU) "
+            "2023/1230). It decides the Annex I section. Null: annex_i_section is used."
+        ),
+    )
     annex_i_section: AnnexISection | None = Field(
         default=None,
         # Whether Art. 2(2) also displaces Art. 5, Art. 50 and Annex III duties is open (PENDING
         # rows in docs/REGULATORY_CLAIM_LEDGER.md), so the schema does not state it as settled.
         description=(
-            "Annex I section of the Art. 6(1) AIA product. For Section B, Art. 2(2) AIA limits "
-            "it to the provisions it lists; the report keeps Art. 5, Art. 50 and any Annex III "
-            "duties for review. Null: treated as Section A."
+            "Annex I section of the Art. 6(1) AIA product, where annex_i_legislation is not "
+            "given; it must match annex_i_legislation where both are. For Section B, Art. 2(2) "
+            "AIA limits it to the provisions it lists; the report keeps Art. 5, Art. 50 and any "
+            "Annex III duties for review. Null with no legislation: the report keeps the "
+            "Section A duties and goes to review."
         ),
     )
     annex_iii_area: AnnexIII | None = None  # Art. 6(2) + Annex III
@@ -343,6 +524,24 @@ class SystemProfile(BaseModel):
     generates_synthetic_content: bool = False  # 50(2)
     deploys_emotion_or_biometric_categorisation: bool = False  # 50(3)
     generates_deepfakes: bool = False  # 50(4)
+
+    @model_validator(mode="after")
+    def _section_matches_legislation(self) -> SystemProfile:
+        legislation = self.annex_i_legislation
+        if legislation and self.annex_i_section and self.annex_i_section != legislation.section:
+            raise ValueError(
+                f"annex_i_section {self.annex_i_section.value} contradicts annex_i_legislation "
+                f"{legislation.value}, which is in Annex I, Section {legislation.section.value}"
+            )
+        return self
+
+    @property
+    def effective_annex_i_section(self) -> AnnexISection | None:
+        """The section ``annex_i_legislation`` decides, else ``annex_i_section``."""
+
+        if self.annex_i_legislation is not None:
+            return self.annex_i_legislation.section
+        return self.annex_i_section
 
     @property
     def is_provider(self) -> bool:
@@ -412,6 +611,7 @@ class ScopeAssessment(BaseModel):
     intended_purpose_source: str = ""
     eu_nexus: bool | None = True
     excluded_use_flags: list[ExcludedUse] = Field(default_factory=list)
+    assessment_date: str | None = None
     transitional_status: str = "No transitional limitation identified from the submitted facts."
     notes: list[str] = Field(default_factory=list)
 
@@ -425,11 +625,22 @@ class ObligationGraphItem(BaseModel):
     evidence_artifact: str
     source_status: SourceStatus
     source_url: str
-    application_date: str
+    # Null: the date turns on a fact not given, named in the note and the open questions.
+    application_date: str | None
     review_status: ReviewStatus
     # Qualifies the application date: a contestable reading of Art. 113 AIA or a
     # transitional rule in Art. 111 AIA.
     application_date_note: str | None = None
+    # Whether the obligation applies on the profile's assessment_date ("on or after"). Null
+    # where the assessment date is not given, where the unknown or contested application
+    # date could fall either side of it, or where Art. 111(2) AIA makes the duty attach only
+    # after a significant change in design and the date has come.
+    applies_on_assessment_date: bool | None = None
+    # Engine-internal, never reported: the deferred alternative of a contested application
+    # date (Chapter III, Section 5 and Chapter IX items), and whether the duty attaches only
+    # after a significant change under Art. 111(2) AIA. applies_on_assessment_date reads them.
+    _deferred_date: str | None = PrivateAttr(default=None)
+    _after_significant_change: bool = PrivateAttr(default=False)
 
 
 class AdvisoryNote(BaseModel):

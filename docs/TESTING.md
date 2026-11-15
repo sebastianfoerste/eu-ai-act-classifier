@@ -17,7 +17,14 @@ from the built wheel installed into a clean environment (`uv build`, then the CL
 
 ```bash
 uv run pytest tests/test_required_dispositions.py tests/test_obligations_and_artifacts.py tests/test_local_api.py
+uv run pytest tests/legal   # fixtures written from the snapshots in sources/
 ```
+
+The legal fixtures in `tests/legal/fixtures/` state each case's facts, the
+`SystemProfile` that expresses them and the result the cited source text
+requires (format in `tests/legal/fixtures/README.md`). A failure there means the
+engine and the source-derived expectation disagree: check the fixture against
+the snapshot before changing either.
 
 ## CLI Smoke
 

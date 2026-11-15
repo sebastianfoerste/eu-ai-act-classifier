@@ -35,8 +35,11 @@ from eu_ai_act_classifier.intake import (  # noqa: E402
 from eu_ai_act_classifier.labels import label_catalog, option_label  # noqa: E402
 from eu_ai_act_classifier.models import (  # noqa: E402
     AnnexIII,
+    AnnexILegislation,
     AnnexISection,
+    ChildSexualAbuseMaterialScreen,
     ExcludedUse,
+    IntimateImageryScreen,
     ProhibitedPractice,
     Role,
 )
@@ -110,6 +113,13 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             ("eu_nexus", ""),
             ("excluded_use_flags", "Scope exclusions or carve-outs that need visible review."),
             (
+                "assessment_date",
+                "YYYY-MM-DD, the date of the placing on the market, putting into service or use "
+                "under assessment. Decides whether Art. 5(1)(ba) and (bb) AIA apply (from "
+                "2026-12-02) and sets applies_on_assessment_date. Unset: those results go to "
+                "review.",
+            ),
+            (
                 "placing_on_market_date",
                 "YYYY-MM-DD, the AI system's date. Drives Art. 111(2) and (4) AIA; for a GPAI "
                 "model without its own date, also Art. 111(3). For Art. 111(2) the first unit "
@@ -169,7 +179,17 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
                 "prohibited_practices",
                 "Keyed to the letters of Art. 5(1) AIA. 5.1.ba and 5.1.bb apply from "
                 "2 December 2026.",
-            )
+            ),
+            (
+                "intimate_imagery",
+                "Art. 5(1)(ba) AIA element facts with Art. 5(1a) and (1b), each true, false or "
+                "null. Unset on a generator that does not declare 5.1.ba: review.",
+            ),
+            (
+                "child_sexual_abuse_material",
+                "Art. 5(1)(bb) AIA element facts with Art. 5(1a), each true, false or null. "
+                "Unset on a generator that does not declare 5.1.bb: review.",
+            ),
         ],
     ),
     (
@@ -178,11 +198,17 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
             ("annex_i_safety_component", "Art. 6(1)(a): product or safety component."),
             ("annex_i_third_party_assessment", "Art. 6(1)(b): third-party conformity assessment."),
             (
+                "annex_i_legislation",
+                "The Annex I legislation covering the product; it decides the section. "
+                "I.B.21 is machinery (Regulation (EU) 2023/1230), Section B since Regulation "
+                "(EU) 2026/1744.",
+            ),
+            (
                 "annex_i_section",
-                "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): "
-                "Art. 2(2) AIA limits it to Art. 6(1), 60a and 102-112, and 57-59 as far as "
-                "integrated in the sectoral legislation; the report keeps Art. 5, Art. 50 and any "
-                "Annex III duties for review. Unset: Section A.",
+                "Annex I section, where no legislation is given. B: Art. 2(2) AIA limits it to "
+                "Art. 6(1), 60a and 102-112, and 57-59 as far as integrated in the sectoral "
+                "legislation; the report keeps Art. 5, Art. 50 and any Annex III duties for "
+                "review. Unset with no legislation: Section A duties, for review.",
             ),
             (
                 "annex_iii_area",
@@ -215,19 +241,26 @@ _ENUMS: dict[str, type[StrEnum]] = {
     "roles": Role,
     "excluded_use_flags": ExcludedUse,
     "prohibited_practices": ProhibitedPractice,
+    "annex_i_legislation": AnnexILegislation,
     "annex_i_section": AnnexISection,
     "annex_iii_area": AnnexIII,
 }
 
 
 def _field_type(name: str, schema: dict) -> str:
-    if name == "derogation":
+    if name in ("derogation", "intimate_imagery", "child_sexual_abuse_material"):
         return "object"
     if name in _ENUMS:
         return "list" if schema.get("type") == "array" else "choice"
     types = [schema["type"]] if "type" in schema else [t["type"] for t in schema["anyOf"]]
     base = next(t for t in types if t != "null")
     return f"{base} or null" if "null" in types else base
+
+
+_SCREENS = {
+    "intimate_imagery": IntimateImageryScreen,
+    "child_sexual_abuse_material": ChildSexualAbuseMaterialScreen,
+}
 
 
 def build_samples() -> dict:
@@ -260,6 +293,8 @@ def build_fields() -> dict:
                 ]
             if name == "derogation":
                 field["keys"] = list(Derogation.model_fields)
+            if name in _SCREENS:
+                field["keys"] = list(_SCREENS[name].model_fields)
             fields.append(field)
         groups.append({"label": group, "fields": fields})
     return {"version": __version__, "groups": groups}
@@ -290,19 +325,21 @@ def build_intake_fixtures() -> dict:
     for question_id in ("roles", "annex_iii_area", "transparency", "training_flops"):
         partial.pop(question_id, None)
     cases["edge+partly-answered"] = {"answers": partial}
-    # The Annex I route asks annex_i_section, a single question with no "none" option.
+    # The Annex I route asks annex_i_legislation, a single question with no "none" option.
     route = profile_to_answers(
         {
             "name": "x",
             "annex_i_safety_component": True,
             "annex_i_third_party_assessment": True,
-            "annex_i_section": "B",
+            "annex_i_legislation": "I.B.21",
         }
     )
-    for answer in ("A", "B", "none", "unknown"):
-        cases[f"edge+annex-i-section:{answer}"] = {"answers": {**route, "annex_i_section": answer}}
-    cases["edge+annex-i-section:missing"] = {
-        "answers": {k: v for k, v in route.items() if k != "annex_i_section"}
+    for answer in ("I.A.11", "I.B.21", "none", "unknown"):
+        cases[f"edge+annex-i-legislation:{answer}"] = {
+            "answers": {**route, "annex_i_legislation": answer}
+        }
+    cases["edge+annex-i-legislation:missing"] = {
+        "answers": {k: v for k, v in route.items() if k != "annex_i_legislation"}
     }
     model = profile_to_answers(
         {
@@ -332,13 +369,13 @@ def build_intake_fixtures() -> dict:
         "annex-i-section-a": {
             "annex_i_safety_component": True,
             "annex_i_third_party_assessment": True,
-            "annex_i_section": "A",
+            "annex_i_legislation": "I.A.11",
             "placing_on_market_date": "2028-01-01",
         },
         "annex-i-section-b": {
             "annex_i_safety_component": True,
             "annex_i_third_party_assessment": True,
-            "annex_i_section": "B",
+            "annex_i_legislation": "I.B.21",
             "placing_on_market_date": "2028-01-01",
         },
     }.items():

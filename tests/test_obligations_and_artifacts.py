@@ -5,7 +5,7 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from eu_ai_act_classifier import AnnexIII, Role, SystemProfile, classify, render_report
+from eu_ai_act_classifier import AnnexIII, Disposition, Role, SystemProfile, classify, render_report
 from eu_ai_act_classifier.artifacts import render_artifact, write_artifacts
 from eu_ai_act_classifier.cli import main
 from eu_ai_act_classifier.dossier import build_review_dossier, render_review_dossier_markdown
@@ -285,6 +285,7 @@ def test_gpai_and_transparency_items_keep_their_chapter_dates() -> None:
             is_gpai_model=True,
             gpai_systemic_risk_designated=True,
             interacts_with_natural_persons=True,
+            gpai_model_placing_on_market_date="2026-01-15",
         )
     )
     gpai = [item for item in report.obligation_graph if item.actor is Role.GPAI_PROVIDER]
@@ -300,7 +301,7 @@ def test_gpai_and_transparency_items_keep_their_chapter_dates() -> None:
 @pytest.mark.parametrize(
     ("placed", "application_date", "noted"),
     [
-        pytest.param(None, "2026-08-02", True, id="unknown"),
+        pytest.param(None, None, True, id="unknown"),
         pytest.param("2026-03-01", "2026-12-02", True, id="before"),
         pytest.param("2026-08-01", "2026-12-02", True, id="day-before-cut-off"),
         pytest.param("2026-08-02", "2026-08-02", False, id="on-cut-off"),
@@ -308,7 +309,7 @@ def test_gpai_and_transparency_items_keep_their_chapter_dates() -> None:
     ],
 )
 def test_art_50_2_item_follows_the_art_111_4_transition(
-    placed: str | None, application_date: str, noted: bool
+    placed: str | None, application_date: str | None, noted: bool
 ) -> None:
     report = classify(
         SystemProfile(
@@ -320,7 +321,12 @@ def test_art_50_2_item_follows_the_art_111_4_transition(
     item = next(item for item in report.obligation_graph if item.article == "Art. 50(2) AIA")
 
     assert item.application_date == application_date
-    assert item.review_status is ReviewStatus.DETERMINED
+    # C9: an unknown placing date leaves the date open and goes to review.
+    assert item.review_status is (
+        ReviewStatus.REVIEW_REQUIRED if placed is None else ReviewStatus.DETERMINED
+    )
+    asked = any(q.startswith("Art. 111(4) AIA") for q in report.open_questions)
+    assert asked is (placed is None)
     if noted:
         assert item.application_date_note is not None
         assert "Art. 111(4)" in item.application_date_note
@@ -330,10 +336,10 @@ def test_art_50_2_item_follows_the_art_111_4_transition(
 
 
 # Art. 111(3) AIA: GPAI models placed on the market before 2 August 2025 comply by
-# 2 August 2027. Dated like Art. 50(2) under Art. 111(4): an unknown date keeps the
-# Chapter V date with the transition as a condition.
+# 2 August 2027. Dated like Art. 50(2) under Art. 111(4): an unknown date leaves the
+# date open, with both dates in the note, and goes to review (C9).
 ART_111_3_CASES = [
-    pytest.param(None, "2025-08-02", True, id="unknown"),
+    pytest.param(None, None, True, id="unknown"),
     pytest.param("2025-03-01", "2027-08-02", True, id="before"),
     pytest.param("2025-08-01", "2027-08-02", True, id="day-before-cut-off"),
     pytest.param("2025-08-02", "2025-08-02", False, id="on-cut-off"),
@@ -362,7 +368,7 @@ def _gpai_items(**dates: str | None) -> list[ObligationGraphItem]:
 
 @pytest.mark.parametrize(("placed", "application_date", "noted"), ART_111_3_CASES)
 def test_gpai_items_follow_the_art_111_3_transition(
-    placed: str | None, application_date: str, noted: bool
+    placed: str | None, application_date: str | None, noted: bool
 ) -> None:
     gpai = _gpai_items(gpai_model_placing_on_market_date=placed)
 
@@ -972,11 +978,15 @@ def test_section_a_or_unknown_keeps_the_chapter_iii_set(section: str | None) -> 
     assert "Art. 2(2) AIA" not in {item.article for item in report.obligation_graph}
     (finding,) = [f for f in report.findings if f.rule_id == "HIGHRISK.6.1"]
     if section is None:
-        # The reviewer is told that machinery moved to Section B.
+        # The reviewer is told that machinery moved to Section B, and the unknown section
+        # goes to review (C7).
         assert "Regulation (EU) 2023/1230" in finding.detail
-        assert "treated as Section A" in finding.detail
+        assert "keeps the Section A duties for review" in finding.detail
+        assert report.disposition is Disposition.REQUIRES_REVIEW
+        assert any("annex_i_legislation" in q for q in report.open_questions)
     else:
         assert "Annex I, Section A" in finding.detail
+        assert report.disposition is Disposition.DETERMINED
 
 
 def test_section_b_product_in_an_annex_iii_area_keeps_annex_iii_duties_flagged() -> None:
@@ -1695,3 +1705,66 @@ def test_asserted_change_flag_says_which_changes_count_on_each_reading() -> None
         "On the date used here, the asserted change counts only if it was made on or after "
         "2027-12-02"
     ) in item.application_date_note
+
+
+# applies_on_assessment_date must not settle what the item's own note leaves open: the
+# Chapter III, Section 5 and Chapter IX date is contested between the general date and the
+# point (c) date (PENDING ledger row: "The classifier does not pick a side"), and under
+# Art. 111(2) AIA an unchanged legacy system's duties attach only after a significant
+# change in design.
+def _applies(profile: SystemProfile) -> dict[str, bool | None]:
+    return {
+        item.obligation_id: item.applies_on_assessment_date
+        for item in classify(profile).obligation_graph
+    }
+
+
+@pytest.mark.parametrize(
+    ("assessed", "art_40", "art_16"),
+    [
+        pytest.param("2026-08-01", False, False, id="before-both-readings"),
+        pytest.param("2026-11-14", None, False, id="between-the-readings"),
+        pytest.param("2027-12-02", True, True, id="on-the-deferred-date"),
+    ],
+)
+def test_section_5_items_apply_on_the_assessment_date_only_where_both_readings_agree(
+    assessed: str, art_40: bool | None, art_16: bool
+) -> None:
+    applies = _applies(
+        SystemProfile(
+            name="x",
+            roles=[Role.PROVIDER],
+            annex_iii_area=AnnexIII.CREDITWORTHINESS,
+            assessment_date=assessed,
+        )
+    )
+    assert applies["high-risk.provider.40"] is art_40
+    assert applies["high-risk.provider.73"] is art_40
+    assert applies["high-risk.provider.16"] is art_16
+
+
+@pytest.mark.parametrize(
+    ("change", "assessed", "expected"),
+    [
+        pytest.param(False, "2027-12-01", False, id="unchanged-before-the-date"),
+        pytest.param(False, "2028-01-01", None, id="unchanged-after-the-date"),
+        pytest.param(None, "2028-01-01", None, id="change-unknown"),
+        pytest.param(True, "2028-01-01", True, id="changed"),
+    ],
+)
+def test_a_legacy_systems_items_do_not_claim_to_apply_without_a_significant_change(
+    change: bool | None, assessed: str, expected: bool | None
+) -> None:
+    applies = _applies(
+        SystemProfile(
+            name="x",
+            roles=[Role.PROVIDER],
+            annex_iii_area=AnnexIII.CREDITWORTHINESS,
+            placing_on_market_date="2025-01-01",
+            significant_change_after_application_date=change,
+            interacts_with_natural_persons=True,
+            assessment_date=assessed,
+        )
+    )
+    assert applies["high-risk.provider.16"] is expected
+    assert applies["transparency.1"] is (True if change is True else None)

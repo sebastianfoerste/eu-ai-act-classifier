@@ -17,6 +17,7 @@ from .artifacts import ARTIFACT_NAMES
 from .catalog import ANNEX_III, PROHIBITED
 from .models import (
     AnnexIII,
+    AnnexILegislation,
     AnnexISection,
     Derogation,
     Disposition,
@@ -44,6 +45,56 @@ ROLE_LABELS: dict[Role, str] = {
 ANNEX_I_SECTION_LABELS: dict[AnnexISection, str] = {
     AnnexISection.SECTION_A: "Section A",
     AnnexISection.SECTION_B: "Section B",
+}
+# Annex I AIA as amended by Regulation (EU) 2026/1744, Art. 1, point (41), read in
+# sources/oj/32024R1689.en.xhtml and sources/oj/32026R1744.en.xhtml.
+_ANNEX_I_ACTS: dict[AnnexILegislation, str] = {
+    AnnexILegislation.TOYS: "Directive 2009/48/EC (toys)",
+    AnnexILegislation.RECREATIONAL_CRAFT: (
+        "Directive 2013/53/EU (recreational craft and personal watercraft)"
+    ),
+    AnnexILegislation.LIFTS: "Directive 2014/33/EU (lifts)",
+    AnnexILegislation.EXPLOSIVE_ATMOSPHERES_EQUIPMENT: (
+        "Directive 2014/34/EU (equipment for potentially explosive atmospheres)"
+    ),
+    AnnexILegislation.RADIO_EQUIPMENT: "Directive 2014/53/EU (radio equipment)",
+    AnnexILegislation.PRESSURE_EQUIPMENT: "Directive 2014/68/EU (pressure equipment)",
+    AnnexILegislation.CABLEWAY_INSTALLATIONS: "Regulation (EU) 2016/424 (cableway installations)",
+    AnnexILegislation.PERSONAL_PROTECTIVE_EQUIPMENT: (
+        "Regulation (EU) 2016/425 (personal protective equipment)"
+    ),
+    AnnexILegislation.GAS_APPLIANCES: "Regulation (EU) 2016/426 (appliances burning gaseous fuels)",
+    AnnexILegislation.MEDICAL_DEVICES: "Regulation (EU) 2017/745 (medical devices)",
+    AnnexILegislation.IN_VITRO_DIAGNOSTIC_DEVICES: (
+        "Regulation (EU) 2017/746 (in vitro diagnostic medical devices)"
+    ),
+    AnnexILegislation.CIVIL_AVIATION_SECURITY: (
+        "Regulation (EC) No 300/2008 (civil aviation security)"
+    ),
+    AnnexILegislation.TWO_OR_THREE_WHEEL_VEHICLES: (
+        "Regulation (EU) No 168/2013 (two- or three-wheel vehicles and quadricycles)"
+    ),
+    AnnexILegislation.AGRICULTURAL_AND_FORESTRY_VEHICLES: (
+        "Regulation (EU) No 167/2013 (agricultural and forestry vehicles)"
+    ),
+    AnnexILegislation.MARINE_EQUIPMENT: "Directive 2014/90/EU (marine equipment)",
+    AnnexILegislation.RAIL_SYSTEM_INTEROPERABILITY: (
+        "Directive (EU) 2016/797 (interoperability of the rail system)"
+    ),
+    AnnexILegislation.MOTOR_VEHICLES_TYPE_APPROVAL: (
+        "Regulation (EU) 2018/858 (motor vehicles and their trailers)"
+    ),
+    AnnexILegislation.MOTOR_VEHICLES_GENERAL_SAFETY: (
+        "Regulation (EU) 2019/2144 (motor vehicle general safety)"
+    ),
+    AnnexILegislation.UNMANNED_AIRCRAFT: (
+        "Regulation (EU) 2018/1139 (civil aviation, as regards unmanned aircraft)"
+    ),
+    AnnexILegislation.MACHINERY: "Regulation (EU) 2023/1230 (machinery)",
+}
+ANNEX_I_LEGISLATION_LABELS: dict[AnnexILegislation, str] = {
+    act: f"Section {act.section.value}, point {act.value.rsplit('.', 1)[1]}: {title}"
+    for act, title in _ANNEX_I_ACTS.items()
 }
 
 EXCLUDED_USE_LABELS: dict[ExcludedUse, str] = {
@@ -139,6 +190,8 @@ def option_label(member: StrEnum) -> str:
         return EXCLUDED_USE_LABELS[member]
     if isinstance(member, AnnexISection):
         return ANNEX_I_SECTION_LABELS[member]
+    if isinstance(member, AnnexILegislation):
+        return ANNEX_I_LEGISLATION_LABELS[member]
     raise KeyError(f"no label for {member!r}")
 
 
@@ -160,6 +213,7 @@ def label_catalog() -> dict:
             "prohibited_practices": {p.value: prohibited_label(p) for p in ProhibitedPractice},
             "roles": _values(ROLE_LABELS),
             "excluded_use_flags": _values(EXCLUDED_USE_LABELS),
+            "annex_i_legislation": _values(ANNEX_I_LEGISLATION_LABELS),
             "annex_i_section": _values(ANNEX_I_SECTION_LABELS),
             "risk_tier": _values(RISK_TIER_LABELS),
             "disposition": _values(DISPOSITION_LABELS),

@@ -13,8 +13,13 @@ from __future__ import annotations
 
 from ..catalog import ANNEX_III, SECTION_B_PROVISIONS, section_b_annex_iii_flag
 from ..citations import ART_2_13, ART_6_1C, Citation
-from ..models import AnnexIII, AnnexISection, Finding, RiskTier, Severity
-from ..transitions import annex_i_route, derogation_asserted, section_b_product
+from ..models import AnnexIII, AnnexILegislation, AnnexISection, Finding, RiskTier, Severity
+from ..transitions import (
+    annex_i_route,
+    annex_i_section_unknown,
+    derogation_asserted,
+    section_b_product,
+)
 from .base import GateOutput
 
 # Art. 6(1c) AIA, inserted by Regulation (EU) 2026/1744, Art. 1, point (8). Its own finding,
@@ -41,11 +46,27 @@ _ANNEX_I_SECTION_NOTE: dict[AnnexISection | None, str] = {
         "duty attaches through this route."
     ),
     None: (
-        "Annex I section not given, so treated as Section A. For a Section B product, "
-        "including machinery under Regulation (EU) 2023/1230 since Regulation (EU) "
-        f"2026/1744, {SECTION_B_PROVISIONS} (Art. 2(2) AIA)."
+        "Neither the Annex I legislation nor the section is given, so the report keeps the "
+        "Section A duties for review. For a Section B product, including machinery under "
+        "Regulation (EU) 2023/1230 since Regulation (EU) 2026/1744, "
+        f"{SECTION_B_PROVISIONS} (Art. 2(2) AIA)."
     ),
 }
+# C8: Regulation (EU) 2026/1744 sets no later date for Art. 1, point (41), so the move applies
+# from its entry into force (Art. 4: the third day following publication on 24 July 2026).
+_MACHINERY_NOTE = (
+    "Machinery under Regulation (EU) 2023/1230 is Annex I, Section B, point 21 since "
+    "27 July 2026 (Regulation (EU) 2026/1744, Art. 1, point (41), and Art. 4); Section A, "
+    "point 1 (Directive 2006/42/EC) is deleted."
+)
+# C7: a product whose Annex I legislation is not given is not silently Section A.
+ANNEX_I_SECTION_QUESTION = (
+    "Art. 6(1) and Art. 2(2) AIA: name the Annex I legislation that covers the product "
+    "(annex_i_legislation). For a Section B product, including machinery under Regulation "
+    "(EU) 2023/1230 (Annex I, Section B, point 21, added by Regulation (EU) 2026/1744, "
+    f"Art. 1, point (41)), {SECTION_B_PROVISIONS}; the report keeps the Section A duties "
+    "until the legislation is named."
+)
 
 
 def _pinpoint_note(rule_id: str, citation: Citation, title: str, detail: str) -> Finding:
@@ -71,8 +92,10 @@ def evaluate(profile) -> GateOutput:
         detail = (
             "Safety component of, or itself, a product covered by Annex I harmonisation "
             "legislation requiring third-party conformity assessment. "
-            f"{_ANNEX_I_SECTION_NOTE[profile.annex_i_section]}"
+            f"{_ANNEX_I_SECTION_NOTE[profile.effective_annex_i_section]}"
         )
+        if profile.annex_i_legislation is AnnexILegislation.MACHINERY:
+            detail += f" {_MACHINERY_NOTE}"
         if section_b_product(profile) and profile.annex_iii_area is not None:
             detail += f" {section_b_annex_iii_flag(derogation_asserted(profile))}"
         out.findings.append(
@@ -90,24 +113,31 @@ def evaluate(profile) -> GateOutput:
                 "HIGHRISK.6.1c", ART_6_1C, "Annex I route: assessment for other risks", _ART_6_1C
             )
         )
-        if profile.annex_i_section is AnnexISection.SECTION_A:
+        if annex_i_section_unknown(profile):
+            out.open_questions.append(ANNEX_I_SECTION_QUESTION)
+        if profile.effective_annex_i_section is AnnexISection.SECTION_A:
             out.findings.append(
                 _pinpoint_note(
                     "HIGHRISK.2.13", ART_2_13, "Annex I, Section A: delegated acts", _ART_2_13
                 )
             )
 
-    elif profile.annex_i_section is not None:
+    elif profile.effective_annex_i_section is not None:
         # The section only sorts an Art. 6(1) product; say so rather than drop it silently.
+        given = (
+            f"annex_i_legislation is {profile.annex_i_legislation.value}"
+            if profile.annex_i_legislation is not None
+            else f"annex_i_section is {profile.effective_annex_i_section.value}"
+        )
         out.findings.append(
             Finding(
                 rule_id="HIGHRISK.6.1.section_unused",
                 citation="Art. 6(1) AIA",
                 title="Annex I section given without the Art. 6(1) route",
                 detail=(
-                    f"annex_i_section is {profile.annex_i_section.value}, but the profile does "
-                    "not assert both an Annex I product or safety component and a third-party "
-                    "conformity assessment, so the Art. 6(1) route and the section are not used."
+                    f"{given}, but the profile does not assert both an Annex I product or "
+                    "safety component and a third-party conformity assessment, so the "
+                    "Art. 6(1) route and the section are not used."
                 ),
                 severity=Severity.INFO,
             )

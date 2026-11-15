@@ -241,6 +241,18 @@ def flag_unless_verified(citation: Citation) -> str:
     return "" if citation.verified else f" {UNVERIFIED_FLAG}"
 
 
+# --- Harmonised standards (Art. 40 AIA) --------------------------------------
+# Read on 2026-11-14 in the Official Journal snapshot sources/oj/32026D2274.en.xhtml
+# (manifest entry oj-dec-impl-2026-2274), fetched again that day byte for byte. Art. 1
+# and the Annex publish the reference of one standard; Art. 2 puts the Decision into force
+# on the day of publication, 14.10.2026. The Decision names no AI Act article. It is not
+# in source_manifest(), whose binding_level_1 status covers the AI Act and its
+# amendments only (docs/source-status-model.md).
+STANDARDS_DECISION_2026_2274 = "Implementing Decision (EU) 2026/2274 (OJ L, 2026/2274, 14.10.2026)"
+EN_18286 = "EN 18286:2026"
+EN_18286_TITLE = "Quality management system for EU AI Act regulatory purposes"
+
+
 # --- Application timeline (Art. 113 AIA) -----------------------------------
 # Entry into force 1.8.2024; staggered application thereafter. Checked on
 # 2026-10-18 against Art. 113 and Art. 111 in the consolidated text of

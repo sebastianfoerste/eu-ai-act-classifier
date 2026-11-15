@@ -467,7 +467,7 @@ function sectionDefinitions() {
         search: [g.obligation_id, g.article, g.actor, g.trigger, g.requirement, g.evidence_artifact, g.review_status, g.application_date_note],
         render: () => itemCard(badge(REVIEW_TONE[g.review_status] ?? "tone-grey", REVIEW_LABEL[g.review_status] ?? g.review_status), g.requirement, g.article,
           [`Trigger: ${g.trigger}`, `Evidence: ${g.evidence_artifact}`, dateNote(g.application_date_note)],
-          `${ROLE_LABELS[g.actor] ?? g.actor} · applies from ${g.application_date} · ${SOURCE_LABEL[g.source_status] ?? g.source_status} · ${g.obligation_id}`),
+          `${ROLE_LABELS[g.actor] ?? g.actor} · applies from ${g.application_date ?? "a date not yet known (see the note)"} · ${SOURCE_LABEL[g.source_status] ?? g.source_status} · ${g.obligation_id}`),
       })),
     },
     {

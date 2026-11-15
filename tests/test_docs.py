@@ -137,6 +137,27 @@ def test_examples_readme_lists_every_json_example() -> None:
         assert f"`{path.name}`" in example_docs
 
 
+def test_examples_readme_repeats_no_paragraph() -> None:
+    paragraphs = [
+        " ".join(block.split())
+        for block in EXAMPLES_README.read_text(encoding="utf-8").split("\n\n")
+        if block.strip()
+    ]
+    repeated = {p for p in paragraphs if paragraphs.count(p) > 1}
+    assert not repeated, repeated
+
+
+def test_methodology_states_the_open_dates_and_the_unset_annex_i_section() -> None:
+    # The port leaves an unknown Art. 111(3) or (4) date open and sends an Art. 6(1)
+    # product with neither the Annex I act nor the section to review (C7, C9); the
+    # methodology must not describe the earlier behaviour as current.
+    text = " ".join(Path("docs/methodology.md").read_text(encoding="utf-8").split())
+    assert "with the transition as its note." not in text
+    assert "with the transition as their note." not in text
+    assert "An unset section is treated as Section A" not in text
+    assert "keeps the Section A duties (the full Chapter III set) and goes to review" in text
+
+
 def test_readme_has_no_relative_links() -> None:
     readme = README.read_text(encoding="utf-8")
     relative = [target for target in _link_targets(readme) if not URL_SCHEME.match(target)]
