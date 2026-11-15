@@ -305,7 +305,9 @@ class IntimateImageryScreen(Article5aFacts):
         description=(
             "The system generates realistic images, videos, audio or similar material of an "
             "identifiable natural person's intimate parts, or of an identifiable natural person "
-            "engaged in sexually explicit activities."
+            "engaged in sexually explicit activities. True also where that is not its purpose "
+            "but a reasonably foreseeable and reproducible outcome, or a deployer's purpose in "
+            "using it (Recital 12 of Regulation (EU) 2026/1744)."
         ),
     )
     manipulates_material_increasing_exposure: bool | None = Field(
@@ -335,7 +337,9 @@ class ChildSexualAbuseMaterialScreen(Article5aFacts):
         default=None,
         description=(
             "The system generates or manipulates material or performance within the meaning "
-            "of Art. 2, points (c) and (e), of Directive 2011/93/EU."
+            "of Art. 2, points (c) and (e), of Directive 2011/93/EU. True also where that is "
+            "not its purpose but a reasonably foreseeable and reproducible outcome, or a "
+            "deployer's purpose in using it (Recital 12 of Regulation (EU) 2026/1744)."
         ),
     )
     without_right_defence_applies: bool | None = Field(

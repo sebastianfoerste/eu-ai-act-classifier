@@ -274,6 +274,91 @@
       }
     },
     {
+      "id": "ba-foreseeable-outcome-but-generation-denied",
+      "matrix": "conflict",
+      "facts": "A general image generator's capabilities make realistic intimate images of identifiable persons a reasonably foreseeable and reproducible outcome without significant technical modification, and it has no reasonable and adequate safeguards; no consent mechanism. The profile nevertheless records that the system does not generate such material, because generating it is not its purpose. Art. 5(1a)(a)(ii) speaks of 'that generation or manipulation' being a reasonably foreseeable and reproducible outcome, and Recital 12 counts such systems among those that generate the material, so the two facts conflict and the result is not settled.",
+      "profile": {
+        "intimate_imagery": {
+          "generates_material": false,
+          "manipulates_material_increasing_exposure": false,
+          "consent_ensured": false,
+          "intended_purpose": false,
+          "foreseeable_and_reproducible": true,
+          "adequate_safeguards": false
+        }
+      },
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {
+          "PROHIBITED.5.1.ba.unknown": "medium"
+        },
+        "findings_absent": [
+          "PROHIBITED.5.1.ba",
+          "PROHIBITED.5.1.ba.not_met"
+        ],
+        "open_question_contains": [
+          "intimate_imagery.foreseeable_and_reproducible",
+          "intimate_imagery.generates_material"
+        ]
+      }
+    },
+    {
+      "id": "ba-foreseeable-outcome-with-safeguards-generation-denied",
+      "matrix": "irrelevant_input",
+      "facts": "As before, but the generator has reasonable and adequate safeguards. Art. 5(1a)(a)(ii) then fails whatever the system generates, so the conflicting content fact cannot change the result.",
+      "profile": {
+        "intimate_imagery": {
+          "generates_material": false,
+          "manipulates_material_increasing_exposure": false,
+          "consent_ensured": false,
+          "intended_purpose": false,
+          "foreseeable_and_reproducible": true,
+          "adequate_safeguards": true
+        }
+      },
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "determined",
+        "findings": {
+          "PROHIBITED.5.1.ba.not_met": "info"
+        },
+        "no_open_questions": true
+      }
+    },
+    {
+      "id": "ba-deployer-purpose-but-generation-denied",
+      "matrix": "conflict",
+      "interpretation": "C2-use-limb",
+      "facts": "A deployer uses a general image generator for the purpose of generating realistic intimate images of an identifiable person without consent. The profile records that the system does not generate such material, because it is not designed to. Recital 12 brings the use of lawful AI systems not intended to generate such material, used for that purpose, within Art. 5(1a)(b), so the two facts conflict and the result is not settled.",
+      "profile": {
+        "roles": [
+          "deployer"
+        ],
+        "intimate_imagery": {
+          "generates_material": false,
+          "manipulates_material_increasing_exposure": false,
+          "consent_ensured": false,
+          "deployer_uses_for_that_purpose": true
+        }
+      },
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {
+          "PROHIBITED.5.1.ba.unknown": "medium"
+        },
+        "findings_absent": [
+          "PROHIBITED.5.1.ba",
+          "PROHIBITED.5.1.ba.not_met"
+        ],
+        "open_question_contains": [
+          "intimate_imagery.deployer_uses_for_that_purpose",
+          "intimate_imagery.generates_material"
+        ]
+      }
+    },
+    {
       "id": "ba-deployer-uses-for-purpose-applies",
       "matrix": "applies",
       "facts": "A deployer uses a general image system for the purpose of generating realistic intimate images of an identifiable person who has not consented, and the system generates them.",

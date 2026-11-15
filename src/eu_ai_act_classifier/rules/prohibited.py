@@ -105,12 +105,17 @@ def _modality(f: Facts) -> Tri:
     )
 
 
-def _ba_content(f: Facts) -> Tri:
-    """Art. 5(1)(ba) without consent. Art. 5(1b): manipulation counts only where it
-    increases exposure or alters the depicted activity, which the fact states."""
+def _ba_generation(f: Facts) -> Tri:
+    """Art. 5(1b): manipulation counts only where it increases exposure or alters the
+    depicted activity, which the fact states."""
 
-    generates = t_or(f["generates_material"], f["manipulates_material_increasing_exposure"])
-    return t_and(generates, t_not(f["consent_ensured"]))
+    return t_or(f["generates_material"], f["manipulates_material_increasing_exposure"])
+
+
+def _ba_content(f: Facts) -> Tri:
+    """Art. 5(1)(ba) without consent."""
+
+    return t_and(_ba_generation(f), t_not(f["consent_ensured"]))
 
 
 def _bb_content(f: Facts) -> Tri:
@@ -137,6 +142,10 @@ class _Point:
     field: str
     placing: Callable[[Facts], Tri]
     use: Callable[[Facts], Tri]
+    # The content facts on whether the system generates or manipulates the material, and
+    # the one that states generation.
+    generation: Callable[[Facts], Tri]
+    generation_fact: str
 
 
 _POINTS = (
@@ -146,6 +155,8 @@ _POINTS = (
         "intimate_imagery",
         _placing(_ba_content),
         _use(_ba_content),
+        _ba_generation,
+        "generates_material",
     ),
     _Point(
         "bb",
@@ -153,8 +164,26 @@ _POINTS = (
         "child_sexual_abuse_material",
         _placing(_bb_content),
         _use(_bb_content),
+        lambda f: f["generates_or_manipulates"],
+        "generates_or_manipulates",
     ),
 )
+
+# Facts that presuppose "that generation or manipulation": a reasonably foreseeable and
+# reproducible outcome (Art. 5(1a)(a)(ii)) and the deployer's purpose (Art. 5(1a)(b)).
+# Recital 12 of Regulation (EU) 2026/1744 counts a system for which the generation is such
+# an outcome among the systems that generate the material, and brings within the use limb
+# a deployer who uses for that purpose a lawful system not intended to generate it. A
+# profile that affirms one of them and denies the generation contradicts itself; where the
+# denial decides the result, the point is UNKNOWN, never "not met". Art. 5(1a)(a)(i) is
+# left out: an intended purpose of manipulation that Art. 5(1b) does not count is not a
+# contradiction (fixture ba-manipulation-without-increased-exposure-not-met).
+_PRESUPPOSE_GENERATION = ("foreseeable_and_reproducible", "deployer_uses_for_that_purpose")
+_AFFIRMS = {
+    "foreseeable_and_reproducible": "a reasonably foreseeable and reproducible outcome "
+    "(Art. 5(1a)(a)(ii))",
+    "deployer_uses_for_that_purpose": "the deployer's purpose (Art. 5(1a)(b))",
+}
 
 
 def _decide(facts: Facts, point: _Point, roles: set[Role]) -> Tri:
@@ -192,6 +221,22 @@ def _material_unknowns(facts: Facts, point: _Point, roles: set[Role]) -> list[st
     return material
 
 
+def _generation_conflicts(facts: Facts, point: _Point, roles: set[Role]) -> list[str]:
+    """The facts that affirm the generation or manipulation the content facts deny, where
+    the denial decides the result (_PRESUPPOSE_GENERATION). Empty where no role is covered:
+    the role is then the open point."""
+
+    if not roles & (_PLACING_ROLES | _USE_ROLES) or point.generation(facts) is not False:
+        return []
+    affirming = [name for name in _PRESUPPOSE_GENERATION if facts[name] is True]
+    if not affirming:
+        return []
+    generated = {**facts, point.generation_fact: True}
+    if _decide(generated, point, roles) == _decide(facts, point, roles):
+        return []
+    return affirming
+
+
 def _decisive(name: str, facts: Facts, point: _Point, roles: set[Role]) -> bool:
     """Whether another value of ``name`` (true, false or null) changes the result."""
 
@@ -219,7 +264,10 @@ def _interpretation_notes(facts: Facts, point: _Point, roles: set[Role]) -> list
             "manipulates the material only with the depicted person's consent (Recital 12)."
         )
     placing_decides = bool(roles & _PLACING_ROLES) and point.placing(facts) is True
-    if roles & _USE_ROLES and point.use(facts) is not False and not placing_decides:
+    # The content element C2 keeps also decides where the deployer's purpose is affirmed and
+    # the content denied (_generation_conflicts).
+    use_open = point.use(facts) is not False or facts["deployer_uses_for_that_purpose"] is True
+    if roles & _USE_ROLES and use_open and not placing_decides:
         notes.append(
             "Interpretation (C2): for use, Art. 5(1a)(b) keeps the content element and the "
             "conditions of Art. 5(1a)(a) do not apply."
@@ -246,6 +294,7 @@ def _later_points(profile: SystemProfile, out: GateOutput) -> bool:
             unscreened.append(point)
             continue
         facts: Facts | None = screen.model_dump() if screen is not None else None
+        conflicts: list[str] = []
         if declared:
             # The declaration stands for every element of the point; the roles still decide
             # whether the profile performs a prohibited act (C3).
@@ -258,11 +307,14 @@ def _later_points(profile: SystemProfile, out: GateOutput) -> bool:
                 )
         else:
             result = _decide(facts or {}, point, roles)
+            conflicts = _generation_conflicts(facts or {}, point, roles)
+            if conflicts:
+                result = None
         first = len(out.findings)
         if result is False:
             _not_met(point, out)
         elif result is None:
-            _unknown(point, facts, roles, out)
+            _unknown(point, facts, roles, out, conflicts)
         else:
             met = True
             _met(point, profile, out)
@@ -307,10 +359,33 @@ def _not_met(point: _Point, out: GateOutput) -> None:
     )
 
 
-def _unknown(point: _Point, facts: Facts | None, roles: set[Role], out: GateOutput) -> None:
+def _unknown(
+    point: _Point,
+    facts: Facts | None,
+    roles: set[Role],
+    out: GateOutput,
+    conflicts: list[str] | None = None,
+) -> None:
     ref, verified, label = _citation(point)
     unknowns = _material_unknowns(facts, point, roles) if facts is not None else []
-    if unknowns:
+    if conflicts:
+        affirming = "; ".join(
+            f"{point.field}.{name} says it is {_AFFIRMS[name]}" for name in conflicts
+        )
+        question = (
+            f"Art. 5(1)({point.letter}) AIA (from {_LATER_FROM}): the facts conflict on whether "
+            f"the system generates or manipulates the material. {affirming}; but "
+            f"{point.field}.{point.generation_fact} and the other content facts say the system "
+            "does not generate or manipulate it. Recital 12 of Regulation (EU) 2026/1744 counts "
+            "a system for which that generation is a reasonably foreseeable and reproducible "
+            "outcome among the systems that generate the material, and covers a deployer who "
+            "uses for that purpose a system not intended for it. Correct whichever fact is "
+            "wrong; the point stays open until they agree."
+        )
+        if unknowns:
+            needed = ", ".join(f"{point.field}.{name}" for name in unknowns)
+            question += f" The result also turns on facts not established: {needed}."
+    elif unknowns:
         needed = ", ".join(f"{point.field}.{name}" for name in unknowns)
         question = (
             f"Art. 5(1)({point.letter}) AIA (from {_LATER_FROM}): the result turns on facts not "
@@ -331,8 +406,13 @@ def _unknown(point: _Point, facts: Facts | None, roles: set[Role], out: GateOutp
             citation_verified=verified,
             title=f"Cannot be determined: {label}",
             detail=(
-                f"Art. 5(1)({point.letter}) AIA may apply. A material fact is UNKNOWN, so the "
-                "engine neither applies nor excludes the prohibition."
+                f"Art. 5(1)({point.letter}) AIA may apply. "
+                + (
+                    "The facts conflict on a material point"
+                    if conflicts
+                    else "A material fact is UNKNOWN"
+                )
+                + ", so the engine neither applies nor excludes the prohibition."
             ),
             severity=Severity.MEDIUM,
         )

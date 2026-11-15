@@ -194,6 +194,34 @@
       }
     },
     {
+      "id": "bb-foreseeable-outcome-but-generation-denied",
+      "matrix": "conflict",
+      "facts": "A general image generator makes material within Art. 2, points (c) and (e), of Directive 2011/93/EU a reasonably foreseeable and reproducible outcome and has no reasonable and adequate safeguards; no 'without right' defence applies. The profile nevertheless records that the system does not generate or manipulate such material. Under Art. 5(1a)(a)(ii) and Recital 12 the two facts conflict, so the result is not settled.",
+      "profile": {
+        "child_sexual_abuse_material": {
+          "generates_or_manipulates": false,
+          "without_right_defence_applies": false,
+          "intended_purpose": false,
+          "foreseeable_and_reproducible": true,
+          "adequate_safeguards": false
+        }
+      },
+      "expect": {
+        "risk_tier": "limited_risk",
+        "disposition": "requires_review",
+        "findings": {
+          "PROHIBITED.5.1.bb.unknown": "medium"
+        },
+        "findings_absent": [
+          "PROHIBITED.5.1.bb",
+          "PROHIBITED.5.1.bb.not_met"
+        ],
+        "open_question_contains": [
+          "child_sexual_abuse_material.generates_or_manipulates"
+        ]
+      }
+    },
+    {
       "id": "bb-deployer-uses-for-purpose-applies",
       "matrix": "applies",
       "facts": "A deployer uses an image system for the purpose of generating such material, and the system generates it; no 'without right' defence applies.",

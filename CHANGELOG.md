@@ -65,6 +65,17 @@ were written from the snapshots in `sources/` before the rules.
   Section A duties and goes to review instead of being treated as Section A.
 - Art. 50 for a Section B product raises an open question, as Art. 5 does.
 
+#### Fixed (review of the port)
+
+- A screened point (ba) or (bb) whose facts affirm the generation as a
+  reasonably foreseeable and reproducible outcome or as the deployer's purpose
+  but deny that the system generates the material was reported "not met",
+  determined. A general generator whose reviewer answered `generates_material`
+  false because generating such material is not its purpose passed the screen.
+  Where that denial decides the result, the point is now UNKNOWN with an open
+  question (Recital 12 of Regulation (EU) 2026/1744), and the field
+  descriptions say that a foreseeable outcome or a deployer's purpose counts.
+
 ### Audit fixes on commits merged after verification
 
 #### Fixed

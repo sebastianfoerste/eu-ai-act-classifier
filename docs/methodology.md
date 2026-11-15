@@ -400,6 +400,21 @@ A profile reaches points (ba) and (bb) in one of two ways.
   that could change the result keeps the point UNKNOWN, with an open question
   that names the facts; a null that cannot change it does not hold it open.
 
+A profile can contradict itself on the content element. Where
+`foreseeable_and_reproducible` (Art. 5(1a)(a)(ii)) or
+`deployer_uses_for_that_purpose` (Art. 5(1a)(b)) is true, the generation or
+manipulation of the material is stated as a foreseeable outcome or as the
+deployer's purpose; if the content facts (`generates_material` and, for point
+(ba), `manipulates_material_increasing_exposure`, or `generates_or_manipulates`)
+nevertheless deny it, and that denial decides the result, the point is UNKNOWN
+with an open question naming the conflicting facts, never "not met". Recital 12
+of Regulation (EU) 2026/1744 counts a system for which that generation is a
+reasonably foreseeable and reproducible outcome among the systems that generate
+the material, and covers a deployer who uses for that purpose a system not
+intended for it. An intended purpose (Art. 5(1a)(a)(i)) is not checked this
+way, because a manipulation that Art. 5(1b) does not count may be a system's
+purpose without being "that manipulation".
+
 A point that is not met gives an `info` finding (`PROHIBITED.5.1.ba.not_met`),
 an UNKNOWN point a `medium` finding (`.unknown`) and an open question. A met
 point is dated by `assessment_date`, the date of the placing on the market,
