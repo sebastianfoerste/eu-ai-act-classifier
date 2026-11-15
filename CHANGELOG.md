@@ -170,7 +170,9 @@ were written from the snapshots in `sources/` before the rules.
 
 - An obligation-graph item's `application_date` is null where it turns on an
   unknown placing date (Art. 111(3) and (4)); an open question asks for the
-  date unless the assessment date settles it.
+  date unless the assessment date falls on or after both possible dates. An
+  assessment date before both still asks, because the day the duty starts
+  turns on the missing date.
 - An Art. 6(1) product with neither the Annex I act nor the section keeps the
   Section A duties and goes to review instead of being treated as Section A.
 - Art. 50 for a Section B product raises an open question, as Art. 5 does.

@@ -13,7 +13,7 @@
   "interpretations": [
     {
       "id": "C9-dates",
-      "text": "'Comply by' a date is read as: the obligations apply to the legacy model or system from that date inclusive. 'Before' a cut-off excludes the cut-off date. Art. 111(4) is triggered by placing on the market only. An unknown placing date leaves the application date open (null) and goes to review, unless the assessment date falls on or after both possible dates, or before both."
+      "text": "'Comply by' a date is read as: the obligations apply to the legacy model or system from that date inclusive. 'Before' a cut-off excludes the cut-off date. Art. 111(4) is triggered by placing on the market only. An unknown placing date leaves the application date open (null) and goes to review, unless the assessment date falls on or after both possible dates."
     }
   ],
   "base_profile": {
@@ -142,6 +142,27 @@
             "article": "Art. 53(1)(a) AIA",
             "application_date": null,
             "applies_on_assessment_date": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "gpai-placement-unknown-assessed-2025-08-01",
+      "matrix": "unknown_input",
+      "facts": "The placing date is not given and the assessment date is 1 August 2025: on that day the obligations apply under neither date, but whether they bind the model from 2 August 2025 or from 2 August 2027 turns on the model's placing date.",
+      "profile": {
+        "assessment_date": "2025-08-01"
+      },
+      "expect": {
+        "disposition": "requires_review",
+        "open_question_contains": [
+          "gpai_model_placing_on_market_date"
+        ],
+        "graph": [
+          {
+            "article": "Art. 53(1)(a) AIA",
+            "application_date": null,
+            "applies_on_assessment_date": false
           }
         ]
       }

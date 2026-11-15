@@ -359,7 +359,9 @@ Art. 50(2) item carries 2026-12-02 and the Art. 111(4) note. If it is on or
 after that date, the item carries 2026-08-02 and no note. If the profile gives
 no date, the item's `application_date` is null, its note names both dates, it
 is `review_required` and an open question asks for the date, unless the
-assessment date falls on or after both dates or before both (C9).
+assessment date falls on or after both dates (C9). An assessment date before
+both still raises the question: the duty does not apply that day, but the day
+it starts turns on the missing date.
 
 Art. 111(2) applies "this Regulation", not only Chapter III, to a legacy
 high-risk system only if its design changes significantly, so on its wording
@@ -382,8 +384,7 @@ the Art. 111(3) note. If it is on or after that date, the items carry
 2025-08-02 and no note. If the profile gives neither the model's date nor the
 system's `placing_on_market_date`, their `application_date` is null, the note
 names both dates, they are `review_required` and an open question asks for the
-model's date, unless the assessment date falls on or after both dates or
-before both (C9).
+model's date, unless the assessment date falls on or after both dates (C9).
 
 Art. 111(3) dates the model, Art. 111(4) the system, so the profile has two
 fields. `gpai_model_placing_on_market_date` is the model's date and drives
@@ -580,8 +581,9 @@ on C1, C2, C3 or C10, the finding or open question says "Interpretation (Cn)".
   is triggered by placing on the market only, and the general-purpose AI
   model keeps its own date (`gpai_model_placing_on_market_date`). An unknown
   placing date leaves the item's `application_date` null and raises an open
-  question, unless the assessment date falls on or after both possible dates
-  or before both.
+  question, unless the assessment date falls on or after both possible dates.
+  Refined on 15 November 2026: an assessment date before both dates raises the
+  question too, because the day the duty starts still turns on the missing date.
 - C10, the "without right" defence in point (bb): a fact the reviewer
   establishes under national law (Directive 2011/93/EU, Art. 5(1); Recital 13
   of Regulation (EU) 2026/1744). The engine does not evaluate national law.

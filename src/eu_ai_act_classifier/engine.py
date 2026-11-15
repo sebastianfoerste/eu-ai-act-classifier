@@ -53,7 +53,6 @@ from .transitions import (
     ANNEX_X_CARVE_OUT,
     before,
     chapter_iii_date,
-    date_open,
     derogation_asserted,
     derogation_note,
     describe_dates,
@@ -66,6 +65,7 @@ from .transitions import (
     public_authority_sentence,
     section_b_only,
     section_b_product,
+    start_date_open,
 )
 
 _FRIA_AREAS = {AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH}
@@ -336,13 +336,13 @@ def _art_111_4_questions(
     profile: SystemProfile, transparency_obligations: list[Obligation]
 ) -> list[str]:
     """C9: Art. 111(4) AIA dates Art. 50(2) by the system's placing on the market, so an
-    unknown placing date is asked where the assessment date does not settle it."""
+    unknown placing date is asked until the assessment date falls on or after both dates."""
 
     if profile.placing_on_market_date is not None or not any(
         ob.article == ART_50_2 for ob in transparency_obligations
     ):
         return []
-    if not date_open(profile.assessment_date, GENERAL_APPLICATION_DATE, ART_111_4_DEADLINE):
+    if not start_date_open(profile.assessment_date, ART_111_4_DEADLINE):
         return []
     return [
         "Art. 111(4) AIA: placing_on_market_date is not given. A system generating synthetic "
@@ -358,7 +358,7 @@ def _gpai_date_questions(profile: SystemProfile) -> list[str]:
 
     model_date, fallback = gpai_model_date(profile)
     if model_date is None:
-        if not date_open(profile.assessment_date, POINT_B_DATE, ART_111_3_DEADLINE):
+        if not start_date_open(profile.assessment_date, ART_111_3_DEADLINE):
             return []
         # C9: the Art. 111(3) date turns on the model's placing date, so it is asked.
         return [

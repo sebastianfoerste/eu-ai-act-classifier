@@ -50,9 +50,10 @@ def test_gpai_commission_designation_is_systemic() -> None:
     assert report.disposition is Disposition.DETERMINED
 
 
-def test_undated_model_goes_to_review_unless_the_assessment_date_settles_it() -> None:
+def test_undated_model_goes_to_review_until_both_dates_have_passed() -> None:
     # C9: with no placing date, the Chapter V items apply from 2025-08-02 or, for a model
-    # placed before that date, from 2027-08-02 (Art. 111(3) AIA).
+    # placed before that date, from 2027-08-02 (Art. 111(3) AIA). Before both dates the
+    # duties apply under neither reading, but the day they start is still open.
     def report(assessment_date: str | None):
         return classify(
             SystemProfile(
@@ -64,9 +65,9 @@ def test_undated_model_goes_to_review_unless_the_assessment_date_settles_it() ->
             )
         )
 
-    for day in (None, "2025-08-02", "2027-08-01"):
+    for day in (None, "2025-08-01", "2025-08-02", "2027-08-01"):
         result = report(day)
         assert result.disposition is Disposition.REQUIRES_REVIEW, day
         assert any(q.startswith("Art. 111(3) AIA: neither") for q in result.open_questions)
-    for day in ("2025-08-01", "2027-08-02"):
+    for day in ("2027-08-02", "2027-08-03"):
         assert report(day).disposition is Disposition.DETERMINED, day

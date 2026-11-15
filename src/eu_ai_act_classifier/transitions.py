@@ -140,13 +140,15 @@ def before(value: str, cut_off: str) -> bool:
     return date.fromisoformat(value) < date.fromisoformat(cut_off)
 
 
-def date_open(assessment_date: str | None, first: str, last: str) -> bool:
-    """Whether a duty that applies from ``first`` or ``last``, depending on a date not
-    given, may or may not apply on ``assessment_date``: always so without one."""
+def start_date_open(assessment_date: str | None, last: str) -> bool:
+    """Whether the day a duty starts, ``last`` or an earlier date depending on a date not
+    given, is still open on ``assessment_date``. It is until ``last``, also before the
+    earlier date, where the duty applies under neither reading but its start still turns
+    on the missing date (C9, refined 15 November 2026); always so without one."""
 
     if assessment_date is None:
         return True
-    return not before(assessment_date, first) and before(assessment_date, last)
+    return before(assessment_date, last)
 
 
 def legacy_dates(profile: SystemProfile, cut_off: str) -> list[tuple[str, str]]:
