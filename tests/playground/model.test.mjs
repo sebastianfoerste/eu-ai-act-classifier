@@ -77,4 +77,6 @@ test("labels every risk tier the engine can return", () => {
   const tierBlock = models.slice(models.indexOf("class RiskTier"), models.indexOf("TIER_ORDER: dict"));
   const values = [...tierBlock.matchAll(/= "([a-z_]+)"/g)].map(m => m[1]);
   assert.deepEqual(values.sort(), Object.keys(TIERS).sort());
+  // A limited-risk report also lists the Art. 4 duty (report.py says the same).
+  assert.equal(TIERS.limited_risk.basis, "Transparency duties, Art. 50 AIA");
 });

@@ -446,8 +446,11 @@ QUESTIONS: list[dict[str, Any]] = [
         "putting into service or use under assessment; blank leaves date-dependent results "
         "open, for review. Leave a market date blank if the system was not yet placed on the "
         "market or put into service, or if the date is not known; for a system generating "
-        "synthetic content a blank placing date goes to review (Art. 111(4) AIA). A "
-        "general-purpose AI model's own date is asked next.",
+        "synthetic content a blank placing date goes to review (Art. 111(4) AIA). For "
+        "Art. 111(2) AIA the date the first unit of that type and model was placed on the "
+        "Union market or put into service decides (recital 39 of Regulation (EU) 2026/1744). "
+        "A general-purpose AI model's own date is asked next.",
+        "article": "Art. 111(2) AIA",
         "fields": [
             {"field": "assessment_date", "label": "Assessed on", "type": "date"},
             {"field": "placing_on_market_date", "label": "Placed on the market", "type": "date"},

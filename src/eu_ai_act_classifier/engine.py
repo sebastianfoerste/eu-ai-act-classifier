@@ -6,6 +6,9 @@ from .advisory import build_advisory_notes
 from .catalog import (
     ANNEX_III,
     ART_50_2,
+    PROHIBITED_LITERACY_FLAG,
+    ai_literacy_applies,
+    ai_literacy_obligations,
     eu_database_registration_applies,
     gpai_obligations,
     high_risk_authorized_representative_obligations,
@@ -18,6 +21,7 @@ from .catalog import (
     public_authority_registration_applies,
     public_authority_users,
     section_b_annex_iii_flag,
+    section_b_kept_flag,
     section_b_obligations,
 )
 from .citations import (
@@ -66,6 +70,9 @@ from .transitions import (
 
 _FRIA_AREAS = {AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH}
 _FRIA_EXCLUDED_AREAS = {AnnexIII.CRITICAL_INFRASTRUCTURE}
+# Art. 2(2) AIA lists Art. 4 for no Section B product; the report keeps the duty, flagged,
+# as it keeps Art. 5 and Art. 50. The graph item carries the same flag.
+SECTION_B_LITERACY_FLAG = section_b_kept_flag("Art. 4", "the Art. 4 duty")
 
 
 def classify(profile: SystemProfile, *, include_advisory: bool = False) -> ClassificationReport:
@@ -167,6 +174,17 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
 
     if final_tier is not RiskTier.PROHIBITED:
         open_questions += _art_111_4_questions(profile, transparency_obligations)
+
+    if ai_literacy_applies(final_tier):
+        # Art. 4 AIA (Chapter I) binds every provider and deployer of an AI system within
+        # the Regulation's scope, whatever the tier, so it heads the list. A Section B
+        # product and a prohibited system keep it, flagged.
+        flags = (
+            SECTION_B_LITERACY_FLAG if section_b_product(profile) else "",
+            PROHIBITED_LITERACY_FLAG if final_tier is RiskTier.PROHIBITED else "",
+        )
+        literacy_flag = " ".join(flag for flag in flags if flag)
+        obligations = ai_literacy_obligations(profile.roles, literacy_flag) + obligations
 
     disposition = Disposition.REQUIRES_REVIEW if open_questions else Disposition.DETERMINED
 

@@ -52,7 +52,8 @@ asserted and documentation needed.
 under Art. 50(4) AIA; whether Art. 5(1)(ba) or (bb) AIA reaches the generator
 from 2 December 2026 is asked.
 
-`spam_filter.json`: Minimal risk, determined. No regulated use case.
+`spam_filter.json`: Minimal risk, determined. No regulated use case; only the
+Art. 4 AIA AI literacy duty of every provider and deployer attaches.
 
 `foundation_model_systemic.json`: Minimal system-level risk, determined. GPAI
 with systemic risk under Arts. 51, 53 and 55 AIA.
