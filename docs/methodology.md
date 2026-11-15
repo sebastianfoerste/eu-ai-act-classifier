@@ -57,9 +57,12 @@ system stays high-risk under Art. 6(1), but the report lists no Chapter III
 obligation: one Art. 2(2) obligation and graph item replace them. Regulation
 (EU) 2026/1744, Art. 1, point (41) deleted Section A, point 1 and added
 Regulation (EU) 2023/1230 on machinery as Section B, point 21, so AI-enabled
-machinery is a Section B product. An unset section is treated as Section A
-(the full Chapter III set), and the Art. 6(1) finding says that a Section B
-product, machinery included, gets only the Art. 2(2) provisions.
+machinery is a Section B product. `annex_i_legislation` names the act and
+decides the section (section "Annex I acts" below). A profile that gives
+neither the act nor the section keeps the Section A duties (the full Chapter
+III set) and goes to review with an open question (C7), and the Art. 6(1)
+finding says that a Section B product, machinery included, gets only the
+Art. 2(2) provisions.
 
 Two statements on the Art. 6(1) route are `info` findings of their own:
 `HIGHRISK.6.1c`, Art. 6(1c) (a third-party conformity assessment required
@@ -315,7 +318,9 @@ market before that date take the necessary steps to comply with Art. 50(2) by
 If the profile's placing-on-market date is before 2 August 2026, the
 Art. 50(2) item carries 2026-12-02 and the Art. 111(4) note. If it is on or
 after that date, the item carries 2026-08-02 and no note. If the profile gives
-no date, the item carries 2026-08-02 with the transition as its note.
+no date, the item's `application_date` is null, its note names both dates, it
+is `review_required` and an open question asks for the date, unless the
+assessment date falls on or after both dates or before both (C9).
 
 Art. 111(2) applies "this Regulation", not only Chapter III, to a legacy
 high-risk system only if its design changes significantly, so on its wording
@@ -335,8 +340,11 @@ laid down in the Regulation by 2 August 2027. The model is dated by its
 own date, `gpai_model_placing_on_market_date`. If it is before
 2 August 2025, every GPAI item (Arts. 53, 55 and 56) carries 2027-08-02 and
 the Art. 111(3) note. If it is on or after that date, the items carry
-2025-08-02 and no note. If the profile gives no date, they carry 2025-08-02
-with the transition as their note.
+2025-08-02 and no note. If the profile gives neither the model's date nor the
+system's `placing_on_market_date`, their `application_date` is null, the note
+names both dates, they are `review_required` and an open question asks for the
+model's date, unless the assessment date falls on or after both dates or
+before both (C9).
 
 Art. 111(3) dates the model, Art. 111(4) the system, so the profile has two
 fields. `gpai_model_placing_on_market_date` is the model's date and drives

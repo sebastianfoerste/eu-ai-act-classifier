@@ -71,10 +71,6 @@ The determined GPAI examples give the model's own placing date
 (`gpai_model_placing_on_market_date`). Without one the Art. 111(3) AIA date of
 the Chapter V duties is open and the report goes to review.
 
-The determined GPAI examples give the model's own placing date
-(`gpai_model_placing_on_market_date`). Without one the Art. 111(3) AIA date of
-the Chapter V duties is open and the report goes to review.
-
 ## Guidance Corpus
 
 `guidance/commission_guidance_examples.json` stores Commission-derived guidance
