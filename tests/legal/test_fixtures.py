@@ -133,6 +133,13 @@ def test_fixture(case_id: str, data: dict[str, Any], case: dict[str, Any]) -> No
         assert transparency == expect["transparency_articles"]
 
     graph = {item.article: item for item in report.obligation_graph}
+    # A key that names an article must name one item, or the check reads only the last.
+    counts = [item.article for item in report.obligation_graph]
+    checked = [g["article"] for g in expect.get("graph", [])]
+    checked += [*expect.get("graph_requirement_contains", {})]
+    checked += [*expect.get("graph_requirement_excludes", {})]
+    for article in checked:
+        assert counts.count(article) <= 1, f"{article} names more than one graph item"
     for expected in expect.get("graph", []):
         item = graph.get(expected["article"])
         assert item is not None, f"no graph item for {expected['article']}"
