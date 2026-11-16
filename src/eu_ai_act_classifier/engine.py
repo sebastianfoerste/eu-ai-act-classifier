@@ -54,6 +54,7 @@ from .transitions import (
     PUBLIC_AUTHORITY_DUTY,
     before,
     chapter_iii_date,
+    cut_off_contested,
     derogation_asserted,
     derogation_note,
     describe_dates,
@@ -279,7 +280,8 @@ _STATUS_CONFIRM = (
 def _art_111_2_questions(profile: SystemProfile) -> list[str]:
     """Art. 111(2) AIA: whether the Regulation applies to a legacy high-risk system at all
     turns on a significant change in design, so an unknown answer is an open question.
-    So is an unknown deployer status where the 2030 date may turn on it."""
+    So is an unknown deployer status where the 2030 date may turn on it; that question
+    is asked after an asserted change too, where the status changes only the wording."""
 
     cut_off = chapter_iii_date(profile)
     if cut_off is None:
@@ -312,14 +314,31 @@ def _art_111_2_questions(profile: SystemProfile) -> list[str]:
         placed_before = (
             "" if legacy else f" and was placed on the market or put into service before {cut_off}"
         )
+        # Which date the cut-off is, is contested: say so where the answer rests on it.
+        literal = f"Literal reading, confirm with counsel: this uses {cut_off} as the "
+        general = f"Art. 111(2) AIA cut-off. If the general date of {GENERAL_APPLICATION_DATE} "
+        if not legacy:
+            flag = (
+                " Give the date the system was placed on the market or put into service "
+                f"(placing_on_market_date, putting_into_service_date). {literal}{general}"
+                "is meant, only a system placed on the market or put into service before "
+                "that date is a legacy system."
+            )
+        elif cut_off_contested(profile, cut_off):
+            flag = (
+                f" {literal}{general}is meant, the system is not a legacy system and the "
+                "2 August 2030 date does not apply to it."
+            )
+        else:
+            flag = ""
         questions.append(
             f"Art. 111(2) AIA: {when}; the profile records no intended use by public "
             "authorities, and the deployer's status is not given. If the system is intended "
             f"to be used by public authorities{placed_before}, its providers and deployers "
             f"{PUBLIC_AUTHORITY_DUTY}; a "
-            "public-authority deployer is evidence of that use. Confirm whether the system is "
+            "public-authority deployer may indicate that use. Confirm whether the system is "
             "intended to be used by public authorities (public_authority_use). "
-            f"{_STATUS_CONFIRM}"
+            f"{_STATUS_CONFIRM}{flag}"
         )
     if not legacy and (derogation := derogation_note(profile, cut_off)):
         questions.append(
@@ -386,7 +405,7 @@ def _art_49_3_questions(profile: SystemProfile, registration: bool) -> list[str]
             f"Art. 49(5) AIA: {use}the deployer's status is not given. Art. 49(3) AIA "
             "excepts Annex III point 2, which is registered at national level; a deployer "
             "that is, or acts on behalf of, a public authority or Union institution, body, "
-            f"office or agency confirms what the national procedure asks of it. {confirm}"
+            f"office or agency should check what the national procedure asks of it. {confirm}"
         ]
     return []
 

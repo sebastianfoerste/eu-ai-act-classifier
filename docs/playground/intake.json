@@ -1334,7 +1334,7 @@
       "kind": "boolean",
       "field": "deployer_public_authority",
       "title": "Is the deployer a public authority or a Union institution, body, office or agency, or does it act on behalf of one?",
-      "article": "Art. 49(3) AIA",
+      "article": "Art. 49(3) and Art. 111(2) AIA",
       "show_if": {
         "all": [
           {

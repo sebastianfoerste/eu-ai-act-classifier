@@ -139,8 +139,9 @@ CHANGE_OPEN = {
 # profile's own deployer role on a high-risk route (transitions.public_authority_status_used).
 # The status changes the result on every Annex III point; on an Annex I route without one
 # only for a system dated before the Annex I date, or undated, that is no Section B product
-# and has no public_authority_use (the Art. 111(2) 2030 date). Exactly there an unknown
-# status raises an open question, so the intake asks it there and nowhere else.
+# and has no public_authority_use (the Art. 111(2) 2030 date). Exactly there, for a
+# profile in scope, an unknown status raises an open question, so the intake asks it
+# there and nowhere else.
 _UNDATED = {
     "all": [
         {"field": "placing_on_market_date", "is": None},
@@ -520,7 +521,7 @@ QUESTIONS: list[dict[str, Any]] = [
         "field": "deployer_public_authority",
         "title": "Is the deployer a public authority or a Union institution, body, office or "
         "agency, or does it act on behalf of one?",
-        "article": "Art. 49(3) AIA",
+        "article": "Art. 49(3) and Art. 111(2) AIA",
         "show_if": PUBLIC_AUTHORITY_STATUS_OPEN,
         # Where it is asked, null raises an open question wherever the status changes the
         # result: Art. 49(3) or (5) on an Annex III point, Art. 111(2) for a legacy or

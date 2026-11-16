@@ -197,13 +197,16 @@ def cut_off_contested(profile: SystemProfile, cut_off: str) -> bool:
 
 
 def public_authority_status_used(profile: SystemProfile) -> bool:
-    """Whether ``deployer_public_authority`` can change the result. It describes the
+    """Whether ``deployer_public_authority`` can change the result of a profile in scope
+    (outside scope nothing reads it). It describes the
     profile's own deployer role, so only where the profile holds that role for a high-risk
     system with no prohibited practice screened: on every Annex III point (Art. 49(3) AIA,
     or Art. 49(5) for point 2), and on an Annex I route without one only for a system
     placed on the market or put into service before its Chapter III date, or undated,
     that is no Section B product and has no public_authority_use (the 2030 date of
-    Art. 111(2), second sentence, AIA). Exactly there an unknown status is asked."""
+    Art. 111(2), second sentence, AIA). Exactly there, in scope, an unknown status is
+    asked. As in ``change_used``, any declared prohibited practice counts, also a point
+    (ba) or (bb) that does not yet apply on the assessment date."""
 
     if not profile.is_deployer or profile.prohibited_practices:
         return False

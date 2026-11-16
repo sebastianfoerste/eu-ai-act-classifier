@@ -296,10 +296,12 @@ role, as `deployer_public_authority` describes that role; it then counts for
 the provider items too where the profile also holds the provider role, never
 for importer, distributor or authorised-representative items. For a profile
 without the deployer role the intended use is `public_authority_use` alone.
-On an Annex I route without an Annex III area, a legacy or undated system
-that is no Section B product and has neither `public_authority_use` nor the
-deployer's status raises an open question for both, as the 2030 date may
-turn on them.
+On an Annex I route without an Annex III area, a profile that holds the
+deployer role raises an open question for both where a legacy or undated
+system that is no Section B product has neither `public_authority_use` nor
+the deployer's status, as the 2030 date may turn on them. The question for
+an undated system also asks for the date, and it names the contested
+cut-off where the answer rests on it.
 
 Art. 113 gives Chapter III no single date. Point (b) applies Section 4 from
 2 August 2025, but Section 4 ("Notifying authorities and notified bodies")

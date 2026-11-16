@@ -95,6 +95,16 @@ def test_an_unknown_status_on_an_annex_i_route_asks_for_the_2030_date(
         assert question.startswith("Art. 111(2) AIA:")
         assert "2 August 2030" in question
         assert "(public_authority_use)" in question
+        undated = "no placing-on-market or putting-into-service date is given to compare"
+        placed_before = "and was placed on the market or put into service before 2028-08-02"
+        assert (undated in question) is (not dates)
+        assert (placed_before in question) is (not dates)
+        assert question.startswith("Art. 111(2) AIA: the system was") is bool(dates)
+        assert ("(placing_on_market_date, putting_into_service_date)" in question) is (not dates)
+        # Legacy on either reading of the cut-off, so no flag; undated, the flag.
+        assert ("Literal reading, confirm with counsel" in question) is (
+            not dates or dates == {"putting_into_service_date": "2028-08-01"}
+        )
 
 
 @pytest.mark.parametrize(
@@ -128,7 +138,8 @@ def test_no_status_question_without_the_deployer_role() -> None:
 
 
 def test_the_intake_records_i_dont_know_as_null() -> None:
-    # tests/test_intake.py checks that null reaches review wherever the question is asked.
+    # tests/test_intake.py checks over its grids that null reaches review wherever the
+    # question is asked, and that it is asked exactly where the engine's test holds.
     (question,) = [q for q in QUESTIONS if q["id"] == "deployer_public_authority"]
 
     assert question["unknown"] == {"value": None}
