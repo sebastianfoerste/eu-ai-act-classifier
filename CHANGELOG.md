@@ -15,11 +15,13 @@ Changes since 0.2.2.
   #63) quotes Art. 5(1a) and Art. 5(1b) as the findings for those points
   do. It paraphrased Art. 5(1a)(a), leaving out "without requiring
   significant technical modification" and what the safeguards must do,
-  and did not name Art. 5(1b). `docs/methodology.md` and point (7) of
-  `docs/omnibus-coverage.md` state Art. 5(1a)(a)(ii) with all its
-  elements. The playground wheel is rebuilt.
-- `docs/REGULATORY_CLAIM_LEDGER.md`: the rows first read before 11
-  November 2026 were checked again on 16 November 2026 in the Official
+  and did not name Art. 5(1b). The question asked where only one point
+  is unscreened (#66) quotes Art. 5(1a), and for point (ba) Art. 5(1b),
+  too. `docs/methodology.md` states Art. 5(1a)(a)(ii) with all its
+  elements, and point (7) of `docs/omnibus-coverage.md` names the element
+  the question left out. The playground wheel is rebuilt.
+- `docs/REGULATORY_CLAIM_LEDGER.md`: the rows whose access date was before
+  11 November 2026 were checked again on 16 November 2026 in the Official
   Journal texts pinned in `sources/` and against the code. Each re-checked
   row names the snapshot files and the amending point, and its access date
   moves to 16 November 2026; the row on the GPAI provider guidelines page
@@ -28,7 +30,9 @@ Changes since 0.2.2.
   Art. 2(13) note and the partial encoding describe `annex_i_legislation`
   (#66). The VERIFIED row on the consolidated text no longer calls it the
   current one, since the pinned files cannot show a later consolidation.
-  The corrigendum row adds that the English Art. 6(1b) was not corrected.
+  The corrigendum row quotes the English Art. 6(1b) from the pinned text;
+  that no English correction exists rests on the HTTP 404 of 14 November
+  2026.
   The Stand date moves to 16 November 2026.
 - `docs/research/adaptation-plan.md` unparks H7: the Art. 5(1)(ba)/(bb),
   Art. 5(1a)/(1b) and Art. 4 items are built, and their wording was
@@ -42,7 +46,7 @@ Changes since 0.2.2.
   already checked every column of the VERIFIED rows. It also checks that
   `ART_5_1A`, `ART_5_1B` and the two point texts in `LATER_PROHIBITIONS`
   are the Official Journal's words, straight quotation marks aside.
-- `tests/test_prohibited.py` checks that the screen question quotes both
+- `tests/test_prohibited.py` checks that both screen questions quote the
   paragraphs.
 
 #### Upgrade notes

@@ -95,9 +95,11 @@ def evaluate(profile: SystemProfile) -> GateOutput:
 
 
 def _modality(f: Facts) -> Tri:
-    """Art. 5(1a)(a): (i) the intended purpose, or (ii) a reasonably foreseeable and
-    reproducible outcome, without requiring significant technical modification, of a system
-    without reasonable and adequate technical safety measures and other safeguards."""
+    """Art. 5(1a)(a), in full in catalog.ART_5_1A: (i) the intended purpose, or (ii) a
+    reasonably foreseeable and reproducible outcome, without requiring significant technical
+    modification, of a system without reasonable and adequate technical safety measures and
+    other safeguards to reliably prevent it, taking into account reasonably foreseeable
+    misuse, and to correct observed or reported misuse."""
 
     return t_or(
         f["intended_purpose"],
@@ -332,7 +334,9 @@ def _later_points(profile: SystemProfile, out: GateOutput) -> bool:
                 f"Art. 5(1)({point.letter}) AIA (from {_LATER_FROM}): the profile records "
                 f"synthetic content or deep fakes but neither declares {point.practice.value} "
                 f"nor records the element facts in {point.field}. Confirm whether the system "
-                "generates or manipulates the material the point describes."
+                "generates or manipulates the material the point describes within the limits "
+                f"of {_limits_named(point)}. If so, declare {point.practice.value} or record the "
+                f"element facts in {point.field}. {_limits(point)}"
             )
     return met
 
@@ -420,14 +424,27 @@ def _unknown(
     out.open_questions.append(question)
 
 
+def _limits(point: _Point) -> str:
+    """Art. 5(1a) AIA and, for point (ba) only, Art. 5(1b), in the Act's words."""
+
+    limits = f'Art. 5(1a): "{ART_5_1A}".'
+    if point.practice is ProhibitedPractice.NON_CONSENSUAL_INTIMATE_IMAGERY:
+        limits += f' Art. 5(1b): "{ART_5_1B}".'
+    return limits
+
+
+def _limits_named(point: _Point) -> str:
+    if point.practice is ProhibitedPractice.NON_CONSENSUAL_INTIMATE_IMAGERY:
+        return "Art. 5(1a) and (1b)"
+    return "Art. 5(1a)"
+
+
 def _statute(point: _Point) -> str:
     """Art. 5(1)(ba) and (bb) AIA apply from 2 December 2026, not 2 February 2025. The
     sentence does not depend on the run date, so the output stays deterministic."""
 
     ref, _verified, _label = _citation(point)
-    conditions = f'Art. 5(1a): "{ART_5_1A}".'
-    if point.practice is ProhibitedPractice.NON_CONSENSUAL_INTIMATE_IMAGERY:
-        conditions += f' Art. 5(1b): "{ART_5_1B}".'
+    conditions = _limits(point)
     return (
         f"Prohibited practice under Art. 5 AIA from {_LATER_FROM} ({POINT_A_EXCEPTION_DATE}; "
         "Art. 113, third paragraph, point (a) AIA, as replaced by Regulation (EU) "
