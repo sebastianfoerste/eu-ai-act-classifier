@@ -7,6 +7,49 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Claim ledger checked again in the pinned texts
+
+#### Changed
+
+- The Art. 5(1)(ba) and (bb) screen question (`LATER_SCREEN_QUESTION`,
+  #63) quotes Art. 5(1a) and Art. 5(1b) as the findings for those points
+  do. It paraphrased Art. 5(1a)(a), leaving out "without requiring
+  significant technical modification" and what the safeguards must do,
+  and did not name Art. 5(1b). `docs/methodology.md` and point (7) of
+  `docs/omnibus-coverage.md` state Art. 5(1a)(a)(ii) with all its
+  elements. The playground wheel is rebuilt.
+- `docs/REGULATORY_CLAIM_LEDGER.md`: the rows first read before 11
+  November 2026 were checked again on 16 November 2026 in the Official
+  Journal texts pinned in `sources/` and against the code. Each re-checked
+  row names the snapshot files and the amending point, and its access date
+  moves to 16 November 2026; the row on the GPAI provider guidelines page
+  (a Commission page) and the row on fact-specific classification (no
+  provision) keep theirs. The rows on Art. 2(2), the machinery move, the
+  Art. 2(13) note and the partial encoding describe `annex_i_legislation`
+  (#66). The VERIFIED row on the consolidated text no longer calls it the
+  current one, since the pinned files cannot show a later consolidation.
+  The corrigendum row adds that the English Art. 6(1b) was not corrected.
+  The Stand date moves to 16 November 2026.
+- `docs/research/adaptation-plan.md` unparks H7: the Art. 5(1)(ba)/(bb),
+  Art. 5(1a)/(1b) and Art. 4 items are built, and their wording was
+  checked in the pinned texts.
+- The entry for #63 below was missing and is added.
+
+#### Added
+
+- `tests/test_sources.py` checks the quotations in the provision column
+  of every CORRECTED and PENDING ledger row that cites a snapshot, as it
+  already checked every column of the VERIFIED rows. It also checks that
+  `ART_5_1A`, `ART_5_1B` and the two point texts in `LATER_PROHIBITIONS`
+  are the Official Journal's words, straight quotation marks aside.
+- `tests/test_prohibited.py` checks that the screen question quotes both
+  paragraphs.
+
+#### Upgrade notes
+
+- A consumer that matches the text of the screen question must match the
+  new wording. When the question is asked is unchanged.
+
 ### Omnibus coverage map
 
 #### Added
@@ -20,8 +63,7 @@ Changes since 0.2.2.
   code after #14, #59, #55 and #66. `tests/test_omnibus_coverage.py` checks
   that every point has one row, that every file, symbol and id the map's
   last column names exists and that every ledger row it names is in the
-  claim ledger. The
-  claim ledger's "in part" row points to the map.
+  claim ledger. The claim ledger's "in part" row points to the map.
 - The corrigendum to Regulation (EU) 2026/1744 (CELEX 32026R1744R(01), OJ L
   2026/90810, 29.9.2026) was read on 14 November 2026. It exists in German
   only and changes one phrase of the German text of Art. 6(1b); the English
@@ -170,6 +212,33 @@ Changes since 0.2.2.
   when a source could not be compared, for example when EUR-Lex answers with
   a bot challenge. The byte digests of the Publications Office responses have
   not been recomputed against a fresh download (see `sources/README.md`).
+
+### Art. 5(1)(ba) and (bb) screen question for generators (#63)
+
+#### Changed
+
+- A profile that records synthetic content or deep fakes
+  (`generates_synthetic_content` or `generates_deepfakes`) and declares
+  neither `5.1.ba` nor `5.1.bb` raises an open question and goes to review
+  instead of being determined; `--strict` exits 1. From 2 December 2026
+  (Art. 113, third paragraph, point (a) AIA, as replaced by Art. 1, point
+  (40)(a) of Regulation (EU) 2026/1744) Art. 5(1a)(a)(ii) can reach a
+  general generator whose purpose is not generating such material, so the
+  report asks rather than clears. The risk tier does not change.
+- `examples/deepfake_generator.json` ends in `REQUIRES_REVIEW`
+  (CASE_STUDY.md); `tests/test_prohibited.py` covers the question and its
+  absence where a point is declared or nothing is generated.
+- Since #66 the question also offers the element facts in
+  `intimate_imagery` and `child_sexual_abuse_material`, is not asked of a
+  system already classified as prohibited, and asks about one point where
+  the profile screens only the other. Its wording is corrected in the
+  entry on the claim ledger re-check above.
+
+#### Upgrade notes
+
+- A consumer that expected `deepfake_generator.json`, or any generator
+  profile without the two codes, to be `DETERMINED` gets `REQUIRES_REVIEW`
+  until the profile declares a point or records the element facts.
 
 ### Art. 5(1)(ba) and (bb) element by element, assessment date, Annex I acts
 

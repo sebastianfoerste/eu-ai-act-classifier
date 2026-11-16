@@ -41,12 +41,11 @@ _SECTION_B_FLAG = section_b_kept_flag("Art. 5", "the prohibition")
 LATER_SCREEN_QUESTION = (
     f"Art. 5(1)(ba) and (bb) AIA (from {_LATER_FROM}): the profile records synthetic "
     "content or deep fakes but declares neither point. Confirm whether the system generates "
-    "or manipulates the material these points describe. For placing on the market or "
-    "putting into service, Art. 5(1a)(a) asks whether that is its intended purpose or a "
-    "reasonably foreseeable and reproducible outcome without reasonable and adequate "
-    "safeguards; for use, Art. 5(1a)(b) asks whether the deployer uses it for that purpose. "
-    "If so, declare 5.1.ba or 5.1.bb, or record the element facts in intimate_imagery and "
-    "child_sexual_abuse_material."
+    "or manipulates the material these points describe within the limits of Art. 5(1a) "
+    "and, for point (ba), Art. 5(1b). If so, declare 5.1.ba or 5.1.bb, or record the element "
+    "facts in intimate_imagery and child_sexual_abuse_material. "
+    # The limits in the Act's words, as the findings quote them: a paraphrase loses elements.
+    f'Art. 5(1a): "{ART_5_1A}". Art. 5(1b): "{ART_5_1B}".'
 )
 
 Facts = dict[str, Tri]
@@ -96,8 +95,9 @@ def evaluate(profile: SystemProfile) -> GateOutput:
 
 
 def _modality(f: Facts) -> Tri:
-    """Art. 5(1a)(a): intended purpose, or a foreseeable and reproducible outcome without
-    reasonable and adequate safeguards."""
+    """Art. 5(1a)(a): (i) the intended purpose, or (ii) a reasonably foreseeable and
+    reproducible outcome, without requiring significant technical modification, of a system
+    without reasonable and adequate technical safety measures and other safeguards."""
 
     return t_or(
         f["intended_purpose"],

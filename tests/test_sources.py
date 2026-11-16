@@ -23,6 +23,7 @@ from pathlib import Path
 
 import pytest
 
+from eu_ai_act_classifier.catalog import ART_5_1A, ART_5_1B, LATER_PROHIBITIONS
 from eu_ai_act_classifier.citations import REGULATION
 from eu_ai_act_classifier.verify_sources import BotChallengeError
 
@@ -354,6 +355,38 @@ def test_quote_check_reads_typographic_quotes_and_rejects_short_parts() -> None:
     ]
     with pytest.raises(AssertionError):
         _quote_parts("the first part is long ... short")
+
+
+def test_corrected_and_pending_rows_quote_the_snapshots_they_cite_in_the_provision() -> None:
+    # A CORRECTED or PENDING row that cites a snapshot quotes it verbatim where it states
+    # the provision; other columns may quote the earlier row or the code. VERIFIED rows are
+    # held to every column (test above).
+    texts: dict[str, str] = {}
+    checked = 0
+    for line in LEDGER.read_text(encoding="utf-8").splitlines():
+        if not re.match(r"\| [A-Z]+ \| ", line) or line.startswith("| VERIFIED |"):
+            continue
+        files = sorted(set(_SNAPSHOT_PATH.findall(line)))
+        for quote in _QUOTE.findall(line.split(" | ")[4]) if files else []:
+            for name in files:
+                if name not in texts:
+                    texts[name] = compare_sources.body_text((SOURCES / name).read_bytes())
+            assert any(_in_order(_quote_parts(quote), texts[f]) for f in files), (
+                line[:90],
+                quote,
+            )
+            checked += 1
+    assert checked > 20, checked
+
+
+def test_the_art_5_texts_the_findings_quote_are_the_official_journal_words() -> None:
+    # The code writes the Official Journal's typographic apostrophes and quotation marks as
+    # straight single quotes ('without right'); every other character must match.
+    straight = str.maketrans({"\u2019": "'", "\u2018": "'", "\u201c": "'", "\u201d": "'"})
+    for name in ("oj/32026R1744.en.xhtml", "consolidated/02024R1689-20260727.en.xhtml"):
+        text = compare_sources.body_text((SOURCES / name).read_bytes()).translate(straight)
+        for quoted in (ART_5_1A, ART_5_1B, *LATER_PROHIBITIONS.values()):
+            assert quoted in text, (name, quoted[:60])
 
 
 def _access_date(row: str) -> datetime.date:

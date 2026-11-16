@@ -135,3 +135,15 @@ def test_screen_is_not_asked_when_a_later_point_is_declared_or_nothing_is_genera
     )
     assert LATER_SCREEN_QUESTION not in classify(declared).open_questions
     assert LATER_SCREEN_QUESTION not in classify(SystemProfile(name="x")).open_questions
+
+
+def test_screen_question_quotes_the_limits_rather_than_paraphrasing_them() -> None:
+    from eu_ai_act_classifier.catalog import ART_5_1A, ART_5_1B
+    from eu_ai_act_classifier.rules.prohibited import LATER_SCREEN_QUESTION
+
+    # The earlier paraphrase of Art. 5(1a)(a) left out an element of point (ii) and did
+    # not name Art. 5(1b) (claim ledger, re-check of 16 November 2026).
+    assert f'Art. 5(1a): "{ART_5_1A}".' in LATER_SCREEN_QUESTION
+    assert f'Art. 5(1b): "{ART_5_1B}".' in LATER_SCREEN_QUESTION
+    assert "without requiring significant technical modification" in LATER_SCREEN_QUESTION
+    assert "declares neither point" in LATER_SCREEN_QUESTION
