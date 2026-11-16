@@ -5,8 +5,6 @@ pull requests.
 
 ## Unreleased
 
-Changes since 0.2.2.
-
 ### Dark mode on the playground and the cockpit
 
 #### Added
@@ -33,6 +31,105 @@ Changes since 0.2.2.
   from its text; in the cockpit, muted text on the tinted surface uses
   `--muted-on-tint` (it was 4.47:1), the review-note field has a label,
   and tables and code blocks that scroll can be reached by keyboard.
+
+## 0.3.0 (2026-11-16)
+
+#### Upgrade notes
+
+Profiles and CI jobs that pass on 0.2.2 can fail or change on 0.3.0. Pinning
+`eu-ai-act-classifier==0.2.2` keeps the 0.2.2 behaviour while you update them.
+
+- `application_date` on an obligation-graph item can be null where the date
+  turns on a placing date the profile does not give: the Chapter V items of a
+  general-purpose AI model without `gpai_model_placing_on_market_date` or
+  `placing_on_market_date` (Art. 111(3)), and `transparency.1` for a provider
+  with `generates_synthetic_content` and no `placing_on_market_date`
+  (Art. 111(4)). It can be null while `applies_on_assessment_date` is true.
+  The Python model types it `str | None`, and the 0.2.2 report schema rejects
+  such a report.
+- The JSON report and its models have two new keys, both null by default:
+  `applies_on_assessment_date` on every obligation-graph item (true, false or
+  null; null without an `assessment_date`) and `scope.assessment_date`. The
+  report schema allows extra keys, so the 0.2.2 schema accepts them; key-set
+  and snapshot comparisons change.
+- Every report in scope lists an Art. 4 AI literacy obligation (`Art. 4 AIA`)
+  and a graph item `literacy.provider.4` or `literacy.deployer.4`, dated
+  2025-02-02, once per provider or deployer role, whatever the tier.
+  Minimal-risk and prohibited reports, whose `obligations` and
+  `obligation_graph` were empty on 0.2.2, now hold these entries; for a
+  prohibited system the item is `review_required`. A profile whose only role
+  is `gpai_provider` gets none.
+- `--strict` now exits 1 for five kinds of profile that 0.2.2 reported as
+  `determined` (exit 0). Each now has an open question, so the disposition is
+  `requires_review`:
+  - `generates_synthetic_content` or `generates_deepfakes` with neither
+    `5.1.ba` nor `5.1.bb` declared and no element facts, as in
+    `examples/deepfake_generator.json`. Element facts in `intimate_imagery`
+    and `child_sexual_abuse_material` that settle both points close the
+    question.
+  - a provider with `generates_synthetic_content` and no
+    `placing_on_market_date` (the Art. 111(4) question).
+  - a general-purpose AI model with neither
+    `gpai_model_placing_on_market_date` nor `placing_on_market_date`
+    (Art. 111(3)). The bundled GPAI examples now give
+    `gpai_model_placing_on_market_date`.
+  - an Art. 6(1) product with neither `annex_i_legislation` nor
+    `annex_i_section`, which 0.2.2 treated as Section A.
+  - an Annex I, Section B product with an Art. 50 trigger.
+- A declared `5.1.ba` or `5.1.bb` without `assessment_date` keeps the tier
+  `prohibited` and now goes to review. With an `assessment_date` before
+  2026-12-02 the point no longer sets the tier to `prohibited`: the finding is
+  `PROHIBITED.5.1.ba.not_yet_applicable` or its `5.1.bb` counterpart, and the
+  report goes to review.
+- A consumer that matches the text of the Art. 5(1)(ba)/(bb) screen question
+  (`LATER_SCREEN_QUESTION`) must match the new wording quoting Art. 5(1a) and
+  (1b); when the question is asked is unchanged.
+- For an Annex III point 2 to 8 provider the graph lists
+  `high-risk.provider.43.2` (Art. 43(2) internal control) in place of
+  `high-risk.provider.44`.
+- An Annex I report has one or two more findings: `HIGHRISK.6.1c` on every
+  Annex I route and `HIGHRISK.2.13` for Section A.
+- New optional profile fields: `assessment_date`, `annex_i_legislation`,
+  `intimate_imagery`, `child_sexual_abuse_material` and
+  `used_for_financial_fraud_detection` (default false; true or null on a
+  `III.5.b` profile raises a review question). No field or value was removed,
+  so a profile valid on 0.2.2 stays valid. `annex_i_legislation` takes
+  `I.A.2` to `I.A.12` and `I.B.13` to `I.B.21`; `I.A.1`, and an
+  `annex_i_section` that contradicts the legislation, exit 2. 0.2.2 and its
+  profile schema reject any profile that uses a new field. The new models are
+  in `eu_ai_act_classifier.models`; the package root does not export them.
+- Both schema files keep their names and `$id`s, which point at `main`, and
+  `main` already serves the 0.3.0 versions. A kept copy of the 0.2.2 report
+  schema rejects a report with a null `application_date`. Reports from 0.2.2
+  validate against the 0.3.0 schema.
+- The CLI prints an invalid profile as one `field: message` line per error
+  after `error: invalid SystemProfile:`, without pydantic's report and its
+  `errors.pydantic.dev` links. The exit code stays 2.
+- The MCP tools type `profile` as `SystemProfile`: `list_tools` returns its
+  schema, and a validation error names the model
+  `classify_ai_systemArguments` and the field as `profile.<field>`. The
+  `[mcp]` extra needs `mcp>=1.21.1`.
+- `--update` without `--verify-sources` exits 2; 0.2.2 ignored it. From an
+  installed package, `--verify-sources --update` exits 2 before any request.
+  `python -m eu_ai_act_classifier.verify_sources` exits 1 when a URL fails;
+  0.2.2 exited 0.
+- Changed text and ids: the limited-risk label reads "transparency duties
+  (Art. 50 AIA)"; `regulation` ends with ", as amended by Regulation (EU)
+  2026/1744"; the `HIGHRISK.III.5.b` and `HIGHRISK.III.5.c` titles name
+  natural persons; with `--advisory`, `guidance.transparency` is
+  `guidance.transparency-guidelines`, and Art. 50(2) and (4) profiles also get
+  `guidance.transparency-code-of-practice`; the source manifest replaces
+  `transparency-guidance` with `art-50-code-of-practice` and
+  `art-50-guidelines`.
+- `deployer_public_authority` counts only for a profile with the `deployer`
+  role, and `significant_change_after_application_date` only where
+  Art. 111(2) uses it. Elsewhere the scope notes say the answer "is given, but
+  it is not used". Tier, disposition and obligations stay the same.
+- `eu-ai-act-local-api` names artifact files with the CLI's slug, for example
+  `provider-a-cv-screening.annex-iv-checklist.md`.
+- 0.3.0 needs `pydantic>=2.11`; 0.2.2 accepted `>=2.6`.
+
+Changes since 0.2.2.
 
 ### Claim ledger checked again in the pinned texts
 
