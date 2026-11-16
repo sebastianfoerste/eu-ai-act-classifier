@@ -589,6 +589,8 @@ textarea {
   background: var(--surface-muted);
   border-radius: 8px;
   padding: 9px 10px;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .tableWrap {
@@ -864,14 +866,14 @@ th {
   margin-top: 14px;
 }
 
-.questionList {
+ol.questionList {
   display: grid;
   gap: 10px;
   margin: 14px 0 0;
   padding-left: 22px;
 }
 
-.questionList li {
+ol.questionList li {
   background: var(--surface-muted);
   border-radius: 6px;
   padding: 12px;
