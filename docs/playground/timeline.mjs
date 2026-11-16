@@ -40,10 +40,10 @@ function graphItem(item) {
     id: item.obligation_id,
     article: item.article,
     actor: item.actor,
-    // The engine's note on this item's date. It can record a contested reading of
-    // Art. 113, an Art. 111 transitional condition, a scope question that bears on
-    // the item (Art. 2(2) for a Section B product, Art. 4 for a prohibited system) or
-    // an explanation of the date. The timeline only says that a note exists; the
+    // The engine's note on this item's date. It can record, for example, a contested
+    // reading of Art. 113, an Art. 111 transitional condition, a scope question that
+    // bears on the item (Art. 2(2) for a Section B product, Art. 4 for a prohibited
+    // system), a missing input the date depends on, or an explanation of the date. The timeline only says that a note exists; the
     // obligation graph section shows its text.
     hasDateNote: Boolean(item.application_date_note),
     note: item.application_date_note ?? null,

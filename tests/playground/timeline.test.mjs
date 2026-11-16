@@ -83,10 +83,39 @@ test("marks the items whose date carries a note and passes the assessment answer
   assert.ok(noted > 0, "no bundled example has a date note, so the marker is untested");
 });
 
+const LABELS = { provider: "Provider", deployer: "Deployer" };
+const text = (element, className) => element.all(className).map(e => e.textContent);
+
+test("renders each column as the model has it: its date, milestones and items", () => {
+  for (const [key, report] of Object.entries(reports)) {
+    const model = timelineModel(report);
+    const view = renderTimeline(fakeDocument, report, LABELS);
+    const rendered = view.all("timeline-date").map(column => [
+      text(column, "timeline-when")[0],
+      text(column, "timeline-milestone"),
+      column.all("timeline-item").map(item => [
+        text(item, "timeline-article")[0],
+        text(item, "timeline-actor")[0],
+        item.all("timeline-note").length === 1,
+        text(item, "timeline-status")[0] ?? null,
+      ]),
+    ]);
+    const expected = [
+      ...model.columns.map(c => [c.date, c.milestones.map(m => m.provision), c.items]),
+      ...(model.open.length ? [["Date open", [], model.open]] : []),
+    ].map(([date, milestones, items]) => [
+      date,
+      milestones,
+      items.map(i => [i.article, LABELS[i.actor] ?? i.actor, i.hasDateNote, assessmentLabel(i.appliesOnAssessmentDate)]),
+    ]);
+    assert.deepEqual(rendered, expected, key);
+  }
+});
+
 test("renders exactly the model: dates, milestones, items, markers and answers", () => {
   for (const [key, report] of Object.entries(reports)) {
     const model = timelineModel(report);
-    const view = renderTimeline(fakeDocument, report, { provider: "Provider", deployer: "Deployer" });
+    const view = renderTimeline(fakeDocument, report, LABELS);
     assert.equal(view.attributes.role, "region", key);
     const headers = view.all("timeline-when").map(e => e.textContent);
     assert.deepEqual(headers, [...shownDates(model), ...(model.open.length ? ["Date open"] : [])], key);
