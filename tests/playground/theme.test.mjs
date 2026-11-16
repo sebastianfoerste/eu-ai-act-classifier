@@ -58,7 +58,10 @@ test("the stylesheet has a light token set and two identical dark ones", () => {
   assert.equal(darkByChoice.selector, ':root[data-theme="dark"]');
   assert.equal(darkBySystem.scheme, "dark");
   assert.equal(darkByChoice.scheme, "dark");
-  assert.match(css, /@media \(prefers-color-scheme: dark\) \{ :root:not\(\[data-theme="light"\]\) \{/);
+  // Both dark blocks are for screens only: a page printed from a dark screen uses the light set.
+  assert.match(css, /@media screen and \(prefers-color-scheme: dark\) \{ :root:not\(\[data-theme="light"\]\) \{/);
+  assert.match(css, /@media screen \{ :root\[data-theme="dark"\] \{/);
+  assert.equal(css.match(/color-scheme: dark;/g).length, 2);
   assert.deepEqual(darkBySystem.tokens, darkByChoice.tokens);
   assert.deepEqual(Object.keys(darkBySystem.tokens), Object.keys(light.tokens));
   assert.ok(Object.keys(light.tokens).length > 40);

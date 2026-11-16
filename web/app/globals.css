@@ -1,7 +1,9 @@
 /* Colour tokens. The dark set applies with the system setting unless the Theme button
    stored "light", and always when it stored "dark" (the script in app/layout.tsx sets
    data-theme before the first paint). The two dark blocks must stay identical;
-   lib/theme.test.ts checks that and the contrast of the text and control pairs. */
+   lib/theme.test.ts checks that and the contrast of the text and control pairs. Both
+   dark blocks are for screens only, so a page printed from a dark screen uses the
+   light set. */
 :root {
   color-scheme: light;
   --background: #f6f7f8;
@@ -36,9 +38,11 @@
   --code-bg: #111827;
   --code-text: #f8fafc;
   --shadow: 0 16px 50px rgba(23, 32, 42, 0.08);
+  /* Text and the notice frame of a printed draft; print always uses the light set. */
+  --print-ink: #000000;
 }
 
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
     --background: #0f1419;
@@ -70,40 +74,44 @@
     --code-bg: #0b1016;
     --code-text: #e7ecf1;
     --shadow: 0 16px 50px rgba(0, 0, 0, 0.45);
+    --print-ink: #000000;
   }
 }
 
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --background: #0f1419;
-  --surface: #171d24;
-  --surface-muted: #1f2730;
-  --border: #2e3945;
-  --control-border: #6a7786;
-  --input-border: #7a8794;
-  --text: #e7ecf1;
-  --muted: #9aa7b4;
-  --muted-on-tint: #aab6c2;
-  --blue: #8fb0ff;
-  --on-primary: #0c1730;
-  --green: #5ecb9c;
-  --amber: #e3b04b;
-  --red: #f59a8e;
-  --violet: #b9a2e6;
-  --success-bg: #12301f;
-  --success-border: #24553c;
-  --info-bg: #17274a;
-  --info-bg-soft: #162338;
-  --info-border: #2c4580;
-  --info-text: #b7ccf5;
-  --info-muted: #93aad6;
-  --warning-bg: #33270c;
-  --warning-border: #5e4a17;
-  --danger-bg: #3a1c18;
-  --danger-border: #6d312a;
-  --code-bg: #0b1016;
-  --code-text: #e7ecf1;
-  --shadow: 0 16px 50px rgba(0, 0, 0, 0.45);
+@media screen {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --background: #0f1419;
+    --surface: #171d24;
+    --surface-muted: #1f2730;
+    --border: #2e3945;
+    --control-border: #6a7786;
+    --input-border: #7a8794;
+    --text: #e7ecf1;
+    --muted: #9aa7b4;
+    --muted-on-tint: #aab6c2;
+    --blue: #8fb0ff;
+    --on-primary: #0c1730;
+    --green: #5ecb9c;
+    --amber: #e3b04b;
+    --red: #f59a8e;
+    --violet: #b9a2e6;
+    --success-bg: #12301f;
+    --success-border: #24553c;
+    --info-bg: #17274a;
+    --info-bg-soft: #162338;
+    --info-border: #2c4580;
+    --info-text: #b7ccf5;
+    --info-muted: #93aad6;
+    --warning-bg: #33270c;
+    --warning-border: #5e4a17;
+    --danger-bg: #3a1c18;
+    --danger-border: #6d312a;
+    --code-bg: #0b1016;
+    --code-text: #e7ecf1;
+    --shadow: 0 16px 50px rgba(0, 0, 0, 0.45);
+    --print-ink: #000000;
+  }
 }
 
 * {
@@ -924,5 +932,67 @@ pre:focus-visible {
 
   .card {
     padding: 16px;
+  }
+}
+
+/* Printing a draft artifact (ADR 0003, part 1): only the printable section goes to
+   paper or PDF. The draft notice is the first block in the page flow and, as the
+   header group of a layout table, repeats at the top of every printed page. Pages
+   without a printable section print as they are. */
+.printOnly {
+  display: none;
+}
+
+@media print {
+  body {
+    background: var(--surface);
+  }
+
+  .shell:has(> .printOnly) > :not(.printOnly) {
+    display: none !important;
+  }
+
+  .shell:has(> .printOnly) {
+    padding: 0;
+  }
+
+  .printOnly {
+    color: var(--print-ink);
+    display: block;
+  }
+
+  .printSheet {
+    border-collapse: collapse;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .printSheet thead {
+    display: table-header-group;
+  }
+
+  .printSheet td {
+    border: 0;
+    font-size: inherit;
+    padding: 0;
+  }
+
+  .printNotice {
+    border: 2px solid var(--print-ink);
+    font-size: 11pt;
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0 0 10pt;
+    padding: 6pt 9pt;
+  }
+
+  .printOnly pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      monospace;
+    font-size: 10pt;
+    line-height: 1.45;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 }

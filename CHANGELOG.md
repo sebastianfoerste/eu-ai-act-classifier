@@ -14,6 +14,9 @@ pull requests.
   word in the browser's local storage and applied before the first paint
   (`docs/playground/theme.js`; an inline script in `web/app/layout.tsx`).
   `PRIVACY.md` names that stored value.
+- Both dark sets are for screens only. A page printed from a dark screen
+  uses the light set, so the draft print of the cockpit (S8) stays black
+  on white; its rules use the tokens (`--print-ink`, `--surface`).
 - `tests/playground/theme.test.mjs` and `web/lib/theme.test.ts` check each
   token set: text at 4.5:1 on its surface, the focus ring at 3:1, in the
   dark set also the line around a button, select or input at 3:1; that
@@ -31,6 +34,35 @@ pull requests.
   from its text; in the cockpit, muted text on the tinted surface uses
   `--muted-on-tint` (it was 4.47:1), the review-note field has a label,
   and tables and code blocks that scroll can be reached by keyboard.
+
+### Print a draft artifact as PDF (S8)
+
+- The cockpit's Export Pack has a print button. The printed page, or a PDF saved
+  from the print dialog, shows only the draft notice and the selected artifact;
+  the notice opens every printed page. The document title starts with "DRAFT"
+  while printing, also when printing starts from the browser menu. Nothing is
+  printable while a classification runs. No dependency is added
+  ([ADR 0003](docs/adr/0003-export-route.md), parts 1 and 3). Checked in
+  Chromium only.
+- The inventory tile "Word package" reads "Draft package". The inventory JSON
+  field `wordExportPackage` keeps its name.
+
+### Application-date timeline in the playground (D3)
+
+- The playground's "Application timeline" section opens with the report's
+  dates side by side: one column per date in the report's timeline and
+  obligation graph, in date order, with what starts on each, a "Date open"
+  column for items without a date, a "see the date note" marker on items whose
+  date carries a note, and the engine's answer on whether an item applies on
+  the assessment date. On narrow screens the columns stack. The view only
+  arranges what the report carries; no date is computed in the browser.
+- The obligation graph cards also show the assessment-date answer, so a search
+  keeps it.
+
+### CI
+
+- The coverage floor rises from 95 % to 96 % (`--cov-fail-under=96`), the
+  integer part of the measured total of 96.37 %.
 
 ## 0.3.0 (2026-11-16)
 

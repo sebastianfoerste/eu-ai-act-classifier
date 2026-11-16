@@ -78,7 +78,11 @@ describe("colour tokens", () => {
     expect(light.scheme).toBe("light");
     expect(darkBySystem.selector).toBe(':root:not([data-theme="light"])');
     expect(darkByChoice.selector).toBe(':root[data-theme="dark"]');
-    expect(css).toMatch(/@media \(prefers-color-scheme: dark\) \{\s*:root:not\(\[data-theme="light"\]\) \{/);
+    expect(css).toMatch(
+      /@media screen and \(prefers-color-scheme: dark\) \{\s*:root:not\(\[data-theme="light"\]\) \{/,
+    );
+    expect(css).toMatch(/@media screen \{\s*:root\[data-theme="dark"\] \{/);
+    expect(css.match(/color-scheme: dark;/g)).toHaveLength(2);
     expect(darkBySystem.tokens).toEqual(darkByChoice.tokens);
     expect(Object.keys(darkBySystem.tokens)).toEqual(Object.keys(light.tokens));
     expect(Object.keys(light.tokens).length).toBeGreaterThan(25);
@@ -99,6 +103,17 @@ describe("colour tokens", () => {
     for (const [text, surface] of TEXT) {
       expect(contrast(tokens[text], tokens[surface]), `--${text} on --${surface}`).toBeGreaterThanOrEqual(4.5);
     }
+  });
+
+  // Both dark blocks are for screens only, so print resolves every token in the light
+  // set. The printed draft is black on the white surface.
+  it("prints with the light set: black on white", () => {
+    const print = css.slice(css.indexOf("@media print {"));
+    expect(print).toContain("background: var(--surface);");
+    expect(print).toContain("color: var(--print-ink);");
+    expect(print).toContain("border: 2px solid var(--print-ink);");
+    expect(print).not.toContain("color-scheme");
+    expect(contrast(light.tokens["print-ink"], light.tokens.surface).toFixed(2)).toBe("21.00");
   });
 
   it("dark: no pair is excepted, light keeps its known one", () => {

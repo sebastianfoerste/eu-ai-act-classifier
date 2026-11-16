@@ -75,7 +75,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 |---|---|---|
 | H1 Guided questionnaire | **Confirmed, built.** Modified: three unknown policies (null routed to review, `III.unsure`, block); `significant_change_after_application_date` is asked only where the engine reads it and records null on "I don't know" (owner decision 1), and `deployer_public_authority` is asked only of a deployer on a high-risk route (item 9) | GOV.UK (Observed); peers' unknown handling (Observed); checks in `tests/test_intake.py` |
 | H2 Label catalog EN/DE | **Confirmed; EN built.** DE parked: German legal terms cannot be checked against the DE Official Journal text from this environment | EuConform, AbdelStark DE terms (Observed); IATE and EUR-Lex not reachable |
-| H3 DOCX/PDF export | **Modified, specified.** Print stylesheet first (no dependency); DOCX as an optional Python extra; rename `wordExportPackage` until real DOCX exists | No peer keeps draft status (Observed); `@page` margin boxes Chrome only (Observed) |
+| H3 DOCX/PDF export | **Modified; PDF built, checked in Chromium only.** Print stylesheet first (no dependency), built; DOCX as an optional Python extra, specified; the cockpit label reads "Draft package" until real DOCX exists (the `wordExportPackage` field keeps its name) | No peer keeps draft status (Observed); `@page` margin boxes Chrome only (Observed) |
 | H4 Cockpit styling, then dark mode | **Styling confirmed and built** without Tailwind ([ADR 0004](../adr/0004-cockpit-styling-without-tailwind.md)). Dark mode specified, not built | Baseline captures |
 | H5 Shareable URL hash | **Confirmed, specified.** Native `deflate-raw` plus base64url, written only on "Create share link"; no dependency | Svelte, TypeScript playground (Observed); 160 to 316 characters per example (Observed) |
 | H6 Evidence tracker | **Confirmed, specified.** Minimal state, owner and reviewed-on date on the cockpit side only | OpenComplAI, ComplianceLint (Observed) |
@@ -146,7 +146,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Risk.** Rule 3: the check stays outside the classification path and is never required for a result. Recording the first hashes needs EUR-Lex access.
 - **Status.** `sources/` pins byte-exact Official Journal snapshots with their SHA-256 in `sources/manifest.json`, and `tests/test_sources.py` fails on drift. Each snapshot's text and element structure were confirmed identical to EUR-Lex on 10 November 2026; the manifest records digests of both and of the EUR-Lex response, and `scripts/compare_sources.py` repeats the comparison on request ("text changed, review required", exit 1; a bot challenge, network failure or incomplete answer is unverified, exit 2). Open: the byte digests of the Publications Office responses have not been recomputed against a fresh download, and `--verify-sources` itself still checks only that each URL answers.
 
-### S8. Draft PDF via print stylesheet, then DOCX (next)
+### S8. Draft PDF via print stylesheet, then DOCX (PDF built and checked in Chromium; Firefox, WebKit and DOCX next)
 
 - **Story.** As counsel I send a draft artifact to a colleague as PDF or Word without losing the draft notice.
 - **References.** Attestor and EuConform PDFs (Observed); npm `docx` and python-docx licences and sizes (Observed); MDN data on `@page` margin boxes (Observed).
@@ -155,10 +155,11 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Files.** `web/app/globals.css` (print rules), `web/components/cockpit.tsx`, `src/eu_ai_act_classifier/docx_export.py` (extra only), `pyproject.toml` (`[docx]` extra), an ADR update.
 - **Tests.** A test that every artifact rendered for print or DOCX contains `DRAFT_NOTICE`; a test that importing the core package does not import `docx`.
 - **Risk.** Rule 7: the notice must survive every format, so the test covers each. Rule 3: the new dependency sits in an extra, with an ADR.
+- **Status.** The PDF route and the "Draft package" label are built ([ADR 0003](../adr/0003-export-route.md), Implementation). The notice opens every printed page, as the repeating header of a layout table. `web/components/printable-artifact.test.tsx` renders the printable section once per artifact name (synthetic content) and checks that the notice comes first and sits in the repeating header, and pins the section's place in `cockpit.tsx` and the guard while classifying; `web/lib/print.test.ts` checks the notice value, that it is never empty and equals the engine's `DRAFT_NOTICE`, and that the title starts with "DRAFT"; `tests/test_review_dossier.py` checks that every artifact of every bundled example contains `DRAFT_NOTICE`. Checked in Chromium only; Firefox, WebKit and the DOCX extra are open.
 
 ## Design upgrades
 
-D1, D2 and D4 are built; the others are specified.
+D1, D2, D3 and D4 are built; the others are specified.
 
 ### D1. Dark mode on both surfaces (built)
 
@@ -178,7 +179,7 @@ D1, D2 and D4 are built; the others are specified.
 - **Files.** `docs/playground/styles.css`.
 - **Risk.** None.
 
-### D3. Application-date timeline
+### D3. Application-date timeline (built)
 
 - **Story.** As counsel I see which obligations apply now, which are upcoming and which rest on a contested reading.
 - **References.** legalithm `appliesFrom` (Observed); Stripe Tax status chips (Claimed).
@@ -186,6 +187,7 @@ D1, D2 and D4 are built; the others are specified.
 - **Acceptance.** Every date shown is one the report already carries; the text list states the same content; axe clean.
 - **Files.** `docs/playground/app.mjs`, `docs/playground/styles.css`.
 - **Risk.** Rule 4 and 8: no date is computed in the browser; the view only displays report data.
+- **Status.** Built. `docs/playground/timeline.mjs` arranges the report's own dates and renders the view: one column per date from `timeline` and the graph's `application_date`, in date order (ISO strings sort as text), a "Date open" column for items without a date, a "see the date note" marker where an item carries an `application_date_note`, and the engine's `applies_on_assessment_date` in words. The note can record, for example, a contested Art. 113 reading, an Art. 111 condition, a scope question (Art. 2(2) for a Section B product, Art. 4 for a prohibited system), a missing input the date depends on (a general-purpose AI model's own placing date) or an explanation of the date, so the marker only points to it; the obligation graph section shows the note and the assessment answer for every item, also during a search, which hides the timeline. The view is an ordered list, so a screen reader reads it as text. `tests/playground/timeline.test.mjs` runs the engine on every bundled example and checks the model and the rendered view, column by column (each date with its own milestones and items, their article, actor, marker and answer), a synthetic report with an open date and both assessment answers, and that no playground module other than `intake.mjs` (which validates dates the user types) builds, parses or formats a date. Checked in Chromium with axe at 1280 and 375 px: no violation in the timeline; the page keeps one existing finding, `label-content-name-mismatch` on the header brand link (WCAG 2.1 A tag), which this change does not touch.
 
 ### D4. Binding result apart from the advisory overlay (built)
 

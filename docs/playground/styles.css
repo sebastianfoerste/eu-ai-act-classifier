@@ -1,7 +1,8 @@
 /* Colour tokens. The dark set applies with the system setting unless the Theme button
    stored "light", and always when it stored "dark" (theme.js sets data-theme). The two
    dark blocks must stay identical; tests/playground/theme.test.mjs checks that and the
-   contrast of every text and control pair in both sets. */
+   contrast of every text and control pair in both sets. Both dark blocks are for screens
+   only, so a page printed from a dark screen uses the light set. */
 :root { color-scheme: light;
   --ink: #172b35; --ink-soft: #4d5c62; --code: #344e52; --muted: #5d6a70; --heading-muted: #61716c;
   --placeholder: #65736f; --bg: #f4f5f2; --paper: #fff; --surface-subtle: #fbfcfa; --surface-sunken: #f6f8f4;
@@ -15,7 +16,7 @@
   --notice-bg: #fff6df; --notice-line: #eadcb5; --pending: #ad7a29; --icon-line: #b7c7bd; --icon-fill: #ccd7cd;
   --icon-badge: #e2ece1; --shadow: #172b3503;
 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark;
+@media screen and (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark;
   --ink: #e6ecea; --ink-soft: #c3ced0; --code: #c9d8d6; --muted: #9fb0b3; --heading-muted: #9db1ab;
   --placeholder: #95a6a4; --bg: #101b21; --paper: #17262e; --surface-subtle: #1b2b34; --surface-sunken: #132129;
   --chip: #22343e; --hover: #1f3039; --selected: #232a3d; --line: #2b3d47; --line-soft: #233540;
@@ -28,7 +29,7 @@
   --notice-ink: #ecc777; --notice-bg: #33280e; --notice-line: #5e4a1a; --pending: #d9a441; --icon-line: #4a5f58;
   --icon-fill: #3a4d47; --icon-badge: #1f3d31; --shadow: #00000033;
 } }
-:root[data-theme="dark"] { color-scheme: dark;
+@media screen { :root[data-theme="dark"] { color-scheme: dark;
   --ink: #e6ecea; --ink-soft: #c3ced0; --code: #c9d8d6; --muted: #9fb0b3; --heading-muted: #9db1ab;
   --placeholder: #95a6a4; --bg: #101b21; --paper: #17262e; --surface-subtle: #1b2b34; --surface-sunken: #132129;
   --chip: #22343e; --hover: #1f3039; --selected: #232a3d; --line: #2b3d47; --line-soft: #233540;
@@ -40,7 +41,7 @@
   --error-ink: #f5a79c; --error-bg: #3a1d1a; --error-bg-soft: #2e1a18; --error-line: #6b332c;
   --notice-ink: #ecc777; --notice-bg: #33280e; --notice-line: #5e4a1a; --pending: #d9a441; --icon-line: #4a5f58;
   --icon-fill: #3a4d47; --icon-badge: #1f3d31; --shadow: #00000033;
-}
+} }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body { margin: 0; color: var(--ink); background: var(--bg); font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -281,3 +282,19 @@ footer a { margin-left: 18px; }
 /* Colour scheme switch */
 .theme-toggle { font-size: inherit; padding: 4px 0; white-space: nowrap; }
 @media (max-width: 520px) { nav { gap: 16px; } }
+/* D3 application timeline: one column per date the report carries, in date order; a vertical list on narrow screens. */
+.timeline { overflow-x: auto; margin: 4px 0 10px; padding-bottom: 6px; }
+.timeline-list { display: flex; align-items: flex-start; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.timeline-date { flex: 0 0 170px; margin: 0; padding: 8px 10px; border: 1px solid var(--line); border-top: 3px solid var(--blue); border-radius: 6px; background: var(--paper); }
+.timeline-date.is-open { border-top-color: var(--amber); }
+.timeline-when { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.timeline-hint, .timeline-milestone { margin: 0 0 6px; color: var(--muted); }
+.timeline-milestone { color: var(--ink); }
+.finding-body .timeline-items { list-style: none; margin: 6px 0 0; padding: 0; color: var(--ink); }
+.finding-body .timeline-item { display: flex; flex-wrap: wrap; gap: 2px 6px; margin: 0 0 5px; padding-left: 6px; border-left: 2px solid var(--line); }
+.finding-body .timeline-item.has-note { border-left-color: var(--amber); }
+.timeline-article { font-weight: 600; }
+.timeline-actor { color: var(--muted); }
+.timeline-note { flex-basis: 100%; color: var(--amber); }
+.timeline-status { flex-basis: 100%; color: var(--muted); }
+@media (max-width: 600px) { .timeline { overflow-x: visible; } .timeline-list { flex-direction: column; } .timeline-date { flex-basis: auto; } }
