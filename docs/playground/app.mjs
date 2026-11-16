@@ -2,6 +2,7 @@ import { answersToProfile, compactProfile, droppedFields, profileToAnswers } fro
 import { createWizard } from "./wizard.mjs";
 import { DISPOSITIONS, MAX_BYTES, ROLE_LABELS, TIERS, annexCitation, describeDefault, formatProfile, groupByRole, matchesQuery, parseProfile, practiceCitation, reportIsCurrent } from "./model.mjs";
 import { ShareError, decodeShare, encodeShare, isShareFragment } from "./share.mjs";
+import { THEME_LABELS, applyTheme, nextTheme, readTheme } from "./theme.mjs";
 import { assessmentLabel, renderTimeline } from "./timeline.mjs";
 
 const $ = id => document.getElementById(id);
@@ -647,6 +648,18 @@ $("export-text").onclick = () => {
 window.addEventListener("beforeunload", event => {
   if (modified || guidedEdited) { event.preventDefault(); event.returnValue = ""; }
 });
+
+// Colour scheme. theme.js has already applied a stored choice; the button cycles
+// System, Light, Dark and stores nothing but that word.
+const themeStorage = () => { try { return window.localStorage; } catch { return null; } };
+let theme = readTheme(themeStorage());
+const showTheme = () => { $("theme-toggle").textContent = `Theme: ${THEME_LABELS[theme]}`; };
+$("theme-toggle").onclick = () => {
+  theme = nextTheme(theme);
+  applyTheme(document.documentElement, themeStorage(), theme);
+  showTheme();
+};
+showTheme();
 
 setMode("guided");
 loadSamples();

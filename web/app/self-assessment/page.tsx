@@ -1,3 +1,4 @@
+import { ThemeToggle } from "../../components/theme-toggle";
 import { runClassifierBridge } from "../../lib/python";
 import { WorkspaceClient, type Workspace } from "./workspace-client";
 
@@ -8,7 +9,10 @@ export default async function SelfAssessmentPage() {
   return (
     <main className="pageShell">
       <header className="pageHeader">
-        <p className="eyebrow">Synthetic local demo</p>
+        <div className="pageHeaderBar">
+          <p className="eyebrow">Synthetic local demo</p>
+          <ThemeToggle />
+        </div>
         <h1>EU AI Act self-assessment portal</h1>
         <p className="pageLead">
           Guided intake, collaborative factor review and versioned policy workflows. Export remains

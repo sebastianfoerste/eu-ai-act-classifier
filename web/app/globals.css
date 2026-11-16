@@ -1,19 +1,117 @@
+/* Colour tokens. The dark set applies with the system setting unless the Theme button
+   stored "light", and always when it stored "dark" (the script in app/layout.tsx sets
+   data-theme before the first paint). The two dark blocks must stay identical;
+   lib/theme.test.ts checks that and the contrast of the text and control pairs. Both
+   dark blocks are for screens only, so a page printed from a dark screen uses the
+   light set. */
 :root {
   color-scheme: light;
   --background: #f6f7f8;
   --surface: #ffffff;
   --surface-muted: #f0f3f5;
   --border: #d7dde3;
+  /* The line around a button, select or input; 3:1 on its surface in the dark set. */
+  --control-border: #d7dde3;
+  --input-border: #9aa6b2;
   --text: #17202a;
   --muted: #64717f;
-  /* Muted text on --surface-muted; --muted there is 4.47:1, below WCAG AA. */
+  /* Muted text on --surface-muted; light --muted there is 4.47:1, below WCAG AA. */
   --muted-on-tint: #525e6b;
   --blue: #1f5eff;
+  /* Text on a --blue button. */
+  --on-primary: #ffffff;
   --green: #147a53;
   --amber: #9a6400;
   --red: #b42318;
   --violet: #6246a8;
+  --success-bg: #e9f7ef;
+  --success-border: #b8e2cc;
+  --info-bg: #eaf1ff;
+  --info-bg-soft: #eef5ff;
+  --info-border: #c7d8ff;
+  --info-text: #1b427e;
+  --info-muted: #43658e;
+  --warning-bg: #fff5db;
+  --warning-border: #ead18b;
+  --danger-bg: #fff0ee;
+  --danger-border: #fac7c0;
+  --code-bg: #111827;
+  --code-text: #f8fafc;
   --shadow: 0 16px 50px rgba(23, 32, 42, 0.08);
+  /* Text and the notice frame of a printed draft; print always uses the light set. */
+  --print-ink: #000000;
+}
+
+@media screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --background: #0f1419;
+    --surface: #171d24;
+    --surface-muted: #1f2730;
+    --border: #2e3945;
+    --control-border: #6a7786;
+    --input-border: #7a8794;
+    --text: #e7ecf1;
+    --muted: #9aa7b4;
+    --muted-on-tint: #aab6c2;
+    --blue: #8fb0ff;
+    --on-primary: #0c1730;
+    --green: #5ecb9c;
+    --amber: #e3b04b;
+    --red: #f59a8e;
+    --violet: #b9a2e6;
+    --success-bg: #12301f;
+    --success-border: #24553c;
+    --info-bg: #17274a;
+    --info-bg-soft: #162338;
+    --info-border: #2c4580;
+    --info-text: #b7ccf5;
+    --info-muted: #93aad6;
+    --warning-bg: #33270c;
+    --warning-border: #5e4a17;
+    --danger-bg: #3a1c18;
+    --danger-border: #6d312a;
+    --code-bg: #0b1016;
+    --code-text: #e7ecf1;
+    --shadow: 0 16px 50px rgba(0, 0, 0, 0.45);
+    --print-ink: #000000;
+  }
+}
+
+@media screen {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --background: #0f1419;
+    --surface: #171d24;
+    --surface-muted: #1f2730;
+    --border: #2e3945;
+    --control-border: #6a7786;
+    --input-border: #7a8794;
+    --text: #e7ecf1;
+    --muted: #9aa7b4;
+    --muted-on-tint: #aab6c2;
+    --blue: #8fb0ff;
+    --on-primary: #0c1730;
+    --green: #5ecb9c;
+    --amber: #e3b04b;
+    --red: #f59a8e;
+    --violet: #b9a2e6;
+    --success-bg: #12301f;
+    --success-border: #24553c;
+    --info-bg: #17274a;
+    --info-bg-soft: #162338;
+    --info-border: #2c4580;
+    --info-text: #b7ccf5;
+    --info-muted: #93aad6;
+    --warning-bg: #33270c;
+    --warning-border: #5e4a17;
+    --danger-bg: #3a1c18;
+    --danger-border: #6d312a;
+    --code-bg: #0b1016;
+    --code-text: #e7ecf1;
+    --shadow: 0 16px 50px rgba(0, 0, 0, 0.45);
+    --print-ink: #000000;
+  }
 }
 
 * {
@@ -89,7 +187,7 @@ small {
 .primaryButton,
 .secondaryButton {
   align-items: center;
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   display: inline-flex;
   gap: 8px;
@@ -106,7 +204,7 @@ small {
 .primaryButton {
   background: var(--blue);
   border-color: var(--blue);
-  color: #ffffff;
+  color: var(--on-primary);
   font-weight: 680;
   padding: 0 14px;
 }
@@ -130,37 +228,37 @@ small {
 }
 
 .statusPill.success {
-  background: #e9f7ef;
-  border-color: #b8e2cc;
+  background: var(--success-bg);
+  border-color: var(--success-border);
   color: var(--green);
 }
 
 .statusPill.info {
-  background: #eaf1ff;
-  border-color: #c7d8ff;
+  background: var(--info-bg);
+  border-color: var(--info-border);
   color: var(--blue);
 }
 
 .statusPill.warning {
-  background: #fff5db;
-  border-color: #ead18b;
+  background: var(--warning-bg);
+  border-color: var(--warning-border);
   color: var(--amber);
 }
 
 .statusPill.danger {
-  background: #fff0ee;
-  border-color: #fac7c0;
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
   color: var(--red);
 }
 
 .statusPill.neutral {
   background: var(--surface-muted);
-  color: var(--muted);
+  color: var(--muted-on-tint);
 }
 
 .errorBanner {
-  background: #fff0ee;
-  border: 1px solid #fac7c0;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
   border-radius: 8px;
   color: var(--red);
   margin-bottom: 16px;
@@ -237,7 +335,7 @@ small {
 
 .promptBrief p,
 .promptBrief dd {
-  color: var(--muted);
+  color: var(--muted-on-tint);
   font-size: 13px;
   line-height: 1.55;
   margin: 0;
@@ -259,9 +357,9 @@ small {
 }
 
 .promptBrief pre {
-  background: #111827;
+  background: var(--code-bg);
   border-radius: 8px;
-  color: #f8fafc;
+  color: var(--code-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     monospace;
   font-size: 12px;
@@ -305,7 +403,7 @@ small {
 
 .inventoryItem {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   color: var(--text);
   display: grid;
@@ -362,8 +460,8 @@ small {
 input,
 select,
 textarea {
-  background: #ffffff;
-  border: 1px solid var(--border);
+  background: var(--surface);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   color: var(--text);
   min-height: 38px;
@@ -412,13 +510,13 @@ textarea {
 
 .triState button {
   background: var(--surface-muted);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   min-height: 34px;
 }
 
 .triState button.active {
-  background: #eaf1ff;
+  background: var(--info-bg);
   border-color: var(--blue);
   color: var(--blue);
   font-weight: 720;
@@ -442,7 +540,7 @@ textarea {
 }
 
 .riskMap span {
-  color: var(--muted);
+  color: var(--muted-on-tint);
   font-size: 12px;
   font-weight: 720;
   text-transform: uppercase;
@@ -468,7 +566,7 @@ textarea {
 .blockHeader span {
   background: var(--surface-muted);
   border-radius: 999px;
-  color: var(--muted);
+  color: var(--muted-on-tint);
   font-size: 12px;
   font-weight: 700;
   min-width: 28px;
@@ -549,10 +647,10 @@ th {
 }
 
 .dossierSummary {
-  background: #eef5ff;
-  border: 1px solid #c7d8ff;
+  background: var(--info-bg-soft);
+  border: 1px solid var(--info-border);
   border-radius: 8px;
-  color: #1b427e;
+  color: var(--info-text);
   display: grid;
   gap: 4px;
   margin-top: 12px;
@@ -565,15 +663,15 @@ th {
 
 .dossierSummary span,
 .dossierSummary small {
-  color: #43658e;
+  color: var(--info-muted);
   font-size: 12px;
   line-height: 1.45;
 }
 
 .exportPanel pre {
-  background: #111827;
+  background: var(--code-bg);
   border-radius: 8px;
-  color: #f8fafc;
+  color: var(--code-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     monospace;
   font-size: 12px;
@@ -791,7 +889,7 @@ th {
 
 .textInput {
   background: var(--surface);
-  border: 1px solid #9aa6b2;
+  border: 1px solid var(--input-border);
   border-radius: 6px;
   color: var(--text);
   margin-top: 8px;
@@ -801,7 +899,9 @@ th {
 
 .textInput:focus-visible,
 .primaryButton:focus-visible,
-.secondaryButton:focus-visible {
+.secondaryButton:focus-visible,
+.tableWrap:focus-visible,
+pre:focus-visible {
   outline: 3px solid var(--blue);
   outline-offset: 2px;
 }
@@ -810,6 +910,19 @@ th {
   color: var(--muted);
   font-size: 0.8rem;
   margin: 0;
+}
+
+/* Colour scheme switch */
+.themeToggle {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.pageHeaderBar {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
 }
 
 @media (max-width: 520px) {
@@ -832,7 +945,7 @@ th {
 
 @media print {
   body {
-    background: #ffffff;
+    background: var(--surface);
   }
 
   .shell:has(> .printOnly) > :not(.printOnly) {
@@ -844,7 +957,7 @@ th {
   }
 
   .printOnly {
-    color: #000000;
+    color: var(--print-ink);
     display: block;
   }
 
@@ -865,7 +978,7 @@ th {
   }
 
   .printNotice {
-    border: 2px solid #000000;
+    border: 2px solid var(--print-ink);
     font-size: 11pt;
     font-weight: 700;
     line-height: 1.4;

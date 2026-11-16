@@ -12,8 +12,8 @@ Measured on `main` at `dea9675` before any change, and after the three built ite
 | Playground tests (`node --test`) | 9 | 16 |
 | Cockpit tests (vitest) | 3 | 6 |
 | Cockpit build | passes | passes |
-| axe, WCAG 2.2 AA tags, playground (5 states, 1280 and 375 px) | 1 rule each: `label-content-name-mismatch` on the brand link | unchanged; every guided page adds none |
-| axe, cockpit `/` | color-contrast (17), label (1), scrollable-region-focusable (6 at 1280, 8 at 375) | unchanged (not in scope) |
+| axe, WCAG 2.2 AA tags, playground (5 states, 1280 and 375 px) | 1 rule each: `label-content-name-mismatch` on the brand link | unchanged; every guided page adds none. Since D1 (16 November 2026): 0 in the light and the dark scheme (4 states, 1280 and 375 px) |
+| axe, cockpit `/` | color-contrast (17), label (1), scrollable-region-focusable (6 at 1280, 8 at 375) | unchanged (not in scope). Since D1 (16 November 2026): 0 in both schemes |
 | axe, cockpit `/workspace` | 0 (page unstyled) | 0 (styled) |
 | axe, cockpit `/self-assessment` | label (4), page unstyled | 0 (styled) |
 | Playground time to ready, CDN bytes | not reachable: cdn.jsdelivr.net returned 403 in the capture environment | not reachable |
@@ -159,9 +159,9 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 
 ## Design upgrades
 
-D2, D3 and D4 are built; the others are specified.
+D1, D2, D3 and D4 are built; the others are specified.
 
-### D1. Dark mode on both surfaces
+### D1. Dark mode on both surfaces (built)
 
 - **Story.** As a reviewer working at night I read results without glare, with the same tier colours and labels.
 - **References.** EuConform `ThemeToggle.tsx`; DanielHuette `prefers-color-scheme` (Observed).
@@ -169,6 +169,7 @@ D2, D3 and D4 are built; the others are specified.
 - **Acceptance.** axe clean in both schemes at 1280 and 375 px; contrast checked per token pair.
 - **Files.** `docs/playground/styles.css`, `web/app/globals.css`, a small toggle in each header.
 - **Risk.** None to the non-negotiables; no web fonts or dependencies.
+- **Built.** Every colour in both stylesheets is a token (49 in the playground, 30 in the cockpit) with a light and a dark value; the cockpit's `--print-ink` is black in every set, and both dark sets are for screens only, so print uses the light set. The dark set applies with the system setting, and a Theme button in each header cycles System, Light and Dark; the choice is one word in the browser's local storage, applied before the first paint. With its light tokens the playground sheet resolves to the sheet before, except that eight near-identical surface tints fold into two (seven declarations move by at most 2 of 255 per channel); the cockpit's light values are unchanged apart from muted text on its tinted surface, which now uses `--muted-on-tint`. `tests/playground/theme.test.mjs` and `web/lib/theme.test.ts` check, for each set, that text reaches 4.5:1 on its surface and the focus ring 3:1, and for the dark set that the control-line tokens (`--control-line`, `--input-line`; `--control-border`, `--input-border`) reach 3:1 on their surfaces. "Borders" is read as those control lines: dividers are decorative, and the light control lines stay as they were, below 3:1. Not on a control-line token, in either set: the playground's search field and guided-answer cards, which keep the divider line, and its JSON field, which has no line. axe (WCAG 2.2 AA tags, headless Chromium, 16 November 2026) reports no violation on the playground (empty, classified in both modes, field guide) or on the cockpit's three routes, in either scheme at 1280 and 375 px. For that, the brand link's label, the cockpit's unlabelled review-note field and its scroll regions that a keyboard could not reach were fixed.
 
 ### D2. Separate tier and link colours (built)
 
@@ -208,7 +209,7 @@ D2, D3 and D4 are built; the others are specified.
 
 - **Tokens.** Keep the playground palette and tier colours, always with a text label. `--blue` (limited tier) and `--accent` (links and primary actions) are separate colours since D2. The cockpit keeps its own tokens for now; convergence is an owner decision.
 - **Type and layout.** Georgia headings with system sans; tabular numerals for counts and dates (already on metric tiles and wizard progress); single-column wizard inside the existing two-panel layout and its 1050/800/520 breakpoints.
-- **Dark mode.** Replace the hard-coded `color-scheme: light` with tokens redefined under `prefers-color-scheme: dark`, text at least 4.5:1 and borders and focus rings at least 3:1, on both surfaces.
+- **Dark mode.** Built (D1): tokens redefined under `prefers-color-scheme: dark` and under a stored choice, text at least 4.5:1 and control lines and focus rings at least 3:1, on both surfaces.
 - **States.** Empty, loading, runtime error and stale states exist; the guided mode adds blocked ("Counsel must answer before classification") and missing states on the check-answers page.
 - **Microcopy.** Plain and hedged; "A cited first pass. A lawyer confirms." stays.
 - **Shared design system.** `sebastianfoerste/legal-ai-design-system` was not attached and was not read.

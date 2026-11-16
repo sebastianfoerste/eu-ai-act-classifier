@@ -12,6 +12,10 @@ The examples are synthetic system profiles. Use them for public demos. Do not pa
 
 The cockpit uses local state and a Python bridge. It does not need to persist client, matter, candidate or account data for the portfolio demo.
 
+## Browser Storage
+
+The playground and the cockpit store one value in the browser's local storage: the colour scheme chosen with the Theme button (`light` or `dark`). Choosing System removes it. No profile, answer or result is stored.
+
 ## Artifacts
 
 Generated artifacts are draft review materials. They are not legal advice, conformity assessments, filing documents or regulatory approvals.
