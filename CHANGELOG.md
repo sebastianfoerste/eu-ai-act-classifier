@@ -10,10 +10,17 @@ pull requests.
 - The playground's "Application timeline" section opens with the report's
   dates side by side: one column per date in the report's timeline and
   obligation graph, in date order, with what starts on each, a "Date open"
-  column for items without a date, and a marker on items whose date rests on
-  a contested or conditional reading. On narrow screens the columns stack.
-  The view only arranges dates the report carries; no date is computed in the
-  browser.
+  column for items without a date, a "see the date note" marker on items whose
+  date carries a note, and the engine's answer on whether an item applies on
+  the assessment date. On narrow screens the columns stack. The view only
+  arranges what the report carries; no date is computed in the browser.
+- The obligation graph cards also show the assessment-date answer, so a search
+  keeps it.
+
+### CI
+
+- The coverage floor rises from 95 % to 96 % (`--cov-fail-under=96`), the
+  integer part of the measured total of 96.30 %.
 
 ## 0.3.0 (2026-11-16)
 

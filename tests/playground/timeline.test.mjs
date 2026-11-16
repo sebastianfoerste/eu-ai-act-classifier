@@ -1,9 +1,20 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { assessmentLabel, shownDates, timelineModel } from "../../docs/playground/timeline.mjs";
+import { assessmentLabel, renderTimeline, shownDates, timelineModel } from "../../docs/playground/timeline.mjs";
+
+// A small DOM stand-in, as in wizard.test.mjs: renderTimeline only creates elements,
+// sets text, classes and attributes, and appends children.
+class FakeElement {
+  constructor(tag) { this.tagName = tag; this.children = []; this.attributes = {}; this.className = ""; }
+  append(...nodes) { this.children.push(...nodes); }
+  setAttribute(name, value) { this.attributes[name] = value; }
+  *walk() { yield this; for (const child of this.children) yield* child.walk(); }
+  all(className) { return [...this.walk()].filter(e => e.className.split(" ").includes(className)); }
+}
+const fakeDocument = { createElement: tag => new FakeElement(tag) };
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 
@@ -55,21 +66,59 @@ test("places every milestone and graph item once, under its own date", () => {
   }
 });
 
-test("marks the contested or conditional dates and nothing else", () => {
-  let contested = 0;
+test("marks the items whose date carries a note and passes the assessment answer through", () => {
+  let noted = 0;
   for (const [key, report] of Object.entries(reports)) {
     const model = timelineModel(report);
     const items = [...model.columns.flatMap(c => c.items), ...model.open];
     const byId = new Map(report.obligation_graph.map(g => [`${g.obligation_id}|${g.actor}`, g]));
     for (const item of items) {
       const source = byId.get(`${item.id}|${item.actor}`);
-      assert.equal(item.contested, Boolean(source.application_date_note), `${key}: ${item.id}`);
+      assert.equal(item.hasDateNote, Boolean(source.application_date_note), `${key}: ${item.id}`);
       assert.equal(item.appliesOnAssessmentDate, source.applies_on_assessment_date ?? null, `${key}: ${item.id}`);
-      if (item.contested) contested += 1;
+      if (item.hasDateNote) noted += 1;
     }
-    for (const item of model.open) assert.equal(item.contested, true, `${key}: an open date without its note`);
+    for (const item of model.open) assert.equal(item.hasDateNote, true, `${key}: an open date without its note`);
   }
-  assert.ok(contested > 0, "no bundled example has a contested date, so the marker is untested");
+  assert.ok(noted > 0, "no bundled example has a date note, so the marker is untested");
+});
+
+test("renders exactly the model: dates, milestones, items, markers and answers", () => {
+  for (const [key, report] of Object.entries(reports)) {
+    const model = timelineModel(report);
+    const view = renderTimeline(fakeDocument, report, { provider: "Provider", deployer: "Deployer" });
+    assert.equal(view.attributes.role, "region", key);
+    const headers = view.all("timeline-when").map(e => e.textContent);
+    assert.deepEqual(headers, [...shownDates(model), ...(model.open.length ? ["Date open"] : [])], key);
+    assert.deepEqual(view.all("timeline-milestone").map(e => e.textContent), model.columns.flatMap(c => c.milestones.map(m => m.provision)), key);
+    const items = [...model.columns.flatMap(c => c.items), ...model.open];
+    assert.equal(view.all("timeline-item").length, items.length, key);
+    assert.equal(view.all("timeline-note").length, items.filter(i => i.hasDateNote).length, key);
+    assert.equal(view.all("timeline-status").length, items.filter(i => i.appliesOnAssessmentDate !== null).length, key);
+    // The marker says only that a note exists; it never calls the date contested.
+    for (const note of view.all("timeline-note")) assert.equal(note.textContent, "see the date note");
+  }
+});
+
+test("renders an open date, both assessment answers and no marker without a note", () => {
+  const report = {
+    timeline: [{ applies_from: "2026-08-02", provision: "General application", note: "" }],
+    obligation_graph: [
+      { obligation_id: "a", article: "Art. 9 AIA", actor: "provider", application_date: "2026-08-02", application_date_note: null, applies_on_assessment_date: true },
+      { obligation_id: "b", article: "Art. 26 AIA", actor: "deployer", application_date: "2026-08-02", application_date_note: "a contested reading", applies_on_assessment_date: false },
+      { obligation_id: "c", article: "Art. 53 AIA", actor: "gpai_provider", application_date: null, application_date_note: "turns on the placing date", applies_on_assessment_date: null },
+    ],
+  };
+  const view = renderTimeline(fakeDocument, report, { provider: "Provider", deployer: "Deployer" });
+  assert.deepEqual(view.all("timeline-when").map(e => e.textContent), ["2026-08-02", "Date open"]);
+  assert.deepEqual(view.all("timeline-status").map(e => e.textContent), ["applies on the assessment date", "not yet applicable on the assessment date"]);
+  const [first, second, third] = view.all("timeline-item");
+  assert.equal(first.all("timeline-note").length, 0);
+  assert.equal(second.all("timeline-note").length, 1);
+  assert.equal(third.all("timeline-note").length, 1);
+  assert.equal(second.all("timeline-actor")[0].textContent, "Deployer");
+  assert.equal(third.all("timeline-actor")[0].textContent, "gpai_provider");
+  assert.equal(renderTimeline(fakeDocument, { timeline: [], obligation_graph: [] }), null);
 });
 
 test("keeps a value that is not an ISO date after the ISO dates, in report order", () => {
@@ -93,9 +142,15 @@ test("words the engine's assessment-date answer and adds none of its own", () =>
   assert.equal(assessmentLabel(undefined), null);
 });
 
-test("computes no date in the browser", () => {
-  for (const file of ["timeline.mjs", "app.mjs"]) {
+test("constructs or formats no date in the results view", () => {
+  // Every playground module except intake.mjs, whose isIsoDate checks a date the user
+  // typed into the guided intake; nothing in the results view may build, parse or
+  // format a date or read the clock.
+  const pattern = /\bDate\s*[.(]|\bnew\s+Date\b|\bTemporal\b|DateTimeFormat|toLocale(?:Date|Time)String|performance\.now/;
+  const files = readdirSync(new URL("../../docs/playground/", import.meta.url)).filter(f => f.endsWith(".mjs") && f !== "intake.mjs");
+  assert.ok(files.includes("timeline.mjs") && files.includes("app.mjs"));
+  for (const file of files) {
     const source = readFileSync(new URL(`../../docs/playground/${file}`, import.meta.url), "utf8");
-    assert.doesNotMatch(source, /\bnew Date\b|\bDate\.(now|parse|UTC)\b|\bIntl\.DateTimeFormat\b/, file);
+    assert.doesNotMatch(source, pattern, file);
   }
 });
