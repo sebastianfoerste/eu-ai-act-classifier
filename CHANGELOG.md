@@ -5,6 +5,8 @@ pull requests.
 
 ## Unreleased
 
+## 0.3.0 (2026-11-16)
+
 Changes since 0.2.2.
 
 ### MCP tools: typed input schema and read-only annotations
