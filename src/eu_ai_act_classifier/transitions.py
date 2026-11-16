@@ -230,8 +230,8 @@ def public_authority_deployer(profile: SystemProfile) -> bool:
 
 def public_authority_sentence(profile: SystemProfile) -> str:
     """Art. 111(2), second sentence, which applies "in any case", so also after an
-    asserted change. It turns on intended use; a public-authority deployer is evidence
-    of that use, for the reviewer to confirm. Starts with a space where not empty."""
+    asserted change. It turns on intended use; a public-authority deployer may indicate
+    that use, for the reviewer to confirm. Starts with a space where not empty."""
 
     if profile.public_authority_use:
         return (

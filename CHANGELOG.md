@@ -21,7 +21,7 @@ pull requests.
   `public_authority_use`, where the 2 August 2030 date of Art. 111(2),
   second sentence, AIA may turn on it. That question says that a
   public-authority deployer may indicate intended use by public
-  authorities, asks an undated system for its date, and names the
+  authorities, asks for the date of an undated system, and names the
   contested Art. 111(2) cut-off where the answer rests on it.
 - The guided intake asks the status exactly there and records "I don't
   know" as null instead of blocking. `transitions.public_authority_status_used`
@@ -55,18 +55,24 @@ pull requests.
 #### Known limits
 
 - A declared Art. 5(1)(ba) or (bb) point that does not yet apply on the
-  assessment date leaves the result high-risk, but the status is then
-  treated as not used (as the Art. 111(2) change answer is). A status
-  given as true on the Annex I route ends determined although the report
-  asks to confirm the intended use. Both were so before this change and
-  are left to a follow-up.
+  assessment date leaves the result high-risk. The engine still reads the
+  status there (the Art. 49(3) and Art. 111(2) items follow it, and on an
+  Annex III point an unset status is still asked), but the report says it
+  is not used and the guided intake does not ask for it; the Art. 111(2)
+  change answer is treated the same way. In the mirror case, where the
+  element facts establish point (ba) or (bb) without a declared practice,
+  the result is prohibited and the Art. 111(2) check still runs.
+- A status given as true for a legacy or undated system ends determined
+  although the report asks to confirm the intended use.
+- These were so before this change and are left to a follow-up.
 - The Art. 111(2) status question is asked after an asserted significant
   change too, where the status changes only the wording of the report.
 
 #### Upgrade notes
 
-- A JSON profile of a deployer on an Annex III point that leaves
-  `deployer_public_authority` unset now ends in `REQUIRES_REVIEW`
+- A JSON profile of a deployer with a high-risk result on an Annex III
+  point that leaves `deployer_public_authority` unset now ends in
+  `REQUIRES_REVIEW`
   (`--strict` exits 1), and so does an undated or legacy Annex I deployer
   profile, other than for a Section B product, that sets neither it nor
   `public_authority_use`. Set the status to keep a determined result.

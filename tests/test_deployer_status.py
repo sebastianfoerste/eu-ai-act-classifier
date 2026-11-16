@@ -3,7 +3,7 @@
 Art. 49(3) AIA turns on whether the deployer is, or acts on behalf of, a public authority or
 Union institution, body, office or agency; Art. 49(5) AIA registers Annex III point 2 at
 national level instead; and the 2 August 2030 date in Art. 111(2), second sentence, AIA turns
-on intended use by public authorities, of which a public-authority deployer is evidence. A
+on intended use by public authorities, which a public-authority deployer may indicate. A
 missing deployer_public_authority used to read like "no" in some of these contexts, so the
 guided intake blocked "I don't know". Each context now raises an open question, and the
 intake records "I don't know" as null.
@@ -68,7 +68,58 @@ def test_an_unknown_status_on_point_2_asks_with_the_art_49_5_pointer(use: bool) 
     assert question.startswith("Art. 49(5) AIA:")
     assert "registered at national level" in question
     assert ("intended to be used by public authorities, but" in question) is use
+    # Art. 49(5) names no addressee, so the sentence is advice, not a duty.
+    assert "should check what the national procedure asks of it" in question
     assert _status_questions(_report(deployer_public_authority=False, **facts)) == []
+
+
+_CUT_OFF_USED = (
+    "Literal reading, confirm with counsel: this uses 2028-08-02 as the Art. 111(2) AIA "
+    "cut-off. If the general date of 2026-08-02 is meant, "
+)
+_CONTESTED = _CUT_OFF_USED + (
+    "the system is not a legacy system and the 2 August 2030 date does not apply to it."
+)
+_UNDATED = (
+    "Give the date the system was placed on the market or put into service "
+    "(placing_on_market_date, putting_into_service_date). "
+    + _CUT_OFF_USED
+    + "only a system placed on the market or put into service before that date is a legacy "
+    "system."
+)
+
+
+@pytest.mark.parametrize(
+    ("dates", "flag"),
+    [
+        pytest.param({}, _UNDATED, id="undated"),
+        pytest.param({"placing_on_market_date": "2026-08-01"}, None, id="before-general-date"),
+        pytest.param({"placing_on_market_date": "2026-08-02"}, _CONTESTED, id="on-general-date"),
+        pytest.param({"putting_into_service_date": "2028-08-01"}, _CONTESTED, id="day-before"),
+        pytest.param(
+            {"placing_on_market_date": "2025-01-01", "putting_into_service_date": "2027-01-01"},
+            None,
+            id="earliest-before-general-date",
+        ),
+        pytest.param(
+            {"placing_on_market_date": "2029-01-01", "putting_into_service_date": "2027-01-01"},
+            _CONTESTED,
+            id="only-legacy-date-in-the-window",
+        ),
+    ],
+)
+def test_the_art_111_2_status_question_flags_the_cut_off_where_the_answer_rests_on_it(
+    dates: dict[str, str], flag: str | None
+) -> None:
+    report = _report(annex_i_legislation="I.A.2", **ANNEX_I, **dates)
+
+    (question,) = _status_questions(report)
+    assert "; a public-authority deployer may indicate that use. Confirm" in question
+    if flag is None:
+        assert "Literal reading" not in question
+        assert question.endswith("(deployer_public_authority).")
+    else:
+        assert question.endswith(f"(deployer_public_authority). {flag}")
 
 
 @pytest.mark.parametrize(

@@ -521,7 +521,7 @@ QUESTIONS: list[dict[str, Any]] = [
         "field": "deployer_public_authority",
         "title": "Is the deployer a public authority or a Union institution, body, office or "
         "agency, or does it act on behalf of one?",
-        "article": "Art. 49(3) and Art. 111(2) AIA",
+        "article": "Art. 49(3), Art. 49(5) and Art. 111(2) AIA",
         "show_if": PUBLIC_AUTHORITY_STATUS_OPEN,
         # Where it is asked, null raises an open question wherever the status changes the
         # result: Art. 49(3) or (5) on an Annex III point, Art. 111(2) for a legacy or
