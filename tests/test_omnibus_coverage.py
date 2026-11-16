@@ -173,7 +173,11 @@ def _exists(token: str) -> bool:
         return any((base / token).exists() for base in bases)
     if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", token):
         return re.search(rf"\b{re.escape(token)}\b", _corpus()) is not None
-    return _in_order(_parts(token), _corpus())
+    if "..." in token:
+        return _in_order(_parts(token), _corpus())
+    # A whole id or text: not part of a longer one (I.A.1 is not found in I.A.10).
+    pattern = rf"(?<![\w.-]){re.escape(token)}(?![\w-]|\.\w)"
+    return re.search(pattern, _corpus()) is not None
 
 
 def test_every_code_token_the_map_names_exists() -> None:
