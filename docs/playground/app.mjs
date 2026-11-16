@@ -2,6 +2,7 @@ import { answersToProfile, compactProfile, droppedFields, profileToAnswers } fro
 import { createWizard } from "./wizard.mjs";
 import { DISPOSITIONS, MAX_BYTES, ROLE_LABELS, TIERS, annexCitation, describeDefault, formatProfile, groupByRole, matchesQuery, parseProfile, practiceCitation, reportIsCurrent } from "./model.mjs";
 import { ShareError, decodeShare, encodeShare, isShareFragment } from "./share.mjs";
+import { assessmentLabel, renderTimeline } from "./timeline.mjs";
 
 const $ = id => document.getElementById(id);
 const input = $("input");
@@ -464,14 +465,18 @@ function sectionDefinitions() {
     {
       title: "Obligation graph · evidence and review",
       items: r.obligation_graph.map(g => ({
-        search: [g.obligation_id, g.article, g.actor, g.trigger, g.requirement, g.evidence_artifact, g.review_status, g.application_date_note],
+        search: [g.obligation_id, g.article, g.actor, g.trigger, g.requirement, g.evidence_artifact, g.review_status, g.application_date_note, assessmentLabel(g.applies_on_assessment_date)],
         render: () => itemCard(badge(REVIEW_TONE[g.review_status] ?? "tone-grey", REVIEW_LABEL[g.review_status] ?? g.review_status), g.requirement, g.article,
-          [`Trigger: ${g.trigger}`, `Evidence: ${g.evidence_artifact}`, dateNote(g.application_date_note)],
+          [`Trigger: ${g.trigger}`, `Evidence: ${g.evidence_artifact}`, dateNote(g.application_date_note), assessmentLabel(g.applies_on_assessment_date) && `Assessment date: ${assessmentLabel(g.applies_on_assessment_date)}`],
           `${ROLE_LABELS[g.actor] ?? g.actor} · applies from ${g.application_date ?? "a date not yet known (see the note)"} · ${SOURCE_LABEL[g.source_status] ?? g.source_status} · ${g.obligation_id}`),
       })),
     },
     {
-      title: "Application timeline",
+      title: "Application timeline", open: true,
+      // The report's dates side by side (D3); the cards below are the same milestones as
+      // text, and the obligation graph section lists every dated item with its note and
+      // its assessment-date answer.
+      lead: () => renderTimeline(document, r, ROLE_LABELS),
       items: r.timeline.map(t => ({
         search: [t.applies_from, t.provision, t.note, t.source_status],
         render: () => itemCard(badge(t.source_status === "binding_level_1" ? "tone-green" : "tone-amber", SOURCE_LABEL[t.source_status] ?? t.source_status), t.provision, t.applies_from, [t.note]),
@@ -536,6 +541,10 @@ function renderSections() {
     heading.append(node("span", "finding-label", section.title));
     summary.append(heading, node("span", "count", String(items.length)));
     const body = node("div", "finding-body");
+    // A section's lead view (the timeline) summarises all its items, so a search,
+    // which shows only matching items, leaves it out.
+    const lead = !query.trim() && section.lead ? section.lead() : null;
+    if (lead) body.append(lead);
     body.append(...items.map(item => item.render()));
     details.append(summary, body);
     binding.append(details);
