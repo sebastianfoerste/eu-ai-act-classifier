@@ -918,6 +918,28 @@ pre:focus-visible {
   white-space: nowrap;
 }
 
+/* The button holds all three names; data-theme on <html>, set by the inline script in
+   the layout before the first paint, decides which one shows. */
+.themeName {
+  display: none;
+}
+
+:root:not([data-theme="light"]):not([data-theme="dark"]) .themeName[data-theme-name="system"],
+:root[data-theme="light"] .themeName[data-theme-name="light"],
+:root[data-theme="dark"] .themeName[data-theme-name="dark"] {
+  display: inline;
+}
+
+/* Text for assistive technology only: the theme announcement and table captions. */
+.visuallyHidden {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 .pageHeaderBar {
   align-items: center;
   display: flex;

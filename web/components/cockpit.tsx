@@ -599,7 +599,7 @@ export function Cockpit() {
             </div>
             <FileText size={18} aria-hidden />
           </div>
-          <div className="tableWrap" role="group" aria-label="Table, scrolls sideways" tabIndex={0}>
+          <div className="tableWrap" role="group" aria-labelledby="tracker-heading" tabIndex={0}>
             <table>
               <thead>
                 <tr>
@@ -757,7 +757,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
         </div>
         <StatusPill label={formatLabel(inventory.reviewStatus)} tone={reviewTone(inventory.reviewStatus)} />
       </div>
-      <div className="tableWrap" role="group" aria-label="Table, scrolls sideways" tabIndex={0}>
+      <div className="tableWrap" role="group" aria-labelledby="system-inventory-heading" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -801,7 +801,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
       </p>
       <div className="reviewTableHeader">
         <div>
-          <h3>System Inventory Controls</h3>
+          <h3 id="inventory-controls-heading">System Inventory Controls</h3>
           <p>{inventory.reviewTable.inventoryControls.reviewNotice}</p>
         </div>
         <StatusPill
@@ -840,8 +840,11 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
         </div>
       </div>
       <div className="controlGrid">
-        <div className="tableWrap" role="group" aria-label="Table, scrolls sideways" tabIndex={0}>
+        <div className="tableWrap" role="group" aria-labelledby="inventory-controls-heading inventory-layers-caption" tabIndex={0}>
           <table>
+            <caption id="inventory-layers-caption" className="visuallyHidden">
+              Layers
+            </caption>
             <thead>
               <tr>
                 <th>Layer</th>
@@ -864,8 +867,11 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
             </tbody>
           </table>
         </div>
-        <div className="tableWrap" role="group" aria-label="Table, scrolls sideways" tabIndex={0}>
+        <div className="tableWrap" role="group" aria-labelledby="inventory-controls-heading inventory-skills-caption" tabIndex={0}>
           <table>
+            <caption id="inventory-skills-caption" className="visuallyHidden">
+              Skills
+            </caption>
             <thead>
               <tr>
                 <th>Skill</th>
@@ -887,7 +893,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
       </div>
       <div className="reviewTableHeader">
         <div>
-          <h3>System Review Table</h3>
+          <h3 id="review-table-heading">System Review Table</h3>
           <p>
             {inventory.reviewTable.summary.rows} rows, {inventory.reviewTable.summary.review_required} requiring review, {inventory.reviewTable.summary.blocked} blocked
           </p>
@@ -919,7 +925,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
         {inventory.reviewTable.reviewTableScale.resetStrategy}{" "}
         {inventory.reviewTable.reviewTableScale.needleInHaystackStrategy}
       </p>
-      <div className="tableWrap" role="group" aria-label="Table, scrolls sideways" tabIndex={0}>
+      <div className="tableWrap" role="group" aria-labelledby="review-table-heading" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -977,7 +983,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
       </div>
       <div className="reviewTableHeader">
         <div>
-          <h3>Review Control Profile</h3>
+          <h3 id="control-profile-heading">Review Control Profile</h3>
           <p>{inventory.reviewTable.controlProfile.routeSummary}</p>
         </div>
         <StatusPill
@@ -986,8 +992,11 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
         />
       </div>
       <div className="controlGrid">
-        <div className="tableWrap" role="group" aria-label="Table, scrolls sideways" tabIndex={0}>
+        <div className="tableWrap" role="group" aria-labelledby="control-profile-heading control-routes-caption" tabIndex={0}>
           <table>
+            <caption id="control-routes-caption" className="visuallyHidden">
+              Routes
+            </caption>
             <thead>
               <tr>
                 <th>Route</th>
@@ -1010,8 +1019,11 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
             </tbody>
           </table>
         </div>
-        <div className="tableWrap" role="group" aria-label="Table, scrolls sideways" tabIndex={0}>
+        <div className="tableWrap" role="group" aria-labelledby="control-profile-heading control-connectors-caption" tabIndex={0}>
           <table>
+            <caption id="control-connectors-caption" className="visuallyHidden">
+              Connectors
+            </caption>
             <thead>
               <tr>
                 <th>Connector</th>

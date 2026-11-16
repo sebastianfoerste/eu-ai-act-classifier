@@ -2,7 +2,7 @@ import { answersToProfile, compactProfile, droppedFields, profileToAnswers } fro
 import { createWizard } from "./wizard.mjs";
 import { DISPOSITIONS, MAX_BYTES, ROLE_LABELS, TIERS, annexCitation, describeDefault, formatProfile, groupByRole, matchesQuery, parseProfile, practiceCitation, reportIsCurrent } from "./model.mjs";
 import { ShareError, decodeShare, encodeShare, isShareFragment } from "./share.mjs";
-import { THEME_LABELS, applyTheme, nextTheme, readTheme } from "./theme.mjs";
+import { wireThemeToggle } from "./theme.mjs";
 import { assessmentLabel, renderTimeline } from "./timeline.mjs";
 
 const $ = id => document.getElementById(id);
@@ -651,15 +651,13 @@ window.addEventListener("beforeunload", event => {
 
 // Colour scheme. theme.js has already applied a stored choice; the button cycles
 // System, Light, Dark and stores nothing but that word.
-const themeStorage = () => { try { return window.localStorage; } catch { return null; } };
-let theme = readTheme(themeStorage());
-const showTheme = () => { $("theme-toggle").textContent = `Theme: ${THEME_LABELS[theme]}`; };
-$("theme-toggle").onclick = () => {
-  theme = nextTheme(theme);
-  applyTheme(document.documentElement, themeStorage(), theme);
-  showTheme();
-};
-showTheme();
+wireThemeToggle({
+  root: document.documentElement,
+  button: $("theme-toggle"),
+  status: $("theme-status"),
+  storage: () => { try { return window.localStorage; } catch { return null; } },
+  events: window,
+});
 
 setMode("guided");
 loadSamples();
