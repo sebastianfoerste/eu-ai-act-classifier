@@ -199,10 +199,8 @@ def _art_111_2_check(profile: SystemProfile) -> str:
     if not facts:
         return ""
     if profile.prohibited_practices:
-        # A public-authority deployer status alone gives the check nothing to compare: the
-        # prohibition applies whatever it is.
-        if not (market_dates(profile) or profile.public_authority_use):
-            return ""
+        # Reached with a date or public_authority_use only: a deployer status alone is no
+        # fact here, as the prohibition applies whatever it is (public_authority_status_used).
         return (
             "Article 111(2) check: not applied, as an Art. 5 prohibited practice is screened. "
             "Art. 111(2) is without prejudice to Art. 5, so the transition does not defer the "
@@ -341,17 +339,19 @@ _UNDATED_CHANGE = (
 
 
 def _no_high_risk_route(profile: SystemProfile) -> str:
+    """No Chapter III date to compare with. Reached with a date or with public_authority_use:
+    a deployer status counts as a fact only on a high-risk route
+    (public_authority_status_used), which has such a date."""
+
     dates = market_dates(profile)
     if dates:
         return (
             f"Article 111(2) check: the system was {describe_dates(dates)}, but no high-risk "
             "route is screened, so there is no Chapter III date to compare with."
         )
-    if profile.public_authority_use:
-        return (
-            "Article 111(2) check: public-authority use is asserted, but no high-risk route is "
-            "screened. The providers and deployers of a high-risk system intended to be used "
-            "by public authorities and placed on the market or put into service before its "
-            f"Chapter III date {PUBLIC_AUTHORITY_DUTY}."
-        )
-    return ""
+    return (
+        "Article 111(2) check: public-authority use is asserted, but no high-risk route is "
+        "screened. The providers and deployers of a high-risk system intended to be used "
+        "by public authorities and placed on the market or put into service before its "
+        f"Chapter III date {PUBLIC_AUTHORITY_DUTY}."
+    )

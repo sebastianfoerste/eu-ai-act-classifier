@@ -308,13 +308,15 @@ def _art_111_2_questions(profile: SystemProfile) -> list[str]:
             else "no placing-on-market or putting-into-service date is given to compare "
             f"with {cut_off}"
         )
-        before = (
+        # public_authority_use is a plain flag, so "not recorded" covers an answer of no too.
+        placed_before = (
             "" if legacy else f" and was placed on the market or put into service before {cut_off}"
         )
         questions.append(
-            f"Art. 111(2) AIA: {when}, and neither public_authority_use nor the deployer's "
-            "status is given. If the system is intended to be used by public authorities"
-            f"{before}, its providers and deployers {PUBLIC_AUTHORITY_DUTY}; a "
+            f"Art. 111(2) AIA: {when}; the profile records no intended use by public "
+            "authorities, and the deployer's status is not given. If the system is intended "
+            f"to be used by public authorities{placed_before}, its providers and deployers "
+            f"{PUBLIC_AUTHORITY_DUTY}; a "
             "public-authority deployer is evidence of that use. Confirm whether the system is "
             "intended to be used by public authorities (public_authority_use). "
             f"{_STATUS_CONFIRM}"
