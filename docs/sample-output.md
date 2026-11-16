@@ -1,9 +1,7 @@
 # Sample Output
 
-This page shows the shape of the output on `main`, run from a clone. Release 0.2.2,
-the current release on PyPI, prints different output in places; see the note after
-the example output. The exact obligation list may grow as the source registry and
-obligation graph are extended.
+This page shows the shape of the output on `main`, run from a clone. The exact
+obligation list may grow as the source registry and obligation graph are extended.
 
 Each output block below is real output of the command or example file named before
 it, run on this repo. "..." marks lines or text left out. `tests/test_sample_output.py`
@@ -59,7 +57,7 @@ When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `exampl
 
 *All 95 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
 
-This output, the worked examples and the playground reflect this repository. Release 0.2.2, the current release on PyPI, which `pip`, `uvx` and eu-reg-mcp's `classify` extra install, does not include the changes listed under Unreleased in [`CHANGELOG.md`](../CHANGELOG.md), among them the changes of 14 October 2026 listed under [Honest limits](overview.md#honest-limits), so its output differs in places. For example, it prints `High-risk: Creditworthiness evaluation and credit scoring` without `of natural persons`, lists the Art. 44 certificate item instead of `high-risk.provider.43.2` for an Annex III point 5(b) provider, and cites the profiling rule as `Art. 6(3) subpara. 2 AIA`. It rejects the `used_for_financial_fraud_detection` field, lists the placeholder `Transparency guidance tracker` instead of the two Art. 50 sources, and names the regulation without `as amended by Regulation (EU) 2026/1744`. Until a release includes these changes, the git form under [Quick start](SETUP.md#quick-start), which installs `main`, runs this version.
+This output, the worked examples and the playground reflect `main`, whose changes since the latest release are listed under Unreleased in [`CHANGELOG.md`](../CHANGELOG.md).
 
 ## CLI Report
 
