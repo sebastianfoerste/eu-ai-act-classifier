@@ -75,7 +75,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 |---|---|---|
 | H1 Guided questionnaire | **Confirmed, built.** Modified: three unknown policies (null routed to review, `III.unsure`, block); `significant_change_after_application_date` is asked only where the engine reads it and records null on "I don't know" (owner decision 1), and `deployer_public_authority` is asked only of a deployer on a high-risk route (item 9) | GOV.UK (Observed); peers' unknown handling (Observed); checks in `tests/test_intake.py` |
 | H2 Label catalog EN/DE | **Confirmed; EN built.** DE parked: German legal terms cannot be checked against the DE Official Journal text from this environment | EuConform, AbdelStark DE terms (Observed); IATE and EUR-Lex not reachable |
-| H3 DOCX/PDF export | **Modified, specified.** Print stylesheet first (no dependency); DOCX as an optional Python extra; rename `wordExportPackage` until real DOCX exists | No peer keeps draft status (Observed); `@page` margin boxes Chrome only (Observed) |
+| H3 DOCX/PDF export | **Modified; PDF built, checked in Chromium only.** Print stylesheet first (no dependency), built; DOCX as an optional Python extra, specified; the cockpit label reads "Draft package" until real DOCX exists (the `wordExportPackage` field keeps its name) | No peer keeps draft status (Observed); `@page` margin boxes Chrome only (Observed) |
 | H4 Cockpit styling, then dark mode | **Styling confirmed and built** without Tailwind ([ADR 0004](../adr/0004-cockpit-styling-without-tailwind.md)). Dark mode specified, not built | Baseline captures |
 | H5 Shareable URL hash | **Confirmed, specified.** Native `deflate-raw` plus base64url, written only on "Create share link"; no dependency | Svelte, TypeScript playground (Observed); 160 to 316 characters per example (Observed) |
 | H6 Evidence tracker | **Confirmed, specified.** Minimal state, owner and reviewed-on date on the cockpit side only | OpenComplAI, ComplianceLint (Observed) |
@@ -146,7 +146,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Risk.** Rule 3: the check stays outside the classification path and is never required for a result. Recording the first hashes needs EUR-Lex access.
 - **Status.** `sources/` pins byte-exact Official Journal snapshots with their SHA-256 in `sources/manifest.json`, and `tests/test_sources.py` fails on drift. Each snapshot's text and element structure were confirmed identical to EUR-Lex on 10 November 2026; the manifest records digests of both and of the EUR-Lex response, and `scripts/compare_sources.py` repeats the comparison on request ("text changed, review required", exit 1; a bot challenge, network failure or incomplete answer is unverified, exit 2). Open: the byte digests of the Publications Office responses have not been recomputed against a fresh download, and `--verify-sources` itself still checks only that each URL answers.
 
-### S8. Draft PDF via print stylesheet, then DOCX (next)
+### S8. Draft PDF via print stylesheet, then DOCX (PDF built and checked in Chromium; Firefox, WebKit and DOCX next)
 
 - **Story.** As counsel I send a draft artifact to a colleague as PDF or Word without losing the draft notice.
 - **References.** Attestor and EuConform PDFs (Observed); npm `docx` and python-docx licences and sizes (Observed); MDN data on `@page` margin boxes (Observed).
@@ -155,6 +155,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Files.** `web/app/globals.css` (print rules), `web/components/cockpit.tsx`, `src/eu_ai_act_classifier/docx_export.py` (extra only), `pyproject.toml` (`[docx]` extra), an ADR update.
 - **Tests.** A test that every artifact rendered for print or DOCX contains `DRAFT_NOTICE`; a test that importing the core package does not import `docx`.
 - **Risk.** Rule 7: the notice must survive every format, so the test covers each. Rule 3: the new dependency sits in an extra, with an ADR.
+- **Status.** The PDF route and the "Draft package" label are built ([ADR 0003](../adr/0003-export-route.md), Implementation). The notice opens every printed page, as the repeating header of a layout table. `web/components/printable-artifact.test.tsx` renders the printable section once per artifact name (synthetic content) and checks that the notice comes first and sits in the repeating header, and pins the section's place in `cockpit.tsx` and the guard while classifying; `web/lib/print.test.ts` checks the notice value, that it is never empty and equals the engine's `DRAFT_NOTICE`, and that the title starts with "DRAFT"; `tests/test_review_dossier.py` checks that every artifact of every bundled example contains `DRAFT_NOTICE`. Checked in Chromium only; Firefox, WebKit and the DOCX extra are open.
 
 ## Design upgrades
 

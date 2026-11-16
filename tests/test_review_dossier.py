@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from eu_ai_act_classifier import SystemProfile, classify
+from eu_ai_act_classifier.artifacts import DRAFT_NOTICE
 from eu_ai_act_classifier.cli import main
 from eu_ai_act_classifier.dossier import (
     REVIEW_DOSSIER_SCHEMA,
@@ -64,3 +65,17 @@ def test_cli_dossier_dir_writes_review_bundle(tmp_path) -> None:
 
     assert (tmp_path / "dossier.md").exists()
     assert (tmp_path / "artifacts" / "fria.md").exists()
+
+
+def test_every_artifact_of_every_bundled_example_carries_the_draft_notice() -> None:
+    # Rule 7 (S8): the notice the cockpit prints first is the one every artifact holds.
+    examples = [
+        p for p in Path("examples").glob("*.json") if p.name != "classification-packet.json"
+    ]
+    assert examples
+    for path in examples:
+        report = classify(SystemProfile.model_validate_json(path.read_text(encoding="utf-8")))
+        dossier = build_review_dossier(report)
+        assert dossier.draft_notice == DRAFT_NOTICE, path.name
+        for artifact in dossier.artifacts:
+            assert DRAFT_NOTICE in artifact.content, (path.name, artifact.name)
