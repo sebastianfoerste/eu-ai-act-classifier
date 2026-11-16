@@ -162,7 +162,7 @@ Unchanged in this change. Peers show a tier word plus checklist (AbdelStark, Obs
 
 ### Exports
 
-No inspected peer keeps a draft status on exported documents (Observed absence in the files read). This project's seven artifacts and dossier already carry `DRAFT_NOTICE`. The PDF route is built (S8, [ADR 0003](../adr/0003-export-route.md); checked in Chromium only) and DOCX is specified and not built. The built printout carries the notice at the top of every page and the artifact text; the wireframe below also shows a source manifest and a generation footer, which it does not have. Running page headers work only in Chrome 131+ (MDN browser-compat-data, Observed), so the banner must be in the page flow:
+No inspected peer keeps a draft status on exported documents (Observed absence in the files read). This project's seven artifacts and dossier already carry `DRAFT_NOTICE`. The PDF route is built (S8, [ADR 0003](../adr/0003-export-route.md); checked in Chromium only) and DOCX is specified and not built. The built printout carries the notice at the top of every page and the full artifact text, including its review status, open questions and source manifest; unlike the wireframe below, it has no generation footer (date, classifier version). Running page headers work only in Chrome 131+ (MDN browser-compat-data, Observed), so the banner must be in the page flow:
 
 ```text
 Print / PDF, A4 (same at 375 px preview)

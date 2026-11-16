@@ -850,6 +850,7 @@ th {
 
   .printSheet {
     border-collapse: collapse;
+    min-width: 0;
     width: 100%;
   }
 
@@ -858,6 +859,8 @@ th {
   }
 
   .printSheet td {
+    border: 0;
+    font-size: inherit;
     padding: 0;
   }
 

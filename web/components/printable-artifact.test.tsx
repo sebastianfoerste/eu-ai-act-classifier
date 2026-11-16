@@ -52,3 +52,26 @@ describe("print stylesheet", () => {
     expect(print).toMatch(/\.printSheet thead\s*\{\s*display: table-header-group;/);
   });
 });
+
+describe("cockpit wiring", () => {
+  // The print rules select `.shell:has(> .printOnly)`, so the section must be a direct
+  // child of the cockpit's <main className="shell">; and while a classification runs
+  // the previous system's artifact must not be printable. Checked in the source, since
+  // the web tests run without a DOM.
+  const cockpit = readFileSync(new URL("./cockpit.tsx", import.meta.url), "utf8");
+
+  it("renders the printable section as the last direct child of main.shell", () => {
+    expect(cockpit).toMatch(
+      /\n {6}\{printable \? <PrintableArtifact doc=\{printable\} \/> : null\}\n {4}<\/main>/,
+    );
+    const shell = cockpit.lastIndexOf('<main className="shell">');
+    const section = cockpit.indexOf("<PrintableArtifact doc={printable} />");
+    expect(shell).toBeGreaterThan(-1);
+    expect(section).toBeGreaterThan(shell);
+  });
+
+  it("builds nothing printable while a classification runs and disables the button", () => {
+    expect(cockpit).toMatch(/activeArtifactPreview && status !== "Classifying"\s*\? printDocument\(/);
+    expect(cockpit).toMatch(/aria-label="Print selected draft artifact"\s*disabled=\{!printable\}/);
+  });
+});
