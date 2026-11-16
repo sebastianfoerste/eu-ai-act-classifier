@@ -7,6 +7,7 @@ from eu_ai_act_classifier import (
     Disposition,
     ProhibitedPractice,
     RiskTier,
+    Role,
     SystemProfile,
     classify,
 )
@@ -135,3 +136,46 @@ def test_screen_is_not_asked_when_a_later_point_is_declared_or_nothing_is_genera
     )
     assert LATER_SCREEN_QUESTION not in classify(declared).open_questions
     assert LATER_SCREEN_QUESTION not in classify(SystemProfile(name="x")).open_questions
+
+
+def test_screen_question_quotes_the_limits_rather_than_paraphrasing_them() -> None:
+    from eu_ai_act_classifier.catalog import ART_5_1A, ART_5_1B
+    from eu_ai_act_classifier.rules.prohibited import LATER_SCREEN_QUESTION
+
+    # The earlier paraphrase of Art. 5(1a)(a) left out an element of point (ii) and did
+    # not name Art. 5(1b) (claim ledger, re-check of 16 November 2026).
+    assert f'Art. 5(1a): "{ART_5_1A}".' in LATER_SCREEN_QUESTION
+    assert f'Art. 5(1b): "{ART_5_1B}".' in LATER_SCREEN_QUESTION
+    assert "without requiring significant technical modification" in LATER_SCREEN_QUESTION
+    assert "declares neither point" in LATER_SCREEN_QUESTION
+
+
+@pytest.mark.parametrize(
+    ("screened", "letter", "with_1b"),
+    [("intimate_imagery", "bb", False), ("child_sexual_abuse_material", "ba", True)],
+)
+def test_the_question_on_one_unscreened_point_quotes_its_limits(
+    screened: str, letter: str, with_1b: bool
+) -> None:
+    from eu_ai_act_classifier.catalog import ART_5_1A, ART_5_1B
+    from eu_ai_act_classifier.models import (
+        ChildSexualAbuseMaterialScreen,
+        IntimateImageryScreen,
+    )
+
+    screen = {
+        "intimate_imagery": IntimateImageryScreen,
+        "child_sexual_abuse_material": ChildSexualAbuseMaterialScreen,
+    }[screened]
+    facts = dict.fromkeys(screen.model_fields, False)
+    profile = SystemProfile(
+        name="x", roles=[Role.PROVIDER], generates_synthetic_content=True, **{screened: facts}
+    )
+
+    (question,) = [
+        q
+        for q in classify(profile).open_questions
+        if q.startswith(f"Art. 5(1)({letter}) AIA (from")
+    ]
+    assert f'Art. 5(1a): "{ART_5_1A}".' in question
+    assert (f'Art. 5(1b): "{ART_5_1B}".' in question) is with_1b
