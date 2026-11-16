@@ -7,6 +7,39 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Omnibus coverage map
+
+#### Added
+
+- `docs/omnibus-coverage.md` lists every amending point of Art. 1 of
+  Regulation (EU) 2026/1744 (points (1) to (43)) and its Arts. 2 to 4 with
+  the classifier's status for each (encoded, flagged for review, outside the
+  classifier's scope, or not encoded) and where the code or the claim ledger
+  handles it. Written on 31 October 2026 and checked again row by row
+  against the Official Journal text pinned in `sources/` and against the
+  code after #14, #59, #55 and #66. `tests/test_omnibus_coverage.py` checks
+  that every point has one row, that every file, symbol and id the map's
+  last column names exists and that every ledger row it names is in the
+  claim ledger. The
+  claim ledger's "in part" row points to the map.
+- The corrigendum to Regulation (EU) 2026/1744 (CELEX 32026R1744R(01), OJ L
+  2026/90810, 29.9.2026) was read on 14 November 2026. It exists in German
+  only and changes one phrase of the German text of Art. 6(1b); the English
+  text the classifier relies on is unaffected. A CORRECTED row in the claim
+  ledger records it.
+
+### Research notes brought up to date
+
+#### Changed
+
+- `docs/research/2026-10-competitive-landscape.md` marks the Art. 50(2)
+  grace-period conflict as resolved (Art. 111(4) AIA: "by 2 December 2026";
+  recital (38): a transitional period of four months), and
+  `docs/research/adaptation-plan.md` records the same Art. 50(2) check
+  and notes that the Art. 5(1)(ba)/(bb) screens are encoded since #30 and
+  that #66 tests them element by element, each as a dated update line next
+  to the original text.
+
 ### MCP tools: typed input schema and read-only annotations
 
 #### Changed
