@@ -5,6 +5,18 @@ pull requests.
 
 ## Unreleased
 
+### Print a draft artifact as PDF (S8)
+
+- The cockpit's Export Pack has a print button. The printed page, or a PDF saved
+  from the print dialog, shows only the draft notice and the selected artifact;
+  the notice opens every printed page. The document title starts with "DRAFT"
+  while printing, also when printing starts from the browser menu. Nothing is
+  printable while a classification runs. No dependency is added
+  ([ADR 0003](docs/adr/0003-export-route.md), parts 1 and 3). Checked in
+  Chromium only.
+- The inventory tile "Word package" reads "Draft package". The inventory JSON
+  field `wordExportPackage` keeps its name.
+
 ### Application-date timeline in the playground (D3)
 
 - The playground's "Application timeline" section opens with the report's
@@ -20,7 +32,7 @@ pull requests.
 ### CI
 
 - The coverage floor rises from 95 % to 96 % (`--cov-fail-under=96`), the
-  integer part of the measured total of 96.30 %.
+  integer part of the measured total of 96.37 %.
 
 ## 0.3.0 (2026-11-16)
 
