@@ -280,6 +280,13 @@ small {
   margin-top: 16px;
 }
 
+/* Grid items default to min-width: auto, so a wide table or code block would widen its
+   panel and the page. With min-width: 0 the content scrolls inside .tableWrap or pre. */
+.cockpitGrid > *,
+.lowerGrid > * {
+  min-width: 0;
+}
+
 .inventoryTrackerPanel {
   margin-top: 16px;
 }
@@ -385,6 +392,17 @@ small {
   gap: 12px;
   justify-content: space-between;
   margin-bottom: 14px;
+}
+
+/* The title block gives way to the header's buttons: a long unbroken status such as
+   draft_only_human_review_required wraps and no longer pushes them out of the panel. */
+.panelHeader > :first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.panelHeader > .toolbar {
+  flex-shrink: 0;
 }
 
 .panelHeader h2 {
