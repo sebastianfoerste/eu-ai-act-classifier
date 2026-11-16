@@ -130,7 +130,8 @@ textarea:focus-visible { outline-offset: -3px; }
 .review-boundary { margin: 11px 24px 20px; font-size: 11px; color: var(--muted); }
 .finding-toolbar { padding: 0 24px; }
 #search { width: 100%; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-subtle); padding: 9px 12px; font-size: 12px; color: var(--ink); }
-#search::placeholder { color: var(--placeholder); }
+/* opacity: Firefox dims a placeholder by default, which would undercut the measured contrast. */
+#search::placeholder, textarea::placeholder, .text-input::placeholder { color: var(--placeholder); opacity: 1; }
 .visible-count { margin: 12px 24px 8px; font-size: 10px; color: var(--muted); }
 .findings { padding: 0 24px 20px; max-height: 640px; overflow: auto; }
 .finding { border: 1px solid var(--line); border-radius: 5px; margin-bottom: 9px; overflow: hidden; }
@@ -281,6 +282,12 @@ footer a { margin-left: 18px; }
 
 /* Colour scheme switch */
 .theme-toggle { font-size: inherit; padding: 4px 0; white-space: nowrap; }
+/* The button holds all three names; data-theme on the root element, set by theme.js
+   before the first paint, decides which one shows. */
+.theme-name { display: none; }
+:root:not([data-theme="light"]):not([data-theme="dark"]) .theme-name[data-theme-name="system"],
+:root[data-theme="light"] .theme-name[data-theme-name="light"],
+:root[data-theme="dark"] .theme-name[data-theme-name="dark"] { display: inline; }
 @media (max-width: 520px) { nav { gap: 16px; } }
 /* D3 application timeline: one column per date the report carries, in date order; a vertical list on narrow screens. */
 .timeline { overflow-x: auto; margin: 4px 0 10px; padding-bottom: 6px; }

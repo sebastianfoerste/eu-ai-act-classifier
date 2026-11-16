@@ -7,8 +7,13 @@ import {
   THEME_LABELS,
   type Theme,
   applyTheme,
+  cycleTheme,
   nextTheme,
   readTheme,
+  restoreTheme,
+  shownTheme,
+  themeAnnouncement,
+  watchTheme,
 } from "./theme";
 
 const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -79,6 +84,47 @@ const FOCUS: Array<[string, string]> = [
   ["blue", "surface-muted"],
 ];
 
+// Every way CSS writes a colour without a token: hex, a colour function, one of the 148
+// named colours, or a system colour. transparent and currentColor are the same in both
+// sets and stay allowed. Only declaration values are read, after var(), url() and strings
+// are taken out, so a selector such as .red or a token such as --red is not a finding.
+const NAMED_COLOURS = `
+  aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue
+  blueviolet brown burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk
+  crimson cyan darkblue darkcyan darkgoldenrod darkgray darkgreen darkgrey darkkhaki
+  darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen
+  darkslateblue darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue
+  dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite
+  gold goldenrod gray green greenyellow grey honeydew hotpink indianred indigo ivory khaki
+  lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan
+  lightgoldenrodyellow lightgray lightgreen lightgrey lightpink lightsalmon lightseagreen
+  lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen
+  magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen
+  mediumslateblue mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream
+  mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid
+  palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum
+  powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown
+  seagreen seashell sienna silver skyblue slateblue slategray slategrey snow springgreen
+  steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen
+`.trim().split(/\s+/);
+const SYSTEM_COLOURS = `
+  accentcolor accentcolortext activetext buttonborder buttonface buttontext canvas canvastext
+  field fieldtext graytext highlight highlighttext linktext mark marktext selecteditem
+  selecteditemtext visitedtext
+`.trim().split(/\s+/);
+const COLOUR = new RegExp(
+  `#[0-9a-f]{3,8}\\b|\\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix|light-dark|device-cmyk)\\(|(?<![\\w-])(?:${[...NAMED_COLOURS, ...SYSTEM_COLOURS].join("|")})(?![\\w-])`,
+  "gi",
+);
+function strayColours(rules: string): string[] {
+  const found: string[] = [];
+  for (const [, property, value] of rules.matchAll(/([a-z-]+)\s*:\s*([^;{}]+)(?=[;}])/g)) {
+    const bare = value.replace(/var\(--[a-z-]+\)|url\([^)]*\)|"[^"]*"|'[^']*'/g, " ");
+    for (const match of bare.match(COLOUR) ?? []) found.push(`${property}: ${match}`);
+  }
+  return found;
+}
+
 describe("colour tokens", () => {
   it("has a light set and two identical dark sets", () => {
     expect(light.selector).toBe(":root");
@@ -97,10 +143,29 @@ describe("colour tokens", () => {
 
   it("writes no colour outside the token sets", () => {
     const rules = css.slice(css.indexOf("* {"));
-    expect(rules.match(/#[0-9a-fA-F]{3,8}\b|(?<![\w-])(?:white|black)(?![\w-])|rgba?\(|hsla?\(/g)).toBeNull();
+    expect(strayColours(rules)).toEqual([]);
+    // Hex anywhere in the rules, also outside a declaration.
+    expect(rules.match(/#[0-9a-fA-F]{3,8}\b/g)).toBeNull();
     for (const [, name] of rules.matchAll(/var\(--([a-z-]+)\)/g)) {
       expect(Object.keys(light.tokens)).toContain(name);
     }
+  });
+
+  it("finds each way of writing a colour and passes tokens", () => {
+    const stray = (value: string) => strayColours(`a { color: ${value}; }`).length;
+    for (const value of [
+      "#fff", "#0a1b2c80", "white", "Black", "red", "rebeccapurple", "rgb(0 0 0)", "rgba(0,0,0,.5)",
+      "hsl(0 0% 0%)", "hwb(0 0% 0%)", "lab(50% 0 0)", "lch(50% 0 0)", "oklab(50% 0 0)", "oklch(50% 0 0)",
+      "color(srgb 0 0 0)", "color-mix(in srgb, var(--text), var(--surface))",
+      "light-dark(var(--text), var(--surface))", "CanvasText",
+    ]) {
+      expect(stray(value), value).toBe(1);
+    }
+    for (const value of ["var(--red)", "var(--blue)", "transparent", "currentColor", "inherit"]) {
+      expect(stray(value), value).toBe(0);
+    }
+    expect(strayColours('.red, a:hover { white-space: nowrap; border: 1px solid var(--border); content: "red"; }')).toEqual([]);
+    expect(strayColours("a { box-shadow: 0 1px 2px grey }")).toEqual(["box-shadow: grey"]);
   });
 
   it.each([
@@ -209,6 +274,71 @@ describe("theme choice", () => {
     expect(storage.data.size).toBe(0);
     applyTheme(root, blocked, "light");
     expect(root.dataset).toEqual({ theme: "light" });
+  });
+
+  it("cycles from the choice the page shows, with storage and without", () => {
+    expect(shownTheme({ dataset: {} })).toBe("system");
+    expect(shownTheme({ dataset: { theme: "dark" } })).toBe("dark");
+    expect(shownTheme({ dataset: { theme: "sepia" } })).toBe("system");
+    for (const storage of [memoryStorage(), blocked, null]) {
+      const root = { dataset: {} as Record<string, string | undefined> };
+      expect(cycleTheme(root, storage)).toBe("light");
+      expect(cycleTheme(root, storage)).toBe("dark");
+      expect(root.dataset).toEqual({ theme: "dark" });
+      expect(cycleTheme(root, storage)).toBe("system");
+      expect(root.dataset).toEqual({});
+    }
+    expect(THEMES.map(themeAnnouncement)).toEqual([
+      "Theme set to System",
+      "Theme set to Light",
+      "Theme set to Dark",
+    ]);
+  });
+
+  it("restores a stored light or dark and leaves the page alone otherwise", () => {
+    const root = { dataset: {} as Record<string, string | undefined> };
+    restoreTheme(root, memoryStorage({ [THEME_KEY]: "dark" }));
+    expect(root.dataset).toEqual({ theme: "dark" });
+    // Blocked or empty storage reads as "system": a choice made on this visit stays.
+    for (const storage of [blocked, null, memoryStorage(), memoryStorage({ [THEME_KEY]: "sepia" })]) {
+      restoreTheme(root, storage);
+      expect(root.dataset).toEqual({ theme: "dark" });
+    }
+    restoreTheme(root, memoryStorage({ [THEME_KEY]: "light" }));
+    expect(root.dataset).toEqual({ theme: "light" });
+  });
+
+  it("shows a choice made in another tab until it stops listening", () => {
+    const listeners = new Set<(event: { key: string | null }) => void>();
+    const events = {
+      addEventListener: (_type: "storage", listener: (event: { key: string | null }) => void) =>
+        void listeners.add(listener),
+      removeEventListener: (_type: "storage", listener: (event: { key: string | null }) => void) =>
+        void listeners.delete(listener),
+    };
+    const fire = (key: string | null) => listeners.forEach((listener) => listener({ key }));
+    const root = { dataset: {} as Record<string, string | undefined> };
+    const storage = memoryStorage();
+    let changes = 0;
+    const stop = watchTheme(events, root, () => storage, () => void changes++);
+    expect(listeners.size).toBe(1);
+
+    storage.setItem(THEME_KEY, "dark");
+    fire("another.key");
+    expect(root.dataset).toEqual({});
+    expect(changes).toBe(0);
+    fire(THEME_KEY);
+    expect(root.dataset).toEqual({ theme: "dark" });
+    expect(changes).toBe(1);
+    // The next click starts from the other tab's choice.
+    expect(cycleTheme(root, storage)).toBe("system");
+    // Key null: the storage was cleared.
+    root.dataset.theme = "light";
+    fire(null);
+    expect(root.dataset).toEqual({});
+
+    stop();
+    expect(listeners.size).toBe(0);
   });
 
   it("applies a stored choice in the inline script of the layout", () => {

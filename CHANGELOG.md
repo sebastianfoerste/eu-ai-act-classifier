@@ -36,6 +36,31 @@ pull requests.
   `--muted-on-tint` (it was 4.47:1), the review-note field has a label,
   and tables and code blocks that scroll can be reached by keyboard.
 
+#### Follow-up: the five points left open by the review
+
+- A click on the Theme button is announced: each surface has a visually
+  hidden `role="status"` element that reads "Theme set to Dark" (or Light,
+  or System). The button holds all three names and the stylesheet shows
+  the one that matches `data-theme`, so with a stored choice the label is
+  right at the first paint, before the playground's module loads or the
+  cockpit hydrates.
+- A choice made in one tab reaches the other open tabs (`storage` event),
+  without an announcement there. The button cycles from the choice the
+  page shows. With blocked storage a choice in the cockpit now lasts
+  across its routes until the page is reloaded.
+- The placeholders of the playground's JSON field and guided date field
+  use `--placeholder`, as the search field does, at full opacity (Firefox
+  dims placeholders by default). This changes the light design slightly:
+  those two placeholders were the browser's default colour.
+- Each of the cockpit's seven scrolling tables takes its accessible name
+  from its panel heading; where one heading has two tables, a visually
+  hidden caption (Layers, Skills, Routes, Connectors) tells them apart.
+- Tests: the playground's button wiring and the cockpit's `ThemeToggle`
+  have unit tests, without a DOM test dependency. The "no colour outside
+  the token sets" guards now also catch the named and system colours and
+  the colour functions (`oklch()`, `color-mix()`, `light-dark()` and the
+  like).
+
 ### Print a draft artifact as PDF (S8)
 
 - The cockpit's Export Pack has a print button. The printed page, or a PDF saved

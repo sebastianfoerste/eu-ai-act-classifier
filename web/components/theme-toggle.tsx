@@ -2,35 +2,48 @@
 
 import { useLayoutEffect, useState } from "react";
 import {
+  THEMES,
   THEME_LABELS,
-  type Theme,
-  applyTheme,
   browserStorage,
-  nextTheme,
-  readTheme,
+  cycleTheme,
+  restoreTheme,
+  themeAnnouncement,
+  watchTheme,
 } from "../lib/theme";
 
 export function ThemeToggle() {
-  // "system" on the server and on the first client render, so hydration matches. The
-  // stored choice is read in the layout effect, before the first paint after hydration.
-  const [theme, setTheme] = useState<Theme>("system");
+  // The button renders all three names and globals.css shows the one that matches
+  // data-theme on <html>. The inline script in the layout sets that attribute before the
+  // first paint, so the label is right before hydration and the markup is the same on
+  // the server and in the browser.
+  const [announcement, setAnnouncement] = useState("");
 
   useLayoutEffect(() => {
-    const stored = readTheme(browserStorage());
-    // React's development remount resets the attributes of <html>, so set it again.
-    applyTheme(document.documentElement, browserStorage(), stored);
-    setTheme(stored);
+    restoreTheme(document.documentElement, browserStorage());
+    // A choice made in another tab is shown here and not announced.
+    return watchTheme(window, document.documentElement, browserStorage, () => setAnnouncement(""));
   }, []);
 
   function cycle() {
-    const next = nextTheme(theme);
-    applyTheme(document.documentElement, browserStorage(), next);
-    setTheme(next);
+    setAnnouncement(themeAnnouncement(cycleTheme(document.documentElement, browserStorage())));
   }
 
   return (
-    <button className="secondaryButton themeToggle" type="button" onClick={cycle}>
-      Theme: {THEME_LABELS[theme]}
-    </button>
+    <>
+      <button className="secondaryButton themeToggle" type="button" onClick={cycle}>
+        {/* One flex item, so the button's gap does not widen the space after the colon. */}
+        <span>
+          Theme:{" "}
+          {THEMES.map((theme) => (
+            <span className="themeName" data-theme-name={theme} key={theme}>
+              {THEME_LABELS[theme]}
+            </span>
+          ))}
+        </span>
+      </button>
+      <span className="visuallyHidden" role="status">
+        {announcement}
+      </span>
+    </>
   );
 }

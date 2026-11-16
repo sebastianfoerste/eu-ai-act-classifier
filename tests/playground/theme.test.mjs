@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import vm from "node:vm";
-import { THEMES, THEME_KEY, THEME_LABELS, applyTheme, nextTheme, readTheme } from "../../docs/playground/theme.mjs";
+import { THEMES, THEME_KEY, THEME_LABELS, applyTheme, nextTheme, readTheme, showTheme, shownTheme, wireThemeToggle } from "../../docs/playground/theme.mjs";
 
 const read = name => readFileSync(new URL(`../../docs/playground/${name}`, import.meta.url), "utf8");
 const css = read("styles.css");
@@ -36,7 +36,9 @@ const TEXT = [
   ["code", "surface-subtle"],
   ["muted", "bg"], ["muted", "paper"], ["muted", "surface-subtle"], ["muted", "surface-sunken"], ["muted", "chip"], ["muted", "grey-tint"], ["muted", "hover"],
   ["muted", "red-tint"], ["muted", "amber-tint"], ["muted", "blue-tint"], ["muted", "green-tint"],
-  ["heading-muted", "bg"], ["placeholder", "surface-subtle"],
+  ["heading-muted", "bg"],
+  // Placeholders: the search field and the JSON field, and the guided date field.
+  ["placeholder", "surface-subtle"], ["placeholder", "paper"],
   ["accent", "bg"], ["accent", "paper"], ["accent", "surface-subtle"], ["accent", "surface-sunken"], ["accent", "accent-tint"],
   ["on-accent", "accent"], ["on-accent", "accent-strong"], ["on-ink", "ink"],
   ["red", "paper"], ["red", "red-tint"], ["red", "error-bg-soft"],
@@ -67,12 +69,82 @@ test("the stylesheet has a light token set and two identical dark ones", () => {
   assert.ok(Object.keys(light.tokens).length > 40);
 });
 
+// Every way CSS writes a colour without a token: hex, a colour function, one of the 148
+// named colours, or a system colour. transparent and currentColor are the same in both
+// sets and stay allowed. Only declaration values are read, after var(), url() and strings
+// are taken out, so a selector such as .red or a token such as --red is not a finding.
+const NAMED_COLOURS = `
+  aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue
+  blueviolet brown burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk
+  crimson cyan darkblue darkcyan darkgoldenrod darkgray darkgreen darkgrey darkkhaki
+  darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen
+  darkslateblue darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue
+  dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite
+  gold goldenrod gray green greenyellow grey honeydew hotpink indianred indigo ivory khaki
+  lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan
+  lightgoldenrodyellow lightgray lightgreen lightgrey lightpink lightsalmon lightseagreen
+  lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen
+  magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen
+  mediumslateblue mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream
+  mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid
+  palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum
+  powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown
+  seagreen seashell sienna silver skyblue slateblue slategray slategrey snow springgreen
+  steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen
+`.trim().split(/\s+/);
+const SYSTEM_COLOURS = `
+  accentcolor accentcolortext activetext buttonborder buttonface buttontext canvas canvastext
+  field fieldtext graytext highlight highlighttext linktext mark marktext selecteditem
+  selecteditemtext visitedtext
+`.trim().split(/\s+/);
+const COLOUR = new RegExp(
+  `#[0-9a-f]{3,8}\\b|\\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix|light-dark|device-cmyk)\\(|(?<![\\w-])(?:${[...NAMED_COLOURS, ...SYSTEM_COLOURS].join("|")})(?![\\w-])`,
+  "gi",
+);
+export function strayColours(rules) {
+  const found = [];
+  for (const [, property, value] of rules.matchAll(/([a-z-]+)\s*:\s*([^;{}]+)(?=[;}])/g)) {
+    const bare = value.replace(/var\(--[a-z-]+\)|url\([^)]*\)|"[^"]*"|'[^']*'/g, " ");
+    for (const match of bare.match(COLOUR) ?? []) found.push(`${property}: ${match}`);
+  }
+  return found;
+}
+
 test("no colour is written outside the token sets", () => {
   const rules = css.slice(css.indexOf("* { box-sizing"));
-  // The keyword as a value only: "white-space" is a property name.
-  assert.deepEqual(rules.match(/#[0-9a-fA-F]{3,8}\b|(?<![\w-])(?:white|black)(?![\w-])|rgba?\(|hsla?\(/g), null);
+  assert.deepEqual(strayColours(rules), []);
+  // Hex anywhere in the rules, also outside a declaration.
+  assert.deepEqual(rules.match(/#[0-9a-fA-F]{3,8}\b/g), null);
   assert.equal(rules.includes("var(--paper)-"), false);
   for (const [, name] of rules.matchAll(/var\(--([a-z-]+)\)/g)) assert.ok(name in light.tokens, name);
+});
+
+test("the guard finds each way of writing a colour and passes tokens", () => {
+  const stray = value => strayColours(`a { color: ${value}; }`).length;
+  for (const value of ["#fff", "#0a1b2c80", "white", "Black", "red", "rebeccapurple", "rgb(0 0 0)", "rgba(0,0,0,.5)",
+    "hsl(0 0% 0%)", "hwb(0 0% 0%)", "lab(50% 0 0)", "lch(50% 0 0)", "oklab(50% 0 0)", "oklch(50% 0 0)",
+    "color(srgb 0 0 0)", "color-mix(in srgb, var(--ink), var(--paper))", "light-dark(var(--ink), var(--paper))", "CanvasText"]) {
+    assert.equal(stray(value), 1, value);
+  }
+  for (const value of ["var(--red)", "var(--blue-tint)", "transparent", "currentColor", "inherit"]) assert.equal(stray(value), 0, value);
+  assert.deepEqual(strayColours(".red, a:hover { white-space: nowrap; border: 1px solid var(--line); content: \"red\"; }"), []);
+  assert.deepEqual(strayColours("a { box-shadow: 0 1px 2px grey }"), ["box-shadow: grey"]);
+});
+
+test("every placeholder uses the placeholder token at full opacity", () => {
+  const rules = [...css.matchAll(/([^{}]*::placeholder[^{}]*)\{([^}]*)\}/g)];
+  assert.equal(rules.length, 1);
+  const [, selector, body] = rules[0];
+  assert.deepEqual(selector.split("*/").pop().trim().split(/,\s*/), ["#search::placeholder", "textarea::placeholder", ".text-input::placeholder"]);
+  assert.equal(body.trim(), "color: var(--placeholder); opacity: 1;");
+  // The surfaces behind them, which the TEXT list pairs with the token.
+  assert.match(css, /\n#search \{[^}]*background: var\(--surface-subtle\);/);
+  assert.match(css, /\ntextarea \{[^}]*background: var\(--surface-subtle\);/);
+  assert.match(css, /\n\.text-input \{[^}]*background: var\(--paper\);/);
+  // Every placeholder in the page sits in one of the three fields.
+  assert.equal(read("index.html").match(/placeholder=/g).length, 2);
+  assert.match(read("wizard.mjs"), /node\("input", "text-input"\);[^}]*input\.placeholder = "YYYY-MM-DD"/);
+  assert.equal([...read("wizard.mjs").matchAll(/\.placeholder\b/g)].length, 1);
 });
 
 for (const [scheme, tokens] of [["light", light.tokens], ["dark", darkBySystem.tokens]]) {
@@ -158,5 +230,111 @@ test("theme.js applies a stored choice before the page script, with the same key
   // A classic script in the head, before any module: it must run before the first paint.
   const html = read("index.html");
   assert.match(html, /<script src="theme\.js"><\/script>\n<\/head>/);
-  assert.match(html, /<button type="button" id="theme-toggle"[^>]*>Theme: System<\/button>/);
+});
+
+function fakeTarget() {
+  const listeners = {};
+  return {
+    addEventListener: (type, listener) => { (listeners[type] ??= []).push(listener); },
+    dispatch: (type, event = {}) => { for (const listener of listeners[type] ?? []) listener(event); },
+    count: type => (listeners[type] ?? []).length,
+  };
+}
+
+function wired(storage, dataset = {}) {
+  const root = { dataset };
+  const button = fakeTarget();
+  const events = fakeTarget();
+  const status = { textContent: "" };
+  wireThemeToggle({ root, button, status, storage: () => storage, events });
+  return { root, button, events, status };
+}
+
+test("the shown choice is the attribute on the root element", () => {
+  assert.equal(shownTheme({ dataset: {} }), "system");
+  assert.equal(shownTheme({ dataset: { theme: "dark" } }), "dark");
+  assert.equal(shownTheme({ dataset: { theme: "sepia" } }), "system");
+  const root = { dataset: {} };
+  showTheme(root, "light");
+  assert.deepEqual(root.dataset, { theme: "light" });
+  showTheme(root, "system");
+  assert.deepEqual(root.dataset, {});
+});
+
+test("a click on the Theme button cycles, stores and announces the choice", () => {
+  const storage = memoryStorage();
+  const { root, button, events, status } = wired(storage);
+  assert.equal(button.count("click"), 1);
+  assert.equal(events.count("storage"), 1);
+  // Wiring changes nothing: theme.js has applied a stored choice already.
+  assert.deepEqual(root.dataset, {});
+  assert.equal(status.textContent, "");
+  button.dispatch("click");
+  assert.deepEqual(root.dataset, { theme: "light" });
+  assert.equal(storage.data.get(THEME_KEY), "light");
+  assert.equal(status.textContent, "Theme set to Light");
+  button.dispatch("click");
+  assert.deepEqual(root.dataset, { theme: "dark" });
+  assert.equal(status.textContent, "Theme set to Dark");
+  button.dispatch("click");
+  assert.deepEqual(root.dataset, {});
+  assert.equal(storage.data.size, 0);
+  assert.equal(status.textContent, "Theme set to System");
+});
+
+test("the button starts from a stored choice that theme.js applied", () => {
+  const storage = memoryStorage({ [THEME_KEY]: "dark" });
+  const { root, button, status } = wired(storage, runEarlyScript(storage));
+  button.dispatch("click");
+  assert.deepEqual(root.dataset, {});
+  assert.equal(status.textContent, "Theme set to System");
+});
+
+test("with blocked storage the button still cycles through all three", () => {
+  for (const storage of [blocked, null]) {
+    const { root, button, status } = wired(storage);
+    button.dispatch("click");
+    button.dispatch("click");
+    assert.deepEqual(root.dataset, { theme: "dark" });
+    assert.equal(status.textContent, "Theme set to Dark");
+    button.dispatch("click");
+    assert.deepEqual(root.dataset, {});
+  }
+});
+
+test("a choice made in another tab is shown, not announced, and the next click starts from it", () => {
+  const storage = memoryStorage();
+  const { root, button, events, status } = wired(storage);
+  button.dispatch("click");
+  assert.equal(status.textContent, "Theme set to Light");
+  storage.setItem(THEME_KEY, "dark");
+  events.dispatch("storage", { key: THEME_KEY });
+  assert.deepEqual(root.dataset, { theme: "dark" });
+  assert.equal(status.textContent, "");
+  button.dispatch("click");
+  assert.deepEqual(root.dataset, {});
+  // Another key changes nothing; a cleared storage (key null) returns to the system setting.
+  storage.setItem(THEME_KEY, "light");
+  events.dispatch("storage", { key: "eu-ai-act-classifier.draft" });
+  assert.deepEqual(root.dataset, {});
+  events.dispatch("storage", { key: THEME_KEY });
+  assert.deepEqual(root.dataset, { theme: "light" });
+  storage.removeItem(THEME_KEY);
+  events.dispatch("storage", { key: null });
+  assert.deepEqual(root.dataset, {});
+});
+
+test("the page wires the button, a hidden status element and all three names", () => {
+  const html = read("index.html");
+  assert.match(html, /<button type="button" id="theme-toggle"[^>]*>Theme: <span class="theme-name" data-theme-name="system">System<\/span><span class="theme-name" data-theme-name="light">Light<\/span><span class="theme-name" data-theme-name="dark">Dark<\/span><\/button><span id="theme-status" class="sr-only" role="status"><\/span>/);
+  for (const theme of THEMES) assert.ok(html.includes(`data-theme-name="${theme}">${THEME_LABELS[theme]}</span>`));
+  // The stylesheet shows exactly the name that matches data-theme, so the label is right
+  // before any script runs.
+  assert.ok(css.includes(".theme-name { display: none; }"));
+  assert.ok(css.includes(`:root:not([data-theme="light"]):not([data-theme="dark"]) .theme-name[data-theme-name="system"],
+:root[data-theme="light"] .theme-name[data-theme-name="light"],
+:root[data-theme="dark"] .theme-name[data-theme-name="dark"] { display: inline; }`));
+  const app = read("app.mjs");
+  assert.match(app, /wireThemeToggle\(\{\s*root: document\.documentElement,\s*button: \$\("theme-toggle"\),\s*status: \$\("theme-status"\),/);
+  assert.match(app, /events: window,/);
 });
