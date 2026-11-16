@@ -821,3 +821,47 @@ th {
     padding: 16px;
   }
 }
+
+/* Printing a draft artifact (ADR 0003, part 1): only the printable section goes to
+   paper or PDF, with the draft notice as the first block in the page flow. */
+.printOnly {
+  display: none;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  .shell > :not(.printOnly) {
+    display: none !important;
+  }
+
+  .shell {
+    padding: 0;
+  }
+
+  .printOnly {
+    color: #000000;
+    display: block;
+  }
+
+  .printNotice {
+    border: 2px solid #000000;
+    font-size: 12pt;
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0 0 12pt;
+    padding: 8pt 10pt;
+  }
+
+  .printOnly pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      monospace;
+    font-size: 10pt;
+    line-height: 1.45;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}

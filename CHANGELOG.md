@@ -5,6 +5,16 @@ pull requests.
 
 ## Unreleased
 
+### Print a draft artifact as PDF (S8)
+
+- The cockpit's Export Pack has a print button. The printed page, or a PDF saved
+  from the print dialog, shows only the draft notice, first, and the selected
+  artifact; the document title starts with "DRAFT" while printing, also when
+  printing starts from the browser menu. No dependency is added
+  ([ADR 0003](docs/adr/0003-export-route.md), parts 1 and 3).
+- The inventory tile "Word package" reads "Draft package". The inventory JSON
+  field `wordExportPackage` keeps its name.
+
 ## 0.3.0 (2026-11-16)
 
 #### Upgrade notes

@@ -7,11 +7,13 @@ import {
   Download,
   FileText,
   Plus,
+  Printer,
   RefreshCw,
   ShieldCheck,
 } from "lucide-react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { formatLabel, labelFor, type LabelNamespace } from "../lib/labels";
+import { printDocument } from "../lib/print";
 import { baseProfile, emptyDerogation, inventory } from "../lib/samples";
 import type {
   ArtifactPreview,
@@ -76,6 +78,43 @@ export function Cockpit() {
       artifacts.artifacts[0]
     );
   }, [activeArtifact, artifacts]);
+
+  const printable = useMemo(
+    () =>
+      activeArtifactPreview
+        ? printDocument(
+            dossier?.draft_notice,
+            labelFor("artifacts", activeArtifactPreview.name),
+            artifacts?.system ?? profile.name,
+            activeArtifactPreview.content,
+          )
+        : null,
+    [activeArtifactPreview, artifacts, dossier, profile.name],
+  );
+
+  // A printed or saved-as-PDF artifact carries "DRAFT" in its document title, whether
+  // printing starts from the button below or from the browser's own menu.
+  useEffect(() => {
+    if (!printable) {
+      return;
+    }
+    let previous = "";
+    const before = () => {
+      previous = document.title;
+      document.title = printable.title;
+    };
+    const after = () => {
+      if (previous) {
+        document.title = previous;
+      }
+    };
+    window.addEventListener("beforeprint", before);
+    window.addEventListener("afterprint", after);
+    return () => {
+      window.removeEventListener("beforeprint", before);
+      window.removeEventListener("afterprint", after);
+    };
+  }, [printable]);
 
   async function loadMetadata() {
     try {
@@ -641,6 +680,16 @@ export function Cockpit() {
               >
                 <Download size={18} aria-hidden />
               </button>
+              <button
+                className="iconButton"
+                type="button"
+                title="Print or save the draft artifact as PDF"
+                aria-label="Print selected draft artifact"
+                disabled={!printable}
+                onClick={() => window.print()}
+              >
+                <Printer size={18} aria-hidden />
+              </button>
             </div>
           </div>
           {isClassifying ? (
@@ -683,6 +732,12 @@ export function Cockpit() {
           )}
         </section>
       </div>
+      {printable ? (
+        <section className="printOnly" aria-label="Printable draft artifact">
+          <p className="printNotice">{printable.notice}</p>
+          <pre>{printable.content}</pre>
+        </section>
+      ) : null}
     </main>
   );
 }
@@ -775,7 +830,7 @@ function SystemInventoryPanel({ inventory }: { inventory: AISystemInventory }) {
           </strong>
         </div>
         <div>
-          <span>Word package</span>
+          <span>Draft package</span>
           <strong>
             {formatLabel(String(inventory.reviewTable.inventoryControls.wordExportPackage.status))}
           </strong>
