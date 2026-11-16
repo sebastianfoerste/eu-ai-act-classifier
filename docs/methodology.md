@@ -203,8 +203,14 @@ engine raises a review question instead of asserting a FRIA conclusion.
 
 ## Obligation Graph
 
-The legacy obligation lists remain for compatibility. The richer
-`obligation_graph` is the product surface for review workflows.
+Every duty is written once, as an item of `obligation_graph`, the product
+surface for review workflows. `obligations` lists the same duties in the same
+order for compatibility: the article, actor and requirement of each graph
+item, with a title, apart from the Art. 50 items, which
+`transparency_obligations` lists. Three kinds of entry repeat a counsel flag
+in the requirement that the graph item carries in its date note: the Art. 4
+entry of a Section B product or a prohibited system, and the Art. 2(2) entry
+of a Section B product in an Annex III area.
 
 Each graph item records:
 

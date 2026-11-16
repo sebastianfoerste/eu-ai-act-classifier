@@ -13,10 +13,10 @@ The table below summarizes the classification status, risk tier, number of direc
 
 | Profile / Model ID | Risk Tier | Scope Status | Roles | Obligations | Next Compliance Deadline |
 | :--- | :--- | :--- | :--- | :---: | :--- |
-| **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 5 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-03-02, so Art. 111(3) AIA does not apply) |
-| **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 9 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2025-09-15, so Art. 111(3) AIA does not apply) |
-| **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 9 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-04-01, so Art. 111(3) AIA does not apply) |
-| **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 15 | 2026-08-02 (Arts. 40-43, 43(2), 47-49, 72 and 73; "Literal reading, confirm with counsel"; 2027-12-02 if they follow the Sections 1 to 3 deferral), then 2027-12-02 (Annex III, Chapter III Sections 1 to 3) |
+| **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 6 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-03-02, so Art. 111(3) AIA does not apply) |
+| **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 10 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2025-09-15, so Art. 111(3) AIA does not apply) |
+| **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 10 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-04-01, so Art. 111(3) AIA does not apply) |
+| **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 24 | 2026-08-02 (Arts. 40-43, 43(2), 47-49, 72 and 73; "Literal reading, confirm with counsel"; 2027-12-02 if they follow the Sections 1 to 3 deferral), then 2027-12-02 (Annex III, Chapter III Sections 1 to 3) |
 
 Each profile above also has the Art. 4 AI literacy item, dated 2025-02-02, the date from which Chapter I applies; the deadline column leaves it out.
 
@@ -43,10 +43,11 @@ Findings:
 
 Obligations:
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
-  - Art. 53(1)(a) AIA: Model technical documentation. Draw up and keep technical documentation per Annex XI.
+  - Art. 53(1)(a) AIA: Model technical documentation. Keep model technical documentation per Annex XI.
   - Art. 53(1)(b) AIA: Information to downstream providers. Provide downstream providers with information per Annex XII.
-  - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
+  - Art. 53(1)(c) AIA: Copyright policy. Maintain a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
+  - Art. 56 AIA: Code of Practice adherence. Track Code of Practice adherence or alternative means of compliance.
 
 Obligation graph:
   - literacy.provider.4: Art. 4 AIA (provider), evidence: AI literacy measures record: training plan, materials and participation by role., review: determined
@@ -108,10 +109,11 @@ Findings:
 
 Obligations:
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
-  - Art. 53(1)(a) AIA: Model technical documentation. Draw up and keep technical documentation per Annex XI.
+  - Art. 53(1)(a) AIA: Model technical documentation. Keep model technical documentation per Annex XI.
   - Art. 53(1)(b) AIA: Information to downstream providers. Provide downstream providers with information per Annex XII.
-  - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
+  - Art. 53(1)(c) AIA: Copyright policy. Maintain a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
+  - Art. 56 AIA: Code of Practice adherence. Track Code of Practice adherence or alternative means of compliance.
   - Art. 55(1)(a) AIA: Model evaluation. Perform model evaluation, including adversarial testing.
   - Art. 55(1)(b) AIA: Systemic-risk mitigation. Assess and mitigate systemic risks at Union level.
   - Art. 55(1)(c) AIA: Serious-incident tracking. Track, document and report serious incidents.
@@ -181,10 +183,11 @@ Findings:
 
 Obligations:
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
-  - Art. 53(1)(a) AIA: Model technical documentation. Draw up and keep technical documentation per Annex XI.
+  - Art. 53(1)(a) AIA: Model technical documentation. Keep model technical documentation per Annex XI.
   - Art. 53(1)(b) AIA: Information to downstream providers. Provide downstream providers with information per Annex XII.
-  - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
+  - Art. 53(1)(c) AIA: Copyright policy. Maintain a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
+  - Art. 56 AIA: Code of Practice adherence. Track Code of Practice adherence or alternative means of compliance.
   - Art. 55(1)(a) AIA: Model evaluation. Perform model evaluation, including adversarial testing.
   - Art. 55(1)(b) AIA: Systemic-risk mitigation. Assess and mitigate systemic risks at Union level.
   - Art. 55(1)(c) AIA: Serious-incident tracking. Track, document and report serious incidents.
@@ -260,11 +263,20 @@ Obligations:
   - Art. 13 AIA: Transparency to deployers. Provide instructions for use enabling deployers to comply.
   - Art. 14 AIA: Human oversight. Design the system for effective oversight by natural persons.
   - Art. 15 AIA: Accuracy, robustness, cybersecurity. Achieve appropriate accuracy, robustness and cybersecurity.
-  - Art. 17 AIA: Quality management system. Put a quality management system in place.
-  - Art. 43 AIA: Conformity assessment. Undergo the applicable conformity assessment before market placement.
-  - Art. 47 AIA: EU declaration of conformity. Draw up and keep an EU declaration of conformity.
-  - Art. 48 AIA: CE marking. Affix the CE marking to indicate conformity.
-  - Art. 49 AIA: Registration. Register the system in the EU database before market placement.
+  - Art. 16 AIA: Provider obligations. Ensure the high-risk system complies with Chapter III requirements.
+  - Art. 17 AIA: Quality management system. Maintain a quality management system.
+  - Art. 18 AIA: Document retention. Keep technical documentation, logs and conformity documentation.
+  - Art. 19 AIA: Log retention. Keep automatically generated logs where under provider control.
+  - Art. 20 AIA: Corrective action and notification. Take corrective action and inform relevant parties where required.
+  - Art. 21 AIA: Authority cooperation. Cooperate with competent authorities and provide requested information.
+  - Art. 40 AIA: Harmonised standards. Track applicable harmonised standards and standardisation deliverables. Implementing Decision (EU) 2026/2274 (OJ L, 2026/2274, 14.10.2026) published the ...
+  - Art. 41 AIA: Common specifications. Assess common specifications where harmonised standards are unavailable or insufficient.
+  - Art. 42 AIA: Presumption of conformity. Map implemented controls to standards, specifications or alternative evidence.
+  - Art. 43 AIA: Conformity assessment. Complete the applicable conformity assessment.
+  - Art. 43(2) AIA: Conformity assessment based on internal control. Follow the conformity assessment procedure based on internal control (Annex VI), which does not involve a notified body.
+  - Art. 47 AIA: EU declaration of conformity. Draw up and keep the EU declaration of conformity.
+  - Art. 48 AIA: CE marking. Affix CE marking where required.
+  - Art. 49 AIA: Registration. Register the provider and system in the EU database where required.
   - Art. 72 AIA: Post-market monitoring. Operate a post-market monitoring system based on a post-market monitoring plan, which is part of the Annex IV technical documentation. The Commission's guidance on the plan, including a template, is due by 2 September 2027 (Art. 72(3) AIA as replaced by Art. 1, point (30) of Regulation (EU) 2026/1744).
   - Art. 73 AIA: Serious incident reporting. Report serious incidents to the market surveillance authorities of the Member States where the incident occurred (Art. 73(1) AIA), or to the AI Office where it is exclusively competent for the system under Art. 75(1), as for AI systems based on a general-purpose AI model developed by the same provider or its undertaking, with the exceptions listed there, and systems of designated very large online platforms or search engines (Art. 75(1a) AIA, inserted by Art. 1, point (31) of Regulation (EU) 2026/1744).
 
@@ -277,6 +289,13 @@ Documentation to maintain:
 
 Obligation graph:
   - literacy.provider.4: Art. 4 AIA (provider), evidence: AI literacy measures record: training plan, materials and participation by role., review: determined
+  - high-risk.provider.9: Art. 9 AIA (provider), evidence: Risk management file., review: determined
+  - high-risk.provider.10: Art. 10 AIA (provider), evidence: Data governance record., review: determined
+  - high-risk.provider.11: Art. 11 AIA (provider), evidence: Annex IV technical documentation., review: determined
+  - high-risk.provider.12: Art. 12 AIA (provider), evidence: Event logging design record., review: determined
+  - high-risk.provider.13: Art. 13 AIA (provider), evidence: Instructions for use., review: determined
+  - high-risk.provider.14: Art. 14 AIA (provider), evidence: Human oversight design record., review: determined
+  - high-risk.provider.15: Art. 15 AIA (provider), evidence: Accuracy, robustness and cybersecurity test record., review: determined
   - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
   - high-risk.provider.17: Art. 17 AIA (provider), evidence: Quality management system file., review: determined
   - high-risk.provider.18: Art. 18 AIA (provider), evidence: Document retention register., review: determined
@@ -284,21 +303,21 @@ Obligation graph:
   - high-risk.provider.20: Art. 20 AIA (provider), evidence: Corrective-action and notification log., review: review_required
   - high-risk.provider.21: Art. 21 AIA (provider), evidence: Authority cooperation protocol., review: review_required
   - high-risk.provider.40: Art. 40 AIA (provider), evidence: Standards applicability matrix., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
   - high-risk.provider.41: Art. 41 AIA (provider), evidence: Common specifications assessment., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
   - high-risk.provider.42: Art. 42 AIA (provider), evidence: Presumption of conformity mapping., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
   - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
   - high-risk.provider.43.2: Art. 43(2) AIA (provider), evidence: Annex VI internal-control assessment record., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
   - high-risk.provider.47: Art. 47 AIA (provider), evidence: EU declaration of conformity., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
   - high-risk.provider.48: Art. 48 AIA (provider), evidence: CE marking record., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
   - high-risk.provider.49: Art. 49 AIA (provider), evidence: EU database registration record., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
   - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan., review: review_required
       Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter IX duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
   - high-risk.provider.73: Art. 73 AIA (provider), evidence: Serious incident register., review: review_required

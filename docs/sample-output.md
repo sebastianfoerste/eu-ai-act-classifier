@@ -41,7 +41,7 @@ Source manifest:
   ...
 ```
 
-A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons`, and 15 cited obligations, for example:
+A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons`, and 24 cited obligations, for example:
 
 ```text
 ...
@@ -53,9 +53,9 @@ A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK 
 
 When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](../examples/classification-packet.md) and [`examples/classification-packet.json`](../examples/classification-packet.json).
 
-![Actual CLI output of eu-ai-act-classify examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with its 15 obligations, the obligation graph, the binding application timeline and the source manifest](demo.png)
+![Actual CLI output of eu-ai-act-classify examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with its 24 obligations, the obligation graph, the binding application timeline and the source manifest](demo.png)
 
-*All 95 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
+*All 111 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
 
 This output, the worked examples and the playground reflect `main`, whose changes since the latest release are listed under Unreleased in [`CHANGELOG.md`](../CHANGELOG.md).
 
@@ -87,22 +87,36 @@ Findings:
 
 ...
 
+Documentation to maintain:
+  - Art. 11 AIA + Annex IV: Technical documentation. Annex IV technical documentation, kept current.
+  - Art. 9 AIA: Risk management file. Documented risk management system and its results.
+  - Art. 13 AIA: Instructions for use. Instructions enabling deployer compliance.
+  - Art. 17 AIA: QMS documentation. Written quality management system policies and procedures.
+  - Art. 47 AIA: EU declaration of conformity. Signed EU declaration of conformity.
+
 Obligation graph:
   - literacy.provider.4: Art. 4 AIA (provider), evidence: AI literacy measures record: training plan, materials and participation by role., review: determined
+  - high-risk.provider.9: Art. 9 AIA (provider), evidence: Risk management file., review: determined
+  - high-risk.provider.10: Art. 10 AIA (provider), evidence: Data governance record., review: determined
+  - high-risk.provider.11: Art. 11 AIA (provider), evidence: Annex IV technical documentation., review: determined
+  - high-risk.provider.12: Art. 12 AIA (provider), evidence: Event logging design record., review: determined
+  - high-risk.provider.13: Art. 13 AIA (provider), evidence: Instructions for use., review: determined
+  - high-risk.provider.14: Art. 14 AIA (provider), evidence: Human oversight design record., review: determined
+  - high-risk.provider.15: Art. 15 AIA (provider), evidence: Accuracy, robustness and cybersecurity test record., review: determined
   - high-risk.provider.16: Art. 16 AIA (provider), evidence: Provider compliance responsibility matrix., review: determined
-  ...
+...
   - high-risk.provider.43: Art. 43 AIA (provider), evidence: Conformity assessment file., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
   - high-risk.provider.43.2: Art. 43(2) AIA (provider), evidence: Annex VI internal-control assessment record., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
-  ...
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
+...
   - high-risk.provider.72: Art. 72 AIA (provider), evidence: Post-market monitoring plan., review: review_required
       Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter IX duty applies from 2026-08-02 (Art. 113, second paragraph). If it is read as following that deferral, 2027-12-02 applies.
-  ...
+...
 
 Binding application timeline:
   2025-02-02: Chapters I-II, incl. Art. 5 (prohibited practices)
-  ...
+...
 
 Advisory overlay:
   - AI-system-definition guidance: Use the Commission AI-system-definition guidelines to support the scope analysis. This advisory note does not determine legal scope.
@@ -137,22 +151,23 @@ Disposition: REQUIRES_REVIEW
 
 Obligations:
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, ... Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
-  - Art. 26 AIA: Deployer obligations. Use per instructions, assign human oversight, monitor use, keep logs. Where the deployer is itself a public authority or Union institution, body, office or agency and finds that the system has not been registered in the EU database, do not use it and inform the provider or the distributor (Art. 26(8) AIA).
+  - Art. 26 AIA: Deployer obligations. Use the system per instructions, assign oversight, monitor operation and keep logs. Where the deployer is itself a public authority or Union institution, body, ...
   - Art. 49(3) AIA: Registration of use by a public-authority deployer. Where the deployer is, or acts on behalf of, a public authority or Union institution, body, office or agency: register as deployer, select the system and register its use in the EU database before putting it into service or using it. Selecting the system presupposes that it is registered there, so do not use a system that is not.
+  - Art. 111(2) AIA: System already placed on the market or put into service. Apart from Art. 5, the Regulation applies only if the design changes significantly as from 2027-12-02. Confirm whether it ...
 
 Obligation graph:
   - literacy.deployer.4: Art. 4 AIA (deployer), evidence: AI literacy measures record: training plan, materials and participation by role., review: review_required
-      Literal reading, confirm with counsel: Art. 111(2) AIA applies this Regulation to a high-risk system put into service on 2026-09-01, before 2027-12-02, only if its design changes significantly as from that date, so on its wording Art. 4 would apply to it only then. This report keeps the Art. 4 dating as the conservative reading. ... Which date Art. 111(2) means is itself contested (see the Art. 111(2) item).
+      Literal reading, confirm with counsel: Art. 111(2) AIA applies this Regulation to a high-risk system put into service on 2026-09-01, before 2027-12-02, only if its design changes significantly ...
   - high-risk.deployer.26: Art. 26 AIA (deployer), evidence: Deployer operating procedure and monitoring log., review: review_required
       Art. 111(2) AIA: the system was put into service on 2026-09-01, before 2027-12-02. Whatever date this item gives, the duty attaches only once the system's design changes significantly as from 2027-12-02, and by 2 August 2030 in any case, as the system is intended to be used by public authorities. Literal reading, confirm with counsel: this uses 2027-12-02 as the Art. 111(2) AIA cut-off. ...
   - high-risk.deployer.49.3: Art. 49(3) AIA (deployer), evidence: EU database registration-of-use record., review: review_required
-      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. 113, second paragraph). ... Art. 111(2) AIA: the system was put into service on 2026-09-01, before 2027-12-02. ...
+      Literal reading, confirm with counsel: Art. 113, third paragraph, point (c) AIA defers only Chapter III, Sections 1, 2 and 3, so this Chapter III, Section 5 duty applies from 2026-08-02 (Art. ...
   - high-risk.deployer.111.2: Art. 111(2) AIA (deployer), evidence: First placing-on-market or putting-into-service record and design-change log., review: review_required
       Literal reading, confirm with counsel: Art. 111(2) AIA refers to "the date of application of Chapter III referred to in Article 113", and Art. 113 gives Chapter III no single date ... As the system is intended to be used by public authorities, its providers and deployers in any case take the necessary steps to comply with the requirements and obligations laid down in this Regulation by 2 August 2030.
 
 Open questions for review:
   ? Art. 49(3) AIA: the system is intended to be used by public authorities, but the deployer's status is not given. ...
-  ...
+...
   ? Art. 111(2) AIA: the system was put into service on 2026-09-01, before 2027-12-02. Confirm whether its design changes significantly as from that date, and the date of any such change (significant_change_after_application_date); ... Literal reading, confirm with counsel: this uses 2027-12-02 as the Art. 111(2) AIA cut-off. ...
 ...
 ```

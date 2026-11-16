@@ -105,7 +105,7 @@ def test_life_insurer_carries_provider_and_deployer_duties() -> None:
     assert "Art. 44 AIA" not in graph
     # Dates and counts stated in docs/worked-examples/life-insurer-pricing.md: the
     # Section 5 and Chapter IX items, the Art. 43(2) item among them, carry the literal
-    # Art. 113 date; the Section 3 items carry the point (c)(i) date; the two Art. 4 items
+    # Art. 113 date; the Section 2 and 3 items carry the point (c)(i) date; the two Art. 4 items
     # (provider and deployer) carry the Chapter I date.
     literal = {f"Art. {n} AIA" for n in (40, 41, 42, 43, 47, 48, 49, 72, 73)} | {"Art. 43(2) AIA"}
     for item in report.obligation_graph:
@@ -114,10 +114,10 @@ def test_life_insurer_carries_provider_and_deployer_duties() -> None:
         else:
             expected = "2026-08-02" if item.article in literal else "2027-12-02"
         assert item.application_date == expected, item.obligation_id
-    assert len([ob for ob in report.obligations if ob.applies_to.value == "provider"]) == 15
+    assert len([ob for ob in report.obligations if ob.applies_to.value == "provider"]) == 24
     assert len([ob for ob in report.obligations if ob.applies_to.value == "deployer"]) == 3
     assert len(report.documentation_required) == 5
-    assert len(report.obligation_graph) == 20
+    assert len(report.obligation_graph) == 27
     assert (
         sum(item.review_status.value == "review_required" for item in report.obligation_graph) == 13
     )

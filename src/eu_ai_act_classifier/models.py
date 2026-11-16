@@ -645,6 +645,9 @@ class ObligationGraphItem(BaseModel):
     # after a significant change under Art. 111(2) AIA. applies_on_assessment_date reads them.
     _deferred_date: str | None = PrivateAttr(default=None)
     _after_significant_change: bool = PrivateAttr(default=False)
+    # The requirement of the report.obligations entry where it differs from this item's:
+    # the entry repeats a counsel flag that the item carries in application_date_note.
+    _listed_requirement: str | None = PrivateAttr(default=None)
 
 
 class AdvisoryNote(BaseModel):
