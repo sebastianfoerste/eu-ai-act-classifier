@@ -14,9 +14,10 @@ The seven draft artifacts and the dossier are Markdown and JSON, each with `DRAF
 
 ## Implementation
 
-- Part 1: the cockpit's Export Pack has a print button. `web/lib/print.ts` builds what is printed: the dossier's `draft_notice` (or, if it is missing, a copy of `DRAFT_NOTICE` that a test keeps equal to the engine's) as the first block, then the selected artifact, under a document title that starts with "DRAFT". The title is set on `beforeprint` and restored on `afterprint`, so it also applies when printing starts from the browser menu. The `@media print` rules in `web/app/globals.css` hide everything else in the page flow; there are no `@page` margin boxes.
+- Part 1: the cockpit's Export Pack has a print button. `web/lib/print.ts` builds what is printed: the dossier's `draft_notice` (or, if it is missing, a copy of `DRAFT_NOTICE` that a test keeps equal to the engine's) and the selected artifact, under a document title that starts with "DRAFT". The title is set on `beforeprint` and restored on `afterprint`, so it also applies when printing starts from the browser menu. `web/components/printable-artifact.tsx` puts the notice in the header group of a layout table, which browsers repeat at the top of every printed page, and the artifact in its body; no `@page` margin boxes are used. The `@media print` rules in `web/app/globals.css` hide the rest of the cockpit only while a printable section exists; nothing is printable while a classification runs, so the previous system's artifact cannot be printed then.
 - Part 3: the tile reads "Draft package". The inventory field keeps its name, `wordExportPackage`, because renaming it would change the inventory JSON that integrations read.
-- Checked in Chromium (print media and a PDF of the page): only the notice and the artifact print, the notice first. Firefox and WebKit were not available where this was built and remain to be checked.
+- Tests: `web/components/printable-artifact.test.tsx` renders the printable section for each of the seven artifacts and checks that the notice comes before the artifact and sits in the repeating header, and checks the print rules; `web/lib/print.test.ts` checks the notice value, its fallback and the title; `tests/test_review_dossier.py` checks that every artifact of every bundled example contains `DRAFT_NOTICE`.
+- Checked in Chromium only (print media and saved PDFs of all seven artifacts: the notice opens every page). Firefox and WebKit, which S8's acceptance names, were not available where this was built and remain to be checked.
 
 ## Consequences
 

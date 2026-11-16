@@ -823,7 +823,9 @@ th {
 }
 
 /* Printing a draft artifact (ADR 0003, part 1): only the printable section goes to
-   paper or PDF, with the draft notice as the first block in the page flow. */
+   paper or PDF. The draft notice is the first block in the page flow and, as the
+   header group of a layout table, repeats at the top of every printed page. Pages
+   without a printable section print as they are. */
 .printOnly {
   display: none;
 }
@@ -833,11 +835,11 @@ th {
     background: #ffffff;
   }
 
-  .shell > :not(.printOnly) {
+  .shell:has(> .printOnly) > :not(.printOnly) {
     display: none !important;
   }
 
-  .shell {
+  .shell:has(> .printOnly) {
     padding: 0;
   }
 
@@ -846,13 +848,26 @@ th {
     display: block;
   }
 
+  .printSheet {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .printSheet thead {
+    display: table-header-group;
+  }
+
+  .printSheet td {
+    padding: 0;
+  }
+
   .printNotice {
     border: 2px solid #000000;
-    font-size: 12pt;
+    font-size: 11pt;
     font-weight: 700;
     line-height: 1.4;
-    margin: 0 0 12pt;
-    padding: 8pt 10pt;
+    margin: 0 0 10pt;
+    padding: 6pt 9pt;
   }
 
   .printOnly pre {

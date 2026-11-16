@@ -14,6 +14,7 @@ import {
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { formatLabel, labelFor, type LabelNamespace } from "../lib/labels";
 import { printDocument } from "../lib/print";
+import { PrintableArtifact } from "./printable-artifact";
 import { baseProfile, emptyDerogation, inventory } from "../lib/samples";
 import type {
   ArtifactPreview,
@@ -79,9 +80,11 @@ export function Cockpit() {
     );
   }, [activeArtifact, artifacts]);
 
+  // Nothing is printable while a classification runs: the preview still shows the
+  // previous system's artifacts until the new dossier arrives.
   const printable = useMemo(
     () =>
-      activeArtifactPreview
+      activeArtifactPreview && status !== "Classifying"
         ? printDocument(
             dossier?.draft_notice,
             labelFor("artifacts", activeArtifactPreview.name),
@@ -89,7 +92,7 @@ export function Cockpit() {
             activeArtifactPreview.content,
           )
         : null,
-    [activeArtifactPreview, artifacts, dossier, profile.name],
+    [activeArtifactPreview, artifacts, dossier, profile.name, status],
   );
 
   // A printed or saved-as-PDF artifact carries "DRAFT" in its document title, whether
@@ -732,12 +735,7 @@ export function Cockpit() {
           )}
         </section>
       </div>
-      {printable ? (
-        <section className="printOnly" aria-label="Printable draft artifact">
-          <p className="printNotice">{printable.notice}</p>
-          <pre>{printable.content}</pre>
-        </section>
-      ) : null}
+      {printable ? <PrintableArtifact doc={printable} /> : null}
     </main>
   );
 }
