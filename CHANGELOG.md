@@ -7,6 +7,33 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Dark mode on the playground and the cockpit
+
+#### Added
+
+- Both surfaces follow the system's colour scheme, and a Theme button in
+  each header cycles System, Light and Dark. The choice is stored as one
+  word in the browser's local storage and applied before the first paint
+  (`docs/playground/theme.js`; an inline script in `web/app/layout.tsx`).
+  `PRIVACY.md` names that stored value.
+- `tests/playground/theme.test.mjs` and `web/lib/theme.test.ts` check each
+  token set: text at 4.5:1 on its surface, the focus ring at 3:1, in the
+  dark set also the line around a button, select or input at 3:1; that
+  the two dark blocks are identical; and that no colour is written
+  outside the token sets.
+
+#### Changed
+
+- Every colour in `docs/playground/styles.css` and `web/app/globals.css`
+  is a token. The playground's light values are the ones it had, except
+  that eight near-identical surface tints fold into two (at most 2 of 255
+  per channel on seven declarations).
+- Accessibility, so that axe (WCAG 2.2 AA tags) reports nothing on either
+  surface in either scheme: the playground's brand link takes its name
+  from its text; in the cockpit, muted text on the tinted surface uses
+  `--muted-on-tint` (it was 4.47:1), the review-note field has a label,
+  and tables and code blocks that scroll can be reached by keyboard.
+
 ### Claim ledger checked again in the pinned texts
 
 #### Changed
