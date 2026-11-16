@@ -31,10 +31,10 @@ export function contrast(a, b) {
 
 // Text on the surface it is drawn on: WCAG 2.2 AA, 4.5:1.
 const TEXT = [
-  ["ink", "bg"], ["ink", "paper"], ["ink", "surface-subtle"], ["ink", "surface-sunken"], ["ink", "selected"], ["ink", "hover"],
+  ["ink", "bg"], ["ink", "paper"], ["ink", "surface-subtle"], ["ink", "surface-sunken"], ["ink", "selected"], ["ink", "hover"], ["ink", "error-bg-soft"],
   ["ink-soft", "paper"], ["ink-soft", "surface-sunken"],
   ["code", "surface-subtle"],
-  ["muted", "bg"], ["muted", "paper"], ["muted", "surface-subtle"], ["muted", "surface-sunken"], ["muted", "chip"], ["muted", "grey-tint"],
+  ["muted", "bg"], ["muted", "paper"], ["muted", "surface-subtle"], ["muted", "surface-sunken"], ["muted", "chip"], ["muted", "grey-tint"], ["muted", "hover"],
   ["muted", "red-tint"], ["muted", "amber-tint"], ["muted", "blue-tint"], ["muted", "green-tint"],
   ["heading-muted", "bg"], ["placeholder", "surface-subtle"],
   ["accent", "bg"], ["accent", "paper"], ["accent", "surface-subtle"], ["accent", "surface-sunken"], ["accent", "accent-tint"],

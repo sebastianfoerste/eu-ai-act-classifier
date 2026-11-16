@@ -47,6 +47,7 @@ const TEXT: Array<[string, string]> = [
   ["muted", "background"],
   ["muted", "surface"],
   ["muted-on-tint", "surface-muted"],
+  ["blue", "background"],
   ["blue", "surface"],
   ["blue", "info-bg"],
   ["on-primary", "blue"],
@@ -62,11 +63,17 @@ const TEXT: Array<[string, string]> = [
 // Below 4.5:1 in the light set, which is why --muted-on-tint exists and no rule puts
 // --muted on --surface-muted. The dark set needs no such exception.
 const LIGHT_BELOW: Array<[string, string]> = [["muted", "surface-muted"]];
-// The line around a button, select or input, and the focus ring, in the dark set: 3:1.
+// The line around a button, select or input, in the dark set: 3:1.
 const DARK_LINES: Array<[string, string]> = [
   ["control-border", "surface"],
   ["control-border", "surface-muted"],
+  ["control-border", "background"],
+  ["control-border", "danger-bg"],
   ["input-border", "surface"],
+  ["input-border", "surface-muted"],
+];
+// The focus ring, in both sets: 3:1.
+const FOCUS: Array<[string, string]> = [
   ["blue", "background"],
   ["blue", "surface"],
   ["blue", "surface-muted"],
@@ -130,12 +137,21 @@ describe("colour tokens", () => {
     }
   });
 
-  it("dark: control lines and the focus ring reach 3:1", () => {
+  it("dark: control lines reach 3:1", () => {
     for (const [line, surface] of DARK_LINES) {
       expect(
         contrast(darkBySystem.tokens[line], darkBySystem.tokens[surface]),
         `--${line} on --${surface}`,
       ).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it.each([
+    ["light", light.tokens],
+    ["dark", darkBySystem.tokens],
+  ] as const)("%s: the focus ring reaches 3:1", (_scheme, tokens) => {
+    for (const [ring, surface] of FOCUS) {
+      expect(contrast(tokens[ring], tokens[surface]), `--${ring} on --${surface}`).toBeGreaterThanOrEqual(3);
     }
   });
 

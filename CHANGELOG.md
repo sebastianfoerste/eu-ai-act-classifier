@@ -19,9 +19,10 @@ pull requests.
   on white; its rules use the tokens (`--print-ink`, `--surface`).
 - `tests/playground/theme.test.mjs` and `web/lib/theme.test.ts` check each
   token set: text at 4.5:1 on its surface, the focus ring at 3:1, in the
-  dark set also the line around a button, select or input at 3:1; that
-  the two dark blocks are identical; and that no colour is written
-  outside the token sets.
+  dark set also the control-line tokens at 3:1; that the two dark blocks
+  are identical; and that no colour is written outside the token sets.
+  The playground's search field and guided-answer cards keep the divider
+  line, below 3:1 in both sets.
 
 #### Changed
 
