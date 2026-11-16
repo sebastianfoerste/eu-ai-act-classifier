@@ -35,8 +35,8 @@ Changes since 0.2.2.
   grace-period conflict as resolved (Art. 111(4) AIA: "by 2 December 2026";
   recital (38): a transitional period of four months), and
   `docs/research/adaptation-plan.md` notes that the Art. 5(1)(ba)/(bb)
-  screens are encoded since #30 and the Art. 4 duty since #55, each as a
-  dated update line next to the original text.
+  screens are encoded since #30 and that #66 tests them element by
+  element, each as a dated update line next to the original text.
 
 ### MCP tools: typed input schema and read-only annotations
 
