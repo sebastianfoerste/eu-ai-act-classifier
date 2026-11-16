@@ -34,8 +34,8 @@ jobs:
       - name: Format check
         run: uv run ruff format --check .
       - name: Tests with coverage gate
-        # The floor is the integer part of the measured total (95.02 % on 2026-11-12).
-        run: uv run pytest --cov=eu_ai_act_classifier --cov-report=term --cov-fail-under=95
+        # The floor is the integer part of the measured total (96.37 % on 2026-11-16).
+        run: uv run pytest --cov=eu_ai_act_classifier --cov-report=term --cov-fail-under=96
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         if: matrix.python-version == '3.13'
         with:
