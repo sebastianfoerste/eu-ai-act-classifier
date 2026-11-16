@@ -5,5 +5,6 @@
   "purpose": "General-purpose text generation",
   "sector": "AI",
   "is_gpai_model": true,
-  "training_flops": 5e25
+  "training_flops": 5e25,
+  "gpai_model_placing_on_market_date": "2026-02-02"
 }

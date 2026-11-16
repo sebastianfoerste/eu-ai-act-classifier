@@ -10,10 +10,12 @@ from __future__ import annotations
 from datetime import date
 
 from .citations import (
+    ART_111_1,
     ART_111_2_PUBLIC_AUTHORITY_DEADLINE,
     GENERAL_APPLICATION_DATE,
     POINT_C_ANNEX_I,
     POINT_C_ANNEX_III,
+    flag_unless_verified,
     long_date,
 )
 from .models import AnnexISection, Role, SystemProfile
@@ -25,11 +27,14 @@ PUBLIC_AUTHORITY_DUTY = (
     "in any case take the necessary steps to comply with the requirements and obligations "
     f"laid down in this Regulation by {DEADLINE_2030}"
 )
-# Art. 111(1) AIA, the carve-out Art. 111(2) excludes.
+# Art. 111(1) AIA, the carve-out Art. 111(2) excludes. Read with its two dates in the
+# Official Journal text on 11 November 2026 (VERIFIED row in docs/REGULATORY_CLAIM_LEDGER.md).
+# Were ART_111_1 unverified, the text would carry the flag wherever it is stated and the
+# engine would list ART_111_1 among the unverified citations.
 ANNEX_X_CARVE_OUT = (
     "components of the Annex X large-scale IT systems placed on the market or put into "
     "service before 2 August 2027, which are brought into compliance by 31 December 2030 "
-    "(Art. 111(1) AIA)"
+    f"({ART_111_1.ref}){flag_unless_verified(ART_111_1)}"
 )
 
 
@@ -43,7 +48,14 @@ def annex_i_route(profile: SystemProfile) -> bool:
 def section_b_product(profile: SystemProfile) -> bool:
     """An Art. 6(1) high-risk system for a product listed in Annex I, Section B."""
 
-    return annex_i_route(profile) and profile.annex_i_section is AnnexISection.SECTION_B
+    return annex_i_route(profile) and profile.effective_annex_i_section is AnnexISection.SECTION_B
+
+
+def annex_i_section_unknown(profile: SystemProfile) -> bool:
+    """An Art. 6(1) product whose Annex I legislation and section are both not given. The
+    report keeps the Section A duties and goes to review (docs/methodology.md)."""
+
+    return annex_i_route(profile) and profile.effective_annex_i_section is None
 
 
 def section_b_only(profile: SystemProfile) -> bool:
@@ -128,6 +140,17 @@ def before(value: str, cut_off: str) -> bool:
     return date.fromisoformat(value) < date.fromisoformat(cut_off)
 
 
+def start_date_open(assessment_date: str | None, last: str) -> bool:
+    """Whether the day a duty starts, ``last`` or an earlier date depending on a date not
+    given, is still open on ``assessment_date``. It is until ``last``, also before the
+    earlier date, where the duty applies under neither reading but its start still turns
+    on the missing date (C9, refined 15 November 2026); always so without one."""
+
+    if assessment_date is None:
+        return True
+    return before(assessment_date, last)
+
+
 def legacy_dates(profile: SystemProfile, cut_off: str) -> list[tuple[str, str]]:
     """Given dates before ``cut_off``. Art. 111(2) AIA covers a system "placed on the
     market or put into service before" the Chapter III date, so either date counts."""
@@ -173,6 +196,28 @@ def cut_off_contested(profile: SystemProfile, cut_off: str) -> bool:
     return not before(earliest, GENERAL_APPLICATION_DATE) and before(earliest, cut_off)
 
 
+def public_authority_status_used(profile: SystemProfile) -> bool:
+    """Whether the engine reads ``deployer_public_authority``: it describes the profile's
+    own deployer role, so only where the profile holds that role for a high-risk system
+    with no prohibited practice screened (Art. 49(3) and Art. 111(2) AIA). A necessary
+    condition: on an Annex I route without an Annex III area the status changes the
+    result only for an undated or legacy system without public_authority_use."""
+
+    return (
+        profile.is_deployer
+        and not profile.prohibited_practices
+        and (profile.annex_iii_area is not None or annex_i_route(profile))
+    )
+
+
+def public_authority_deployer(profile: SystemProfile) -> bool:
+    """A public-authority deployer is asserted for the profile's own deployer role. For
+    an operator that is not the deployer, whether the system is intended to be used by
+    public authorities is its public_authority_use answer alone."""
+
+    return profile.is_deployer and profile.deployer_public_authority is True
+
+
 def public_authority_sentence(profile: SystemProfile) -> str:
     """Art. 111(2), second sentence, which applies "in any case", so also after an
     asserted change. It turns on intended use; a public-authority deployer is evidence
@@ -183,7 +228,7 @@ def public_authority_sentence(profile: SystemProfile) -> str:
             " As the system is intended to be used by public authorities, its providers and "
             f"deployers {PUBLIC_AUTHORITY_DUTY}."
         )
-    if profile.deployer_public_authority:
+    if public_authority_deployer(profile):
         return (
             " A public-authority deployer is asserted: confirm whether the system is intended "
             "to be used by public authorities. If it is, its providers and deployers "
@@ -203,7 +248,7 @@ def undated_public_authority_sentence(profile: SystemProfile) -> str:
             " As the system is intended to be used by public authorities, if it was "
             f"{before_that_date}, its providers and deployers {PUBLIC_AUTHORITY_DUTY}."
         )
-    if profile.deployer_public_authority:
+    if public_authority_deployer(profile):
         return (
             " A public-authority deployer is asserted: confirm whether the system is intended "
             f"to be used by public authorities. If it is and was {before_that_date}, its "
@@ -221,7 +266,7 @@ def public_authority_clause(profile: SystemProfile) -> str:
             f", and by {DEADLINE_2030} in any case, as the system is intended to be used by "
             "public authorities"
         )
-    if profile.deployer_public_authority:
+    if public_authority_deployer(profile):
         return (
             f", and by {DEADLINE_2030} in any case if, as the public-authority deployer "
             "suggests, the system is intended to be used by public authorities"

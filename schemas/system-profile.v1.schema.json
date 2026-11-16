@@ -35,8 +35,35 @@
       "title": "AnnexIII",
       "type": "string"
     },
+    "AnnexILegislation": {
+      "description": "Union harmonisation legislation listed in Annex I AIA, as amended.\n\nValues are locators: ``I.A.2`` is Annex I, Section A, point 2. Regulation\n(EU) 2026/1744, Art. 1, point (41), deleted Section A, point 1 (Directive\n2006/42/EC, machinery) and added Section B, point 21 (Regulation (EU)\n2023/1230, machinery), so machinery is a Section B act and ``I.A.1`` does\nnot exist. The engine derives the section from the point; the reviewer only\nnames the legislation that covers the product.",
+      "enum": [
+        "I.A.2",
+        "I.A.3",
+        "I.A.4",
+        "I.A.5",
+        "I.A.6",
+        "I.A.7",
+        "I.A.8",
+        "I.A.9",
+        "I.A.10",
+        "I.A.11",
+        "I.A.12",
+        "I.B.13",
+        "I.B.14",
+        "I.B.15",
+        "I.B.16",
+        "I.B.17",
+        "I.B.18",
+        "I.B.19",
+        "I.B.20",
+        "I.B.21"
+      ],
+      "title": "AnnexILegislation",
+      "type": "string"
+    },
     "AnnexISection": {
-      "description": "Annex I sections for the Art. 6(1) AIA product route.\n\nFor a Section B product only Art. 6(1), Art. 60a and Arts. 102 to 112 apply,\nand Arts. 57 to 59 only in so far as the high-risk requirements have been\nintegrated in the sectoral legislation (Art. 2(2) AIA). Regulation (EU)\n2026/1744 moved machinery to Section B:\nSection A, point 1 is deleted and Regulation (EU) 2023/1230 is Section B,\npoint 21.",
+      "description": "Annex I sections for the Art. 6(1) AIA product route.\n\nFor a Section B product Art. 2(2) AIA lists only Art. 6(1), Art. 60a and\nArts. 102 to 112, and Arts. 57 to 59 only in so far as the high-risk\nrequirements have been integrated in the sectoral legislation; the report\nkeeps Art. 5, Art. 50 and any Annex III duties for review. Regulation (EU)\n2026/1744 moved machinery to Section B:\nSection A, point 1 is deleted and Regulation (EU) 2023/1230 is Section B,\npoint 21.",
       "enum": [
         "A",
         "B"
@@ -44,8 +71,94 @@
       "title": "AnnexISection",
       "type": "string"
     },
+    "ChildSexualAbuseMaterialScreen": {
+      "additionalProperties": false,
+      "description": "Facts for Art. 5(1), first subparagraph, point (bb) AIA, with Art. 5(1a), which\napply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA).",
+      "properties": {
+        "intended_purpose": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The generation or manipulation is the intended purpose of the AI system (Art. 5(1a)(a)(i) AIA).",
+          "title": "Intended Purpose"
+        },
+        "foreseeable_and_reproducible": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The system's design, training, architecture, capabilities or user-facing functionalities make the generation or manipulation a reasonably foreseeable and reproducible outcome, without requiring significant technical modification (Art. 5(1a)(a)(ii) AIA).",
+          "title": "Foreseeable And Reproducible"
+        },
+        "adequate_safeguards": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The system has reasonable and adequate technical safety measures and other safeguards to reliably prevent the generation or manipulation, taking into account reasonably foreseeable misuse, and to correct observed or reported misuse (Art. 5(1a)(a)(ii) AIA).",
+          "title": "Adequate Safeguards"
+        },
+        "deployer_uses_for_that_purpose": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The deployer uses the system for the purpose of generating or manipulating the material or performance (Art. 5(1a)(b) AIA).",
+          "title": "Deployer Uses For That Purpose"
+        },
+        "generates_or_manipulates": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The system generates or manipulates material or performance within the meaning of Art. 2, points (c) and (e), of Directive 2011/93/EU. True also where that is not its purpose but a reasonably foreseeable and reproducible outcome, or a deployer's purpose in using it (Recital 12 of Regulation (EU) 2026/1744).",
+          "title": "Generates Or Manipulates"
+        },
+        "without_right_defence_applies": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A \"without right\" defence applies under national law. A fact the reviewer establishes; the engine does not evaluate national law.",
+          "title": "Without Right Defence Applies"
+        }
+      },
+      "title": "ChildSexualAbuseMaterialScreen",
+      "type": "object"
+    },
     "Derogation": {
-      "description": "Art. 6(3) AIA derogation facts for an Annex III system.\n\nAn Annex III system is *not* high-risk if it does not pose a significant\nrisk of harm, but only where one of the four conditions holds AND the\nsystem does not perform profiling of natural persons. Profiling always\nkeeps the system high-risk (Art. 6(3), third subparagraph, AIA; the\nconditions are in the second subparagraph).",
+      "description": "Art. 6(3) AIA derogation facts for an Annex III system.\n\nAn Annex III system is *not* high-risk if it does not pose a significant\nrisk of harm, but only where one of the four conditions holds AND the\nsystem does not perform profiling of natural persons. Profiling always\nkeeps the system high-risk (Art. 6(3), third subparagraph, AIA).",
       "properties": {
         "narrow_procedural_task": {
           "default": false,
@@ -86,6 +199,105 @@
       ],
       "title": "ExcludedUse",
       "type": "string"
+    },
+    "IntimateImageryScreen": {
+      "additionalProperties": false,
+      "description": "Facts for Art. 5(1), first subparagraph, point (ba) AIA, with Art. 5(1a) and (1b),\nwhich apply from 2 December 2026 (Art. 113, third paragraph, point (a) AIA).",
+      "properties": {
+        "intended_purpose": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The generation or manipulation is the intended purpose of the AI system (Art. 5(1a)(a)(i) AIA).",
+          "title": "Intended Purpose"
+        },
+        "foreseeable_and_reproducible": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The system's design, training, architecture, capabilities or user-facing functionalities make the generation or manipulation a reasonably foreseeable and reproducible outcome, without requiring significant technical modification (Art. 5(1a)(a)(ii) AIA).",
+          "title": "Foreseeable And Reproducible"
+        },
+        "adequate_safeguards": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The system has reasonable and adequate technical safety measures and other safeguards to reliably prevent the generation or manipulation, taking into account reasonably foreseeable misuse, and to correct observed or reported misuse (Art. 5(1a)(a)(ii) AIA).",
+          "title": "Adequate Safeguards"
+        },
+        "deployer_uses_for_that_purpose": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The deployer uses the system for the purpose of generating or manipulating the material or performance (Art. 5(1a)(b) AIA).",
+          "title": "Deployer Uses For That Purpose"
+        },
+        "generates_material": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The system generates realistic images, videos, audio or similar material of an identifiable natural person's intimate parts, or of an identifiable natural person engaged in sexually explicit activities. True also where that is not its purpose but a reasonably foreseeable and reproducible outcome, or a deployer's purpose in using it (Recital 12 of Regulation (EU) 2026/1744).",
+          "title": "Generates Material"
+        },
+        "manipulates_material_increasing_exposure": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The system manipulates such material in a way that increases the exposure of any depicted intimate parts or alters the nature of any depicted sexually explicit activities. Other manipulation is not manipulation (Art. 5(1b) AIA).",
+          "title": "Manipulates Material Increasing Exposure"
+        },
+        "consent_ensured": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The generation or manipulation takes place only with the depicted person's freely-given, specific, informed, unambiguous and explicit consent for it. Interpretation: read at system level for placing on the market and putting into service (docs/methodology.md).",
+          "title": "Consent Ensured"
+        }
+      },
+      "title": "IntimateImageryScreen",
+      "type": "object"
     },
     "ProhibitedPractice": {
       "description": "Prohibited practices (Art. 5(1) AIA), keyed to their letters.",
@@ -183,6 +395,21 @@
       "title": "Excluded Use Flags",
       "type": "array"
     },
+    "assessment_date": {
+      "anyOf": [
+        {
+          "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "The date of the placing on the market, putting into service or use under assessment. It decides whether a rule with a later application date applies (Art. 5(1)(ba) and (bb) AIA from 2026-12-02) and sets applies_on_assessment_date in the obligation graph. Null: those results stay open and go to review.",
+      "title": "Assessment Date"
+    },
     "placing_on_market_date": {
       "anyOf": [
         {
@@ -241,7 +468,7 @@
         }
       ],
       "default": null,
-      "description": "Art. 49(3) AIA: the deployer is a public authority, Union institution, body, office or agency, or acts on behalf of one. Null: not established, so the registration of use is inferred, for review, where the system is intended to be used by public authorities or its Annex III point (5(a), 6 or 7) describes such use.",
+      "description": "Art. 49(3) AIA: the deployer is a public authority, Union institution, body, office or agency, or acts on behalf of one. Read only where the profile holds the deployer role. Null: not established, so the registration of use is inferred, for review, where the system is intended to be used by public authorities or its Annex III point (5(a), 6 or 7) describes such use.",
       "title": "Deployer Public Authority"
     },
     "deployer_public_law_body": {
@@ -340,6 +567,30 @@
       "title": "Prohibited Practices",
       "type": "array"
     },
+    "intimate_imagery": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/IntimateImageryScreen"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Element facts for Art. 5(1)(ba) AIA read with Art. 5(1a) and (1b). Null: not screened; for a system that generates synthetic content or deep fakes and does not declare 5.1.ba, that goes to review."
+    },
+    "child_sexual_abuse_material": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ChildSexualAbuseMaterialScreen"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Element facts for Art. 5(1)(bb) AIA read with Art. 5(1a). Null: not screened; for a system that generates synthetic content or deep fakes and does not declare 5.1.bb, that goes to review."
+    },
     "annex_i_safety_component": {
       "default": false,
       "title": "Annex I Safety Component",
@@ -349,6 +600,18 @@
       "default": false,
       "title": "Annex I Third Party Assessment",
       "type": "boolean"
+    },
+    "annex_i_legislation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AnnexILegislation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "The Annex I AIA legislation covering the Art. 6(1) product, as a locator (I.B.21 is Annex I, Section B, point 21, machinery under Regulation (EU) 2023/1230). It decides the Annex I section. Null: annex_i_section is used."
     },
     "annex_i_section": {
       "anyOf": [
@@ -360,7 +623,7 @@
         }
       ],
       "default": null,
-      "description": "Annex I section of the Art. 6(1) AIA product. For Section B only the Art. 2(2) provisions apply. Null: treated as Section A."
+      "description": "Annex I section of the Art. 6(1) AIA product, where annex_i_legislation is not given; it must match annex_i_legislation where both are. For Section B, Art. 2(2) AIA limits it to the provisions it lists; the report keeps Art. 5, Art. 50 and any Annex III duties for review. Null with no legislation: the report keeps the Section A duties and goes to review."
     },
     "annex_iii_area": {
       "anyOf": [
@@ -372,6 +635,19 @@
         }
       ],
       "default": null
+    },
+    "used_for_financial_fraud_detection": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": false,
+      "description": "Annex III point 5(b) AIA excepts AI systems used for the purpose of detecting financial fraud. On a III.5.b profile, true (asserted) or null (unknown) raises a review question; the system stays high-risk until it is answered.",
+      "title": "Used For Financial Fraud Detection"
     },
     "derogation": {
       "$ref": "#/$defs/Derogation"

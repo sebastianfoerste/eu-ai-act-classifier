@@ -9,6 +9,10 @@ dist/
 build/
 .pytest_cache/
 .ruff_cache/
+# pytest-cov writes these when the suite runs with the coverage gate (AGENTS.md).
+.coverage
+.coverage.*
+htmlcov/
 .mypy_cache/
 .DS_Store
 web/.next/

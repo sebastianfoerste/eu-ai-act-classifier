@@ -9,7 +9,7 @@ provision a reviewer can open.
 from __future__ import annotations
 
 from .citations import Citation, cite
-from .models import AnnexIII, Obligation, ProhibitedPractice, Role
+from .models import AnnexIII, Obligation, ProhibitedPractice, RiskTier, Role
 
 # Article labels other modules match on. Use these constants, not copies of the
 # string, so a wording change cannot silently break the match.
@@ -69,13 +69,15 @@ ANNEX_III: dict[AnnexIII, tuple[Citation, str]] = {
         cite("Annex III(5)(a) AIA"),
         "Eligibility for essential public assistance benefits and services",
     ),
+    # Point 5(b) excepts AI systems used for the purpose of detecting financial fraud;
+    # rules/high_risk.py raises that exception as a review question.
     AnnexIII.CREDITWORTHINESS: (
         cite("Annex III(5)(b) AIA"),
-        "Creditworthiness evaluation and credit scoring",
+        "Creditworthiness evaluation and credit scoring of natural persons",
     ),
     AnnexIII.INSURANCE_LIFE_HEALTH: (
         cite("Annex III(5)(c) AIA"),
-        "Risk assessment and pricing in life and health insurance",
+        "Risk assessment and pricing for natural persons in life and health insurance",
     ),
     AnnexIII.EMERGENCY_DISPATCH: (
         cite("Annex III(5)(d) AIA"),
@@ -283,6 +285,24 @@ AI_LITERACY_REQUIREMENT = (
     "27 July 2026."
 )
 _AI_LITERACY_ROLES = (Role.PROVIDER, Role.DEPLOYER)
+# Art. 4 AIA names no exception for a system under an Art. 5 AIA prohibition, and a
+# prohibition can apply from a later date (Art. 113, third paragraph, point (a): Art. 5(1),
+# first subparagraph, points (ba) and (bb), from 2 December 2026) or be subject to an
+# exception. The report keeps the duty for a prohibited system and flags it.
+PROHIBITED_LITERACY_FLAG = (
+    "Literal reading, confirm with counsel: Art. 4 AIA names no exception for a system "
+    "this report classifies as prohibited under Art. 5 AIA, so the report keeps the Art. 4 "
+    "duty. A prohibition can apply from a later date, as Art. 5(1), first subparagraph, "
+    "points (ba) and (bb) do from 2 December 2026, or be subject to an exception."
+)
+
+
+def ai_literacy_applies(final_tier: RiskTier) -> bool:
+    """Art. 4 AIA binds providers and deployers of every AI system within the Regulation's
+    scope, whatever its tier. A prohibited system keeps the duty, flagged
+    (PROHIBITED_LITERACY_FLAG). The engine and the obligation graph both ask this."""
+
+    return final_tier is not RiskTier.OUT_OF_SCOPE
 
 
 def ai_literacy_roles(roles: list[Role]) -> list[Role]:
@@ -294,7 +314,8 @@ def ai_literacy_roles(roles: list[Role]) -> list[Role]:
 
 def ai_literacy_obligations(roles: list[Role], flag: str = "") -> list[Obligation]:
     """One Art. 4 AIA obligation per provider or deployer role held, with ``flag``
-    appended where Art. 2(2) AIA does not list Art. 4 (a Section B product)."""
+    appended where the report keeps the duty under a counsel flag (a Section B product,
+    a prohibited system)."""
 
     requirement = f"{AI_LITERACY_REQUIREMENT} {flag}" if flag else AI_LITERACY_REQUIREMENT
     return [

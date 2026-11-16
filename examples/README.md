@@ -1,6 +1,6 @@
 # Example Systems
 
-Each file is a `SystemProfile`. The 18 base examples double as fixtures in
+Each file is a `SystemProfile`. The 19 base examples double as fixtures in
 `tests/test_examples.py`; expected classification is asserted on every run.
 
 ## Base Eval Set
@@ -13,7 +13,9 @@ under Art. 5(1)(f) AIA.
 
 `intimate_imagery_generator.json`: Prohibited, determined. Non-consensual
 realistic intimate material under Art. 5(1)(ba) AIA, a ban that applies from
-2 December 2026.
+2 December 2026. The profile is assessed on that date (`assessment_date`); with
+no assessment date the tier stays prohibited and goes to review, and before that
+date the ban is reported as not yet applicable, for review.
 
 `cv_screening.json`: High-risk, determined. Employment selection under Annex III(4)(a)
 AIA.
@@ -25,7 +27,14 @@ III(5)(b) AIA.
 III(3)(d) AIA.
 
 `credit_scoring_deployer.json`: High-risk, determined. Deployer of Annex
-III(5)(b); FRIA required under Art. 27 AIA.
+III(5)(b); FRIA required under Art. 27 AIA. Worked example:
+[bank-credit-scoring.md](../docs/worked-examples/bank-credit-scoring.md).
+
+`life_insurer_pricing.json`: High-risk, determined. A synthetic German life
+insurer that builds and uses its own term-life pricing model: provider and
+deployer under Annex III(5)(c) AIA, with profiling, the Art. 43(2) internal-control
+route and an Art. 27 FRIA. Worked example:
+[life-insurer-pricing.md](../docs/worked-examples/life-insurer-pricing.md).
 
 `law_enforcement.json`: High-risk, determined. Reoffending risk under Annex
 III(6)(d) AIA.
@@ -39,8 +48,9 @@ asserted and documentation needed.
 `support_chatbot.json`: Limited risk, determined. Chatbot disclosure under Art.
 50(1) AIA.
 
-`deepfake_generator.json`: Limited risk, determined. Deepfake disclosure under
-Art. 50(4) AIA.
+`deepfake_generator.json`: Limited risk, requires_review. Deepfake disclosure
+under Art. 50(4) AIA; whether Art. 5(1)(ba) or (bb) AIA reaches the generator
+from 2 December 2026 is asked.
 
 `spam_filter.json`: Minimal risk, determined. No regulated use case; only the
 Art. 4 AIA AI literacy duty of every provider and deployer attaches.
@@ -57,6 +67,10 @@ AIA.
 `gpai_systemic_by_flops.json`: Minimal system-level risk, determined. GPAI model with systemic risk based on FLOPs threshold under Art. 51(2) AIA.
 
 `gpai_systemic_designated.json`: Minimal system-level risk, determined. GPAI model with systemic risk by Commission designation under Art. 51(1)(b) AIA.
+
+The determined GPAI examples give the model's own placing date
+(`gpai_model_placing_on_market_date`). Without one the Art. 111(3) AIA date of
+the Chapter V duties is open and the report goes to review.
 
 ## Guidance Corpus
 

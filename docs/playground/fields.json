@@ -110,6 +110,12 @@
           ]
         },
         {
+          "name": "assessment_date",
+          "type": "string or null",
+          "default": null,
+          "hint": "YYYY-MM-DD, the date of the placing on the market, putting into service or use under assessment. Decides whether Art. 5(1)(ba) and (bb) AIA apply (from 2026-12-02) and sets applies_on_assessment_date. Unset: those results go to review."
+        },
+        {
           "name": "placing_on_market_date",
           "type": "string or null",
           "default": null,
@@ -137,7 +143,7 @@
           "name": "deployer_public_authority",
           "type": "boolean or null",
           "default": null,
-          "hint": "The deployer is, or acts on behalf of, a public authority or Union institution, body, office or agency: Art. 49(3) AIA registration of use. Unset: inferred for review from public-authority use or Annex III points 5(a), 6 and 7."
+          "hint": "The deployer is, or acts on behalf of, a public authority or Union institution, body, office or agency: Art. 49(3) AIA registration of use. Read only for the deployer role. Unset: inferred for review from public-authority use or Annex III points 5(a), 6 and 7."
         },
         {
           "name": "deployer_public_law_body",
@@ -256,6 +262,35 @@
               "label": "Art. 5(1)(h): Real-time remote biometric identification in public spaces for law enforcement"
             }
           ]
+        },
+        {
+          "name": "intimate_imagery",
+          "type": "object",
+          "default": null,
+          "hint": "Art. 5(1)(ba) AIA element facts with Art. 5(1a) and (1b), each true, false or null. Unset on a generator that does not declare 5.1.ba: review.",
+          "keys": [
+            "intended_purpose",
+            "foreseeable_and_reproducible",
+            "adequate_safeguards",
+            "deployer_uses_for_that_purpose",
+            "generates_material",
+            "manipulates_material_increasing_exposure",
+            "consent_ensured"
+          ]
+        },
+        {
+          "name": "child_sexual_abuse_material",
+          "type": "object",
+          "default": null,
+          "hint": "Art. 5(1)(bb) AIA element facts with Art. 5(1a), each true, false or null. Unset on a generator that does not declare 5.1.bb: review.",
+          "keys": [
+            "intended_purpose",
+            "foreseeable_and_reproducible",
+            "adequate_safeguards",
+            "deployer_uses_for_that_purpose",
+            "generates_or_manipulates",
+            "without_right_defence_applies"
+          ]
         }
       ]
     },
@@ -275,10 +310,98 @@
           "hint": "Art. 6(1)(b): third-party conformity assessment."
         },
         {
+          "name": "annex_i_legislation",
+          "type": "choice",
+          "default": null,
+          "hint": "The Annex I legislation covering the product; it decides the section. I.B.21 is machinery (Regulation (EU) 2023/1230), Section B since Regulation (EU) 2026/1744.",
+          "options": [
+            {
+              "value": "I.A.2",
+              "label": "Section A, point 2: Directive 2009/48/EC (toys)"
+            },
+            {
+              "value": "I.A.3",
+              "label": "Section A, point 3: Directive 2013/53/EU (recreational craft and personal watercraft)"
+            },
+            {
+              "value": "I.A.4",
+              "label": "Section A, point 4: Directive 2014/33/EU (lifts)"
+            },
+            {
+              "value": "I.A.5",
+              "label": "Section A, point 5: Directive 2014/34/EU (equipment for potentially explosive atmospheres)"
+            },
+            {
+              "value": "I.A.6",
+              "label": "Section A, point 6: Directive 2014/53/EU (radio equipment)"
+            },
+            {
+              "value": "I.A.7",
+              "label": "Section A, point 7: Directive 2014/68/EU (pressure equipment)"
+            },
+            {
+              "value": "I.A.8",
+              "label": "Section A, point 8: Regulation (EU) 2016/424 (cableway installations)"
+            },
+            {
+              "value": "I.A.9",
+              "label": "Section A, point 9: Regulation (EU) 2016/425 (personal protective equipment)"
+            },
+            {
+              "value": "I.A.10",
+              "label": "Section A, point 10: Regulation (EU) 2016/426 (appliances burning gaseous fuels)"
+            },
+            {
+              "value": "I.A.11",
+              "label": "Section A, point 11: Regulation (EU) 2017/745 (medical devices)"
+            },
+            {
+              "value": "I.A.12",
+              "label": "Section A, point 12: Regulation (EU) 2017/746 (in vitro diagnostic medical devices)"
+            },
+            {
+              "value": "I.B.13",
+              "label": "Section B, point 13: Regulation (EC) No 300/2008 (civil aviation security)"
+            },
+            {
+              "value": "I.B.14",
+              "label": "Section B, point 14: Regulation (EU) No 168/2013 (two- or three-wheel vehicles and quadricycles)"
+            },
+            {
+              "value": "I.B.15",
+              "label": "Section B, point 15: Regulation (EU) No 167/2013 (agricultural and forestry vehicles)"
+            },
+            {
+              "value": "I.B.16",
+              "label": "Section B, point 16: Directive 2014/90/EU (marine equipment)"
+            },
+            {
+              "value": "I.B.17",
+              "label": "Section B, point 17: Directive (EU) 2016/797 (interoperability of the rail system)"
+            },
+            {
+              "value": "I.B.18",
+              "label": "Section B, point 18: Regulation (EU) 2018/858 (motor vehicles and their trailers)"
+            },
+            {
+              "value": "I.B.19",
+              "label": "Section B, point 19: Regulation (EU) 2019/2144 (motor vehicle general safety)"
+            },
+            {
+              "value": "I.B.20",
+              "label": "Section B, point 20: Regulation (EU) 2018/1139 (civil aviation, as regards unmanned aircraft)"
+            },
+            {
+              "value": "I.B.21",
+              "label": "Section B, point 21: Regulation (EU) 2023/1230 (machinery)"
+            }
+          ]
+        },
+        {
           "name": "annex_i_section",
           "type": "choice",
           "default": null,
-          "hint": "Annex I section of the product. B (incl. machinery, Regulation (EU) 2023/1230): only Art. 6(1), 60a and 102-112 apply, and 57-59 as far as integrated in the sectoral legislation (Art. 2(2) AIA). Unset: Section A.",
+          "hint": "Annex I section, where no legislation is given. B: Art. 2(2) AIA limits it to Art. 6(1), 60a and 102-112, and 57-59 as far as integrated in the sectoral legislation; the report keeps Art. 5, Art. 50 and any Annex III duties for review. Unset with no legislation: Section A duties, for review.",
           "options": [
             {
               "value": "A",
@@ -342,11 +465,11 @@
             },
             {
               "value": "III.5.b",
-              "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring"
+              "label": "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons"
             },
             {
               "value": "III.5.c",
-              "label": "Annex III(5)(c): Risk assessment and pricing in life and health insurance"
+              "label": "Annex III(5)(c): Risk assessment and pricing for natural persons in life and health insurance"
             },
             {
               "value": "III.5.d",
@@ -401,6 +524,12 @@
               "label": "Annex III, point unsettled: An Annex III area is implicated but the specific point is unsettled"
             }
           ]
+        },
+        {
+          "name": "used_for_financial_fraud_detection",
+          "type": "boolean or null",
+          "default": false,
+          "hint": "Annex III(5)(b) AIA excepts financial-fraud detection. True or null on a III.5.b profile raises a review question."
         },
         {
           "name": "derogation",

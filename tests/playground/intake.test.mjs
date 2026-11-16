@@ -116,9 +116,9 @@ test("the change question is asked only before the Chapter III date", () => {
   assert.equal(ask({ ...annexIII, placing_on_market_date: "2027-12-02" }), false);
   assert.equal(ask(annexIII), false);
   assert.equal(ask({ ...annexIII, prohibited_practices: ["5.1.c"], placing_on_market_date: "2025-01-01" }), false);
-  const annexI = { name: "x", annex_i_safety_component: true, annex_i_third_party_assessment: true, annex_i_section: "A" };
+  const annexI = { name: "x", annex_i_safety_component: true, annex_i_third_party_assessment: true, annex_i_legislation: "I.A.11" };
   assert.equal(ask({ ...annexI, placing_on_market_date: "2028-01-01" }), true);
-  assert.equal(ask({ ...annexI, annex_i_section: "B", placing_on_market_date: "2028-01-01" }), false);
+  assert.equal(ask({ ...annexI, annex_i_legislation: "I.B.21", placing_on_market_date: "2028-01-01" }), false);
 });
 
 test("opening a profile reports values the questions would drop", () => {
@@ -127,24 +127,46 @@ test("opening a profile reports values the questions would drop", () => {
   const skipped = { name: "x", annex_iii_area: "III.4.a", derogation: { performs_profiling: true, narrow_procedural_task: true } };
   assert.deepEqual(droppedFields(definition, skipped), { skipped: ["derogation.narrow_procedural_task"], unsupported: [] });
   assert.deepEqual(droppedFields(definition, { name: "  padded  " }), none);
+  // A public-authority status saved for a high-risk provider before the question
+  // was narrowed to the deployer role; a deployer still carries it.
+  for (const status of [true, false]) {
+    const provider = { name: "x", annex_iii_area: "III.5.b", deployer_public_authority: status };
+    assert.deepEqual(droppedFields(definition, provider), { skipped: ["deployer_public_authority"], unsupported: [] });
+    assert.deepEqual(droppedFields(definition, { ...provider, roles: ["provider", "deployer"] }), none);
+  }
   // Asked, but not expressible as an answer: a cause other than skipping.
   assert.deepEqual(droppedFields(definition, { name: "x", roles: [] }), { skipped: [], unsupported: ["roles"] });
   assert.deepEqual(droppedFields(definition, { name: "x", annex_iii_area: "III.9" }), { skipped: [], unsupported: ["annex_iii_area"] });
 });
 
 test("a single question without a none option does not accept none", () => {
-  const section = definition.questions.find(q => q.id === "annex_i_section");
-  assert.equal(section.none_label, undefined);
-  assert.equal(isAnswered(section, "none"), false);
-  assert.equal(isAnswered(section, "B"), true);
+  const act = definition.questions.find(q => q.id === "annex_i_legislation");
+  assert.equal(act.none_label, undefined);
+  assert.equal(isAnswered(act, "none"), false);
+  assert.equal(isAnswered(act, "I.B.21"), true);
   const route = { name: "x", annex_i_safety_component: true, annex_i_third_party_assessment: true };
-  assert.equal(profileToAnswers(definition, route).annex_i_section, undefined);
-  const answers = { ...profileToAnswers(definition, route), annex_i_section: "none" };
-  assert.ok(answersToProfile(definition, answers).missing.includes("annex_i_section"));
+  assert.equal(profileToAnswers(definition, route).annex_i_legislation, undefined);
+  const answers = { ...profileToAnswers(definition, route), annex_i_legislation: "none" };
+  assert.ok(answersToProfile(definition, answers).missing.includes("annex_i_legislation"));
 });
 
 test("numbers use the same grammar as the Python interpreter", () => {
-  for (const ok of ["2e25", " 2e25 ", ".5e3", "10", 2e25]) assert.equal(isNumber(ok), true, String(ok));
-  for (const bad of ["0x10", "1_000", "1e", "", " ", "Infinity", NaN]) assert.equal(isNumber(bad), false, String(bad));
+  // The same inputs as NUMBERS_ACCEPTED and NUMBERS_REJECTED in tests/test_intake.py: ASCII
+  // digits only, and only ASCII whitespace is trimmed.
+  const forms = ["5.", "+5", "-0", "1.e5", "5.5e-3"];
+  for (const ok of ["2e25", " 2e25 ", ".5e3", "10", "\t10\n", "\v10\f\r", ...forms, 2e25]) assert.equal(isNumber(ok), true, JSON.stringify(ok));
+  const unicode = ["\u0661\u0662", "\uff11\uff12", "\ufeff5", "\u00a05", "5\u2028", "\u30005", "\x1c5", "5\x1f", "5\x85"];
+  const edges = ["   ", ".", "e5", "5..", "1e+"];
+  for (const bad of ["0x10", "1_000", "1e", "", " ", ...edges, "Infinity", NaN, ...unicode]) assert.equal(isNumber(bad), false, JSON.stringify(bad));
 });
 
+test("a long text that is not a number is refused in time that grows with its length", () => {
+  // A profile opened from a share link or a file can hold any text. At this length the
+  // earlier pattern took seconds on the first two texts and the earlier trim on the third.
+  const run = 100_000;
+  const digits = "1".repeat(run);
+  const texts = [`${digits}x`, `${digits}.${digits}x`, `5${" ".repeat(run)}5`];
+  const started = performance.now();
+  for (const text of texts) assert.equal(isNumber(text), false);
+  assert.ok(performance.now() - started < 2000);
+});

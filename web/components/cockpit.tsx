@@ -573,7 +573,7 @@ export function Cockpit() {
                         <td>{item.article}</td>
                         <td>{labelFor("roles", item.actor)}</td>
                         <td>{item.evidence_artifact}</td>
-                        <td>{item.application_date}</td>
+                        <td>{item.application_date ?? "Open: see note"}</td>
                         <td>{labelFor("review_status", item.review_status)}</td>
                       </tr>
                       {item.application_date_note ? (

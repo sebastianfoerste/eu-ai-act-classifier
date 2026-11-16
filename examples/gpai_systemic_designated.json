@@ -6,5 +6,6 @@
   "sector": "Scientific-Inference",
   "is_gpai_model": true,
   "training_flops": 1e24,
-  "gpai_systemic_risk_designated": true
+  "gpai_systemic_risk_designated": true,
+  "gpai_model_placing_on_market_date": "2026-04-01"
 }

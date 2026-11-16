@@ -5,6 +5,9 @@ from __future__ import annotations
 from .advisory import build_advisory_notes
 from .catalog import (
     ANNEX_III,
+    ART_50_2,
+    PROHIBITED_LITERACY_FLAG,
+    ai_literacy_applies,
     ai_literacy_obligations,
     eu_database_registration_applies,
     gpai_obligations,
@@ -21,7 +24,17 @@ from .catalog import (
     section_b_kept_flag,
     section_b_obligations,
 )
-from .citations import AMENDING_APPLICATION_DATES, APPLICATION_DATES, REGULATION, source_manifest
+from .citations import (
+    AMENDING_APPLICATION_DATES,
+    APPLICATION_DATES,
+    ART_111_1,
+    ART_111_3_DEADLINE,
+    ART_111_4_DEADLINE,
+    GENERAL_APPLICATION_DATE,
+    POINT_B_DATE,
+    REGULATION,
+    source_manifest,
+)
 from .models import (
     TIER_ORDER,
     AnnexIII,
@@ -37,6 +50,7 @@ from .models import (
 from .obligation_graph import build_obligation_graph
 from .rules import gpai, high_risk, prohibited, scope, transparency
 from .transitions import (
+    ANNEX_X_CARVE_OUT,
     before,
     chapter_iii_date,
     derogation_asserted,
@@ -51,6 +65,7 @@ from .transitions import (
     public_authority_sentence,
     section_b_only,
     section_b_product,
+    start_date_open,
 )
 
 _FRIA_AREAS = {AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH}
@@ -157,10 +172,18 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         obligations += gpai_obligations(systemic_risk=gpai_systemic)
         open_questions += _gpai_date_questions(profile)
 
+    if final_tier is not RiskTier.PROHIBITED:
+        open_questions += _art_111_4_questions(profile, transparency_obligations)
+
     if ai_literacy_applies(final_tier):
         # Art. 4 AIA (Chapter I) binds every provider and deployer of an AI system within
-        # the Regulation's scope, whatever the tier, so it heads the list.
-        literacy_flag = SECTION_B_LITERACY_FLAG if section_b_product(profile) else ""
+        # the Regulation's scope, whatever the tier, so it heads the list. A Section B
+        # product and a prohibited system keep it, flagged.
+        flags = (
+            SECTION_B_LITERACY_FLAG if section_b_product(profile) else "",
+            PROHIBITED_LITERACY_FLAG if final_tier is RiskTier.PROHIBITED else "",
+        )
+        literacy_flag = " ".join(flag for flag in flags if flag)
         obligations = ai_literacy_obligations(profile.roles, literacy_flag) + obligations
 
     disposition = Disposition.REQUIRES_REVIEW if open_questions else Disposition.DETERMINED
@@ -195,6 +218,13 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         transparency_obligations=transparency_obligations,
     )
 
+    # The Art. 111(1) carve-out is stated in prose, not as a finding or an obligation, so
+    # while its citation is unverified the engine lists it wherever the report states it.
+    stated = [scope_assessment.transitional_status]
+    stated += [item.application_date_note or "" for item in obligation_graph]
+    if not ART_111_1.verified and any(ANNEX_X_CARVE_OUT in text for text in stated):
+        unverified = sorted({*unverified, ART_111_1.ref})
+
     return ClassificationReport(
         system=profile.name,
         regulation=REGULATION,
@@ -215,14 +245,6 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         open_questions=open_questions,
         unverified_citations=unverified,
     )
-
-
-def ai_literacy_applies(final_tier: RiskTier) -> bool:
-    """Art. 4 AIA attaches to every system within the Regulation's scope, whatever its
-    tier, except a prohibited one: as for the GPAI duties, a system that may not be placed
-    on the market, put into service or used (Art. 5 AIA) has no staff to operate it."""
-
-    return final_tier not in (RiskTier.OUT_OF_SCOPE, RiskTier.PROHIBITED)
 
 
 def _fria_required(profile: SystemProfile) -> bool:
@@ -310,10 +332,41 @@ def _art_49_3_questions(profile: SystemProfile, registration: bool) -> list[str]
     return []
 
 
+def _art_111_4_questions(
+    profile: SystemProfile, transparency_obligations: list[Obligation]
+) -> list[str]:
+    """C9: Art. 111(4) AIA dates Art. 50(2) by the system's placing on the market, so an
+    unknown placing date is asked until the assessment date falls on or after both dates."""
+
+    if profile.placing_on_market_date is not None or not any(
+        ob.article == ART_50_2 for ob in transparency_obligations
+    ):
+        return []
+    if not start_date_open(profile.assessment_date, ART_111_4_DEADLINE):
+        return []
+    return [
+        "Art. 111(4) AIA: placing_on_market_date is not given. A system generating synthetic "
+        f"content placed on the market before {GENERAL_APPLICATION_DATE} complies with "
+        f"Art. 50(2) by {ART_111_4_DEADLINE}; a later one is bound from "
+        f"{GENERAL_APPLICATION_DATE}. Give the date the system was placed on the market "
+        "(placing_on_market_date)."
+    ]
+
+
 def _gpai_date_questions(profile: SystemProfile) -> list[str]:
     """Art. 111(3) AIA dates a general-purpose AI model by its own placing on the market."""
 
     model_date, fallback = gpai_model_date(profile)
+    if model_date is None:
+        if not start_date_open(profile.assessment_date, ART_111_3_DEADLINE):
+            return []
+        # C9: the Art. 111(3) date turns on the model's placing date, so it is asked.
+        return [
+            "Art. 111(3) AIA: neither gpai_model_placing_on_market_date nor "
+            "placing_on_market_date is given. A model placed on the market before "
+            f"{POINT_B_DATE} complies by {ART_111_3_DEADLINE}; a later one is bound from "
+            f"{POINT_B_DATE}. Give the model's own date (gpai_model_placing_on_market_date)."
+        ]
     if fallback:
         return [
             "Art. 111(3) AIA: no gpai_model_placing_on_market_date is given, so the model is "

@@ -6,7 +6,7 @@ The longer introduction to the classifier. The [README](../README.md) has instal
 
 Find out which EU AI Act risk tier an AI system falls into, with every obligation cited to its article. Rules-based, offline, and built for a lawyer to confirm.
 
-Built on Regulation (EU) 2024/1689 as consolidated on 27 July 2026. From the amending Regulation (EU) 2026/1744 it encodes the application dates, including the deferral of Chapter III, Sections 1 to 3 (Annex III 2027-12-02, Annex I 2028-08-02), and the new Art. 5(1)(ba) and (bb) prohibitions, which apply from 2026-12-02: the prohibited-practice screen returns a prohibited finding when a profile asserts one of them and quotes the Art. 5(1a) limits (and, for point (ba), Art. 5(1b)) without testing them. The [claim ledger](REGULATORY_CLAIM_LEDGER.md) lists the other amendments that are encoded; the rest have not been mapped. Not legal advice; the bundled example data is synthetic.
+Built on Regulation (EU) 2024/1689 as consolidated on 27 July 2026. From the amending Regulation (EU) 2026/1744 it encodes the application dates, including the deferral of Chapter III, Sections 1 to 3 (Annex III 2027-12-02, Annex I 2028-08-02), and the new Art. 5(1)(ba) and (bb) prohibitions, which apply from 2026-12-02: a profile either asserts one of them or gives their element facts, which the classifier tests against Art. 5(1a) and, for point (ba), Art. 5(1b), and its assessment date decides whether the ban already applies. The [claim ledger](REGULATORY_CLAIM_LEDGER.md) lists the other amendments that are encoded; the rest have not been mapped. Not legal advice; the bundled example data is synthetic.
 
 ## Who it's for
 
@@ -19,13 +19,13 @@ Built on Regulation (EU) 2024/1689 as consolidated on 27 July 2026. From the ame
 
 **[Open the live playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/)**: no install, and nothing you paste leaves the page. The playground runs the same engine as the CLI.
 
-[![Live playground: the synthetic CreditSightScore credit scoring profile classified high-risk under Art. 6 AIA, with its Annex III(5)(b) finding and the cited provider obligations from Article 9 onwards](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
+[![Live playground: the synthetic CreditSightScore credit scoring profile classified high-risk under Art. 6 AIA, with its Annex III(5)(b) finding and the cited provider obligations from Article 9 onwards; captured before the Art. 4 AI literacy item was added, which the live playground now lists first](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
-> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 18 synthetic examples, or see [Example output](sample-output.md#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
+> **If you don't code:** open the [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/) and pick one of the 19 synthetic examples, or see [Example output](sample-output.md#example-output). The point isn't the code; it's whether the legal work is structured, cited, reviewable, and testable.
 
-## Human-authored legal judgment
+## Human legal judgment
 
-AI tools assisted the implementation, but the parts that carry the value are human-authored: the Annex/Article mappings, the obligation set, and the prohibited-practice and review-status logic. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable. The rules are plain Python under `src/eu_ai_act_classifier/`, and the eval set is tested for drift.
+AI tools assisted the implementation and drafted some changes to the mappings. The legal judgment that carries the value stays with the author: the Annex and Article mappings, the obligation set, and the prohibited-practice and review-status logic are the author's responsibility. Each row of the [claim ledger](REGULATORY_CLAIM_LEDGER.md) records the source a claim was read in and the date. Of the AI-drafted changes of 14 October 2026, those on Art. 6(3), third subparagraph, Annex III point 5(b) and 5(c), and Art. 43(2) and Art. 43(3), last subparagraph, were checked claim by claim on 11 November 2026 against the Official Journal texts pinned in `sources/` (the VERIFIED rows of that date). That check confirms wording and pinpoints; no lawyer has adopted those conclusions. The two Art. 50 Commission sources that change introduced were not checked there; their documents were read on the Commission's site on 14 November 2026 (claim ledger). Interpretation choices are not settled that way: they carry "Literal reading, confirm with counsel" and stay with counsel. The worked examples carry their own AI-assistance disclosure. The point of this repository is not code volume; it is showing how legal judgment can be made structured, testable, and reviewable. The rules are plain Python under `src/eu_ai_act_classifier/`, and the eval set is tested for drift.
 
 ## Honest limits
 
@@ -34,6 +34,7 @@ AI tools assisted the implementation, but the parts that carry the value are hum
 - Guidance changes, and national implementation and supervisory practice may vary by Member State.
 - The engine applies rules to characterised facts and does not decide disputed intended purpose, operator role or factual deployment scope.
 - `requires_review`, draft artifacts and advisory overlays must be reviewed before reliance.
+- The changes of 14 October 2026 (Art. 6(3), third subparagraph; the Annex III point 5(b) and 5(c) wording and the point 5(b) fraud exception; Art. 43(2) and Art. 43(3), last subparagraph) are in this repository but not in release 0.2.2, the current release on PyPI. Their wording and pinpoints were checked on 11 November 2026 against the Official Journal texts pinned in `sources/` (see the claim ledger); no lawyer has adopted the conclusions, so confirm them with counsel before reliance. The two Art. 50 sources in the manifest were read on the Commission's site on 14 November 2026; both are nonbinding.
 
 ## Part of the EU regulation as code suite
 

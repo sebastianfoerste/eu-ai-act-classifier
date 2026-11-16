@@ -15,6 +15,8 @@ from .catalog import (
     ART_72_REQUIREMENT,
     ART_73_REQUIREMENT,
     ART_111_2,
+    PROHIBITED_LITERACY_FLAG,
+    ai_literacy_applies,
     ai_literacy_roles,
     eu_database_registration_applies,
     national_registration_for_public_authority_deployer,
@@ -31,12 +33,15 @@ from .citations import (
     ART_111_2_PUBLIC_AUTHORITY_DEADLINE,
     ART_111_3_DEADLINE,
     ART_111_4_DEADLINE,
+    EN_18286,
+    EN_18286_TITLE,
     GENERAL_APPLICATION_DATE,
     POINT_A_DATE,
     POINT_B_DATE,
     POINT_C_ANNEX_I,
     POINT_C_ANNEX_III,
     POINT_D_DATE,
+    STANDARDS_DECISION_2026_2274,
 )
 from .models import (
     AnnexIII,
@@ -48,6 +53,7 @@ from .models import (
     SourceStatus,
     SystemProfile,
 )
+from .rules.base import on_or_after
 from .transitions import (
     ANNEX_X_CARVE_OUT,
     before,
@@ -69,6 +75,17 @@ from .transitions import (
 )
 
 _SECTION_5 = "Chapter III, Section 5"
+# Interpretation (S1, docs/methodology.md): Art. 40(1) AIA presumes conformity with the
+# Section 2 requirements and the Chapter V obligations; the Decision names no article.
+_ART_40_REQUIREMENT = (
+    "Track applicable harmonised standards and standardisation deliverables. "
+    f"{STANDARDS_DECISION_2026_2274} published the reference of {EN_18286} "
+    f'("{EN_18286_TITLE}"). Interpretation (S1): Art. 40(1) presumes conformity with the '
+    "requirements in Chapter III, Section 2, and the quality management system is Art. 17, "
+    "in Section 3; the Decision names no article, so whether the standard gives a "
+    "presumption for Art. 17 is for review."
+)
+_ART_43_REQUIREMENT = "Complete the applicable conformity assessment."
 _CHAPTER_IX = "Chapter IX"
 _ART_111_3_NOTE = (
     "Art. 111(3) AIA: providers of general-purpose AI models placed on the market before "
@@ -258,7 +275,8 @@ def build_obligation_graph(
 
     legacy_flag = legacy_transparency_flag(profile) if final_tier is RiskTier.HIGH else None
     for index, obligation in enumerate(transparency_obligations, start=1):
-        applies_from, note = GENERAL_APPLICATION_DATE, None
+        applies_from: str | None = GENERAL_APPLICATION_DATE
+        note: str | None = None
         if obligation.article == ART_50_2:
             applies_from, note = _art_111_dating(
                 profile.placing_on_market_date,
@@ -268,44 +286,55 @@ def build_obligation_graph(
             )
         # Art. 2(2) lists Art. 50 for no Section B product, Annex III area or not.
         section_b_flag = _SECTION_B_TRANSPARENCY_FLAG if section_b_product(profile) else None
-        flagged = bool(section_b_flag or legacy_flag)
+        flagged = bool(section_b_flag or legacy_flag) or applies_from is None
         note = " ".join(part for part in (section_b_flag, note, legacy_flag) if part) or None
-        items.append(
-            _item(
-                f"transparency.{index}",
-                obligation.article,
-                obligation.applies_to,
-                "Art. 50 transparency trigger in the submitted profile.",
-                obligation.requirement,
-                "Transparency notice, label or disclosure record.",
-                applies_from,
-                # A counsel flag sends the item to review, like every other flagged item.
-                ReviewStatus.REVIEW_REQUIRED if flagged else ReviewStatus.DETERMINED,
-                note,
-            )
+        item = _item(
+            f"transparency.{index}",
+            obligation.article,
+            obligation.applies_to,
+            "Art. 50 transparency trigger in the submitted profile.",
+            obligation.requirement,
+            "Transparency notice, label or disclosure record.",
+            applies_from,
+            # A counsel flag sends the item to review, like every other flagged item.
+            ReviewStatus.REVIEW_REQUIRED if flagged else ReviewStatus.DETERMINED,
+            note,
         )
+        # On the wording of Art. 111(2) AIA Art. 50 reaches an unchanged legacy system only
+        # after a significant change; the report keeps the dating, not the answer.
+        item._after_significant_change = legacy_flag is not None
+        items.append(item)
 
     # Art. 4 AIA (Chapter I) heads the graph: every provider and deployer, whatever the
-    # tier. The engine applies the same condition to the obligation list.
-    if final_tier not in (RiskTier.OUT_OF_SCOPE, RiskTier.PROHIBITED):
+    # tier. The engine asks the same predicate for the obligation list.
+    if ai_literacy_applies(final_tier):
         items = _ai_literacy_items(profile, final_tier) + items
 
-    return items
+    return [
+        item.model_copy(
+            update={"applies_on_assessment_date": applies_on(profile.assessment_date, item)}
+        )
+        for item in items
+    ]
 
 
 def _ai_literacy_items(profile: SystemProfile, final_tier: RiskTier) -> list[ObligationGraphItem]:
     """Art. 4 AIA, one item per provider or deployer role held, dated by Chapter I
     (Art. 113, third paragraph, point (a)). Art. 2(2) AIA does not list Art. 4 for a
-    Section B product, and Art. 111(2) AIA reaches it for a legacy high-risk system as it
-    reaches Art. 50: in both cases the item is kept, flagged and sent to review."""
+    Section B product, Art. 111(2) AIA reaches it for a legacy high-risk system as it
+    reaches Art. 50, and Art. 4 names no exception for a prohibited system: in each case
+    the item is kept, flagged and sent to review."""
 
     section_b_flag = _SECTION_B_LITERACY_FLAG if section_b_product(profile) else None
+    prohibited_flag = PROHIBITED_LITERACY_FLAG if final_tier is RiskTier.PROHIBITED else None
     legacy_flag = (
         legacy_transparency_flag(profile, "Art. 4") if final_tier is RiskTier.HIGH else None
     )
-    note = " ".join(part for part in (section_b_flag, legacy_flag) if part) or None
-    return [
-        _item(
+    parts = (section_b_flag, prohibited_flag, legacy_flag)
+    note = " ".join(part for part in parts if part) or None
+    items = []
+    for actor in ai_literacy_roles(profile.roles):
+        item = _item(
             f"literacy.{_actor_slug(actor)}.4",
             ART_4,
             actor,
@@ -319,8 +348,11 @@ def _ai_literacy_items(profile: SystemProfile, final_tier: RiskTier) -> list[Obl
             ReviewStatus.REVIEW_REQUIRED if note else ReviewStatus.DETERMINED,
             note,
         )
-        for actor in ai_literacy_roles(profile.roles)
-    ]
+        # As for Art. 50: on its wording Art. 111(2) AIA reaches Art. 4 for an unchanged
+        # legacy system only after a significant change (applies_on).
+        item._after_significant_change = legacy_flag is not None
+        items.append(item)
+    return items
 
 
 def _high_risk_provider_graph(
@@ -391,7 +423,7 @@ def _high_risk_provider_graph(
             "high-risk.provider.40",
             "Art. 40 AIA",
             "High-risk requirements where harmonised standards are available.",
-            "Track applicable harmonised standards and standardisation deliverables.",
+            _ART_40_REQUIREMENT,
             "Standards applicability matrix.",
             _SECTION_5,
             application_date,
@@ -421,19 +453,13 @@ def _high_risk_provider_graph(
             "high-risk.provider.43",
             "Art. 43 AIA",
             "Before placing high-risk AI system on the market or putting into service.",
-            "Complete the applicable conformity assessment.",
+            _art_43_requirement(profile),
             "Conformity assessment file.",
             _SECTION_5,
             application_date,
         ),
-        _undeferred_item(
-            "high-risk.provider.44",
-            "Art. 44 AIA",
-            "Certificate issued by notified body where applicable.",
-            "Track certificate validity, changes and renewal obligations.",
-            "Certificate register.",
-            _SECTION_5,
-            application_date,
+        _conformity_route_item(
+            application_date, internal_control_route=_internal_control_route(profile)
         ),
         _undeferred_item(
             "high-risk.provider.47",
@@ -473,6 +499,37 @@ def _high_risk_provider_graph(
             application_date,
         ),
     ]
+
+
+def _conformity_route_item(
+    application_date: str, *, internal_control_route: bool
+) -> ObligationGraphItem:
+    """The Art. 43(2) internal-control item for Annex III points 2 to 8, else the Art. 44
+    certificate item. Both are Chapter III, Section 5 duties, dated like the other
+    Section 5 items (_undeferred_item)."""
+
+    if internal_control_route:
+        return _undeferred_item(
+            "high-risk.provider.43.2",
+            "Art. 43(2) AIA",
+            "High-risk AI system referred to in points 2 to 8 of Annex III.",
+            (
+                "Follow the conformity assessment procedure based on internal control "
+                "(Annex VI), which does not involve a notified body."
+            ),
+            "Annex VI internal-control assessment record.",
+            _SECTION_5,
+            application_date,
+        )
+    return _undeferred_item(
+        "high-risk.provider.44",
+        "Art. 44 AIA",
+        "Certificate issued by notified body where applicable.",
+        "Track certificate validity, changes and renewal obligations.",
+        "Certificate register.",
+        _SECTION_5,
+        application_date,
+    )
 
 
 def _registration_items(profile: SystemProfile) -> list[ObligationGraphItem]:
@@ -672,18 +729,16 @@ def _with_legacy_notes(
         if item.actor in _PROVIDER_OR_DEPLOYER:
             text += public_authority_clause(profile)
         text += f". {flag}"
-        out.append(
-            item.model_copy(
-                update={
-                    "application_date_note": (
-                        f"{item.application_date_note} {text}"
-                        if item.application_date_note
-                        else text
-                    ),
-                    "review_status": ReviewStatus.REVIEW_REQUIRED,
-                }
-            )
+        conditional = item.model_copy(
+            update={
+                "application_date_note": (
+                    f"{item.application_date_note} {text}" if item.application_date_note else text
+                ),
+                "review_status": ReviewStatus.REVIEW_REQUIRED,
+            }
         )
+        conditional._after_significant_change = True
+        out.append(conditional)
     return out
 
 
@@ -724,7 +779,7 @@ def _actor_slug(actor: Role) -> str:
     return actor.value.replace("_", "-")
 
 
-def _gpai_dating(profile: SystemProfile) -> tuple[str, str | None, bool]:
+def _gpai_dating(profile: SystemProfile) -> tuple[str | None, str | None, bool]:
     """Art. 111(3) AIA dating from the model's own date, or from the AI system's
     placing_on_market_date when only that is given, with a note, and whether it is that
     fallback, which sends every item to review."""
@@ -745,8 +800,10 @@ def _gpai_dating(profile: SystemProfile) -> tuple[str, str | None, bool]:
 
 def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphItem]:
     application_date, note, fallback = _gpai_dating(profile)
-    # The fallback date is not the model's own: nothing dated by it is determined.
-    status = ReviewStatus.REVIEW_REQUIRED if fallback else ReviewStatus.DETERMINED
+    # The fallback date is not the model's own, and an open date is no date: nothing dated
+    # by either is determined.
+    open_date = application_date is None
+    status = ReviewStatus.REVIEW_REQUIRED if fallback or open_date else ReviewStatus.DETERMINED
     # Every Chapter V item takes the same date and Art. 111(3) AIA note (_art_111_dating).
     items = [
         _item(
@@ -864,7 +921,7 @@ def _item(
     trigger: str,
     requirement: str,
     evidence_artifact: str,
-    application_date: str,
+    application_date: str | None,
     review_status: ReviewStatus = ReviewStatus.DETERMINED,
     application_date_note: str | None = None,
 ) -> ObligationGraphItem:
@@ -897,7 +954,7 @@ def _undeferred_item(
     """A duty outside the point (c) deferral: the literal general date, the deferred
     alternative in the note, and review."""
 
-    return _item(
+    item = _item(
         obligation_id,
         article,
         actor,
@@ -908,20 +965,63 @@ def _undeferred_item(
         ReviewStatus.REVIEW_REQUIRED,
         _literal_reading_note(location, deferred_date),
     )
+    item._deferred_date = deferred_date
+    return item
 
 
 def _art_111_dating(
     placed_on: str | None, cut_off: str, deadline: str, note: str
-) -> tuple[str, str | None]:
+) -> tuple[str | None, str | None]:
     """Application date and note under Art. 111(3) or (4) AIA. The duty applies from
-    ``cut_off``; what was placed on the market before that date has until ``deadline``."""
+    ``cut_off``; what was placed on the market before that date has until ``deadline``.
+    With the placing date unknown the date is open (None) and the note says why (C9)."""
 
     if placed_on is None:
-        # Placing date unknown: the cut-off date, with the transition as a condition.
-        return cut_off, note
+        return None, f"{note} {unknown_placing_note(cut_off, deadline)}"
     if before(placed_on, cut_off):
         return deadline, note
     return cut_off, None
+
+
+def unknown_placing_note(cut_off: str, deadline: str) -> str:
+    return (
+        f"The placing date is not given, so the application date is open: {cut_off} for "
+        f"placing on the market on or after {cut_off}, {deadline} for placing before it."
+    )
+
+
+def dating_window(item: ObligationGraphItem) -> tuple[str, str] | None:
+    """The two dates an item with an unknown Art. 111(3) or (4) AIA date can take."""
+
+    if item.application_date is not None:
+        return None
+    if item.obligation_id.startswith("gpai."):
+        return POINT_B_DATE, ART_111_3_DEADLINE
+    if item.article == ART_50_2:
+        return GENERAL_APPLICATION_DATE, ART_111_4_DEADLINE
+    return None
+
+
+def applies_on(assessment_date: str | None, item: ObligationGraphItem) -> bool | None:
+    """Whether ``item`` applies on ``assessment_date``: on or after its application date.
+    For an open date, and for a contested one with a deferred alternative, known only where
+    both possible dates give the same answer. A duty that attaches only after a significant
+    change (Art. 111(2) AIA) is known only not to apply before its date."""
+
+    if item.application_date is None:
+        window = dating_window(item)
+        if window is None:
+            return None
+        days = list(window)
+    else:
+        days = [item.application_date]
+        if item._deferred_date is not None:
+            days.append(item._deferred_date)
+    answers = {on_or_after(assessment_date, day) for day in days}
+    answer = answers.pop() if len(answers) == 1 else None
+    if item._after_significant_change and answer is not False:
+        return None
+    return answer
 
 
 def _literal_reading_note(location: str, deferred_date: str) -> str:
@@ -931,3 +1031,63 @@ def _literal_reading_note(location: str, deferred_date: str) -> str:
         f"from {GENERAL_APPLICATION_DATE} (Art. 113, second paragraph). If it is read as "
         f"following that deferral, {deferred_date} applies."
     )
+
+
+_ANNEX_III_POINT_1 = {
+    AnnexIII.BIOMETRICS_REMOTE_ID,
+    AnnexIII.BIOMETRICS_CATEGORISATION,
+    AnnexIII.BIOMETRICS_EMOTION,
+}
+
+
+def _art_43_requirement(profile: SystemProfile) -> str:
+    """The Art. 43 item, with the Art. 43(1) AIA choice for an Annex III, point 1 system.
+
+    Art. 43(1) lets such a provider choose internal control (Annex VI) only where it has
+    applied harmonised standards or common specifications for the Section 2 requirements,
+    and requires Annex VII otherwise. An unsettled Annex III point may be point 1, so it
+    gets the sentence as a condition. A product under Annex I, Section A legislation
+    follows that legislation's procedure (Art. 43(3), last subparagraph, as replaced by
+    Regulation (EU) 2026/1744, Art. 1, point (19)), as _internal_control_route reads it.
+    """
+
+    area = profile.annex_iii_area
+    if area not in _ANNEX_III_POINT_1 and area is not AnnexIII.UNSURE:
+        return _ART_43_REQUIREMENT
+    if profile.annex_i_safety_component and not section_b_product(profile):
+        return _ART_43_REQUIREMENT
+    scope = (
+        "If the system falls in Annex III, point 1, internal"
+        if area is AnnexIII.UNSURE
+        else "Annex III, point 1: internal"
+    )
+    return (
+        f"{_ART_43_REQUIREMENT} {scope} control (Annex VI) is open only where the provider has "
+        "applied harmonised standards or, where applicable, common specifications in "
+        "demonstrating compliance with the requirements in Chapter III, Section 2; where none "
+        "exist, or the provider has applied only part of a harmonised standard, Annex VII "
+        "applies, with a notified body (Art. 43(1) AIA). Interpretation (S2): "
+        f"{EN_18286} is a quality management system standard and does not by its title cover "
+        "the Section 2 requirements, so applying it alone does not open Annex VI."
+    )
+
+
+def _internal_control_route(profile: SystemProfile) -> bool:
+    """Whether Art. 43(2) AIA fixes internal control (Annex VI) as the route.
+
+    Art. 43(2) covers Annex III points 2 to 8. Point 1 (biometrics) can involve a
+    notified body under Art. 43(1), an unsettled Annex III point could be point 1,
+    and an Annex III system also covered by the legislation in Annex I, Section A,
+    follows that legislation's procedure (Art. 43(3), last subparagraph, as replaced
+    by Regulation (EU) 2026/1744, Art. 1, point (19)), whether or not that procedure
+    involves a third party. Those cases keep the review_required Art. 44 item, and
+    so does an Annex I product whose section is not given, which may be Section A.
+    That subparagraph names Section A only, so a Section B product in points 2 to 8
+    takes the Art. 43(2) route like any other Annex III system. The section counts
+    only on the Art. 6(1) route, where the profile gives it (elsewhere the engine
+    reports it as not used, HIGHRISK.6.1.section_unused).
+    """
+    area = profile.annex_iii_area
+    if area is None or area is AnnexIII.UNSURE or area in _ANNEX_III_POINT_1:
+        return False
+    return not profile.annex_i_safety_component or section_b_product(profile)

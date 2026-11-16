@@ -30,6 +30,10 @@
           "label": "Credit scoring, deployer"
         },
         {
+          "key": "life_insurer_pricing",
+          "label": "Life insurance pricing, provider and deployer"
+        },
+        {
           "key": "cv_screening",
           "label": "CV screening"
         },
@@ -135,7 +139,8 @@
       "generates_synthetic_content": true,
       "prohibited_practices": [
         "5.1.ba"
-      ]
+      ],
+      "assessment_date": "2026-12-02"
     },
     "credit_scoring": {
       "name": "CreditSightScore",
@@ -156,6 +161,20 @@
       "purpose": "Loan underwriting",
       "sector": "Banking",
       "annex_iii_area": "III.5.b"
+    },
+    "life_insurer_pricing": {
+      "name": "Musterversicherung term-life pricing model",
+      "description": "A synthetic German life insurer's gradient-boosted model that sets term-life premiums from applicant health questionnaires. The insurer builds the model and uses it in its own underwriting.",
+      "roles": [
+        "provider",
+        "deployer"
+      ],
+      "purpose": "Risk assessment and pricing of term-life insurance for natural persons",
+      "sector": "Life insurance",
+      "annex_iii_area": "III.5.c",
+      "derogation": {
+        "performs_profiling": true
+      }
     },
     "cv_screening": {
       "name": "TalentRank CV Screener",
@@ -260,7 +279,8 @@
       "purpose": "Text classification and sentiment analysis",
       "sector": "AI-Analytics",
       "is_gpai_model": true,
-      "training_flops": 1e+24
+      "training_flops": 1e+24,
+      "gpai_model_placing_on_market_date": "2026-03-02"
     },
     "gpai_systemic_by_flops": {
       "name": "NexusUltra-Large",
@@ -272,7 +292,8 @@
       "purpose": "Multimodal text and reasoning generation",
       "sector": "AI-Research",
       "is_gpai_model": true,
-      "training_flops": 2e+25
+      "training_flops": 2e+25,
+      "gpai_model_placing_on_market_date": "2025-09-15"
     },
     "gpai_systemic_designated": {
       "name": "NexusCustom-Reason",
@@ -285,7 +306,8 @@
       "sector": "Scientific-Inference",
       "is_gpai_model": true,
       "training_flops": 1e+24,
-      "gpai_systemic_risk_designated": true
+      "gpai_systemic_risk_designated": true,
+      "gpai_model_placing_on_market_date": "2026-04-01"
     },
     "foundation_model_systemic": {
       "name": "Atlas-70B",
@@ -297,7 +319,8 @@
       "purpose": "General-purpose text generation",
       "sector": "AI",
       "is_gpai_model": true,
-      "training_flops": 5e+25
+      "training_flops": 5e+25,
+      "gpai_model_placing_on_market_date": "2026-02-02"
     }
   }
 }

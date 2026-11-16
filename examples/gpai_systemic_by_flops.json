@@ -5,5 +5,6 @@
   "purpose": "Multimodal text and reasoning generation",
   "sector": "AI-Research",
   "is_gpai_model": true,
-  "training_flops": 2e25
+  "training_flops": 2e25,
+  "gpai_model_placing_on_market_date": "2025-09-15"
 }

@@ -5,14 +5,26 @@
 ```bash
 uv run ruff check .
 uv run ruff format --check .
-uv run pytest
+uv run pytest --cov=eu_ai_act_classifier --cov-report=term --cov-fail-under=95
 ```
+
+CI also runs the suite on Python 3.14, at the lowest declared dependency versions
+(`uv run --isolated --resolution lowest-direct --extra dev --extra mcp pytest`) and
+from the built wheel installed into a clean environment (`uv build`, then the CLI on
+`examples/spam_filter.json` and, expecting exit 1, `examples/social_scoring.json --strict`).
 
 ## Focused Source And Artifact Checks
 
 ```bash
 uv run pytest tests/test_required_dispositions.py tests/test_obligations_and_artifacts.py tests/test_local_api.py
+uv run pytest tests/legal   # fixtures written from the snapshots in sources/
 ```
+
+The legal fixtures in `tests/legal/fixtures/` state each case's facts, the
+`SystemProfile` that expresses them and the result the cited source text
+requires (format in `tests/legal/fixtures/README.md`). A failure there means the
+engine and the source-derived expectation disagree: check the fixture against
+the snapshot before changing either.
 
 ## CLI Smoke
 

@@ -42,11 +42,12 @@ agreements. No provisional AI Omnibus source remains in the current manifest.
 Nonbinding guidance appears only as advisory overlay or eval context. The
 overlay can point reviewers to Commission materials, the AI Act Service Desk,
 the GPAI Code of Practice, the draft high-risk guidelines, the Commission
-guidelines on the transparency obligations under Art. 50 (published
-20 July 2026) and the final Code of Practice on marking and labelling of
-AI-generated content (published 10 June 2026; Art. 50(2) and (4)). It never
-changes the binding classification. The Art. 50 sources carry their own
-retrieval date, 31 October 2026; the other advisory sources keep theirs.
+guidelines on the transparency obligations under Art. 50 (Communication
+C(2026) 7702 final of 5 November 2026; the Commission's page dates their
+publication to 20 July 2026) and the Code of Practice on Transparency of
+AI-generated Content (final text of 10 June 2026; Art. 50(2), (4) and (5)).
+It never changes the binding classification. The Art. 50 sources carry their
+own retrieval date, 14 November 2026; the other advisory sources keep theirs.
 
 ## AI Literacy (Art. 4)
 
@@ -58,24 +59,28 @@ systems on their behalf", taking into account their technical knowledge,
 experience, education and training, the context of use and the persons the
 system is used on; no specific level of AI literacy of any individual has to
 be guaranteed. Chapter I applies from 2 February 2025 (Art. 113, third
-paragraph, point (a)).
+paragraph, point (a)), which is the item's date. The wording quoted applies
+since Regulation (EU) 2026/1744 entered into force on 27 July 2026; until then
+Art. 4 asked for measures "to ensure, to their best extent, a sufficient level
+of AI literacy".
 
 The report lists one Art. 4 obligation and one graph item (`literacy.provider.4`,
 `literacy.deployer.4`, dated 2025-02-02, `determined`) per provider or deployer
 role the profile holds, for every report whose scope is not outside the AI
 Act, including a minimal-risk system and a system whose scope is under review.
 Importers, distributors, authorised representatives and the provider of a
-general-purpose AI model, as such, get none. A prohibited system gets none
-either, as for the GPAI duties: a system that may not be placed on the market,
-put into service or used (Art. 5) has no staff to operate it; the choice is
-pinned in `tests/test_ai_literacy.py`.
+general-purpose AI model, as such, get none. A system the report classifies
+as prohibited keeps the duty (below); `tests/test_ai_literacy.py` pins that.
 
-Two positions are flagged "Literal reading, confirm with counsel" and sent to
-review, as the same positions are for Art. 50: for a Section B product
-Art. 2(2) does not list Art. 4 (the obligation text and the item carry the
-flag), and for a legacy high-risk system Art. 111(2) applies the Regulation
-only after a significant change in design (the item keeps its date and carries
-the flag).
+Three positions are flagged "Literal reading, confirm with counsel" and sent
+to review. For a Section B product Art. 2(2) does not list Art. 4 (the
+obligation text and the item carry the flag). For a legacy high-risk system
+Art. 111(2) applies the Regulation only after a significant change in design
+(the item keeps its date and carries the flag). Both positions are the same
+for Art. 50. For a system the report classifies as prohibited, Art. 4 names no
+exception, and a prohibition can apply from a later date (Art. 5(1), first
+subparagraph, points (ba) and (bb), from 2 December 2026) or be subject to an
+exception (the obligation text and the item carry the flag).
 
 ## High-Risk Logic
 
@@ -91,9 +96,20 @@ system stays high-risk under Art. 6(1), but the report lists no Chapter III
 obligation: one Art. 2(2) obligation and graph item replace them. Regulation
 (EU) 2026/1744, Art. 1, point (41) deleted Section A, point 1 and added
 Regulation (EU) 2023/1230 on machinery as Section B, point 21, so AI-enabled
-machinery is a Section B product. An unset section is treated as Section A
-(the full Chapter III set), and the Art. 6(1) finding says that a Section B
-product, machinery included, gets only the Art. 2(2) provisions.
+machinery is a Section B product. `annex_i_legislation` names the act and
+decides the section (section "Annex I acts" below). A profile that gives
+neither the act nor the section keeps the Section A duties (the full Chapter
+III set) and goes to review with an open question (C7), and the Art. 6(1)
+finding says that a Section B product, machinery included, gets only the
+Art. 2(2) provisions.
+
+Two statements on the Art. 6(1) route are `info` findings of their own:
+`HIGHRISK.6.1c`, Art. 6(1c) (a third-party conformity assessment required
+solely for risks other than risks to health and safety does not meet
+Art. 6(1)(b)), on every Annex I route, and, for Section A, `HIGHRISK.2.13`,
+the Art. 2(13) note on delegated acts. Both citations were read in the
+Official Journal text of Regulation (EU) 2026/1744 on 11 November 2026 and
+are verified; the claim ledger records the source.
 
 On its wording, Art. 2(2) covers any AI system
 "classified as high-risk AI systems in accordance with Article 6(1)" for a
@@ -120,6 +136,12 @@ Annex III systems are treated as high-risk unless an Art. 6(3) derogation is
 asserted. An asserted derogation keeps the tier high-risk and changes the
 disposition to `requires_review`, because Art. 6(4) requires documentation and
 registration. Profiling of natural persons forecloses the derogation.
+
+Annex III point 5(b) excepts AI systems used for the purpose of detecting
+financial fraud. The exception is not applied silently: on a point 5(b)
+profile, `used_for_financial_fraud_detection: true` or `null` keeps the tier
+high-risk and adds an open question, so the disposition is `requires_review`.
+The default, `false`, adds none.
 
 The residual `AnnexIII.UNSURE` value is conservative. It marks the system
 high-risk and records an unverified citation for review.
@@ -266,6 +288,11 @@ counts only if it was made on or after that date. Only the provider and deployer
 2 August 2030 sentence. With `public_authority_use` they also carry
 2030-08-02, unless a significant change is asserted; with only a
 public-authority deployer they ask the reviewer to confirm the intended use.
+A public-authority deployer counts only where the profile holds the deployer
+role, as `deployer_public_authority` describes that role; it then counts for
+the provider items too where the profile also holds the provider role, never
+for importer, distributor or authorised-representative items. For a profile
+without the deployer role the intended use is `public_authority_use` alone.
 
 Art. 113 gives Chapter III no single date. Point (b) applies Section 4 from
 2 August 2025, but Section 4 ("Notifying authorities and notified bodies")
@@ -287,7 +314,9 @@ the point (c) date. For a system whose earliest date falls on or after
 2 August 2026 but before the point (c) date, it says that on the general-date
 reading the system is not a legacy system and the condition does not apply.
 An undated check states both. The item's note also
-states the Art. 111(1) carve-out for the Annex X large-scale IT systems, and
+states the Art. 111(1) carve-out for the Annex X large-scale IT systems
+with its dates (read in the Official Journal text on 11 November 2026; VERIFIED
+in the claim ledger), and
 that the first unit of the type and model decides (recital (39) of
 Regulation (EU) 2026/1744).
 
@@ -305,15 +334,21 @@ The scope gate's transitional status states the same comparison in words:
 which dates were given, the Chapter III date and its point, whether the system
 predates it, the significant-change position, for a legacy system the
 Art. 111(1) carve-out, and the 2030 deadline for public-authority use. Where
-the profile gives no date but `public_authority_use` or
-`deployer_public_authority`, it names the date to compare with; where it
+the profile gives no date but `public_authority_use` or, for a profile that
+holds the deployer role, `deployer_public_authority`, it names the date to
+compare with; where it
 gives a date but no high-risk route, it says there is no Chapter III date to
 compare with. A `significant_change_after_application_date` answer counts
 only for a high-risk system, with no prohibited practice screened, placed on
 the market or put into service before its Chapter III date; elsewhere the
-check states that the answer is not used. It also states the Art. 111(3)
+check states that the answer is not used. In the same way it states that a
+`deployer_public_authority` answer is not used unless the profile holds the
+deployer role for a high-risk system with no prohibited practice screened. It
+also states the Art. 111(3)
 check for a general-purpose AI model and the Art. 111(4) check for a system
 generating synthetic content where the profile gives the date they turn on.
+Outside the AI Act's scope there is no transitional status, so none of these
+statements appears.
 
 Art. 50 items (Chapter IV) carry 2 August 2026, subject to the Art. 50(2) rule
 that follows. Under Art. 111(4), providers of generative systems placed on the
@@ -322,7 +357,11 @@ market before that date take the necessary steps to comply with Art. 50(2) by
 If the profile's placing-on-market date is before 2 August 2026, the
 Art. 50(2) item carries 2026-12-02 and the Art. 111(4) note. If it is on or
 after that date, the item carries 2026-08-02 and no note. If the profile gives
-no date, the item carries 2026-08-02 with the transition as its note.
+no date, the item's `application_date` is null, its note names both dates, it
+is `review_required` and an open question asks for the date, unless the
+assessment date falls on or after both dates (C9). An assessment date before
+both still raises the question: the duty does not apply that day, but the day
+it starts turns on the missing date.
 
 Art. 111(2) applies "this Regulation", not only Chapter III, to a legacy
 high-risk system only if its design changes significantly, so on its wording
@@ -342,8 +381,10 @@ laid down in the Regulation by 2 August 2027. The model is dated by its
 own date, `gpai_model_placing_on_market_date`. If it is before
 2 August 2025, every GPAI item (Arts. 53, 55 and 56) carries 2027-08-02 and
 the Art. 111(3) note. If it is on or after that date, the items carry
-2025-08-02 and no note. If the profile gives no date, they carry 2025-08-02
-with the transition as their note.
+2025-08-02 and no note. If the profile gives neither the model's date nor the
+system's `placing_on_market_date`, their `application_date` is null, the note
+names both dates, they are `review_required` and an open question asks for the
+model's date, unless the assessment date falls on or after both dates (C9).
 
 Art. 111(3) dates the model, Art. 111(4) the system, so the profile has two
 fields. `gpai_model_placing_on_market_date` is the model's date and drives
@@ -370,6 +411,8 @@ Art. 1, point (7). Their findings quote the point and the Art. 5(1a)
 conditions (and, for point (ba), Art. 5(1b)) and say that the ban applies
 from 2 December 2026 (Art. 113, third paragraph, point (a)). The sentence
 does not depend on the date of the run, so the output stays deterministic.
+Whether the ban applies on the date assessed is decided from the profile's
+`assessment_date`, never from the clock (next section).
 
 The binding timeline also lists the point (a) exception (Art. 5(1), first
 subparagraph, points (ba) and (bb), and Art. 5(1a) and (1b), from
@@ -379,6 +422,171 @@ VII and XII except Art. 101, and Art. 78, from 2 August 2025), point (d)
 2 August 2027 for general-purpose AI models already on the market before
 2 August 2025, and the Art. 111(2) deadline of 2 August 2030 for high-risk
 systems intended to be used by public authorities.
+
+## Art. 5(1)(ba) and (bb), Annex I Acts And Open Dates
+
+Read on 14 November 2026 in the Official Journal snapshots in `sources/`:
+Regulation (EU) 2026/1744, Art. 1, points (2)(a), (7), (39)(b), (40) and (41),
+Art. 4 and Recitals 11 to 13; Regulation (EU) 2024/1689, Art. 3, points (3),
+(4), (6), (7), (9) and (11), Art. 111(3), Art. 113 and Annex I; Directive
+2011/93/EU, Art. 2, points (c) and (e), and Art. 5(1). The legal fixtures in
+`tests/legal/fixtures/` cite the same pinpoints.
+
+### Points (ba) and (bb)
+
+A profile reaches points (ba) and (bb) in one of two ways.
+
+- It declares `5.1.ba` or `5.1.bb`. The declaration stands for every element:
+  the reviewer has characterised the facts.
+- It gives the element facts in `intimate_imagery` or
+  `child_sexual_abuse_material`, each true, false or null. The engine subsumes
+  them under Art. 5(1a)(a)(i) (intended purpose), Art. 5(1a)(a)(ii)
+  (reasonably foreseeable and reproducible outcome without reasonable and
+  adequate safeguards), Art. 5(1a)(b) (use for that purpose) and, for point
+  (ba), Art. 5(1b) (manipulation counts only where it increases exposure or
+  alters the depicted activity). Unknown facts use three-valued logic: a null
+  that could change the result keeps the point UNKNOWN, with an open question
+  that names the facts; a null that cannot change it does not hold it open.
+
+A profile can contradict itself on the content element. Where
+`foreseeable_and_reproducible` (Art. 5(1a)(a)(ii)) or
+`deployer_uses_for_that_purpose` (Art. 5(1a)(b)) is true, the generation or
+manipulation of the material is stated as a foreseeable outcome or as the
+deployer's purpose; if the content facts (`generates_material` and, for point
+(ba), `manipulates_material_increasing_exposure`, or `generates_or_manipulates`)
+nevertheless deny it, and that denial decides the result, the point is UNKNOWN
+with an open question naming the conflicting facts, never "not met". Recital 12
+of Regulation (EU) 2026/1744 counts a system for which that generation is a
+reasonably foreseeable and reproducible outcome among the systems that generate
+the material, and covers a deployer who uses for that purpose a system not
+intended for it. An intended purpose (Art. 5(1a)(a)(i)) is not checked this
+way, because a manipulation that Art. 5(1b) does not count may be a system's
+purpose without being "that manipulation".
+
+A point that is not met gives an `info` finding (`PROHIBITED.5.1.ba.not_met`),
+an UNKNOWN point a `medium` finding (`.unknown`) and an open question. A met
+point is dated by `assessment_date`, the date of the placing on the market,
+putting into service or use under assessment:
+
+- on or after 2 December 2026, the tier is prohibited (`PROHIBITED.5.1.ba`);
+- before 2 December 2026, a `high` finding says the point applies from that
+  date (`.not_yet_applicable`), the tier is not raised, and an open question
+  sends the result to review (C4);
+- with no assessment date, the prohibited tier is kept and an open question
+  asks for the date (C4).
+
+A system that generates synthetic content or deep fakes and neither declares
+nor screens a point is asked about it, as the interim screen of #63 does; a
+system already prohibited is not, because a further point cannot change its
+result. A declaration that the element facts contradict is kept, with an open
+question. The guided intake does not ask the element facts, so a guided
+generator always gets the screen question.
+
+### Annex I acts
+
+`annex_i_legislation` names the Annex I act, as a locator (`I.B.21` is
+Section B, point 21), and decides the section. Regulation (EU) 2026/1744,
+Art. 1, point (41), deleted Section A, point 1 (Directive 2006/42/EC) and added
+Regulation (EU) 2023/1230 on machinery as Section B, point 21, so `I.A.1` is
+rejected and machinery is Section B. `annex_i_section` stays for profiles that
+give only the section; a section that contradicts the act is rejected.
+
+### Open dates and the assessment date
+
+`applies_on_assessment_date` on an obligation-graph item says whether the item
+applies on the assessment date, "on or after" its application date. It is null
+without an assessment date. Where the application date itself is open (null),
+it is known only if both possible dates give the same answer. The same holds
+for a Chapter III, Section 5 or Chapter IX item, whose literal date (2 August
+2026) is contested with the point (c) date the note names: the field does not
+pick a side. For an item that Art. 111(2) makes attach only after a significant
+change in design (an unchanged legacy high-risk system's Chapter III and
+Art. 50 items), the field is false before the item's date and null from then
+on, because whether the duty has attached turns on the change and on the
+contested cut-off.
+
+### Harmonised standards
+
+Read on 14 November 2026 in the Official Journal snapshot
+`sources/oj/32026D2274.en.xhtml`, fetched again that day and identical byte
+for byte, and in Art. 40(1), Art. 17 and Art. 43(1) of Regulation (EU)
+2024/1689. Commission Implementing Decision (EU) 2026/2274 publishes the
+reference of one harmonised standard, EN 18286:2026, titled "Quality
+management system for EU AI Act regulatory purposes" after the words
+"Artificial intelligence", and enters
+into force on the day of publication, 14 October 2026 (Art. 2). It names no
+AI Act article. The Art. 40 graph item of every high-risk provider names the
+standard. For an Annex III, point 1 system the Art. 43 item states the
+Art. 43(1) choice: internal control (Annex VI) only where harmonised standards
+or common specifications were applied for the Section 2 requirements, Annex
+VII otherwise; an unsettled Annex III point gets the same sentence as a
+condition, and a product under Annex I, Section A legislation, which follows
+that legislation's procedure (Art. 43(3), last subparagraph), does not. The
+Decision is not in the report's source manifest, whose `binding_level_1`
+status covers the AI Act and its amendments only. Fixture:
+`tests/legal/fixtures/art40_art43_1_harmonised_standards.json`.
+
+Two readings are the classifier's own and not yet answered by the owner. The
+graph items label them "Interpretation (S1)" and "Interpretation (S2)".
+
+- S1: Art. 40(1) presumes conformity with the requirements in Chapter III,
+  Section 2 (Arts. 8 to 15) and the Chapter V obligations. The quality
+  management system is Art. 17, in Section 3, and the Decision's recital 1
+  speaks only of "the requirements covered by those standards". Against
+  that, Art. 40(2), third subparagraph, added by Regulation (EU) 2026/1744,
+  Art. 1, point (17), asks for standardisation deliverables "to facilitate the
+  joint compliance and presumption of conformity with the requirements or
+  obligations set out in Chapter III, Sections 2 and 3"; Art. 40(1) itself
+  was not amended. The item names the standard and leaves to review whether
+  it gives a presumption for Art. 17.
+- S2: EN 18286:2026 is by its title a quality management system standard, so
+  the classifier reads it as not covering the Section 2 requirements:
+  applying it alone does not open Annex VI under Art. 43(1).
+
+### Interpretation choices
+
+These are the answers given on 10 November 2026 under the owner's delegation
+(continuation of the GitHub profile plan, section 2). They are Claude's
+answers, recorded as such, and not a lawyer's sign-off. Where a result turns
+on C1, C2, C3 or C10, the finding or open question says "Interpretation (Cn)".
+
+- C1, consent in point (ba): read at system level for placing on the market
+  and putting into service. Art. 5(1a)(a) frames its conditions at system
+  level ("design, training, architecture, capabilities"), and Recital 12 asks
+  for means to collect and demonstrate consent. Consent stays a reviewer fact.
+- C2, the use limb: Art. 5(1a)(b) is read literally. Use is prohibited only
+  where the deployer uses the system for the purpose of generating or
+  manipulating the material; the content element stays and the Art. 5(1a)(a)
+  conditions do not apply to use.
+- C3, roles: providers (Art. 3(3)) and importers (Art. 3(6)) place on the
+  market or put into service; deployers (Art. 3(4)) use. A distributor makes
+  available (Art. 3(7)), which is not the first making available that
+  Art. 3(9) calls placing on the market, so a distributor-only profile stays
+  UNKNOWN with review, whether the point is declared or screened.
+- C4, dates: before 2 December 2026 the result reads "applies from
+  2 December 2026" and goes to review; with no assessment date the stricter
+  result is kept, with review. This is a routing choice, not a reading of the
+  text, so the output does not label it an interpretation.
+- C6, Section B products: Art. 2(2) read literally lists neither Art. 5 nor
+  Art. 50. The report keeps both and raises an open question for each.
+- C7, an Art. 6(1) product with neither the act nor the section given: the
+  report keeps the Section A duties and goes to review.
+- C8, machinery: Section B, point 21 from 27 July 2026, the entry into force
+  under Art. 4 of Regulation (EU) 2026/1744, which sets no later date for
+  Art. 1, point (41). No Chapter III date changes, because the Annex I duties
+  start on 2 August 2028. Limit: the engine applies the amended list on every
+  assessment date; for a date before 27 July 2026, machinery was Section A.
+- C9, Art. 111(3) and (4): "comply by" a date is read as applying from that
+  date, inclusive; "before" a cut-off excludes the cut-off date; Art. 111(4)
+  is triggered by placing on the market only, and the general-purpose AI
+  model keeps its own date (`gpai_model_placing_on_market_date`). An unknown
+  placing date leaves the item's `application_date` null and raises an open
+  question, unless the assessment date falls on or after both possible dates.
+  Refined on 15 November 2026: an assessment date before both dates raises the
+  question too, because the day the duty starts still turns on the missing date.
+- C10, the "without right" defence in point (bb): a fact the reviewer
+  establishes under national law (Directive 2011/93/EU, Art. 5(1); Recital 13
+  of Regulation (EU) 2026/1744). The engine does not evaluate national law.
 
 ## Draft Work Products
 
@@ -401,7 +609,12 @@ The artifacts are:
 Citations are pinpoint, for example `Art. 6(2) AIA` and `Annex III(5)(b) AIA`.
 
 Unconfirmed pinpoints are flagged `noch zu verifizieren` and carried in
-`report.unverified_citations`. Nothing is invented.
+`report.unverified_citations`. Nothing is invented. A pinpoint stated in prose,
+such as the Art. 111(1) carve-out, carries the flag in the text while its
+citation is unverified; the binding timeline, the same in every report, flags
+it in its note only and does not add it to `report.unverified_citations`. A
+pinpoint becomes verified only with a claim-ledger row that names the source,
+the pinpoint and the access date.
 
 ## Boundaries
 

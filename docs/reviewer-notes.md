@@ -50,6 +50,14 @@ an Annex III area keeps the Annex III duties. Each kept position is flagged
 its finding and an open question, Art. 50 on its finding and items, and the
 Annex III duties on the Art. 6(1) finding and the Art. 2(2) item.
 
+### Annex III(5)(b) Financial-Fraud Exception
+
+Annex III point 5(b) excepts AI systems used for the purpose of detecting
+financial fraud. The classifier does not apply the exception itself. On a
+point 5(b) profile, `used_for_financial_fraud_detection: true` or `null` adds
+an open question, the system stays high-risk and the disposition is
+`requires_review`. The default, `false`, adds no question.
+
 ### Article 6(3) Derogation Claims
 
 If a system is in an Annex III area and the user asserts that it does not pose a

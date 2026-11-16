@@ -178,8 +178,15 @@
           "type": "string"
         },
         "application_date": {
-          "title": "Application Date",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Application Date"
         },
         "review_status": {
           "$ref": "#/$defs/ReviewStatus"
@@ -195,6 +202,18 @@
           ],
           "default": null,
           "title": "Application Date Note"
+        },
+        "applies_on_assessment_date": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Applies On Assessment Date"
         }
       },
       "required": [
@@ -330,6 +349,18 @@
           },
           "title": "Excluded Use Flags",
           "type": "array"
+        },
+        "assessment_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assessment Date"
         },
         "transitional_status": {
           "default": "No transitional limitation identified from the submitted facts.",

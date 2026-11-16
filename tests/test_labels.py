@@ -42,7 +42,7 @@ def test_every_enum_value_has_a_label() -> None:
 
 def test_annex_iii_and_art_5_labels_name_the_point_the_engine_cites() -> None:
     assert option_label(AnnexIII.CREDITWORTHINESS) == (
-        "Annex III(5)(b): Creditworthiness evaluation and credit scoring"
+        "Annex III(5)(b): Creditworthiness evaluation and credit scoring of natural persons"
     )
     for area, (citation, title) in ANNEX_III.items():
         if area is not AnnexIII.UNSURE:

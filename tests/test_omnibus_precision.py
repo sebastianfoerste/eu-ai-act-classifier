@@ -58,11 +58,10 @@ def test_art_72_item_dates_the_commission_template() -> None:
         assert "Art. 72(3) AIA as replaced by Art. 1, point (30)" in text
 
 
-def test_report_footer_names_the_amendment_and_the_consolidated_version() -> None:
+def test_report_footer_names_the_amendment() -> None:
     report = classify(SystemProfile(name="x"))
 
-    assert "as amended by Regulation (EU) 2026/1744" in REGULATION
-    assert "consolidated version of 27 July 2026" in REGULATION
+    assert REGULATION.endswith("as amended by Regulation (EU) 2026/1744")
     assert report.regulation == REGULATION
     assert render_report(report).splitlines()[-2] == REGULATION
 

@@ -31,9 +31,9 @@ from eu_ai_act_classifier.verify_sources import (
 ROOT = Path(__file__).resolve().parents[1]
 REAL_CITATIONS = ROOT / "src" / "eu_ai_act_classifier" / "citations.py"
 DATE_LINE = re.compile(
-    r'^(BINDING|ADVISORY|TRANSPARENCY)_SOURCE_RETRIEVED_ON = "([^"]*)"$', re.MULTILINE
+    r'^(BINDING_SOURCE|ADVISORY_SOURCE|ART_50_SOURCES)_RETRIEVED_ON = "([^"]*)"$', re.MULTILINE
 )
-DATE_GROUPS = ("BINDING", "ADVISORY", "TRANSPARENCY")
+DATE_GROUPS = ("BINDING_SOURCE", "ADVISORY_SOURCE", "ART_50_SOURCES")
 # A date no run of --update can produce, so a moved date is visible.
 OLD_DATE = "2000-01-01"
 OLD_DATES = dict.fromkeys(DATE_GROUPS, OLD_DATE)
@@ -63,7 +63,7 @@ def checkout(tmp_path) -> Path:
     package.mkdir(parents=True)
     shutil.copy(ROOT / "pyproject.toml", root / "pyproject.toml")
     text, count = DATE_LINE.subn(
-        lambda match: f'{match[1]}_SOURCE_RETRIEVED_ON = "{OLD_DATE}"',
+        lambda match: f'{match[1]}_RETRIEVED_ON = "{OLD_DATE}"',
         REAL_CITATIONS.read_text(encoding="utf-8"),
     )
     assert count == len(DATE_GROUPS)
@@ -139,13 +139,13 @@ def test_all_sources_passing_updates_every_date_and_nothing_else(checkout) -> No
     dates = _dates(checkout)
     assert set(dates) == set(DATE_GROUPS)
     assert len(set(dates.values())) == 1
-    assert dates["BINDING"] in days
+    assert dates["BINDING_SOURCE"] in days
     after = _citations(checkout).read_text(encoding="utf-8")
     assert DATE_LINE.sub("", after) == DATE_LINE.sub("", before)
     assert fetch.calls == list(URLS.values())
 
     meta = json.loads((checkout / "dist" / "verified_sources.json").read_text(encoding="utf-8"))
-    assert meta["retrieved_on"] == dates["BINDING"]
+    assert meta["retrieved_on"] == dates["BINDING_SOURCE"]
     assert [(row["name"], row["status"], row["error"]) for row in meta["results"]] == [
         (name, 200, None) for name in URLS
     ]

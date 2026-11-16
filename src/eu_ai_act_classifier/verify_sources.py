@@ -33,13 +33,13 @@ try:
         AI_ACT_AMENDMENT_URL,
         AI_ACT_SERVICE_DESK_URL,
         AI_ACT_URL,
-        AI_CONTENT_CODE_URL,
         AI_SYSTEM_DEFINITION_GUIDELINES_URL,
+        ART_50_CODE_OF_PRACTICE_URL,
+        ART_50_GUIDELINES_URL,
         GPAI_CODE_URL,
         GPAI_PROVIDER_GUIDELINES_URL,
         HIGH_RISK_GUIDELINES_URL,
         PROHIBITED_GUIDELINES_URL,
-        TRANSPARENCY_GUIDELINES_URL,
     )
 except (ImportError, ValueError):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -48,13 +48,13 @@ except (ImportError, ValueError):
         AI_ACT_AMENDMENT_URL,
         AI_ACT_SERVICE_DESK_URL,
         AI_ACT_URL,
-        AI_CONTENT_CODE_URL,
         AI_SYSTEM_DEFINITION_GUIDELINES_URL,
+        ART_50_CODE_OF_PRACTICE_URL,
+        ART_50_GUIDELINES_URL,
         GPAI_CODE_URL,
         GPAI_PROVIDER_GUIDELINES_URL,
         HIGH_RISK_GUIDELINES_URL,
         PROHIBITED_GUIDELINES_URL,
-        TRANSPARENCY_GUIDELINES_URL,
     )
 
 URLS = {
@@ -66,8 +66,8 @@ URLS = {
     "AI_SYSTEM_DEFINITION_GUIDELINES_URL": AI_SYSTEM_DEFINITION_GUIDELINES_URL,
     "GPAI_CODE_URL": GPAI_CODE_URL,
     "GPAI_PROVIDER_GUIDELINES_URL": GPAI_PROVIDER_GUIDELINES_URL,
-    "TRANSPARENCY_GUIDELINES_URL": TRANSPARENCY_GUIDELINES_URL,
-    "AI_CONTENT_CODE_URL": AI_CONTENT_CODE_URL,
+    "ART_50_CODE_OF_PRACTICE_URL": ART_50_CODE_OF_PRACTICE_URL,
+    "ART_50_GUIDELINES_URL": ART_50_GUIDELINES_URL,
 }
 
 
@@ -269,10 +269,8 @@ def verify_sources(
     # Every configured URL was verified, so every source retrieval date moves to today.
     content = citations_file.read_text(encoding="utf-8")
     new_content = re.sub(
-        r'(?:BINDING|ADVISORY|TRANSPARENCY)_SOURCE_RETRIEVED_ON\s*=\s*"[^"]+"',
-        lambda match: (
-            f'{match.group(0).split("_SOURCE_")[0]}_SOURCE_RETRIEVED_ON = "{retrieved_on}"'
-        ),
+        r'(BINDING_SOURCE|ADVISORY_SOURCE|ART_50_SOURCES)_RETRIEVED_ON\s*=\s*"[^"]+"',
+        lambda match: f'{match.group(1)}_RETRIEVED_ON = "{retrieved_on}"',
         content,
     )
     citations_file.write_text(new_content, encoding="utf-8")
