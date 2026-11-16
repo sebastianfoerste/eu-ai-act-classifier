@@ -235,3 +235,18 @@ footer a { margin-left: 18px; }
 .defaults li { margin-bottom: 4px; overflow-wrap: anywhere; }
 .defaults .question-hint { margin: 8px 0 0; }
 @media (max-width: 520px) { .mode-switch, .guided { margin-inline: 18px; } .guided { padding-inline: 0; } .answer-row { grid-template-columns: 1fr auto; } .answer-row dd:not(.change) { grid-column: 1; } .answer-row .change { grid-row: 1; grid-column: 2; } .question-title { font-size: 19px; } }
+/* D3 application timeline: one column per date the report carries, in date order; a vertical list on narrow screens. */
+.timeline { overflow-x: auto; margin: 4px 0 10px; padding-bottom: 6px; }
+.timeline-list { display: flex; align-items: flex-start; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.timeline-date { flex: 0 0 170px; margin: 0; padding: 8px 10px; border: 1px solid var(--line); border-top: 3px solid var(--blue); border-radius: 6px; background: var(--paper); }
+.timeline-date.is-open { border-top-color: var(--amber); }
+.timeline-when { margin: 0 0 6px; font-size: 12px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.timeline-hint, .timeline-milestone { margin: 0 0 6px; color: var(--muted); }
+.timeline-milestone { color: var(--ink); }
+.finding-body .timeline-items { list-style: none; margin: 6px 0 0; padding: 0; color: var(--ink); }
+.finding-body .timeline-item { display: flex; flex-wrap: wrap; gap: 2px 6px; margin: 0 0 5px; padding-left: 6px; border-left: 2px solid var(--line); }
+.finding-body .timeline-item.is-contested { border-left-color: var(--amber); }
+.timeline-article { font-weight: 600; }
+.timeline-actor { color: var(--muted); }
+.timeline-flag { flex-basis: 100%; color: var(--amber); }
+@media (max-width: 600px) { .timeline { overflow-x: visible; } .timeline-list { flex-direction: column; } .timeline-date { flex-basis: auto; } }

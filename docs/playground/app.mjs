@@ -2,6 +2,7 @@ import { answersToProfile, compactProfile, droppedFields, profileToAnswers } fro
 import { createWizard } from "./wizard.mjs";
 import { DISPOSITIONS, MAX_BYTES, ROLE_LABELS, TIERS, annexCitation, describeDefault, formatProfile, groupByRole, matchesQuery, parseProfile, practiceCitation, reportIsCurrent } from "./model.mjs";
 import { ShareError, decodeShare, encodeShare, isShareFragment } from "./share.mjs";
+import { assessmentLabel, timelineModel } from "./timeline.mjs";
 
 const $ = id => document.getElementById(id);
 const input = $("input");
@@ -426,6 +427,44 @@ const badge = (tone, text) => node("span", `badge ${tone}`, text);
 const unverifiedNote = verified => verified === false ? node("p", "item-text unverified", "noch zu verifizieren · citation pending verification") : null;
 const dateNote = note => note ? node("p", "item-text date-note", note) : null;
 
+// D3: the report's dates side by side, with what starts on each. It shows only dates
+// the report carries (see timeline.mjs); the cards below it are the same milestones as
+// a text list, and the obligation graph section lists every dated item in full.
+function timelineView() {
+  const model = timelineModel(report);
+  if (!model.columns.length && !model.open.length) return null;
+  const region = node("div", "timeline");
+  region.setAttribute("role", "region");
+  region.setAttribute("aria-label", "Application dates in date order");
+  region.tabIndex = 0;
+  const list = node("ol", "timeline-list");
+  for (const column of model.columns) list.append(timelineColumn(column.date, column.milestones, column.items));
+  if (model.open.length) list.append(timelineColumn(null, [], model.open));
+  region.append(list);
+  return region;
+}
+
+function timelineColumn(date, milestones, items) {
+  const column = node("li", date ? "timeline-date" : "timeline-date is-open");
+  column.append(node("p", "timeline-when", date ?? "Date open"));
+  if (!date) column.append(node("p", "timeline-hint", "Turns on a fact the profile does not give; see each item's note in the obligation graph."));
+  for (const milestone of milestones) column.append(node("p", "timeline-milestone", milestone.provision));
+  if (items.length) {
+    const list = node("ul", "timeline-items");
+    list.setAttribute("aria-label", `Obligation graph items ${date ? `dated ${date}` : "without a date"}`);
+    for (const item of items) {
+      const entry = node("li", item.contested ? "timeline-item is-contested" : "timeline-item");
+      entry.append(node("span", "timeline-article", item.article), node("span", "timeline-actor", ROLE_LABELS[item.actor] ?? item.actor));
+      if (item.contested) entry.append(node("span", "timeline-flag", "contested or conditional date"));
+      const assessment = assessmentLabel(item.appliesOnAssessmentDate);
+      if (assessment) entry.append(node("span", "timeline-flag", assessment));
+      list.append(entry);
+    }
+    column.append(list);
+  }
+  return column;
+}
+
 function sectionDefinitions() {
   const r = report;
   return [
@@ -471,7 +510,8 @@ function sectionDefinitions() {
       })),
     },
     {
-      title: "Application timeline",
+      title: "Application timeline", open: true,
+      lead: timelineView,
       items: r.timeline.map(t => ({
         search: [t.applies_from, t.provision, t.note, t.source_status],
         render: () => itemCard(badge(t.source_status === "binding_level_1" ? "tone-green" : "tone-amber", SOURCE_LABEL[t.source_status] ?? t.source_status), t.provision, t.applies_from, [t.note]),
@@ -536,6 +576,10 @@ function renderSections() {
     heading.append(node("span", "finding-label", section.title));
     summary.append(heading, node("span", "count", String(items.length)));
     const body = node("div", "finding-body");
+    // A section's lead view (the timeline) summarises all its items, so a search,
+    // which shows only matching items, leaves it out.
+    const lead = !query.trim() && section.lead ? section.lead() : null;
+    if (lead) body.append(lead);
     body.append(...items.map(item => item.render()));
     details.append(summary, body);
     binding.append(details);

@@ -158,7 +158,7 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 
 ## Design upgrades
 
-D2 and D4 are built; the others are specified.
+D2, D3 and D4 are built; the others are specified.
 
 ### D1. Dark mode on both surfaces
 
@@ -177,7 +177,7 @@ D2 and D4 are built; the others are specified.
 - **Files.** `docs/playground/styles.css`.
 - **Risk.** None.
 
-### D3. Application-date timeline
+### D3. Application-date timeline (built)
 
 - **Story.** As counsel I see which obligations apply now, which are upcoming and which rest on a contested reading.
 - **References.** legalithm `appliesFrom` (Observed); Stripe Tax status chips (Claimed).
@@ -185,6 +185,7 @@ D2 and D4 are built; the others are specified.
 - **Acceptance.** Every date shown is one the report already carries; the text list states the same content; axe clean.
 - **Files.** `docs/playground/app.mjs`, `docs/playground/styles.css`.
 - **Risk.** Rule 4 and 8: no date is computed in the browser; the view only displays report data.
+- **Status.** Built. `docs/playground/timeline.mjs` arranges the report's own dates: one column per date from `timeline` and the graph's `application_date`, in date order (ISO strings sort as text), a "Date open" column for items without a date, an amber marker where an item carries an `application_date_note` (a contested Art. 113 reading or a condition such as an Art. 111 rule), and the engine's `applies_on_assessment_date` in words. The view is an ordered list, so a screen reader reads it as text; the milestone cards stay below it and the obligation graph section lists every dated item in full. It is hidden while a search filters the items. `tests/playground/timeline.test.mjs` runs the engine on every bundled example and checks that exactly the report's dates are shown, in order, each item once under its own date, the markers, and that neither `timeline.mjs` nor `app.mjs` constructs a date. Checked in Chromium with axe at 1280 and 375 px (no violations).
 
 ### D4. Binding result apart from the advisory overlay (built)
 

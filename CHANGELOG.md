@@ -5,6 +5,16 @@ pull requests.
 
 ## Unreleased
 
+### Application-date timeline in the playground (D3)
+
+- The playground's "Application timeline" section opens with the report's
+  dates side by side: one column per date in the report's timeline and
+  obligation graph, in date order, with what starts on each, a "Date open"
+  column for items without a date, and a marker on items whose date rests on
+  a contested or conditional reading. On narrow screens the columns stack.
+  The view only arranges dates the report carries; no date is computed in the
+  browser.
+
 ## 0.3.0 (2026-11-16)
 
 #### Upgrade notes
