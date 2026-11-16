@@ -32,6 +32,14 @@ Changes since 0.2.2.
   false`, and the two worked examples say why; both stay determined.
   `docs/methodology.md`, `docs/reviewer-notes.md` and
   `docs/research/adaptation-plan.md` follow.
+- `docs/REGULATORY_CLAIM_LEDGER.md`: the rows on Art. 49(3) and Art. 111(2)
+  say what the classifier does with an unset status. Row (39) of
+  `docs/omnibus-coverage.md` names `_art_111_2_questions`, and ADR 0001
+  records the status as the second question whose "I don't know" writes
+  null.
+- The bundled examples stay below 450 characters as share links, 400
+  before: `life_insurer_pricing` went from 393 to 418 by stating the
+  status (`tests/playground/share.test.mjs`, S6 in the adaptation plan).
 - `tests/test_deployer_status.py` covers each question and the cases where
   none is asked. `tests/test_intake.py` names the Section B route by its act
   (`annex_i_legislation` I.B.21), as the intake records it, and pins the new
