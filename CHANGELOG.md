@@ -7,7 +7,181 @@ pull requests.
 
 ## 0.3.0 (2026-11-16)
 
+#### Upgrade notes
+
+Profiles and CI jobs that pass on 0.2.2 can fail or change on 0.3.0. Pinning
+`eu-ai-act-classifier==0.2.2` keeps the 0.2.2 behaviour while you update them.
+
+- `application_date` on an obligation-graph item can be null where the date
+  turns on a placing date the profile does not give: the Chapter V items of a
+  general-purpose AI model without `gpai_model_placing_on_market_date` or
+  `placing_on_market_date` (Art. 111(3)), and `transparency.1` for a provider
+  with `generates_synthetic_content` and no `placing_on_market_date`
+  (Art. 111(4)). It can be null while `applies_on_assessment_date` is true.
+  The Python model types it `str | None`, and the 0.2.2 report schema rejects
+  such a report.
+- The JSON report and its models have two new keys, both null by default:
+  `applies_on_assessment_date` on every obligation-graph item (true, false or
+  null; null without an `assessment_date`) and `scope.assessment_date`. The
+  report schema allows extra keys, so the 0.2.2 schema accepts them; key-set
+  and snapshot comparisons change.
+- Every report in scope lists an Art. 4 AI literacy obligation (`Art. 4 AIA`)
+  and a graph item `literacy.provider.4` or `literacy.deployer.4`, dated
+  2025-02-02, once per provider or deployer role, whatever the tier.
+  Minimal-risk and prohibited reports, whose `obligations` and
+  `obligation_graph` were empty on 0.2.2, now hold these entries; for a
+  prohibited system the item is `review_required`. A profile whose only role
+  is `gpai_provider` gets none.
+- `--strict` now exits 1 for five kinds of profile that 0.2.2 reported as
+  `determined` (exit 0). Each now has an open question, so the disposition is
+  `requires_review`:
+  - `generates_synthetic_content` or `generates_deepfakes` with neither
+    `5.1.ba` nor `5.1.bb` declared and no element facts, as in
+    `examples/deepfake_generator.json`. Element facts in `intimate_imagery`
+    and `child_sexual_abuse_material` that settle both points close the
+    question.
+  - a provider with `generates_synthetic_content` and no
+    `placing_on_market_date` (the Art. 111(4) question).
+  - a general-purpose AI model with neither
+    `gpai_model_placing_on_market_date` nor `placing_on_market_date`
+    (Art. 111(3)). The bundled GPAI examples now give
+    `gpai_model_placing_on_market_date`.
+  - an Art. 6(1) product with neither `annex_i_legislation` nor
+    `annex_i_section`, which 0.2.2 treated as Section A.
+  - an Annex I, Section B product with an Art. 50 trigger.
+- A declared `5.1.ba` or `5.1.bb` without `assessment_date` keeps the tier
+  `prohibited` and now goes to review. With an `assessment_date` before
+  2026-12-02 the point no longer sets the tier to `prohibited`: the finding is
+  `PROHIBITED.5.1.ba.not_yet_applicable` or its `5.1.bb` counterpart, and the
+  report goes to review.
+- A consumer that matches the text of the Art. 5(1)(ba)/(bb) screen question
+  (`LATER_SCREEN_QUESTION`) must match the new wording quoting Art. 5(1a) and
+  (1b); when the question is asked is unchanged.
+- For an Annex III point 2 to 8 provider the graph lists
+  `high-risk.provider.43.2` (Art. 43(2) internal control) in place of
+  `high-risk.provider.44`.
+- An Annex I report has one or two more findings: `HIGHRISK.6.1c` on every
+  Annex I route and `HIGHRISK.2.13` for Section A.
+- New optional profile fields: `assessment_date`, `annex_i_legislation`,
+  `intimate_imagery`, `child_sexual_abuse_material` and
+  `used_for_financial_fraud_detection` (default false; true or null on a
+  `III.5.b` profile raises a review question). No field or value was removed,
+  so a profile valid on 0.2.2 stays valid. `annex_i_legislation` takes
+  `I.A.2` to `I.A.12` and `I.B.13` to `I.B.21`; `I.A.1`, and an
+  `annex_i_section` that contradicts the legislation, exit 2. 0.2.2 and its
+  profile schema reject any profile that uses a new field. The new models are
+  in `eu_ai_act_classifier.models`; the package root does not export them.
+- Both schema files keep their names and `$id`s, which point at `main`, and
+  `main` already serves the 0.3.0 versions. A kept copy of the 0.2.2 report
+  schema rejects a report with a null `application_date`. Reports from 0.2.2
+  validate against the 0.3.0 schema.
+- The CLI prints an invalid profile as one `field: message` line per error
+  after `error: invalid SystemProfile:`, without pydantic's report and its
+  `errors.pydantic.dev` links. The exit code stays 2.
+- The MCP tools type `profile` as `SystemProfile`: `list_tools` returns its
+  schema, and a validation error names the model
+  `classify_ai_systemArguments` and the field as `profile.<field>`. The
+  `[mcp]` extra needs `mcp>=1.21.1`.
+- `--update` without `--verify-sources` exits 2; 0.2.2 ignored it. From an
+  installed package, `--verify-sources --update` exits 2 before any request.
+  `python -m eu_ai_act_classifier.verify_sources` exits 1 when a URL fails;
+  0.2.2 exited 0.
+- Changed text and ids: the limited-risk label reads "transparency duties
+  (Art. 50 AIA)"; `regulation` ends with ", as amended by Regulation (EU)
+  2026/1744"; the `HIGHRISK.III.5.b` and `HIGHRISK.III.5.c` titles name
+  natural persons; with `--advisory`, `guidance.transparency` is
+  `guidance.transparency-guidelines`, and Art. 50(2) and (4) profiles also get
+  `guidance.transparency-code-of-practice`; the source manifest replaces
+  `transparency-guidance` with `art-50-code-of-practice` and
+  `art-50-guidelines`.
+- `deployer_public_authority` counts only for a profile with the `deployer`
+  role, and `significant_change_after_application_date` only where
+  Art. 111(2) uses it. Elsewhere the scope notes say the answer "is given, but
+  it is not used". Tier, disposition and obligations stay the same.
+- `eu-ai-act-local-api` names artifact files with the CLI's slug, for example
+  `provider-a-cv-screening.annex-iv-checklist.md`.
+- 0.3.0 needs `pydantic>=2.11`; 0.2.2 accepted `>=2.6`.
+
 Changes since 0.2.2.
+
+### Claim ledger checked again in the pinned texts
+
+#### Changed
+
+- The Art. 5(1)(ba) and (bb) screen question (`LATER_SCREEN_QUESTION`,
+  #63) quotes Art. 5(1a) and Art. 5(1b) as the findings for those points
+  do. It paraphrased Art. 5(1a)(a), leaving out "without requiring
+  significant technical modification" and what the safeguards must do,
+  and did not name Art. 5(1b). The question asked where only one point
+  is unscreened (#66) quotes Art. 5(1a), and for point (ba) Art. 5(1b),
+  too. `docs/methodology.md` states Art. 5(1a)(a)(ii) with all its
+  elements, and point (7) of `docs/omnibus-coverage.md` names the element
+  the question left out. The playground wheel is rebuilt.
+- `docs/REGULATORY_CLAIM_LEDGER.md`: the rows whose access date was before
+  11 November 2026 were checked again on 16 November 2026 in the Official
+  Journal texts pinned in `sources/` and against the code. Each re-checked
+  row names the snapshot files and the amending point, and its access date
+  moves to 16 November 2026; the row on the GPAI provider guidelines page
+  (a Commission page) and the row on fact-specific classification (no
+  provision) keep theirs. The rows on Art. 2(2), the machinery move, the
+  Art. 2(13) note and the partial encoding describe `annex_i_legislation`
+  (#66). The VERIFIED row on the consolidated text no longer calls it the
+  current one, since the pinned files cannot show a later consolidation.
+  The corrigendum row quotes the English Art. 6(1b) from the pinned text;
+  that no English correction exists rests on the HTTP 404 of 14 November
+  2026.
+  The Stand date moves to 16 November 2026.
+- `docs/research/adaptation-plan.md` unparks H7: the Art. 5(1)(ba)/(bb),
+  Art. 5(1a)/(1b) and Art. 4 items are built, and their wording was
+  checked in the pinned texts.
+- The entry for #63 below was missing and is added.
+
+#### Added
+
+- `tests/test_sources.py` checks the quotations in the provision column
+  of every CORRECTED and PENDING ledger row that cites a snapshot, as it
+  already checked every column of the VERIFIED rows. It also checks that
+  `ART_5_1A`, `ART_5_1B` and the two point texts in `LATER_PROHIBITIONS`
+  are the Official Journal's words, straight quotation marks aside.
+- `tests/test_prohibited.py` checks that both screen questions quote the
+  paragraphs.
+
+#### Upgrade notes
+
+- A consumer that matches the text of the screen question must match the
+  new wording. When the question is asked is unchanged.
+
+### Omnibus coverage map
+
+#### Added
+
+- `docs/omnibus-coverage.md` lists every amending point of Art. 1 of
+  Regulation (EU) 2026/1744 (points (1) to (43)) and its Arts. 2 to 4 with
+  the classifier's status for each (encoded, flagged for review, outside the
+  classifier's scope, or not encoded) and where the code or the claim ledger
+  handles it. Written on 31 October 2026 and checked again row by row
+  against the Official Journal text pinned in `sources/` and against the
+  code after #14, #59, #55 and #66. `tests/test_omnibus_coverage.py` checks
+  that every point has one row, that every file, symbol and id the map's
+  last column names exists and that every ledger row it names is in the
+  claim ledger. The claim ledger's "in part" row points to the map.
+- The corrigendum to Regulation (EU) 2026/1744 (CELEX 32026R1744R(01), OJ L
+  2026/90810, 29.9.2026) was read on 14 November 2026. It exists in German
+  only and changes one phrase of the German text of Art. 6(1b); the English
+  text the classifier relies on is unaffected. A CORRECTED row in the claim
+  ledger records it.
+
+### Research notes brought up to date
+
+#### Changed
+
+- `docs/research/2026-10-competitive-landscape.md` marks the Art. 50(2)
+  grace-period conflict as resolved (Art. 111(4) AIA: "by 2 December 2026";
+  recital (38): a transitional period of four months), and
+  `docs/research/adaptation-plan.md` records the same Art. 50(2) check
+  and notes that the Art. 5(1)(ba)/(bb) screens are encoded since #30 and
+  that #66 tests them element by element, each as a dated update line next
+  to the original text.
 
 ### MCP tools: typed input schema and read-only annotations
 
@@ -139,6 +313,33 @@ Changes since 0.2.2.
   when a source could not be compared, for example when EUR-Lex answers with
   a bot challenge. The byte digests of the Publications Office responses have
   not been recomputed against a fresh download (see `sources/README.md`).
+
+### Art. 5(1)(ba) and (bb) screen question for generators (#63)
+
+#### Changed
+
+- A profile that records synthetic content or deep fakes
+  (`generates_synthetic_content` or `generates_deepfakes`) and declares
+  neither `5.1.ba` nor `5.1.bb` raises an open question and goes to review
+  instead of being determined; `--strict` exits 1. From 2 December 2026
+  (Art. 113, third paragraph, point (a) AIA, as replaced by Art. 1, point
+  (40)(a) of Regulation (EU) 2026/1744) Art. 5(1a)(a)(ii) can reach a
+  general generator whose purpose is not generating such material, so the
+  report asks rather than clears. The risk tier does not change.
+- `examples/deepfake_generator.json` ends in `REQUIRES_REVIEW`
+  (CASE_STUDY.md); `tests/test_prohibited.py` covers the question and its
+  absence where a point is declared or nothing is generated.
+- Since #66 the question also offers the element facts in
+  `intimate_imagery` and `child_sexual_abuse_material`, is not asked of a
+  system already classified as prohibited, and asks about one point where
+  the profile screens only the other. Its wording is corrected in the
+  entry on the claim ledger re-check above.
+
+#### Upgrade notes
+
+- A consumer that expected `deepfake_generator.json`, or any generator
+  profile without the two codes, to be `DETERMINED` gets `REQUIRES_REVIEW`
+  until the profile declares a point or records the element facts.
 
 ### Art. 5(1)(ba) and (bb) element by element, assessment date, Annex I acts
 

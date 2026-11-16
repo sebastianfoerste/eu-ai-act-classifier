@@ -440,9 +440,14 @@ A profile reaches points (ba) and (bb) in one of two ways.
   the reviewer has characterised the facts.
 - It gives the element facts in `intimate_imagery` or
   `child_sexual_abuse_material`, each true, false or null. The engine subsumes
-  them under Art. 5(1a)(a)(i) (intended purpose), Art. 5(1a)(a)(ii)
-  (reasonably foreseeable and reproducible outcome without reasonable and
-  adequate safeguards), Art. 5(1a)(b) (use for that purpose) and, for point
+  them under Art. 5(1a)(a)(i) (intended purpose), Art. 5(1a)(a)(ii) (the
+  system's design, training, architecture, capabilities or user-facing
+  functionalities make it a reasonably foreseeable and reproducible outcome,
+  without requiring significant technical modification, and the system has
+  no reasonable and adequate technical safety measures and other safeguards
+  to reliably prevent it, taking into account reasonably foreseeable misuse,
+  and to correct observed or reported misuse), Art. 5(1a)(b) (use for that
+  purpose) and, for point
   (ba), Art. 5(1b) (manipulation counts only where it increases exposure or
   alters the depicted activity). Unknown facts use three-valued logic: a null
   that could change the result keeps the point UNKNOWN, with an open question
