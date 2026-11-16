@@ -51,8 +51,10 @@ from .obligation_graph import build_obligation_graph
 from .rules import gpai, high_risk, prohibited, scope, transparency
 from .transitions import (
     ANNEX_X_CARVE_OUT,
+    PUBLIC_AUTHORITY_DUTY,
     before,
     chapter_iii_date,
+    cut_off_contested,
     derogation_asserted,
     derogation_note,
     describe_dates,
@@ -64,6 +66,7 @@ from .transitions import (
     operator_roles,
     operators,
     public_authority_sentence,
+    public_authority_status_used,
     section_b_only,
     section_b_product,
     start_date_open,
@@ -307,9 +310,17 @@ def _fria_needs_review(profile: SystemProfile, fria_required: bool) -> bool:
     )
 
 
+_STATUS_CONFIRM = (
+    "Confirm whether the deployer is, or acts on behalf of, a public authority or Union "
+    "institution, body, office or agency (deployer_public_authority)."
+)
+
+
 def _art_111_2_questions(profile: SystemProfile) -> list[str]:
     """Art. 111(2) AIA: whether the Regulation applies to a legacy high-risk system at all
-    turns on a significant change in design, so an unknown answer is an open question."""
+    turns on a significant change in design, so an unknown answer is an open question.
+    So is an unknown deployer status where the 2030 date may turn on it; that question
+    is asked after an asserted change too, where the status changes only the wording."""
 
     cut_off = chapter_iii_date(profile)
     if cut_off is None:
@@ -325,6 +336,49 @@ def _art_111_2_questions(profile: SystemProfile) -> list[str]:
             f"Art. 5, the Regulation applies to it only then.{public_authority_sentence(profile)} "
             f"{legacy_note_flag(profile, cut_off)}"
         )
+    # On an Annex I route without an Annex III area no Art. 49 question asks for the
+    # deployer's status, yet the 2030 date of the second sentence may turn on it.
+    if (
+        profile.annex_iii_area is None
+        and profile.deployer_public_authority is None
+        and public_authority_status_used(profile)
+    ):
+        when = (
+            f"the system was {describe_dates(legacy)}, before {cut_off}"
+            if legacy
+            else "no placing-on-market or putting-into-service date is given to compare "
+            f"with {cut_off}"
+        )
+        # public_authority_use is a plain flag, so "not recorded" covers an answer of no too.
+        placed_before = (
+            "" if legacy else f" and was placed on the market or put into service before {cut_off}"
+        )
+        # Which date the cut-off is, is contested: say so where the answer rests on it.
+        literal = f"Literal reading, confirm with counsel: this uses {cut_off} as the "
+        general = f"Art. 111(2) AIA cut-off. If the general date of {GENERAL_APPLICATION_DATE} "
+        if not legacy:
+            flag = (
+                " Give the date the system was placed on the market or put into service "
+                f"(placing_on_market_date, putting_into_service_date). {literal}{general}"
+                "is meant, only a system placed on the market or put into service before "
+                "that date is a legacy system."
+            )
+        elif cut_off_contested(profile, cut_off):
+            flag = (
+                f" {literal}{general}is meant, the system is not a legacy system and the "
+                "2 August 2030 date does not apply to it."
+            )
+        else:
+            flag = ""
+        questions.append(
+            f"Art. 111(2) AIA: {when}; the profile records no intended use by public "
+            "authorities, and the deployer's status is not given. If the system is intended "
+            f"to be used by public authorities{placed_before}, its providers and deployers "
+            f"{PUBLIC_AUTHORITY_DUTY}; a "
+            "public-authority deployer may indicate that use. Confirm whether the system is "
+            "intended to be used by public authorities (public_authority_use). "
+            f"{_STATUS_CONFIRM}{flag}"
+        )
     if not legacy and (derogation := derogation_note(profile, cut_off)):
         questions.append(
             f"Art. 111(2) AIA: the system was {describe_dates(market_dates(profile))}, not "
@@ -335,15 +389,14 @@ def _art_111_2_questions(profile: SystemProfile) -> list[str]:
 
 
 def _art_49_3_questions(profile: SystemProfile, registration: bool) -> list[str]:
-    """Art. 49(3) AIA turns on the deployer's own status. Where it is not given, ask for
-    it when the registration item is inferred, or when other facts point to it."""
+    """Art. 49(3) AIA turns on the deployer's own status, and so does the Art. 49(5)
+    pointer for Annex III point 2. Where the status is not given, ask for it on every
+    Annex III point, naming what points to it where something does: a missing status
+    would otherwise read like "no"."""
 
     if profile.deployer_public_authority is not None:
         return []
-    confirm = (
-        "Confirm whether the deployer is, or acts on behalf of, a public authority or Union "
-        "institution, body, office or agency (deployer_public_authority)."
-    )
+    confirm = _STATUS_CONFIRM
     if registration:
         if profile.public_authority_use:
             reason = "the system is intended to be used by public authorities"
@@ -367,6 +420,31 @@ def _art_49_3_questions(profile: SystemProfile, registration: bool) -> list[str]
             "Art. 49(3) AIA: the deployer is a body governed by public law (Art. 27 AIA), "
             "which may be a public authority. If it is, or acts on behalf of one, it registers "
             f"its use in the EU database. {confirm}"
+        ]
+    if eu_database_registration_applies(profile.annex_iii_area):
+        # Any other point but 2; III.unsure too, as for Art. 49(1).
+        point_2 = (
+            " If the Annex III point is 2, Art. 49(5) AIA registers the system at national "
+            "level instead."
+            if profile.annex_iii_area is AnnexIII.UNSURE
+            else ""
+        )
+        return [
+            "Art. 49(3) AIA: the deployer's status is not given. A deployer that is, or acts "
+            "on behalf of, a public authority or Union institution, body, office or agency "
+            f"registers its use of the system in the EU database.{point_2} {confirm}"
+        ]
+    if profile.annex_iii_area is AnnexIII.CRITICAL_INFRASTRUCTURE:
+        use = (
+            "the system is intended to be used by public authorities, but "
+            if profile.public_authority_use
+            else ""
+        )
+        return [
+            f"Art. 49(5) AIA: {use}the deployer's status is not given. Art. 49(3) AIA "
+            "excepts Annex III point 2, which is registered at national level; a deployer "
+            "that is, or acts on behalf of, a public authority or Union institution, body, "
+            f"office or agency should check what the national procedure asks of it. {confirm}"
         ]
     return []
 

@@ -13,9 +13,12 @@ A bank uses a credit-scoring model bought from a third party to decide consumer 
   "roles": ["deployer"],
   "purpose": "Loan underwriting",
   "sector": "Banking",
-  "annex_iii_area": "III.5.b"
+  "annex_iii_area": "III.5.b",
+  "deployer_public_authority": false
 }
 ```
+
+The bank is not a public authority and does not act on behalf of one, so the profile says `deployer_public_authority: false`. Left unset, the status would raise an Art. 49(3) AIA open question and send the report to review.
 
 ## Run it
 

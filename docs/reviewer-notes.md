@@ -37,9 +37,14 @@ authority or Union institution, body, office or agency
 (`deployer_public_authority`). Where that is unset, the registration
 item is inferred for review if the system is intended to be used by public
 authorities or its Annex III point is 5(a), 6 or 7. Point 8(a) and a
-`deployer_public_law_body: true` answer raise the question without the item. Point 2
+`deployer_public_law_body: true` answer raise the question without the item, and so
+does every other Annex III point, so on a high-risk result an unset status goes to
+review on every Annex III point. Point 2
 is excepted: a public-authority deployer there gets an Art. 49(5) pointer to
-national registration.
+national registration, and an unset status raises the question with that pointer.
+On an Annex I route without an Annex III area, a deployer profile for a legacy or
+undated system without `public_authority_use` that is no Section B product asks for
+the status as well, for the Art. 111(2) 2030 date.
 
 ### Annex I, Section B Products
 

@@ -434,9 +434,12 @@ class SystemProfile(BaseModel):
         description=(
             "Art. 49(3) AIA: the deployer is a public authority, Union institution, body, office "
             "or agency, or acts on behalf of one. Read only where the profile holds the deployer "
-            "role. Null: not established, so the registration of use is inferred, for review, "
-            "where the system is intended to be used by public authorities or its Annex III "
-            "point (5(a), 6 or 7) describes such use."
+            "role. Null: not established. The report then asks for the status and goes to review "
+            "on every Annex III point where the result is high-risk, and on an Annex I route "
+            "where the 2 August 2030 date "
+            "of Art. 111(2) AIA may turn on it; the registration of use is inferred, for "
+            "review, where the system is intended to be used by public authorities or its "
+            "Annex III point (5(a), 6 or 7) describes such use."
         ),
     )
     deployer_public_law_body: bool | None = None

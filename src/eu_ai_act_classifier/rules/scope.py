@@ -161,12 +161,15 @@ _CHANGE_UNUSED = (
     "used: it matters only for a high-risk system, with no prohibited practice screened, "
     "placed on the market or put into service before its Chapter III date."
 )
-# The same for a deployer status given without the deployer role on a high-risk route
-# with no prohibited practice screened (public_authority_status_used).
+# The same for a deployer status given where the engine does not use it
+# (public_authority_status_used).
 _PUBLIC_AUTHORITY_STATUS_UNUSED = (
     "Article 111(2) check: deployer_public_authority is given, but it is not used: it "
     "describes the profile's own deployer role, so it matters only where the profile holds "
-    "that role for a high-risk system with no prohibited practice screened."
+    "that role for a high-risk system with no prohibited practice screened: on an Annex III "
+    "point, and on an Annex I route without one only for a system placed on the market or "
+    "put into service before its Chapter III date, or undated, that is no Section B product "
+    "and has no public_authority_use."
 )
 
 
@@ -187,18 +190,17 @@ def _art_111_2_check(profile: SystemProfile) -> str:
     """Art. 111(2) AIA check: the given dates against the Chapter III date for the
     system's high-risk route (Art. 113, third paragraph, point (c) AIA)."""
 
+    # A status the engine does not use starts no check of its own.
     facts = (
         bool(market_dates(profile))
         or profile.public_authority_use
-        or public_authority_deployer(profile)
+        or (public_authority_deployer(profile) and public_authority_status_used(profile))
     )
     if not facts:
         return ""
     if profile.prohibited_practices:
-        # A public-authority deployer status alone gives the check nothing to compare: the
-        # prohibition applies whatever it is.
-        if not (market_dates(profile) or profile.public_authority_use):
-            return ""
+        # Reached with a date or public_authority_use only: a deployer status alone is no
+        # fact here, as the prohibition applies whatever it is (public_authority_status_used).
         return (
             "Article 111(2) check: not applied, as an Art. 5 prohibited practice is screened. "
             "Art. 111(2) is without prejudice to Art. 5, so the transition does not defer the "
@@ -337,17 +339,19 @@ _UNDATED_CHANGE = (
 
 
 def _no_high_risk_route(profile: SystemProfile) -> str:
+    """No Chapter III date to compare with. Reached with a date or with public_authority_use:
+    a deployer status counts as a fact only on a high-risk route
+    (public_authority_status_used), which has such a date."""
+
     dates = market_dates(profile)
     if dates:
         return (
             f"Article 111(2) check: the system was {describe_dates(dates)}, but no high-risk "
             "route is screened, so there is no Chapter III date to compare with."
         )
-    if profile.public_authority_use:
-        return (
-            "Article 111(2) check: public-authority use is asserted, but no high-risk route is "
-            "screened. The providers and deployers of a high-risk system intended to be used "
-            "by public authorities and placed on the market or put into service before its "
-            f"Chapter III date {PUBLIC_AUTHORITY_DUTY}."
-        )
-    return ""
+    return (
+        "Article 111(2) check: public-authority use is asserted, but no high-risk route is "
+        "screened. The providers and deployers of a high-risk system intended to be used "
+        "by public authorities and placed on the market or put into service before its "
+        f"Chapter III date {PUBLIC_AUTHORITY_DUTY}."
+    )

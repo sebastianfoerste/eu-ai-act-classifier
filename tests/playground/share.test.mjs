@@ -14,7 +14,9 @@ test("every bundled example round-trips through a short compressed link", async 
   for (const [key, profile] of Object.entries(profiles)) {
     const fragment = await encodeShare(profile);
     assert.ok(fragment.startsWith("p1."), key);
-    assert.ok(fragment.length < 400, `${key}: ${fragment.length} characters`);
+    // 450, not the first 400: the longest example sat at 393 and reached 418 when the
+    // deployer examples began to state deployer_public_authority.
+    assert.ok(fragment.length < 450, `${key}: ${fragment.length} characters`);
     assert.ok(isShareFragment(`#${fragment}`), key);
     assert.deepEqual(JSON.parse(await decodeShare(`#${fragment}`)), profile, key);
   }

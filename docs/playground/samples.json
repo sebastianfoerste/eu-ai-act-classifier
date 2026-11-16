@@ -160,7 +160,8 @@
       ],
       "purpose": "Loan underwriting",
       "sector": "Banking",
-      "annex_iii_area": "III.5.b"
+      "annex_iii_area": "III.5.b",
+      "deployer_public_authority": false
     },
     "life_insurer_pricing": {
       "name": "Musterversicherung term-life pricing model",
@@ -172,6 +173,7 @@
       "purpose": "Risk assessment and pricing of term-life insurance for natural persons",
       "sector": "Life insurance",
       "annex_iii_area": "III.5.c",
+      "deployer_public_authority": false,
       "derogation": {
         "performs_profiling": true
       }

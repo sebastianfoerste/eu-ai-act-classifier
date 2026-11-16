@@ -37,7 +37,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InsightEngine",
@@ -146,7 +147,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "CreditSightScore",
@@ -256,7 +258,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -275,7 +278,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -328,9 +331,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:annex_i_legislation": {
       "answers": {
@@ -370,6 +371,7 @@
           "gpai_model_placing_on_market_date": ""
         },
         "significant_change": "unknown",
+        "deployer_public_authority": "no",
         "annex_i_legislation": "unknown"
       },
       "profile": {
@@ -389,7 +391,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -442,9 +444,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:annex_i_safety_component": {
       "answers": {
@@ -483,7 +483,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -502,7 +503,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -557,9 +558,7 @@
       "blocked": [
         "annex_i_safety_component"
       ],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:annex_i_third_party_assessment": {
       "answers": {
@@ -598,7 +597,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -617,7 +617,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -670,9 +670,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:annex_iii_area": {
       "answers": {
@@ -711,7 +709,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -730,7 +729,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -786,8 +785,7 @@
       "blocked": [],
       "missing": [
         "deployer_public_law_body",
-        "deployer_private_public_service",
-        "deployer_public_authority"
+        "deployer_private_public_service"
       ]
     },
     "credit_scoring_deployer+unknown:deployer_private_public_service": {
@@ -828,6 +826,7 @@
           "gpai_model_placing_on_market_date": ""
         },
         "significant_change": "unknown",
+        "deployer_public_authority": "no",
         "deployer_private_public_service": "unknown"
       },
       "profile": {
@@ -847,7 +846,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -900,9 +899,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:deployer_public_authority": {
       "answers": {
@@ -1013,9 +1010,7 @@
         "dates",
         "deployer_public_authority"
       ],
-      "blocked": [
-        "deployer_public_authority"
-      ],
+      "blocked": [],
       "missing": []
     },
     "credit_scoring_deployer+unknown:deployer_public_law_body": {
@@ -1056,6 +1051,7 @@
           "gpai_model_placing_on_market_date": ""
         },
         "significant_change": "unknown",
+        "deployer_public_authority": "no",
         "deployer_public_law_body": "unknown"
       },
       "profile": {
@@ -1075,7 +1071,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -1128,9 +1124,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:derogation": {
       "answers": {
@@ -1169,7 +1163,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1188,7 +1183,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -1243,9 +1238,7 @@
       "blocked": [
         "derogation"
       ],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:eu_nexus": {
       "answers": {
@@ -1284,7 +1277,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1303,7 +1297,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -1356,9 +1350,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:excluded_use_flags": {
       "answers": {
@@ -1397,7 +1389,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1416,7 +1409,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -1471,9 +1464,7 @@
       "blocked": [
         "excluded_use_flags"
       ],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:gpai_systemic_risk_designated": {
       "answers": {
@@ -1512,7 +1503,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1531,7 +1523,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -1584,9 +1576,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:has_authorised_representative": {
       "answers": {
@@ -1626,6 +1616,7 @@
           "gpai_model_placing_on_market_date": ""
         },
         "significant_change": "unknown",
+        "deployer_public_authority": "no",
         "has_authorised_representative": "unknown"
       },
       "profile": {
@@ -1645,7 +1636,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -1698,9 +1689,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:is_ai_system": {
       "answers": {
@@ -1739,7 +1728,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1758,7 +1748,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -1811,9 +1801,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:is_gpai_model": {
       "answers": {
@@ -1852,7 +1840,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1871,7 +1860,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -1926,9 +1915,7 @@
       "blocked": [
         "is_gpai_model"
       ],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:performs_profiling": {
       "answers": {
@@ -1967,7 +1954,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -1986,7 +1974,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -2041,9 +2029,7 @@
       "blocked": [
         "performs_profiling"
       ],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:prohibited_practices": {
       "answers": {
@@ -2082,7 +2068,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -2101,7 +2088,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -2156,9 +2143,7 @@
       "blocked": [
         "prohibited_practices"
       ],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:provider_established_outside_eu": {
       "answers": {
@@ -2197,7 +2182,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -2216,7 +2202,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -2271,9 +2257,7 @@
       "blocked": [
         "provider_established_outside_eu"
       ],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:public_authority_use": {
       "answers": {
@@ -2312,7 +2296,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -2331,7 +2316,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -2386,9 +2371,7 @@
       "blocked": [
         "public_authority_use"
       ],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:roles": {
       "answers": {
@@ -2425,7 +2408,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -2537,7 +2521,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -2556,7 +2541,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -2609,9 +2594,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:transparency": {
       "answers": {
@@ -2650,7 +2633,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -2669,7 +2653,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -2724,9 +2708,7 @@
       "blocked": [
         "transparency"
       ],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:used_for_financial_fraud_detection": {
       "answers": {
@@ -2765,7 +2747,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -2784,7 +2767,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -2837,9 +2820,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "credit_scoring_deployer+unknown:value_chain": {
       "answers": {
@@ -2878,7 +2859,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "BankCo loan underwriting",
@@ -2897,7 +2879,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -2952,9 +2934,7 @@
       "blocked": [
         "value_chain"
       ],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "cv_screening": {
       "answers": {
@@ -2993,7 +2973,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "TalentRank CV Screener",
@@ -3104,7 +3085,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "FaceSwap Studio",
@@ -3210,7 +3192,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -3320,7 +3303,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -3429,7 +3413,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -3541,7 +3526,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -3653,7 +3639,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -3763,7 +3750,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "no"
+        "significant_change": "no",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -3874,7 +3862,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -3985,7 +3974,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "yes"
+        "significant_change": "yes",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -4096,7 +4086,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "no"
+        "significant_change": "no",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -4206,7 +4197,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -4316,7 +4308,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "yes"
+        "significant_change": "yes",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -4425,7 +4418,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "no"
+        "significant_change": "no",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -4535,7 +4529,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -4645,7 +4640,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "yes"
+        "significant_change": "yes",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -4755,7 +4751,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "no"
+        "significant_change": "no",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -4864,7 +4861,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -4973,7 +4971,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "yes"
+        "significant_change": "yes",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -5082,7 +5081,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "no"
+        "significant_change": "no",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -5192,7 +5192,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -5302,7 +5303,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "yes"
+        "significant_change": "yes",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -5412,7 +5414,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -5595,7 +5598,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "Padded name",
@@ -5694,7 +5698,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "TalentRank CV Screener",
@@ -5987,9 +5992,7 @@
         "dates",
         "deployer_public_authority"
       ],
-      "blocked": [
-        "deployer_public_authority"
-      ],
+      "blocked": [],
       "missing": []
     },
     "edge+public-authority:deployer:yes": {
@@ -6662,9 +6665,7 @@
         "dates",
         "deployer_public_authority"
       ],
-      "blocked": [
-        "deployer_public_authority"
-      ],
+      "blocked": [],
       "missing": []
     },
     "edge+public-authority:provider-deployer:yes": {
@@ -7151,7 +7152,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -7261,7 +7263,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -7369,7 +7372,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -7477,7 +7481,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -7585,7 +7590,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -7693,7 +7699,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -7803,7 +7810,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -7911,7 +7919,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -8021,7 +8030,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -8129,7 +8139,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -8239,7 +8250,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -8349,7 +8361,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -8459,7 +8472,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -8567,7 +8581,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -8675,7 +8690,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -8785,7 +8801,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -8893,7 +8910,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -9003,7 +9021,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -9113,7 +9132,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -9223,7 +9243,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -9331,7 +9352,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -9441,7 +9463,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -9551,7 +9574,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -9659,7 +9683,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -9769,7 +9794,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -9879,7 +9905,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -9989,7 +10016,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -10099,7 +10127,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-03-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "x",
@@ -10211,7 +10240,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "MoodHire",
@@ -10320,7 +10350,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "ShiftSorter",
@@ -10430,7 +10461,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2026-02-02"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "Atlas-70B",
@@ -10539,7 +10571,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "Nimbus-Base",
@@ -10648,7 +10681,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2026-03-02"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "NexusLite-13B",
@@ -10758,7 +10792,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2025-09-15"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "NexusUltra-Large",
@@ -10868,7 +10903,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": "2026-04-01"
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "NexusCustom-Reason",
@@ -10981,7 +11017,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "Nudification image app",
@@ -11088,7 +11125,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "CrimePredict",
@@ -11198,7 +11236,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "no"
       },
       "profile": {
         "name": "Musterversicherung term-life pricing model",
@@ -11218,7 +11257,7 @@
         "putting_into_service_date": null,
         "significant_change_after_application_date": null,
         "public_authority_use": false,
-        "deployer_public_authority": null,
+        "deployer_public_authority": false,
         "deployer_public_law_body": null,
         "deployer_private_public_service": null,
         "provider_established_outside_eu": false,
@@ -11269,9 +11308,7 @@
         "deployer_public_authority"
       ],
       "blocked": [],
-      "missing": [
-        "deployer_public_authority"
-      ]
+      "missing": []
     },
     "proctoring_education": {
       "answers": {
@@ -11310,7 +11347,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "ExamWatch",
@@ -11421,7 +11459,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "CitizenScore",
@@ -11528,7 +11567,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -11634,6 +11674,7 @@
           "gpai_model_placing_on_market_date": ""
         },
         "significant_change": "unknown",
+        "deployer_public_authority": "unknown",
         "annex_i_legislation": "unknown"
       },
       "profile": {
@@ -11739,7 +11780,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -11846,7 +11888,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -11951,7 +11994,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -12061,6 +12105,7 @@
           "gpai_model_placing_on_market_date": ""
         },
         "significant_change": "unknown",
+        "deployer_public_authority": "unknown",
         "deployer_private_public_service": "unknown"
       },
       "profile": {
@@ -12273,6 +12318,7 @@
           "gpai_model_placing_on_market_date": ""
         },
         "significant_change": "unknown",
+        "deployer_public_authority": "unknown",
         "deployer_public_law_body": "unknown"
       },
       "profile": {
@@ -12378,7 +12424,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -12483,7 +12530,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -12588,7 +12636,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -12695,7 +12744,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -12801,6 +12851,7 @@
           "gpai_model_placing_on_market_date": ""
         },
         "significant_change": "unknown",
+        "deployer_public_authority": "unknown",
         "has_authorised_representative": "unknown"
       },
       "profile": {
@@ -12906,7 +12957,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -13011,7 +13063,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -13118,7 +13171,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -13223,7 +13277,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -13330,7 +13385,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -13435,7 +13491,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -13540,7 +13597,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -13647,7 +13705,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -13752,7 +13811,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -13859,7 +13919,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -13964,7 +14025,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "InboxGuard",
@@ -14071,7 +14133,8 @@
         "gpai_date": {
           "gpai_model_placing_on_market_date": ""
         },
-        "significant_change": "unknown"
+        "significant_change": "unknown",
+        "deployer_public_authority": "unknown"
       },
       "profile": {
         "name": "HelpDesk Assistant",

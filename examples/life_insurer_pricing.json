@@ -5,6 +5,7 @@
   "purpose": "Risk assessment and pricing of term-life insurance for natural persons",
   "sector": "Life insurance",
   "annex_iii_area": "III.5.c",
+  "deployer_public_authority": false,
   "derogation": {
     "performs_profiling": true
   }

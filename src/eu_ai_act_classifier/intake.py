@@ -95,13 +95,6 @@ FRIA_OPEN = {
     ]
 }
 
-# Art. 49(3) AIA and the public-authority deployer in Art. 111(2) read the profile's own
-# deployer role, and only on a high-risk route (transitions.public_authority_status_used).
-# Elsewhere, for a profile in scope, the engine reports a given status as not used.
-PUBLIC_AUTHORITY_STATUS_OPEN = {
-    "all": [HIGH_RISK_ROUTE, {"field": "roles", "has": Role.DEPLOYER.value}]
-}
-
 
 def _dated_before(cut_off: str) -> dict[str, Any]:
     return {
@@ -135,6 +128,38 @@ CHANGE_OPEN = {
                         {"not": ANNEX_III_ANY},
                         {"not": SECTION_B},
                         _dated_before(POINT_C_ANNEX_I),
+                    ]
+                },
+            ]
+        },
+    ]
+}
+
+# Art. 49(3) and (5) AIA and the public-authority deployer in Art. 111(2) read the
+# profile's own deployer role on a high-risk route (transitions.public_authority_status_used).
+# The status changes the result on every Annex III point; on an Annex I route without one
+# only for a system dated before the Annex I date, or undated, that is no Section B product
+# and has no public_authority_use (the Art. 111(2) 2030 date). Exactly there, for a
+# profile in scope, an unknown status raises an open question, so the intake asks it
+# there and nowhere else.
+_UNDATED = {
+    "all": [
+        {"field": "placing_on_market_date", "is": None},
+        {"field": "putting_into_service_date", "is": None},
+    ]
+}
+PUBLIC_AUTHORITY_STATUS_OPEN = {
+    "all": [
+        HIGH_RISK_ROUTE,
+        {"field": "roles", "has": Role.DEPLOYER.value},
+        {
+            "any": [
+                ANNEX_III_ANY,
+                {
+                    "all": [
+                        {"not": SECTION_B},
+                        {"field": "public_authority_use", "is": False},
+                        {"any": [_dated_before(POINT_C_ANNEX_I), _UNDATED]},
                     ]
                 },
             ]
@@ -496,12 +521,13 @@ QUESTIONS: list[dict[str, Any]] = [
         "field": "deployer_public_authority",
         "title": "Is the deployer a public authority or a Union institution, body, office or "
         "agency, or does it act on behalf of one?",
-        "article": "Art. 49(3) AIA",
+        "article": "Art. 49(3), Art. 49(5) and Art. 111(2) AIA",
         "show_if": PUBLIC_AUTHORITY_STATUS_OPEN,
-        # A missing status raises a review question only in some contexts
-        # (engine._art_49_3_questions); for a point 5(b) deployer without public-authority
-        # use or a public law body, for one, null reads like false, so it blocks.
-        "unknown": BLOCK,
+        # Where it is asked, null raises an open question wherever the status changes the
+        # result: Art. 49(3) or (5) on an Annex III point, Art. 111(2) for a legacy or
+        # undated system on an Annex I route (engine._art_49_3_questions and
+        # engine._art_111_2_questions).
+        "unknown": {"value": None},
     },
 ]
 

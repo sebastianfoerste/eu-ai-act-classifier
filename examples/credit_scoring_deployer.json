@@ -4,5 +4,6 @@
   "roles": ["deployer"],
   "purpose": "Loan underwriting",
   "sector": "Banking",
-  "annex_iii_area": "III.5.b"
+  "annex_iii_area": "III.5.b",
+  "deployer_public_authority": false
 }
