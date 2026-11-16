@@ -262,7 +262,10 @@ _CHANGE_UNUSED = (
 _PUBLIC_AUTHORITY_STATUS_UNUSED = (
     "Article 111(2) check: deployer_public_authority is given, but it is not used: it "
     "describes the profile's own deployer role, so it matters only where the profile holds "
-    "that role for a high-risk system with no prohibited practice screened."
+    "that role for a high-risk system with no prohibited practice screened: on an Annex III "
+    "point, and on an Annex I route without one only for a system placed on the market or "
+    "put into service before its Chapter III date, or undated, that is no Section B product "
+    "and has no public_authority_use."
 )
 _UNUSED_SENTENCES = (_GPAI_DATE_UNUSED, _CHANGE_UNUSED, _PUBLIC_AUTHORITY_STATUS_UNUSED)
 _NO_TRANSITION = "No transitional limitation identified from the submitted facts."
@@ -431,10 +434,12 @@ def test_the_public_authority_question_follows_the_engines_deployer_test() -> No
         {"annex_iii_area": "III.unsure"},
         {"annex_i_safety_component": True},
         {"annex_i_safety_component": True, "annex_i_third_party_assessment": True},
+        # A Section B product as the intake records it: by its act, never by
+        # annex_i_section, which the intake does not ask (NOT_ASKED).
         {
             "annex_i_safety_component": True,
             "annex_i_third_party_assessment": True,
-            "annex_i_section": "B",
+            "annex_i_legislation": "I.B.21",
         },
     ]
     roles = [

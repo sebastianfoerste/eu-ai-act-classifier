@@ -244,7 +244,10 @@ Point 8(a) also covers use
 "in a similar way in alternative dispute resolution", which may be private,
 so it raises only that open question. Otherwise a deployer given as a body
 governed by public law (`deployer_public_law_body`, the Art. 27 fact) raises
-it too. For points 6 and 7 the item adds the Art. 49(4) secure non-public
+it too. Every other Annex III point raises the same open question, since a
+missing status would otherwise read like "no"; for point 2 it names the
+Art. 49(5) registration at national level instead. So the guided intake
+records "I don't know" as null. For points 6 and 7 the item adds the Art. 49(4) secure non-public
 section, and for point 1 it adds it where the system is used in law
 enforcement, migration, asylum or border control management. It also says
 that the registration there includes only the Annex VIII and Annex IX
@@ -293,6 +296,10 @@ role, as `deployer_public_authority` describes that role; it then counts for
 the provider items too where the profile also holds the provider role, never
 for importer, distributor or authorised-representative items. For a profile
 without the deployer role the intended use is `public_authority_use` alone.
+On an Annex I route without an Annex III area, a legacy or undated system
+that is no Section B product and has neither `public_authority_use` nor the
+deployer's status raises an open question for both, as the 2030 date may
+turn on them.
 
 Art. 113 gives Chapter III no single date. Point (b) applies Section 4 from
 2 August 2025, but Section 4 ("Notifying authorities and notified bodies")
@@ -343,7 +350,9 @@ only for a high-risk system, with no prohibited practice screened, placed on
 the market or put into service before its Chapter III date; elsewhere the
 check states that the answer is not used. In the same way it states that a
 `deployer_public_authority` answer is not used unless the profile holds the
-deployer role for a high-risk system with no prohibited practice screened. It
+deployer role for a high-risk system with no prohibited practice screened, on
+an Annex III point or, on an Annex I route, for a legacy or undated system that
+is no Section B product and has no `public_authority_use`. It
 also states the Art. 111(3)
 check for a general-purpose AI model and the Art. 111(4) check for a system
 generating synthetic content where the profile gives the date they turn on.

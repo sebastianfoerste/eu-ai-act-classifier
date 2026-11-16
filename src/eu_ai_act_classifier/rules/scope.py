@@ -161,12 +161,15 @@ _CHANGE_UNUSED = (
     "used: it matters only for a high-risk system, with no prohibited practice screened, "
     "placed on the market or put into service before its Chapter III date."
 )
-# The same for a deployer status given without the deployer role on a high-risk route
-# with no prohibited practice screened (public_authority_status_used).
+# The same for a deployer status given where the engine does not use it
+# (public_authority_status_used).
 _PUBLIC_AUTHORITY_STATUS_UNUSED = (
     "Article 111(2) check: deployer_public_authority is given, but it is not used: it "
     "describes the profile's own deployer role, so it matters only where the profile holds "
-    "that role for a high-risk system with no prohibited practice screened."
+    "that role for a high-risk system with no prohibited practice screened: on an Annex III "
+    "point, and on an Annex I route without one only for a system placed on the market or "
+    "put into service before its Chapter III date, or undated, that is no Section B product "
+    "and has no public_authority_use."
 )
 
 
@@ -187,10 +190,11 @@ def _art_111_2_check(profile: SystemProfile) -> str:
     """Art. 111(2) AIA check: the given dates against the Chapter III date for the
     system's high-risk route (Art. 113, third paragraph, point (c) AIA)."""
 
+    # A status the engine does not use starts no check of its own.
     facts = (
         bool(market_dates(profile))
         or profile.public_authority_use
-        or public_authority_deployer(profile)
+        or (public_authority_deployer(profile) and public_authority_status_used(profile))
     )
     if not facts:
         return ""

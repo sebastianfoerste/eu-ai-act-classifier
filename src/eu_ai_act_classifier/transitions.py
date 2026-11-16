@@ -197,16 +197,23 @@ def cut_off_contested(profile: SystemProfile, cut_off: str) -> bool:
 
 
 def public_authority_status_used(profile: SystemProfile) -> bool:
-    """Whether the engine reads ``deployer_public_authority``: it describes the profile's
-    own deployer role, so only where the profile holds that role for a high-risk system
-    with no prohibited practice screened (Art. 49(3) and Art. 111(2) AIA). A necessary
-    condition: on an Annex I route without an Annex III area the status changes the
-    result only for an undated or legacy system without public_authority_use."""
+    """Whether ``deployer_public_authority`` can change the result. It describes the
+    profile's own deployer role, so only where the profile holds that role for a high-risk
+    system with no prohibited practice screened: on every Annex III point (Art. 49(3) AIA,
+    or Art. 49(5) for point 2), and on an Annex I route without one only for a system
+    placed on the market or put into service before its Chapter III date, or undated,
+    that is no Section B product and has no public_authority_use (the 2030 date of
+    Art. 111(2), second sentence, AIA). Exactly there an unknown status is asked."""
 
+    if not profile.is_deployer or profile.prohibited_practices:
+        return False
+    if profile.annex_iii_area is not None:
+        return True
+    cut_off = chapter_iii_date(profile)
     return (
-        profile.is_deployer
-        and not profile.prohibited_practices
-        and (profile.annex_iii_area is not None or annex_i_route(profile))
+        cut_off is not None
+        and not profile.public_authority_use
+        and (bool(legacy_dates(profile, cut_off)) or not market_dates(profile))
     )
 
 

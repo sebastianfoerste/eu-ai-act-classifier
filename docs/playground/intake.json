@@ -1386,10 +1386,74 @@
           {
             "field": "roles",
             "has": "deployer"
+          },
+          {
+            "any": [
+              {
+                "not": {
+                  "field": "annex_iii_area",
+                  "is": null
+                }
+              },
+              {
+                "all": [
+                  {
+                    "not": {
+                      "field": "annex_i_legislation",
+                      "in": [
+                        "I.B.13",
+                        "I.B.14",
+                        "I.B.15",
+                        "I.B.16",
+                        "I.B.17",
+                        "I.B.18",
+                        "I.B.19",
+                        "I.B.20",
+                        "I.B.21"
+                      ]
+                    }
+                  },
+                  {
+                    "field": "public_authority_use",
+                    "is": false
+                  },
+                  {
+                    "any": [
+                      {
+                        "any": [
+                          {
+                            "field": "placing_on_market_date",
+                            "before": "2028-08-02"
+                          },
+                          {
+                            "field": "putting_into_service_date",
+                            "before": "2028-08-02"
+                          }
+                        ]
+                      },
+                      {
+                        "all": [
+                          {
+                            "field": "placing_on_market_date",
+                            "is": null
+                          },
+                          {
+                            "field": "putting_into_service_date",
+                            "is": null
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
-      "unknown": "block"
+      "unknown": {
+        "value": null
+      }
     }
   ]
 }

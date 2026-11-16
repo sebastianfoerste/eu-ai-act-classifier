@@ -7,6 +7,44 @@ pull requests.
 
 Changes since 0.2.2.
 
+### Deployer status: "I don't know" goes to review
+
+#### Changed
+
+- Where a deployer's public-authority status (`deployer_public_authority`)
+  is not given, the report asks for it wherever it changes the result and
+  goes to review, instead of reading the gap as "no": on every Annex III
+  point (Art. 49(3) AIA; for `III.unsure` with the note that point 2 is
+  registered at national level), on point 2 with the Art. 49(5) pointer to
+  national registration, and on an Annex I route without an Annex III area
+  for a system placed on the market or put into service before 2 August
+  2028, or undated, that is no Section B product and has no
+  `public_authority_use`, where the 2 August 2030 date of Art. 111(2),
+  second sentence, AIA may turn on it.
+- The guided intake asks the status exactly there and records "I don't
+  know" as null instead of blocking. `transitions.public_authority_status_used`
+  is that exact test now; the "not used" sentence of the Art. 111(2) check
+  names where the status matters, and a status the engine does not use no
+  longer starts the Art. 111(2) check by itself (an undated Section B
+  product).
+- `examples/credit_scoring_deployer.json` and
+  `examples/life_insurer_pricing.json` state `deployer_public_authority:
+  false`, and the two worked examples say why; both stay determined.
+  `docs/methodology.md`, `docs/reviewer-notes.md` and
+  `docs/research/adaptation-plan.md` follow.
+- `tests/test_deployer_status.py` covers each question and the cases where
+  none is asked. `tests/test_intake.py` names the Section B route by its act
+  (`annex_i_legislation` I.B.21), as the intake records it, and pins the new
+  "not used" sentence.
+
+#### Upgrade notes
+
+- A JSON profile of a deployer on an Annex III point that leaves
+  `deployer_public_authority` unset now ends in `REQUIRES_REVIEW`
+  (`--strict` exits 1), and so does an undated or legacy Annex I deployer
+  profile that sets neither it nor `public_authority_use`. Set the status
+  to keep a determined result.
+
 ### Claim ledger checked again in the pinned texts
 
 #### Changed
