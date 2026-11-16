@@ -93,6 +93,8 @@ def test_inventory_uses_classifier_risk_and_obligation_metadata() -> None:
         annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
         deployer_public_law_body=False,
         deployer_private_public_service=False,
+        # An unset status would raise the Art. 49(3) question and send the row to review.
+        deployer_public_authority=False,
     )
     inventory = build_system_inventory([profile], generated_at="2026-06-27T10:00:00+00:00")
     row = inventory.systems[0]

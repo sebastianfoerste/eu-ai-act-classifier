@@ -5,6 +5,78 @@ pull requests.
 
 ## Unreleased
 
+### Deployer status: "I don't know" goes to review
+
+#### Changed
+
+- Where a deployer's public-authority status (`deployer_public_authority`)
+  is not given, the report asks for it wherever it changes the result and
+  goes to review, instead of reading the gap as "no": on every Annex III
+  point (Art. 49(3) AIA; for `III.unsure`, where nothing else points to the
+  status, with the note that point 2 is registered at national level), on
+  point 2 with the Art. 49(5) pointer to
+  national registration, and on an Annex I route without an Annex III area
+  for a system placed on the market or put into service before 2 August
+  2028, or undated, that is no Section B product and has no
+  `public_authority_use`, where the 2 August 2030 date of Art. 111(2),
+  second sentence, AIA may turn on it. That question says that a
+  public-authority deployer may indicate intended use by public
+  authorities, asks for the date of an undated system, and names the
+  contested Art. 111(2) cut-off where the answer rests on it.
+- The guided intake asks the status exactly there and records "I don't
+  know" as null instead of blocking. `transitions.public_authority_status_used`
+  is that test for a profile in scope; the "not used" sentence of the Art. 111(2) check
+  names where the status matters, and a status the engine does not use no
+  longer starts the Art. 111(2) check by itself (an undated Section B
+  product).
+- `examples/credit_scoring_deployer.json` and
+  `examples/life_insurer_pricing.json` state `deployer_public_authority:
+  false`, and the two worked examples say why; both stay determined.
+  `docs/methodology.md`, `docs/reviewer-notes.md` and
+  `docs/research/adaptation-plan.md` follow.
+- `docs/REGULATORY_CLAIM_LEDGER.md`: the rows on Art. 49(3) and Art. 111(2)
+  say what the classifier does with an unset status. Row (39) of
+  `docs/omnibus-coverage.md` names `_art_111_2_questions`, and ADR 0001
+  records the status as a further conditional question whose "I don't know"
+  writes its null default. `docs/surfaces.md`, the field description in
+  the profile schema and the playground's field guide say what an unset
+  status does now.
+- The bundled examples stay below 450 characters as share links, 400
+  before: `life_insurer_pricing` went from 393 to 418 by stating the
+  status (`tests/playground/share.test.mjs`, S6 in the adaptation plan).
+- `tests/test_deployer_status.py` covers each question, both wordings of
+  the Art. 111(2) one and the cases where none is asked.
+  `tests/test_intake.py` names the Section B route by its act
+  (`annex_i_legislation` I.B.21), as the intake records it, pins the new
+  "not used" sentence, holds the intake's condition to the engine's test
+  on every grid state, and adds a Section A act and dates on and after
+  2 August 2028 to the second grid.
+
+#### Known limits
+
+- A declared Art. 5(1)(ba) or (bb) point that does not yet apply on the
+  assessment date leaves the result high-risk. The engine still reads the
+  status there (the Art. 49(3) and Art. 111(2) items follow it, and on an
+  Annex III point an unset status is still asked), but the report says it
+  is not used and the guided intake does not ask for it; the Art. 111(2)
+  change answer is treated the same way. In the mirror case, where the
+  element facts establish point (ba) or (bb) without a declared practice,
+  the result is prohibited and the Art. 111(2) check still runs.
+- A status given as true for a legacy or undated system ends determined
+  although the report asks to confirm the intended use.
+- These were so before this change and are left to a follow-up.
+- The Art. 111(2) status question is asked after an asserted significant
+  change too, where the status changes only the wording of the report.
+
+#### Upgrade notes
+
+- A JSON profile of a deployer with a high-risk result on an Annex III
+  point that leaves `deployer_public_authority` unset now ends in
+  `REQUIRES_REVIEW`
+  (`--strict` exits 1), and so does an undated or legacy Annex I deployer
+  profile, other than for a Section B product, that sets neither it nor
+  `public_authority_use`. Set the status to keep a determined result.
+
 ### Dark mode on the playground and the cockpit
 
 #### Added

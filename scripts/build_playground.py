@@ -146,8 +146,9 @@ FIELD_GROUPS: list[tuple[str, list[tuple[str, str]]]] = [
                 "deployer_public_authority",
                 "The deployer is, or acts on behalf of, a public authority or Union institution, "
                 "body, office or agency: Art. 49(3) AIA registration of use. Read only for the "
-                "deployer role. Unset: inferred for review from public-authority use or Annex III "
-                "points 5(a), 6 and 7.",
+                "deployer role. Unset: an open question and review wherever the status can change "
+                "the result; the registration item is inferred for review from "
+                "public-authority use or Annex III points 5(a), 6 and 7.",
             ),
             ("deployer_public_law_body", "Art. 27 AIA: fundamental rights impact assessment."),
             (

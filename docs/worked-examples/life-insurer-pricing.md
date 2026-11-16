@@ -14,11 +14,14 @@ A German life insurer builds a gradient-boosted model in house and uses it in it
   "purpose": "Risk assessment and pricing of term-life insurance for natural persons",
   "sector": "Life insurance",
   "annex_iii_area": "III.5.c",
+  "deployer_public_authority": false,
   "derogation": {
     "performs_profiling": true
   }
 }
 ```
+
+The insurer is not a public authority and does not act on behalf of one, so the profile says `deployer_public_authority: false`. Left unset, the status would raise an Art. 49(3) AIA open question and send the report to review.
 
 ## Run it
 

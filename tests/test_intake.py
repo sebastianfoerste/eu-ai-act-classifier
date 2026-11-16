@@ -198,11 +198,18 @@ _TRANSITION_AXES = {
         (False, False, None),
         (True, False, None),
         (True, True, None),
+        (True, True, "I.A.2"),
         (True, True, "I.B.21"),
     ],
     "annex_iii_area": [None, "III.2", "III.6.a"],
     "public_authority_use": [False, True],
-    "dates": [(None, None), ("2025-01-01", None), (None, "2028-01-01")],
+    "dates": [
+        (None, None),
+        ("2025-01-01", None),
+        (None, "2028-01-01"),
+        ("2028-08-02", None),
+        ("2029-01-01", "2025-01-01"),
+    ],
     "significant_change": [False, True],
     "gpai": [(False, None), (True, "2025-01-01")],
     "deployer_public_authority": [False, True],
@@ -247,8 +254,8 @@ TRANSITION_GRID = _distinct([_reachable(p) for p in _transition_grid()])
 # A skipped question may change the report only by the engine's own statement that the
 # value is not used: a section without the Art. 6(1) route, a model date without a
 # general-purpose AI model, a change answer without an Art. 111(2) legacy system, a
-# deployer status without the deployer role on a high-risk route. Everything else, the
-# disposition included, must match.
+# deployer status where it cannot change the result (public_authority_status_used).
+# Everything else, the disposition included, must match.
 _SECTION_UNUSED = "HIGHRISK.6.1.section_unused"
 _GPAI_DATE_UNUSED = (
     "Article 111(3) check: gpai_model_placing_on_market_date is given, but no general-purpose "
@@ -262,7 +269,10 @@ _CHANGE_UNUSED = (
 _PUBLIC_AUTHORITY_STATUS_UNUSED = (
     "Article 111(2) check: deployer_public_authority is given, but it is not used: it "
     "describes the profile's own deployer role, so it matters only where the profile holds "
-    "that role for a high-risk system with no prohibited practice screened."
+    "that role for a high-risk system with no prohibited practice screened: on an Annex III "
+    "point, and on an Annex I route without one only for a system placed on the market or "
+    "put into service before its Chapter III date, or undated, that is no Section B product "
+    "and has no public_authority_use."
 )
 _UNUSED_SENTENCES = (_GPAI_DATE_UNUSED, _CHANGE_UNUSED, _PUBLIC_AUTHORITY_STATUS_UNUSED)
 _NO_TRANSITION = "No transitional limitation identified from the submitted facts."
@@ -356,8 +366,8 @@ def test_value_unknowns_equal_a_model_default_only_where_it_fails_closed() -> No
     # A compact profile drops a default value, so "I don't know" reads back as an
     # omitted field. That is safe only for a conditional question whose default is the
     # null that the fail-closed test above checks yields requires_review wherever the
-    # question is asked (the Art. 111(2) change answer); any other default would be
-    # read as an answer.
+    # question is asked (the Annex I act, the Art. 111(2) change answer and the deployer's
+    # public-authority status); any other default would be read as an answer.
     defaults = intake_definition()["defaults"]
     for question in QUESTIONS:
         if isinstance(question.get("unknown"), dict):
@@ -422,8 +432,8 @@ def test_the_change_answer_is_reported_as_not_used_exactly_where_it_is_not_used(
 
 
 def test_the_public_authority_question_follows_the_engines_deployer_test() -> None:
-    # The intake asks for the deployer's public-authority status exactly where the
-    # engine reads it: the profile's own deployer role on a high-risk route.
+    # The intake asks for the deployer's public-authority status exactly where, in scope,
+    # it can change the result (public_authority_status_used).
     routes = [
         {"annex_iii_area": None},
         {"annex_iii_area": "III.2"},
@@ -431,10 +441,12 @@ def test_the_public_authority_question_follows_the_engines_deployer_test() -> No
         {"annex_iii_area": "III.unsure"},
         {"annex_i_safety_component": True},
         {"annex_i_safety_component": True, "annex_i_third_party_assessment": True},
+        # A Section B product as the intake records it: by its act, never by
+        # annex_i_section, which the intake does not ask (NOT_ASKED).
         {
             "annex_i_safety_component": True,
             "annex_i_third_party_assessment": True,
-            "annex_i_section": "B",
+            "annex_i_legislation": "I.B.21",
         },
     ]
     roles = [
@@ -466,12 +478,13 @@ def test_the_public_authority_question_follows_the_engines_deployer_test() -> No
 
 def test_the_public_authority_status_is_reported_as_not_used_exactly_where_it_is_skipped() -> None:
     # As for the change answer: the sentence appears for a given status wherever the
-    # engine's deployer test fails, and so the intake skips the question, never otherwise.
+    # engine's deployer test fails, and exactly there the intake skips the question.
     checked = 0
     for profile in GRID + TRANSITION_GRID:
         if not holds(IN_SCOPE, profile):
             continue
         used = public_authority_status_used(SystemProfile.model_validate(profile))
+        assert holds(PUBLIC_AUTHORITY_STATUS_OPEN, profile) is used, profile
         for status in (True, False, None):
             changed = {**profile, "deployer_public_authority": status}
             text = _report(changed)["scope"]["transitional_status"]
