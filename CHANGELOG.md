@@ -5,6 +5,232 @@ pull requests.
 
 ## Unreleased
 
+### Inventory outside a clone
+
+#### Fixed
+
+- The example inventory (`eu-ai-act-local-api inventory`, the cockpit's
+  inventory and `build_example_inventory()`) reads `examples/` relative to
+  the working directory, and the installed package does not include it. From
+  any directory but a clone's root, it listed no systems, gave no warning and
+  reported `determined`. It now warns that the directory is missing, or that
+  it holds no valid system profile, says that the inventory therefore lists
+  no systems, and reports `review_required` with that warning as the next
+  action. Run from a clone's root, the inventory is unchanged.
+
+### Version stamp
+
+#### Added
+
+- `eu-ai-act-classify --version` prints `eu-ai-act-classifier` and the
+  installed version, then exits 0.
+- A report did not say which classifier version produced it. Every
+  `ClassificationReport` now carries `classifier_version`, the package
+  version that `--version` prints. The field reaches the `--json` output, the
+  MCP tool, the local API and the cockpit, the playground's JSON export and
+  the review dossier (`report.json` and `dossier.json`). The text report is
+  unchanged.
+
+#### Changed
+
+- `schemas/classification-report.v1.schema.json` lists `classifier_version`
+  as a required string. A report written before this change has no such
+  field, so it no longer validates against the report schema.
+- `examples/classification-packet.json` carries the version as well, so a
+  version bump now also regenerates it with the command in
+  `docs/TESTING.md`.
+
+### Collaboration store and bridge errors
+
+#### Fixed
+
+- `save_workspace` wrote `runtime-data/collaboration-workspace.json` in
+  place, so a write that stopped partway left half a JSON document. It now
+  writes a temporary file in the same directory and renames it over the old
+  one, and a failed write leaves the previous file as it was. On POSIX
+  systems the file is now readable and writable by its owner only.
+- A stored workspace that was not valid JSON, or that was built for another
+  inventory (for example before an example was renamed), failed every
+  collaboration action, the page load included, until the file was deleted
+  by hand. The bridge now renames such a file to
+  `collaboration-workspace.unreadable-<UTC time>.json` or
+  `collaboration-workspace.stale-<UTC time>.json`, starts a new workspace and
+  records a `recovered` event that names the renamed file.
+- `review_cell` compared a lock time without a time zone with one that has
+  one and raised `TypeError`, for example after an import of a file with such
+  a lock. It now compares both in UTC, as `lock_cell` does, and answers
+  `409 Conflict` while another reviewer's lock runs.
+- `local_api` printed pydantic's message, which repeats each rejected value
+  and links pydantic's documentation, and a traceback for any other failure.
+  It now prints the number of errors, each field path and each reason, and
+  exits 1 with `{"error": "the classifier bridge failed"}` for any other
+  failure. An `expectedRevision` that is not a number and `answers` that are
+  not an object are now rejected as input instead of failing with a traceback.
+- The cockpit routes returned the bridge's whole stderr, or the text of a
+  JavaScript error, in the HTTP response. They now return local_api's message
+  for rejected input and a fixed text otherwise: `classifier bridge timed out`,
+  `classifier bridge failed` or `request body is not valid JSON`. The JSON
+  parser's message, which quoted the start of the request body, no longer
+  reaches the response.
+
+### Tests cover every example, `--strict` and the cockpit types
+
+#### Changed
+
+- `tests/test_golden_json.py` locks the classification summary of all 19
+  example profiles, not only `examples/credit_scoring.json`, and resolves its
+  paths from the repository root. `uv run python tests/test_golden_json.py`
+  rewrites the goldens after a reviewed rule change.
+- `tests/test_cli.py` checks the `--strict` exit codes: 1 for a prohibited
+  and for a `requires_review` report, 0 otherwise.
+- `tests/test_web_types.py` fails when a type in `web/lib/types.ts` no longer
+  matches the pydantic model it mirrors, field by field. It found four
+  profile fields and one report field missing there (`assessment_date`,
+  `annex_i_legislation`, `intimate_imagery`, `child_sexual_abuse_material`;
+  `scope_assessment.assessment_date`), which `web/lib/types.ts` now declares.
+- `tests/test_ci_workflow.py` also catches an inline `permissions:` value on a
+  job other than `deploy` and a condition on the npm audit step.
+- A test pins the effect text of the Art. 6(3) derogation finding for an
+  Annex I, Section B product in an Annex III area.
+
+### Docs and the cockpit health route say what the code does
+
+#### Fixed
+
+- The cockpit's `/api/health` answered `persistence: "local_in_memory"`, and
+  `PRIVACY.md`, `docs/surfaces.md`, `docs/DESIGN.md` and `docs/FEATURES.md`
+  described the cockpit's state as in-memory or local, while
+  `/api/collaboration` saves reviewer names, overrides and comments to
+  `runtime-data/collaboration-workspace.json`. The route now answers
+  `persistence: "local_file"` with that path as `store`, and the four docs
+  name the file.
+- `docs/coverage.md` said its minimal profiles name no roles. They hold the
+  default `provider` role.
+- `docs/reviewer-notes.md` read as if every Annex I, Section B report were
+  `requires_review`. It now says that a Section B product with no Annex III
+  area and no Art. 5 or Art. 50 screen carries none of the flags.
+- `docs/source-status-model.md` said `verify_sources.py` "checks the source
+  boundary". It now says what the check and `--update` do.
+- `DEPLOYMENT.md` and the Pages entry below said a branch-source Pages build
+  publishes before CI finishes. It publishes without waiting for CI and has
+  finished after it.
+
+### Section B flags reach the review gate
+
+#### Fixed
+
+- A report for an Annex I, Section B product returned `determined` when it
+  also fell in an Annex III area, although Art. 2(2) AIA does not list
+  Art. 6(2) and the report keeps the Annex III duties only as the
+  conservative reading. The counsel flag sat in the finding detail and on
+  the graph item, which the dossier and the cockpit do not list as open
+  questions. `high_risk.evaluate` now adds the open question
+  "Art. 2(2) AIA and Art. 6(2) AIA", repeating the flag, as
+  `prohibited.evaluate` does for Art. 5 and `transparency.evaluate` for
+  Art. 50. Such a report is now `requires_review`. The duties stay listed. Other counsel flags, such as the Art. 113 dating flags on a
+  plain Annex III report and the Art. 50 flag for a high-risk system already
+  on the market, do not change the disposition: `examples/credit_scoring.json`
+  and a plain Annex III(5)(b) provider report stay `determined`.
+  `docs/methodology.md` ("High-Risk Logic") states the rule.
+
+### Cockpit sets every Art. 50 fact
+
+#### Fixed
+
+- The cockpit had toggles for the Art. 50(1) and Art. 50(4) facts only, so a
+  reviewer could not set `generates_synthetic_content` (Art. 50(2)) or
+  `deploys_emotion_or_biometric_categorisation` (Art. 50(3)). Both stayed at
+  `false` from the blank profile, and a system that generates synthetic
+  content classified in the cockpit without its Art. 50(2) duty. The
+  "GPAI And Transparency" group now has an on/off toggle for each, in
+  Art. 50 order. They send booleans only, as `SystemProfile` types both
+  fields as `bool`.
+- The cockpit had no control for `used_for_financial_fraud_detection`
+  (Annex III(5)(b) AIA). It now has a yes, no or unknown control.
+
+#### Added
+
+- `web/components/cockpit-controls.test.ts` fails when a key of
+  `SystemProfile` in `web/lib/types.ts` has no cockpit control and is not on
+  the test's hidden list, and when an Art. 50 fact is not set by an on/off
+  toggle. The hidden list names four fields with the reason for each:
+  `assessment_date`, `intimate_imagery`, `child_sexual_abuse_material` and
+  `annex_i_legislation`. The cockpit cannot set these facts.
+
+### npm advisories fail CI
+
+#### Changed
+
+- The `web` job in `.github/workflows/ci.yml` runs
+  `npm audit --audit-level=high` right after `npm ci`. A high or critical
+  advisory in `web/package-lock.json` now fails CI before the cockpit's tests
+  and build run. Moderate and low advisories are still listed but do not fail
+  the job. The current lockfile passes with 0 vulnerabilities.
+  `tests/test_ci_workflow.py` checks the step and its place in the job.
+
+### Cockpit POST routes reject cross-site writes
+
+#### Fixed
+
+- Any web page the reviewer had open could write to the local cockpit. A
+  cross-site POST with `Content-Type: text/plain` reached
+  `/api/collaboration`, stored a reviewer override and, as an import, emptied
+  the activity list. The four POST routes (`/api/classify`,
+  `/api/artifacts`, `/api/dossier`, `/api/collaboration`) now call one guard,
+  `web/lib/local-request-guard.ts`, before they read the body. It answers 415
+  unless the body is `application/json`, and 403 when `Sec-Fetch-Site` marks
+  a request from another origin or when `Host` or `Origin` names anything but
+  `localhost` or `127.0.0.1` at the server's port, which also stops DNS
+  rebinding.
+- An import replaced the whole collaboration workspace, its activity list
+  included. It still replaces the review cells, but the activity list now
+  keeps every earlier entry, adds the file's entries it lacks and ends with
+  an `imported` event that names the actor and counts the added entries.
+
+#### Changed
+
+- `npm run dev` and `npm run start` in `web/` bind to `127.0.0.1`. Next.js
+  binds `0.0.0.0` by default, which put the cockpit on every network the
+  machine joined.
+
+### Operator roles reach the review gate
+
+#### Fixed
+
+- A profile whose roles did not match its facts returned `determined`: a
+  deployer with `is_gpai_model` got the Art. 53 items for the GPAI model
+  provider, and a high-risk profile holding only `gpai_provider` got no
+  duty at all. Each of these mismatches now adds an open question and the
+  result is `requires_review`: a high-risk tier with no operator role for
+  the system, `is_gpai_model` without the `gpai_provider` role, and the
+  `gpai_provider` role without `is_gpai_model`. The items stay listed.
+  An Art. 50 item for a role the profile does not hold raises no question:
+  the legal fixtures for Art. 5(1)(ba) and (bb) fix a deployer of a
+  generating system as `determined`. `docs/methodology.md`
+  ("Operator Roles") states the rule.
+
+#### Changed
+
+- `roles` must hold at least one role. `SystemProfile` rejects an empty list
+  and `schemas/system-profile.v1.schema.json` gives `minItems: 1`. An empty
+  list used to classify with no duty at all.
+
+### Playground deploys after CI passes
+
+#### Changed
+
+- A `deploy` job in `.github/workflows/ci.yml` publishes `docs/`, the browser
+  playground, to GitHub Pages with `actions/upload-pages-artifact` 5.0.0 and
+  `actions/deploy-pages` 5.0.1, both pinned to a commit SHA. It runs only on
+  a push to `main` and only after the `test` and `web` jobs pass for that
+  commit, so a pull request run or a failed check publishes nothing. Until
+  now Pages published `docs/` from the branch on every push to `main`
+  without waiting for CI. The job takes effect once the repository's Pages
+  source is switched to GitHub Actions. Like every other job, it has a
+  15-minute timeout and its checkout does not persist credentials.
+  `tests/test_ci_workflow.py` checks the job's trigger, dependencies,
+  permissions and pins, and the timeout and checkout of every job.
+
 ### Dark mode on the playground and the cockpit
 
 #### Added
