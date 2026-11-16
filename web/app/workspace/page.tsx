@@ -1,3 +1,4 @@
+import { ThemeToggle } from "../../components/theme-toggle";
 import { formatLabel, labelFor } from "../../lib/labels";
 import { runClassifierBridge } from "../../lib/python";
 
@@ -31,7 +32,10 @@ export default async function PortfolioWorkspacePage() {
   return (
     <main className="pageShell">
       <header className="pageHeader">
-        <p className="eyebrow">AI system portfolio</p>
+        <div className="pageHeaderBar">
+          <p className="eyebrow">AI system portfolio</p>
+          <ThemeToggle />
+        </div>
         <h1>System inventory and fleet command center</h1>
         <p className="pageLead">Deterministic inventory analytics, guided assessment workflows and draft-only evidence packs for qualified review.</p>
       </header>

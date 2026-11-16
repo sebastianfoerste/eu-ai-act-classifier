@@ -77,6 +77,62 @@ pull requests.
   profile, other than for a Section B product, that sets neither it nor
   `public_authority_use`. Set the status to keep a determined result.
 
+### Dark mode on the playground and the cockpit
+
+#### Added
+
+- Both surfaces follow the system's colour scheme, and a Theme button in
+  each header cycles System, Light and Dark. The choice is stored as one
+  word in the browser's local storage and applied before the first paint
+  (`docs/playground/theme.js`; an inline script in `web/app/layout.tsx`).
+  `PRIVACY.md` names that stored value.
+- Both dark sets are for screens only. A page printed from a dark screen
+  uses the light set, so the draft print of the cockpit (S8) stays black
+  on white; its rules use the tokens (`--print-ink`, `--surface`).
+- `tests/playground/theme.test.mjs` and `web/lib/theme.test.ts` check each
+  token set: text at 4.5:1 on its surface, the focus ring at 3:1, in the
+  dark set also the control-line tokens at 3:1; that the two dark blocks
+  are identical; and that no colour is written outside the token sets.
+  The playground's search field and guided-answer cards keep the divider
+  line, below 3:1 in both sets.
+
+#### Changed
+
+- Every colour in `docs/playground/styles.css` and `web/app/globals.css`
+  is a token. The playground's light values are the ones it had, except
+  that eight near-identical surface tints fold into two (at most 2 of 255
+  per channel on seven declarations).
+- Accessibility, so that axe (WCAG 2.2 AA tags) reports nothing on either
+  surface in either scheme: the playground's brand link takes its name
+  from its text; in the cockpit, muted text on the tinted surface uses
+  `--muted-on-tint` (it was 4.47:1), the review-note field has a label,
+  and tables and code blocks that scroll can be reached by keyboard.
+
+#### Follow-up: the five points left open by the review
+
+- A click on the Theme button is announced: each surface has a visually
+  hidden `role="status"` element that reads "Theme set to Dark" (or Light,
+  or System). The button holds all three names and the stylesheet shows
+  the one that matches `data-theme`, so with a stored choice the label is
+  right at the first paint, before the playground's module loads or the
+  cockpit hydrates.
+- A choice made in one tab reaches the other open tabs (`storage` event),
+  without an announcement there. The button cycles from the choice the
+  page shows. With blocked storage a choice in the cockpit now lasts
+  across its routes until the page is reloaded.
+- The placeholders of the playground's JSON field and guided date field
+  use `--placeholder`, as the search field does, at full opacity (Firefox
+  dims placeholders by default). This changes the light design slightly:
+  those two placeholders were the browser's default colour.
+- Each of the cockpit's seven scrolling tables takes its accessible name
+  from its panel heading; where one heading has two tables, a visually
+  hidden caption (Layers, Skills, Routes, Connectors) tells them apart.
+- Tests: the playground's button wiring and the cockpit's `ThemeToggle`
+  have unit tests, without a DOM test dependency. The "no colour outside
+  the token sets" guards now also catch the named and system colours and
+  the colour functions (`oklch()`, `color-mix()`, `light-dark()` and the
+  like).
+
 ### Print a draft artifact as PDF (S8)
 
 - The cockpit's Export Pack has a print button. The printed page, or a PDF saved
