@@ -27,6 +27,13 @@ function post(payload: unknown, headers: Record<string, string> = {}): Request {
   });
 }
 
+/** A GET as the self-assessment page sends it; `headers` overrides single headers. */
+function get(headers: Record<string, string> = {}): Request {
+  return new Request(`${COCKPIT}/api/collaboration`, {
+    headers: { host: "127.0.0.1:3000", "sec-fetch-site": "same-origin", ...headers },
+  });
+}
+
 describe("local collaboration workspace route", () => {
   beforeEach(() => {
     bridge.mockReset();
@@ -37,10 +44,19 @@ describe("local collaboration workspace route", () => {
     vi.unstubAllEnvs();
   });
 
+  it("answers 403 to a read through a DNS-rebound name, without running the bridge", async () => {
+    // A rebound page is same-origin to the browser, so only Host tells it apart; reading
+    // the workspace would expose reviewer names, overrides and comments.
+    const response = await GET(get({ host: "attacker.example:3000" }));
+
+    expect(response.status).toBe(403);
+    expect(bridge).not.toHaveBeenCalled();
+  });
+
   it("loads the persisted workspace through the Python application boundary", async () => {
     bridge.mockResolvedValue({ collaboration: { schema: "review.collaboration.v1" } });
 
-    const response = await GET();
+    const response = await GET(get());
 
     expect(response.status).toBe(200);
     expect(bridge).toHaveBeenCalledWith("collaboration");
@@ -117,7 +133,7 @@ describe("local collaboration workspace route", () => {
       new ClassifierBridgeError("Traceback", 1, 'Traceback\n  File "/home/x/collaboration_workspace.py"\n'),
     );
 
-    const response = await GET();
+    const response = await GET(get());
 
     expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({ error: "classifier bridge failed" });

@@ -55,6 +55,7 @@ uv run python scripts/build_coverage.py     # docs/coverage.md
 uv run eu-ai-act-classify examples/credit_scoring.json --json > examples/classification-packet.json
 uv run eu-ai-act-classify examples/credit_scoring.json > examples/classification-packet.md
 uv run python scripts/render_demo.py        # docs/demo.png, needs headless Chrome
+uv run python tests/test_golden_json.py     # tests/goldens/, one report per example
 ```
 
 `docs/cockpit.png` is a full-page capture of the production build, taken

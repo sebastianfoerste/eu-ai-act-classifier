@@ -29,7 +29,10 @@ pull requests.
   version that `--version` prints. The field reaches the `--json` output, the
   MCP tool, the local API and the cockpit, the playground's JSON export and
   the review dossier (`report.json` and `dossier.json`). The text report is
-  unchanged.
+  unchanged. The stamp names the version in `pyproject.toml`, which moves
+  only at a release: a build from `main` between releases, the Pages
+  playground included, carries the last release's number although its output
+  can differ from that release's.
 
 #### Changed
 
@@ -115,6 +118,20 @@ pull requests.
   publishes before CI finishes. It publishes without waiting for CI and has
   finished after it.
 
+### The FRIA follows Art. 27(1)
+
+#### Fixed
+
+- A deployer of a system that is high-risk only through Annex I (no Annex III
+  area) got the Art. 27 FRIA obligation and graph item when it is a body
+  governed by public law or a private entity providing public services.
+  Art. 27(1) AIA reaches only "a high-risk AI system referred to in Article
+  6(2)", and Regulation (EU) 2026/1744 amends only its paragraphs 4 and 5.
+  `engine._fria_required` and the intake's `FRIA_OPEN` condition now require
+  an Annex III area, so such a report lists no Art. 27 item and the guided
+  intake no longer asks the two deployer status questions there. A VERIFIED
+  ledger row quotes the provision. The bundled examples do not change.
+
 ### Section B flags reach the review gate
 
 #### Fixed
@@ -147,6 +164,11 @@ pull requests.
   fields as `bool`.
 - The cockpit had no control for `used_for_financial_fraud_detection`
   (Annex III(5)(b) AIA). It now has a yes, no or unknown control.
+- The cockpit's yes, no or unknown controls (this one, `is_ai_system`,
+  `eu_nexus` and the deployer status) showed the chosen answer only by colour
+  and did not tie the buttons to their question. Each is now a group labelled
+  by its question, and each button sets `aria-pressed`, so a screen reader
+  announces the question and which answer is set.
 
 #### Added
 
@@ -162,13 +184,17 @@ pull requests.
 #### Changed
 
 - The `web` job in `.github/workflows/ci.yml` runs
-  `npm audit --audit-level=high` right after `npm ci`. A high or critical
-  advisory in `web/package-lock.json` now fails CI before the cockpit's tests
-  and build run. Moderate and low advisories are still listed but do not fail
-  the job. The current lockfile passes with 0 vulnerabilities.
+  `npm audit --omit=dev --audit-level=high` right after `npm ci`. A high or
+  critical advisory in a runtime dependency of `web/package-lock.json` now
+  fails CI before the cockpit's tests and build run. Moderate and low
+  advisories are still listed but do not fail the job. Dev dependencies are
+  left out: the cockpit ships none of them, and on 17 November 2026 a dev-only
+  advisory with no fixed release (picomatch 4.0.7 through vitest,
+  GHSA-fc5q-39xc-vjpf) would have failed every run. The runtime tree passes
+  with 0 vulnerabilities.
   `tests/test_ci_workflow.py` checks the step and its place in the job.
 
-### Cockpit POST routes reject cross-site writes
+### Cockpit API routes reject cross-site requests
 
 #### Fixed
 
@@ -182,6 +208,14 @@ pull requests.
   a request from another origin or when `Host` or `Origin` names anything but
   `localhost` or `127.0.0.1` at the server's port, which also stops DNS
   rebinding.
+- A DNS-rebound page could still read what the GET routes return: the
+  review workspace with reviewer names, overrides and comments
+  (`/api/collaboration`), the inventory and the other bridge output. The
+  five GET routes that run the bridge (`/api/collaboration`,
+  `/api/workspace`, `/api/inventory`, `/api/schema`, `/api/sources`) now call
+  `rejectUnsafeLocalRead` from the same guard first, which applies the
+  `Sec-Fetch-Site`, `Host` and `Origin` checks and answers 403.
+  `/api/health` returns fixed text and stays open.
 - An import replaced the whole collaboration workspace, its activity list
   included. It still replaces the review cells, but the activity list now
   keeps every earlier entry, adds the file's entries it lacks and ends with
@@ -215,6 +249,16 @@ pull requests.
   and `schemas/system-profile.v1.schema.json` gives `minItems: 1`. An empty
   list used to classify with no duty at all.
 
+#### Upgrade notes
+
+- A breaking input change: a saved profile, playground draft, share link,
+  MCP call or inventory file with `"roles": []` is now rejected. The CLI
+  exits 2, and the playground and the local API answer
+  `roles: List should have at least 1 item after validation, not 0`. The
+  example inventory skips such a file with a warning, so an inventory made
+  only of such files lists no systems. Name at least one role; the old
+  result, with no duty at all, matched no role.
+
 ### Playground deploys after CI passes
 
 #### Changed
@@ -222,11 +266,13 @@ pull requests.
 - A `deploy` job in `.github/workflows/ci.yml` publishes `docs/`, the browser
   playground, to GitHub Pages with `actions/upload-pages-artifact` 5.0.0 and
   `actions/deploy-pages` 5.0.1, both pinned to a commit SHA. It runs only on
-  a push to `main` and only after the `test` and `web` jobs pass for that
-  commit, so a pull request run or a failed check publishes nothing. Until
-  now Pages published `docs/` from the branch on every push to `main`
-  without waiting for CI. The job takes effect once the repository's Pages
-  source is switched to GitHub Actions. Like every other job, it has a
+  a push to `main` and only after the `test`, `lowest-direct`, `package` and
+  `web` jobs pass for that commit, so a pull request run or a failed check
+  publishes nothing. Until now Pages published `docs/` from the branch on
+  every push to `main` without waiting for CI. The job skips until the
+  repository variable `PAGES_SOURCE` is `actions`: the owner sets it when
+  switching the Pages source to GitHub Actions, as `DEPLOYMENT.md` describes.
+  Until then Pages keeps publishing from the branch. Like every other job, it has a
   15-minute timeout and its checkout does not persist credentials.
   `tests/test_ci_workflow.py` checks the job's trigger, dependencies,
   permissions and pins, and the timeout and checkout of every job.

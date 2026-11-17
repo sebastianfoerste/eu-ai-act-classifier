@@ -480,3 +480,48 @@ def test_a_workspace_that_cannot_be_read_from_disk_is_not_archived(tmp_path) -> 
         apply_workspace_action({"action": "snapshot"}, runtime_path)
 
     assert [entry.name for entry in tmp_path.iterdir()] == ["workspace.json"]
+
+
+def _workspace_with_lock_time(lock_expires_at: str) -> dict:
+    workspace = json.loads(
+        build_collaboration_state(build_example_inventory()).model_dump_json(by_alias=True)
+    )
+    workspace["cells"][0].update(locked_by="Reviewer A", lock_expires_at=lock_expires_at)
+    return workspace
+
+
+def test_import_rejects_a_malformed_lock_time_without_echoing_it(tmp_path) -> None:
+    # A lock time that does not parse used to be accepted, then broke every later lock
+    # or review of the cell with a bare ValueError that carried the value.
+    from pydantic import ValidationError
+
+    from eu_ai_act_classifier.local_api import _validation_message
+
+    with pytest.raises(ValidationError) as caught:
+        apply_workspace_action(
+            {"action": "import", "workspace": _workspace_with_lock_time("SECRET-not-a-time")},
+            tmp_path / "workspace.json",
+        )
+    message = _validation_message(caught.value)
+    assert "cells.0.lock_expires_at" in message
+    assert "SECRET" not in message
+
+
+def test_a_stored_workspace_with_a_malformed_lock_time_is_archived(tmp_path) -> None:
+    path = tmp_path / "workspace.json"
+    path.write_text(json.dumps(_workspace_with_lock_time("tomorrow")), encoding="utf-8")
+
+    result = apply_workspace_action({}, path)
+
+    recovered = [e for e in result["collaboration"]["activity"] if e["event"] == "recovered"]
+    assert [e["reason"] for e in recovered] == ["unreadable"]
+    assert (tmp_path / recovered[0]["archivedAs"]).exists()
+
+
+def test_import_keeps_a_well_formed_lock_time(tmp_path) -> None:
+    result = apply_workspace_action(
+        {"action": "import", "workspace": _workspace_with_lock_time("2026-07-13T09:15:00+00:00")},
+        tmp_path / "workspace.json",
+        now=datetime(2026, 7, 13, 9, 0, tzinfo=UTC),
+    )
+    assert result["collaboration"]["cells"][0]["lock_expires_at"] == "2026-07-13T09:15:00+00:00"

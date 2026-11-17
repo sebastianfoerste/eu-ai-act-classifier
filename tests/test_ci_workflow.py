@@ -2,9 +2,10 @@
 
 GitHub Pages serves `docs/` on `main`. With the branch as the Pages source, a push
 publishes without waiting for CI, so a red merge reaches the public playground. The
-`deploy` job in `.github/workflows/ci.yml` publishes instead, after `test` and
-`web` pass for the same commit. The `web` job also fails on a high or critical
-npm advisory in the cockpit's lockfile. These tests read the workflow as text:
+`deploy` job in `.github/workflows/ci.yml` publishes instead, after every check
+job passes for the same commit, once the repository variable `PAGES_SOURCE` says
+the Pages source is GitHub Actions. The `web` job also fails on a high or critical
+npm advisory in the cockpit's runtime dependencies. These tests read the workflow as text:
 the repository has no YAML parser, and the shape checked here is plain block YAML.
 """
 
@@ -15,12 +16,14 @@ from pathlib import Path
 
 WORKFLOW = Path(".github/workflows/ci.yml")
 DEPLOYMENT = Path("DEPLOYMENT.md")
-CHECK_JOBS = {"test", "web"}
+CHECK_JOBS = {"test", "lowest-direct", "package", "web"}
 PUSH_TO_MAIN = "github.event_name == 'push' && github.ref == 'refs/heads/main'"
+# The owner sets this repository variable when the Pages source becomes GitHub Actions.
+PAGES_SOURCE_SET = "vars.PAGES_SOURCE == 'actions'"
 # A job `if:` without a status function runs only when every needed job succeeded.
 STATUS_FUNCTIONS = ("always()", "failure()", "cancelled()", "success()")
 PINNED_ACTION = re.compile(r"[\w.-]+/[\w.-]+(?:/[\w./-]+)?@[0-9a-f]{40}")
-NPM_AUDIT = "npm audit --audit-level=high"
+NPM_AUDIT = "npm audit --omit=dev --audit-level=high"
 
 
 def _indent(line: str) -> int:
@@ -76,13 +79,14 @@ def _jobs() -> dict[str, list[str]]:
     return {name: _block(jobs, name, 2) for name in names}
 
 
-def test_deploy_job_runs_on_push_to_main_after_both_check_jobs() -> None:
+def test_deploy_job_runs_on_push_to_main_after_every_check_job() -> None:
     deploy = _jobs().get("deploy")
     assert deploy is not None, "ci.yml has no deploy job, so Pages publishes without CI"
     fields = _scalars(deploy, 4)
     assert {name.strip() for name in fields["needs"].strip("[]").split(",")} == CHECK_JOBS
-    # Pull request runs skip the job; a failed or cancelled check job skips it too.
-    assert fields["if"] == PUSH_TO_MAIN
+    # Pull request runs skip the job; a failed or cancelled check job skips it too, and
+    # so does a repository whose Pages source is still a branch.
+    assert fields["if"] == f"{PUSH_TO_MAIN} && {PAGES_SOURCE_SET}"
     assert not any(function in fields["if"] for function in STATUS_FUNCTIONS)
 
 
@@ -146,7 +150,8 @@ def test_every_job_has_a_timeout_and_its_checkout_keeps_no_credentials() -> None
 def test_deployment_doc_names_the_ci_deploy_job() -> None:
     text = DEPLOYMENT.read_text(encoding="utf-8")
     assert "the `deploy` job in `.github/workflows/ci.yml`" in text
-    assert "after the `test` and `web` jobs pass" in text
+    assert "after the `test`, `lowest-direct`, `package` and `web` jobs pass" in text
+    assert "`PAGES_SOURCE`" in text
     # The branch-source build starts with CI and sometimes ends after it, so the doc says
     # it does not wait for CI, not that it ends first.
     assert "without waiting for CI" in text

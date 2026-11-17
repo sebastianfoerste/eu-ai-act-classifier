@@ -212,3 +212,22 @@ def test_the_published_schema_requires_a_role() -> None:
     )
 
     assert schema["properties"]["roles"]["minItems"] == 1
+
+
+@pytest.mark.parametrize("prohibited", [True, False])
+def test_gpai_role_question_describes_only_items_the_report_lists(prohibited: bool) -> None:
+    facts: dict = {"roles": [Role.DEPLOYER], "is_gpai_model": True, "training_flops": 1e24}
+    if prohibited:
+        facts["prohibited_practices"] = ["5.1.a"]
+    report = _report(**facts, **MODEL_SETTLED)
+    (question,) = [q for q in report.open_questions if q.startswith("GPAI model:")]
+    gpai_items = [ob for ob in report.obligations if ob.applies_to is Role.GPAI_PROVIDER]
+
+    assert (report.risk_tier is RiskTier.PROHIBITED) is prohibited
+    # The question names Chapter V items exactly when the report lists them.
+    assert bool(gpai_items) is not prohibited
+    if prohibited:
+        assert "lists no Chapter V item" in question
+        assert "stays listed" not in question
+    else:
+        assert "stays listed for review" in question

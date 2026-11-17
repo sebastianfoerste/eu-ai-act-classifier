@@ -1,10 +1,14 @@
 import { bodyNotJsonResponse, bridgeErrorBody, bridgeErrorStatus } from "../../../lib/bridge-error";
-import { rejectUnsafeLocalPost } from "../../../lib/local-request-guard";
+import { rejectUnsafeLocalPost, rejectUnsafeLocalRead } from "../../../lib/local-request-guard";
 import { runClassifierBridge } from "../../../lib/python";
 
 export const runtime = "nodejs";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const rejected = rejectUnsafeLocalRead(request);
+  if (rejected) {
+    return rejected;
+  }
   try {
     return Response.json(await runClassifierBridge("collaboration"));
   } catch (error) {

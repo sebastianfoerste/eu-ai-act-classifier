@@ -104,16 +104,20 @@ jobs:
       - run: uv sync --locked
         working-directory: .
       - run: npm ci
-      - run: npm audit --audit-level=high
+      # Runtime dependencies only: the cockpit ships none of its dev tooling, and a dev
+      # advisory with no fixed release would otherwise turn every run red.
+      - run: npm audit --omit=dev --audit-level=high
       - run: npm test
       - run: npm run build
 
   # Publishes the playground in docs/ to GitHub Pages, only from a push to main and only
-  # after test and web pass for that commit. Pull request runs skip it. The Pages source
-  # must be "GitHub Actions"; with a branch source, Pages also publishes without CI.
+  # after every check job passes for that commit. Pull request runs skip it. It also
+  # skips until the repository variable PAGES_SOURCE is "actions": set it when the Pages
+  # source is switched to "GitHub Actions". With a branch source, deploy-pages cannot
+  # publish, and Pages already publishes from the branch without CI.
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [test, web]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PAGES_SOURCE == 'actions'
+    needs: [test, lowest-direct, package, web]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

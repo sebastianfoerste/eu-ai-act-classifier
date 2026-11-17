@@ -189,6 +189,10 @@ high-risk and records an unverified citation for review.
 
 ## FRIA Logic
 
+Art. 27(1) reaches only high-risk AI systems referred to in Art. 6(2), that is
+an Annex III area. A system that is high-risk only through Annex I gets no
+FRIA item and no deployer status question.
+
 Art. 27 is automatic for deployers of Annex III point 5(b) creditworthiness and
 point 5(c) life and health insurance.
 

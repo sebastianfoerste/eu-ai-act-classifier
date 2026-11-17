@@ -76,11 +76,13 @@ HIGH_RISK_ROUTE = {
         {"any": [ANNEX_III_ANY, ANNEX_I_ROUTE]},
     ]
 }
-# Art. 27 AIA deployer status matters only where the FRIA is not already settled
-# by the Annex III point: 5(b) and 5(c) always need one, point 2 never does.
+# Art. 27 AIA deployer status matters only on the Art. 6(2) route (an Annex III
+# area), and only where the FRIA is not already settled by the Annex III point:
+# 5(b) and 5(c) always need one, point 2 never does.
 FRIA_OPEN = {
     "all": [
         HIGH_RISK_ROUTE,
+        ANNEX_III_ANY,
         {"field": "roles", "has": Role.DEPLOYER.value},
         {
             "not": {

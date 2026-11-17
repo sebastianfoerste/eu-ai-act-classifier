@@ -11,7 +11,7 @@ import {
   RefreshCw,
   ShieldCheck,
 } from "lucide-react";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useId, useMemo, useState } from "react";
 import { formatLabel, labelFor, type LabelNamespace } from "../lib/labels";
 import { printDocument } from "../lib/print";
 import { PrintableArtifact } from "./printable-artifact";
@@ -1187,12 +1187,16 @@ function TriStateControl({
     { label: "No", value: false },
     { label: "Review", value: null },
   ];
+  // The group carries the question; aria-pressed carries the answer set, which the
+  // "active" class shows only visually.
+  const labelId = useId();
   return (
-    <div className="triState">
-      <span>{label}</span>
+    <div className="triState" role="group" aria-labelledby={labelId}>
+      <span id={labelId}>{label}</span>
       <div>
         {options.map((option) => (
           <button
+            aria-pressed={value === option.value}
             className={value === option.value ? "active" : ""}
             key={option.label}
             type="button"
