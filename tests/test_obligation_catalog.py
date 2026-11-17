@@ -1,5 +1,6 @@
 """One source for both lists: ``report.obligations`` is ``report.obligation_graph``
-without the Art. 50 items, entry by entry and in the same order.
+without the Art. 50 items and the review tasks in ``GRAPH_ONLY_ITEMS`` (Arts. 40, 42, 44
+and 56), entry by entry and in the same order.
 
 The requirement of an entry is the item's, except where the entry repeats a counsel flag
 that the item carries in its date note (Art. 4 AIA for a Section B product or a prohibited
@@ -93,10 +94,11 @@ def test_a_high_risk_provider_gets_the_section_2_items_in_both_lists(article: in
     assert name in {ob.article for ob in report.obligations}
 
 
-# Arts. 40(1), 41(3) and 42 grant presumptions of conformity, Art. 44 governs notified
-# bodies' certificates and Art. 56 addresses the AI Office and the Board: none puts a
-# duty on the provider (sources/oj/32024R1689.en.xhtml), so the list leaves them out.
-NOT_PROVIDER_DUTIES = {"Art. 40 AIA", "Art. 41 AIA", "Art. 42 AIA", "Art. 44 AIA", "Art. 56 AIA"}
+# Arts. 40(1) and 42 grant presumptions of conformity, Art. 44 governs notified bodies'
+# certificates and Art. 56 addresses the AI Office and the Board: none puts a duty on the
+# provider (sources/oj/32024R1689.en.xhtml), so the list leaves them out. Art. 41(5) does
+# put one on the provider, so Art. 41 stays listed.
+NOT_PROVIDER_DUTIES = {"Art. 40 AIA", "Art. 42 AIA", "Art. 44 AIA", "Art. 56 AIA"}
 
 
 def test_review_tasks_without_a_provider_duty_stay_in_the_graph_only() -> None:
@@ -119,4 +121,44 @@ def test_art_18_entry_names_what_art_18_1_requires_and_not_the_logs() -> None:
     assert "10 years" in entry.requirement
     assert "national competent authorities" in entry.requirement
     assert "EU declaration of conformity" in entry.requirement
+    # Art. 18(1)(c) and (d), each "where applicable".
+    assert "where applicable the changes approved by" in entry.requirement
+    assert "documents issued by notified bodies" in entry.requirement
     assert "logs" not in entry.requirement
+
+
+def test_art_41_entry_states_the_art_41_5_justification_duty() -> None:
+    report = classify(
+        SystemProfile(name="x", roles=[Role.PROVIDER], annex_iii_area=AnnexIII.CREDITWORTHINESS)
+    )
+    (entry,) = [ob for ob in report.obligations if ob.article == "Art. 41 AIA"]
+    assert "Art. 41(5)" in entry.requirement
+    assert "justify" in entry.requirement
+    (item,) = [i for i in report.obligation_graph if i.article == "Art. 41 AIA"]
+    assert item.review_status.value == "review_required"
+
+
+@pytest.mark.parametrize(
+    ("flops", "expected"),
+    [(1e24, {"Art. 53(4) AIA"}), (1e26, {"Art. 53(4) AIA", "Art. 55(2) AIA"})],
+)
+def test_gpai_provider_lists_the_alternative_means_duty(flops: float, expected: set) -> None:
+    # Art. 53(4) and Art. 55(2), third sentence each: a provider that does not adhere to an
+    # approved code of practice or does not comply with a harmonised standard demonstrates
+    # alternative adequate means of compliance. Art. 56 itself stays a graph-only task.
+    report = classify(
+        SystemProfile(
+            name="m",
+            roles=[Role.GPAI_PROVIDER],
+            is_gpai_model=True,
+            training_flops=flops,
+            gpai_model_placing_on_market_date="2025-09-01",
+        )
+    )
+    listed = {ob.article for ob in report.obligations}
+    assert {"Art. 53(4) AIA", "Art. 55(2) AIA"} & listed == expected
+    assert "Art. 56 AIA" not in listed
+    for item in report.obligation_graph:
+        if item.article in expected:
+            assert item.review_status.value == "review_required"
+            assert "alternative adequate means of compliance" in item.requirement

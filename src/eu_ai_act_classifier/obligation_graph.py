@@ -2,8 +2,9 @@
 
 Every duty is written once, as a graph item. ``report.obligations`` lists the same duties
 (:func:`listed_obligations`): the article, actor and requirement of each item that is not
-an Art. 50 item, with the title :data:`.catalog.DUTY_TITLES` gives its article. The
-Art. 50 items come from ``report.transparency_obligations``.
+an Art. 50 item and not one of the review tasks in :data:`GRAPH_ONLY_ITEMS`, with the
+title :data:`.catalog.DUTY_TITLES` gives its article. The Art. 50 items come from
+``report.transparency_obligations``.
 """
 
 from __future__ import annotations
@@ -331,14 +332,15 @@ def build_obligation_graph(
 
 
 # Graph items that are review tasks, not duties, so ``report.obligations`` leaves them
-# out. Arts. 40(1), 41(3) and 42 grant a presumption of conformity; Art. 44 governs
-# the certificates notified bodies issue; Art. 56 addresses the AI Office and the Board
-# (the provider's duty to show compliance by other means is in Art. 53(4) and 55(2),
-# second subparagraphs, which the Chapter V items already cover).
+# out. Arts. 40(1) and 42 grant a presumption of conformity; Art. 44 governs the
+# certificates notified bodies issue; Art. 56 addresses the AI Office and the Board. The
+# provider's duty to show compliance by other means is in Art. 53(4) and Art. 55(2), third
+# sentence each, which the gpai.provider.53.4 and gpai.provider.55.2 items state. Art. 41
+# stays listed: Art. 41(5) puts a duty on a provider that does not follow common
+# specifications.
 GRAPH_ONLY_ITEMS = frozenset(
     {
         "high-risk.provider.40",
-        "high-risk.provider.41",
         "high-risk.provider.42",
         "high-risk.provider.44",
         "gpai.provider.56",
@@ -430,8 +432,9 @@ def _high_risk_provider_graph(
             "Provider of a high-risk AI system.",
             (
                 "Ensure the system meets the Chapter III, Section 2 requirements, indicate "
-                "the provider's name and contact address on it, and meet the other Art. 16 "
-                "duties."
+                "the provider's name, registered trade name or registered trade mark and "
+                "contact address on the system or, where that is not possible, on its "
+                "packaging or accompanying documentation, and meet the other Art. 16 duties."
             ),
             "Provider compliance responsibility matrix.",
             application_date,
@@ -452,7 +455,8 @@ def _high_risk_provider_graph(
             "Provider of a high-risk AI system.",
             (
                 "Keep the technical documentation, the quality management system "
-                "documentation, the documents of notified bodies and the EU declaration of "
+                "documentation, where applicable the changes approved by and the decisions "
+                "and other documents issued by notified bodies, and the EU declaration of "
                 "conformity at the disposal of the national competent authorities for 10 "
                 "years after placing on the market or putting into service."
             ),
@@ -506,8 +510,9 @@ def _high_risk_provider_graph(
             "Art. 41 AIA",
             "Common specifications become applicable.",
             (
-                "Assess common specifications where harmonised standards are unavailable "
-                "or insufficient."
+                "Where common specifications adopted under Art. 41(1) apply and are not "
+                "followed, justify that the technical solutions adopted meet the Section 2 "
+                "requirements to a level at least equivalent (Art. 41(5))."
             ),
             "Common specifications assessment.",
             _SECTION_5,
@@ -930,6 +935,23 @@ def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphI
             note,
         ),
         _item(
+            "gpai.provider.53.4",
+            "Art. 53(4) AIA",
+            Role.GPAI_PROVIDER,
+            (
+                "Provider of a general-purpose AI model that does not adhere to an approved "
+                "code of practice or does not comply with a European harmonised standard."
+            ),
+            (
+                "Demonstrate alternative adequate means of compliance with the Art. 53(1) "
+                "obligations for assessment by the Commission."
+            ),
+            "Alternative means of compliance file.",
+            application_date,
+            ReviewStatus.REVIEW_REQUIRED,
+            note,
+        ),
+        _item(
             "gpai.provider.56",
             "Art. 56 AIA",
             Role.GPAI_PROVIDER,
@@ -984,6 +1006,24 @@ def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphI
                     "GPAI model with systemic risk.",
                     "Ensure an adequate level of cybersecurity protection.",
                     "Cybersecurity control file.",
+                    application_date,
+                    ReviewStatus.REVIEW_REQUIRED,
+                    note,
+                ),
+                _item(
+                    "gpai.provider.55.2",
+                    "Art. 55(2) AIA",
+                    Role.GPAI_PROVIDER,
+                    (
+                        "GPAI model with systemic risk whose provider does not adhere to an "
+                        "approved code of practice or does not comply with a European "
+                        "harmonised standard."
+                    ),
+                    (
+                        "Demonstrate alternative adequate means of compliance with the "
+                        "Art. 55(1) obligations for assessment by the Commission."
+                    ),
+                    "Systemic-risk alternative means of compliance file.",
                     application_date,
                     ReviewStatus.REVIEW_REQUIRED,
                     note,

@@ -22,7 +22,8 @@ facts. The engine applies the rules and makes uncertainty visible.
    (bb), which apply from 2 December 2026. A hit is a hard stop.
 3. High-risk classification: Art. 6(1), Art. 6(2), Art. 6(3), Annex I and
    Annex III.
-4. GPAI: Art. 51 systemic threshold and Arts. 53, 55 and 56 obligations.
+4. GPAI: Art. 51 systemic threshold, Arts. 53 and 55 obligations, and the Art. 56
+   code-of-practice review task.
 5. Transparency: Art. 50(1) to (4) AIA.
 6. Resolution: highest tier, review disposition, source-backed obligations
    (the Art. 4 AI literacy duty of every provider and deployer first), timeline
@@ -205,13 +206,27 @@ The engine suppresses the generic FRIA open question for that case.
 Where the deployment is high-risk and the deployer status is incomplete, the
 engine raises a review question instead of asserting a FRIA conclusion.
 
+Two further cases raise an Art. 27 review question. With `III.unsure`, a
+deployer whose status does not require a FRIA is told that points 5(b) and
+5(c) would require one whatever the status. With an asserted Art. 6(3)
+derogation on a system that is also on the Annex I route (Section A or not
+given), the FRIA stays listed and the question says it falls away if the
+derogation is established, since the system would then be high-risk only
+under Art. 6(1).
+
 ## Obligation Graph
 
 Every duty is written once, as an item of `obligation_graph`, the product
 surface for review workflows. `obligations` lists the same duties in the same
 order for compatibility: the article, actor and requirement of each graph
 item, with a title, apart from the Art. 50 items, which
-`transparency_obligations` lists. Three kinds of entry repeat a counsel flag
+`transparency_obligations` lists, and four review tasks that state no duty of
+the provider: Arts. 40 and 42 (presumptions of conformity), Art. 44
+(certificates of notified bodies) and Art. 56 (codes of practice, addressed to
+the AI Office and the Board). The graph keeps them
+(`obligation_graph.GRAPH_ONLY_ITEMS`). Art. 41 is listed with its Art. 41(5)
+duty, and a GPAI provider's list names the Art. 53(4) and, with systemic risk,
+the Art. 55(2) duty to show alternative adequate means of compliance. Three kinds of entry repeat a counsel flag
 in the requirement that the graph item carries in its date note: the Art. 4
 entry of a Section B product or a prohibited system, and the Art. 2(2) entry
 of a Section B product in an Annex III area.

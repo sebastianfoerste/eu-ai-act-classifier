@@ -29,7 +29,7 @@ The insurer is not a public authority and does not act on behalf of one, so the 
 uv run eu-ai-act-classify examples/life_insurer_pricing.json
 ```
 
-Output (114 lines; the cuts are marked):
+Output (115 lines; the cuts are marked):
 
 ```text
 EU AI Act classification: Musterversicherung term-life pricing model
@@ -51,7 +51,7 @@ Obligations:
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
   - Art. 9 AIA: Risk management system. Establish, document and maintain a continuous risk management system.
-[... 19 lines omitted]
+[... 20 lines omitted]
   - Art. 26 AIA: Deployer obligations. Use the system per instructions, assign human oversight to natural persons, monitor operation and keep logs.
   - Art. 27 AIA: Fundamental rights impact assessment. Perform and maintain a fundamental rights impact assessment before first use.
 
@@ -92,7 +92,7 @@ This is a screening tool, not legal advice. It does not produce a conformity ass
 
 - **Tier:** high-risk under Art. 6(2) AIA and Annex III(5)(c), risk assessment and pricing for natural persons in life and health insurance. Because the profile asserts profiling, the finding notes that the Art. 6(3) derogation is unavailable (Art. 6(3), third subparagraph).
 - **Disposition:** `DETERMINED`, so `--strict` exits 0.
-- **Duties:** as provider, 21 obligations (Art. 4, 9 to 21, 43, the Art. 43(2) internal-control route, 47, 48, 49, 72 and 73; the graph's Arts. 40 to 42 review tasks are not listed) and five documentation items; as deployer, Art. 4, Art. 26 and the Art. 27 FRIA, which Art. 27(1) and (2) require of point 5(c) deployers before first use.
+- **Duties:** as provider, 22 obligations (Art. 4, 9 to 21, the Art. 41(5) duty where common specifications are not followed, 43, the Art. 43(2) internal-control route, 47, 48, 49, 72 and 73; the graph's Arts. 40 and 42 review tasks are not listed) and five documentation items; as deployer, Art. 4, Art. 26 and the Art. 27 FRIA, which Art. 27(1) and (2) require of point 5(c) deployers before first use.
 - **Conformity route:** item `high-risk.provider.43.2`, internal control under Art. 43(2) and Annex VI, without a notified body, as for every Annex III point from 2 to 8 unless the system is also covered by Union harmonisation legislation listed in Annex I, Section A (Art. 43(3), last subparagraph, as replaced by Regulation (EU) 2026/1744, Art. 1, point (19)). That subparagraph names Section A only, so a Section B product on the Art. 6(1) route in points 2 to 8 also gets this item. As a conservative design choice, not statute, the classifier keeps the `review_required` Art. 44 item for an Annex I product whose section is not given and for an Annex I safety component off the Art. 6(1) route, since either may be Section A.
 - **Date and review:** in the JSON report (`--json`), 15 of the 27 graph items carry `"application_date": "2027-12-02"`: the provider's Arts. 9 to 21 and the deployer's Arts. 26 and 27, all in Chapter III, Sections 2 and 3. Art. 113, third paragraph, point (c)(i), as amended by Regulation (EU) 2026/1744, sets that date for Chapter III, Sections 1 to 3. The two Art. 4 items, one for each role, carry `"application_date": "2025-02-02"`, the date from which Chapter I applies (Art. 113, third paragraph, point (a)). The other 10 items are the provider's Section 5 items (Arts. 40 to 43, the Art. 43(2) item and Arts. 47 to 49) and its Chapter IX items (Arts. 72 and 73). Point (c) does not defer them, so they carry `"application_date": "2026-08-02"`, the general date in Art. 113, second paragraph, on a literal reading. Each of them says so in a note, gives 2027-12-02 if it is read as following the deferral, and is `review_required`. In all, 13 of the 27 items are `review_required`.
 

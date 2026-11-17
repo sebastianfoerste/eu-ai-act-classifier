@@ -39,9 +39,11 @@ from .rules import gpai, high_risk, prohibited, scope, transparency
 from .transitions import (
     ANNEX_X_CARVE_OUT,
     PUBLIC_AUTHORITY_DUTY,
+    annex_i_route,
     before,
     chapter_iii_date,
     cut_off_contested,
+    derogation_asserted,
     derogation_note,
     describe_dates,
     gpai_model_date,
@@ -53,6 +55,7 @@ from .transitions import (
     public_authority_sentence,
     public_authority_status_used,
     section_b_only,
+    section_b_product,
     start_date_open,
 )
 
@@ -110,6 +113,7 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
                     "where the deployer is a body governed by public law or a private "
                     "operator providing a public service. Confirm deployer status."
                 )
+            open_questions += _fria_route_questions(profile, fria_required)
         if (
             profile.provider_established_outside_eu
             and profile.has_authorised_representative is False
@@ -250,6 +254,33 @@ def _fria_required(profile: SystemProfile) -> bool:
     if profile.annex_iii_area in _FRIA_AREAS:
         return True
     return bool(profile.deployer_public_law_body or profile.deployer_private_public_service)
+
+
+def _fria_route_questions(profile: SystemProfile, fria_required: bool) -> list[str]:
+    """Art. 27(1) AIA cases the deployer status alone does not settle: an unsettled Annex
+    III point that may be 5(b) or 5(c), and an Annex III area whose asserted Art. 6(3)
+    derogation would leave only the Annex I route. A Section B product carries its own
+    Art. 2(2) flag on the Annex III duties."""
+
+    if profile.annex_iii_area is AnnexIII.UNSURE and not fria_required:
+        return [
+            "Art. 27 AIA: the Annex III point is not settled. If it is point 5(b) or 5(c), "
+            "Art. 27(1) requires a fundamental rights impact assessment whatever the "
+            "deployer's status. Confirm the point (annex_iii_area)."
+        ]
+    if (
+        fria_required
+        and derogation_asserted(profile)
+        and annex_i_route(profile)
+        and not section_b_product(profile)
+    ):
+        return [
+            "Art. 27 AIA: the fundamental rights impact assessment belongs to the Art. 6(2) "
+            "route. If the asserted Art. 6(3) derogation is established, the system is "
+            "high-risk only under Art. 6(1) and Annex I, and Art. 27(1) no longer requires "
+            "it. Confirm the derogation (derogation)."
+        ]
+    return []
 
 
 def _fria_needs_review(profile: SystemProfile, fria_required: bool) -> bool:

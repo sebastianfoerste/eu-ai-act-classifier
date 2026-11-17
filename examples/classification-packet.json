@@ -92,7 +92,7 @@
       "citation_verified": true,
       "title": "Provider obligations",
       "applies_to": "provider",
-      "requirement": "Ensure the system meets the Chapter III, Section 2 requirements, indicate the provider's name and contact address on it, and meet the other Art. 16 duties."
+      "requirement": "Ensure the system meets the Chapter III, Section 2 requirements, indicate the provider's name, registered trade name or registered trade mark and contact address on the system or, where that is not possible, on its packaging or accompanying documentation, and meet the other Art. 16 duties."
     },
     {
       "article": "Art. 17 AIA",
@@ -106,7 +106,7 @@
       "citation_verified": true,
       "title": "Document retention",
       "applies_to": "provider",
-      "requirement": "Keep the technical documentation, the quality management system documentation, the documents of notified bodies and the EU declaration of conformity at the disposal of the national competent authorities for 10 years after placing on the market or putting into service."
+      "requirement": "Keep the technical documentation, the quality management system documentation, where applicable the changes approved by and the decisions and other documents issued by notified bodies, and the EU declaration of conformity at the disposal of the national competent authorities for 10 years after placing on the market or putting into service."
     },
     {
       "article": "Art. 19 AIA",
@@ -128,6 +128,13 @@
       "title": "Authority cooperation",
       "applies_to": "provider",
       "requirement": "Cooperate with competent authorities and provide requested information."
+    },
+    {
+      "article": "Art. 41 AIA",
+      "citation_verified": true,
+      "title": "Common specifications",
+      "applies_to": "provider",
+      "requirement": "Where common specifications adopted under Art. 41(1) apply and are not followed, justify that the technical solutions adopted meet the Section 2 requirements to a level at least equivalent (Art. 41(5))."
     },
     {
       "article": "Art. 43 AIA",
@@ -335,7 +342,7 @@
       "article": "Art. 16 AIA",
       "actor": "provider",
       "trigger": "Provider of a high-risk AI system.",
-      "requirement": "Ensure the system meets the Chapter III, Section 2 requirements, indicate the provider's name and contact address on it, and meet the other Art. 16 duties.",
+      "requirement": "Ensure the system meets the Chapter III, Section 2 requirements, indicate the provider's name, registered trade name or registered trade mark and contact address on the system or, where that is not possible, on its packaging or accompanying documentation, and meet the other Art. 16 duties.",
       "evidence_artifact": "Provider compliance responsibility matrix.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
@@ -363,7 +370,7 @@
       "article": "Art. 18 AIA",
       "actor": "provider",
       "trigger": "Provider of a high-risk AI system.",
-      "requirement": "Keep the technical documentation, the quality management system documentation, the documents of notified bodies and the EU declaration of conformity at the disposal of the national competent authorities for 10 years after placing on the market or putting into service.",
+      "requirement": "Keep the technical documentation, the quality management system documentation, where applicable the changes approved by and the decisions and other documents issued by notified bodies, and the EU declaration of conformity at the disposal of the national competent authorities for 10 years after placing on the market or putting into service.",
       "evidence_artifact": "Document retention register.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
@@ -433,7 +440,7 @@
       "article": "Art. 41 AIA",
       "actor": "provider",
       "trigger": "Common specifications become applicable.",
-      "requirement": "Assess common specifications where harmonised standards are unavailable or insufficient.",
+      "requirement": "Where common specifications adopted under Art. 41(1) apply and are not followed, justify that the technical solutions adopted meet the Section 2 requirements to a level at least equivalent (Art. 41(5)).",
       "evidence_artifact": "Common specifications assessment.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
