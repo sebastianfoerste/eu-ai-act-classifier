@@ -545,14 +545,7 @@ def test_an_unknown_fraud_purpose_is_recorded_as_unknown() -> None:
     assert "the profile states" not in question
 
 
-# AIA-06: the Art. 27 deployer status questions are expected to belong to the
-# Art. 6(2) route only. Blocked until Art. 27(1) AIA is read on EUR-Lex; remove the
-# marker with the FRIA_OPEN change in intake.py and the matching change in
-# engine._fria_required.
-@pytest.mark.xfail(
-    strict=True,
-    reason="AIA-06 is blocked on the EUR-Lex reading of Art. 27(1) AIA",
-)
+# Art. 27(1) AIA: the deployer status questions belong to the Art. 6(2) route only.
 @pytest.mark.parametrize(
     "question_id", ["deployer_public_law_body", "deployer_private_public_service"]
 )

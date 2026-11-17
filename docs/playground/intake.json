@@ -734,6 +734,12 @@
             ]
           },
           {
+            "not": {
+              "field": "annex_iii_area",
+              "is": null
+            }
+          },
+          {
             "field": "roles",
             "has": "deployer"
           },
@@ -804,6 +810,12 @@
                 ]
               }
             ]
+          },
+          {
+            "not": {
+              "field": "annex_iii_area",
+              "is": null
+            }
           },
           {
             "field": "roles",

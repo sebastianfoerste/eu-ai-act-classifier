@@ -91,6 +91,9 @@ question until the model's date is given.
 
 ### FRIA
 
+The FRIA belongs to the Art. 6(2) route: a system that is high-risk only
+through Annex I carries none (Art. 27(1)).
+
 Creditworthiness and life and health insurance deployer cases receive an
 automatic Art. 27 FRIA obligation.
 

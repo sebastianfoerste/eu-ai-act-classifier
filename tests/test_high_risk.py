@@ -179,17 +179,9 @@ def test_fraud_question_is_limited_to_annex_iii_5_b() -> None:
     assert not any("financial fraud" in question for question in report.open_questions)
 
 
-# AIA-06: Art. 27 AIA is expected to reach only the high-risk systems referred to in
-# Art. 6(2), so a system that is high-risk only through Annex I carries no FRIA. The
-# change is blocked until Art. 27(1) is read on EUR-Lex and recorded in
-# docs/REGULATORY_CLAIM_LEDGER.md. Remove this marker with the engine change.
-ART_27_ANNEX_III_ONLY = pytest.mark.xfail(
-    strict=True,
-    reason="AIA-06 is blocked on the EUR-Lex reading of Art. 27(1) AIA",
-)
-
-
-@ART_27_ANNEX_III_ONLY
+# Art. 27(1) AIA reaches only "a high-risk AI system referred to in Article 6(2)"
+# (sources/oj/32024R1689.en.xhtml, not amended by Regulation (EU) 2026/1744), so a
+# system that is high-risk only through Annex I carries no FRIA.
 @pytest.mark.parametrize("section", [None, "A"])
 @pytest.mark.parametrize(
     "deployer_status", ["deployer_public_law_body", "deployer_private_public_service"]

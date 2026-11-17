@@ -1,5 +1,6 @@
 /**
- * Guard for the cockpit's POST routes: same-origin JSON from the loopback address only.
+ * Guards for the cockpit's API routes: same-origin requests to the loopback address only,
+ * and for POST routes JSON bodies only.
  *
  * The cockpit is a local tool. Its POST routes run the Python bridge, and
  * /api/collaboration writes reviewer names, overrides and comments to runtime-data/.
@@ -14,6 +15,11 @@
  *   but the browser still sends that name as Host and Origin. Host and Origin must name
  *   localhost or 127.0.0.1 at the port the server listens on, so such a request answers
  *   403 too.
+ *
+ * The same rebinding lets a page read what a GET route returns, so the routes that
+ * return the inventory, the review workspace (reviewer names, overrides, comments) or
+ * other bridge output call rejectUnsafeLocalRead, which applies the Sec-Fetch-Site,
+ * Host and Origin checks without the body check.
  *
  * A client outside the browser, such as curl, sends no Origin or Sec-Fetch-Site and is
  * judged by Host and Content-Type alone.
@@ -42,6 +48,16 @@ export function rejectUnsafeLocalPost(request: Request): Response | null {
     );
   }
   return null;
+}
+
+/**
+ * Returns the 403 response for a GET the cockpit must not answer, or null to proceed.
+ *
+ * Call it first in every GET route that returns bridge output.
+ */
+export function rejectUnsafeLocalRead(request: Request): Response | null {
+  const reason = crossSiteReason(request, process.env.PORT || DEFAULT_PORT);
+  return reason ? Response.json({ error: `Forbidden: ${reason}` }, { status: 403 }) : null;
 }
 
 function crossSiteReason(request: Request, port: string): string | null {

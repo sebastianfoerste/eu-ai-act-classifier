@@ -220,9 +220,15 @@ def _role_questions(profile: SystemProfile, final_tier: RiskTier) -> list[str]:
         )
     gpai_role = Role.GPAI_PROVIDER in profile.roles
     if profile.is_gpai_model and not gpai_role:
+        # classify() lists no Chapter V item on a prohibited report.
+        listed = (
+            "The report lists no Chapter V item, as the system is prohibited. "
+            if final_tier is RiskTier.PROHIBITED
+            else "Any Chapter V item stays listed for review. "
+        )
         questions.append(
             "GPAI model: the profile describes a general-purpose AI model (is_gpai_model) but "
-            "does not hold the gpai_provider role. Any Chapter V item stays listed for review. "
+            f"does not hold the gpai_provider role. {listed}"
             "Confirm whether the organisation is the model's provider (roles)."
         )
     if gpai_role and not profile.is_gpai_model:
@@ -235,6 +241,10 @@ def _role_questions(profile: SystemProfile, final_tier: RiskTier) -> list[str]:
 
 
 def _fria_required(profile: SystemProfile) -> bool:
+    # Art. 27(1) AIA reaches "a high-risk AI system referred to in Article 6(2)":
+    # a system that is high-risk only through Annex I carries no FRIA.
+    if profile.annex_iii_area is None:
+        return False
     if profile.annex_iii_area in _FRIA_EXCLUDED_AREAS:
         return False
     if profile.annex_iii_area in _FRIA_AREAS:

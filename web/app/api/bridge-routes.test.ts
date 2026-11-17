@@ -170,6 +170,13 @@ describe.each([
   });
 });
 
+/** A GET as the cockpit page sends it; `headers` overrides single headers. */
+function cockpitGet(command: string, headers: Record<string, string> = {}): Request {
+  return new Request(`http://127.0.0.1:3000/api/${command}`, {
+    headers: { host: "127.0.0.1:3000", "sec-fetch-site": "same-origin", ...headers },
+  });
+}
+
 describe.each([
   ["inventory", inventoryGET],
   ["schema", schemaGET],
@@ -178,12 +185,28 @@ describe.each([
 ] as const)("GET /api/%s", (command, GET) => {
   beforeEach(() => {
     bridge.mockReset();
+    vi.stubEnv("PORT", "3000");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it.each<{ name: string; headers: Record<string, string> }>([
+    { name: "a DNS-rebound name", headers: { host: "attacker.example:3000" } },
+    { name: "another site", headers: { "sec-fetch-site": "cross-site" } },
+    { name: "a foreign Origin", headers: { origin: "http://attacker.example:3000" } },
+  ])("answers 403 to $name without running the bridge", async ({ headers }) => {
+    const response = await GET(cockpitGet(command, headers));
+
+    expect(response.status).toBe(403);
+    expect(bridge).not.toHaveBeenCalled();
   });
 
   it("returns what the Python bridge prints", async () => {
     bridge.mockResolvedValue({ ok: true });
 
-    const response = await GET();
+    const response = await GET(cockpitGet(command));
 
     expect(response.status).toBe(200);
     expect(bridge).toHaveBeenCalledWith(command);
@@ -193,7 +216,7 @@ describe.each([
   it.each(SERVER_FAILURES)("answers 500 for $failure, with a fixed message", async ({ error, body }) => {
     bridge.mockRejectedValue(error);
 
-    const response = await GET();
+    const response = await GET(cockpitGet(command));
 
     expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({ error: body });

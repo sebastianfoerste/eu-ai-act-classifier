@@ -10,7 +10,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from . import __version__
 from .inventory import AISystemInventory, build_example_inventory
@@ -35,6 +35,18 @@ class ReviewCellState(BaseModel):
     locked_by: str | None = None
     lock_expires_at: str | None = None
     comments: list[ReviewComment] = Field(default_factory=list)
+
+    @field_validator("lock_expires_at")
+    @classmethod
+    def _lock_time_is_iso(cls, value: str | None) -> str | None:
+        # A lock time that does not parse would make every later lock or review of
+        # the cell fail; reject it when a file is imported or loaded instead.
+        if value is not None:
+            try:
+                datetime.fromisoformat(value)
+            except ValueError:
+                raise ValueError("lock_expires_at must be an ISO 8601 date and time") from None
+        return value
 
 
 class CollaborationWorkspace(BaseModel):

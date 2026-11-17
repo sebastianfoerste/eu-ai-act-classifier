@@ -146,7 +146,9 @@ def test_sections_1_to_3_items_keep_the_deferred_date(
 
     articles = {item.article for item in deferred}
     assert articles <= DEFERRED_ARTICLES
-    assert {f"Art. {n} AIA" for n in (16, 17, 22, 23, 24, 25, 26, 27)} <= articles
+    assert {f"Art. {n} AIA" for n in (16, 17, 22, 23, 24, 25, 26)} <= articles
+    # Art. 27(1) AIA: the FRIA belongs to the Art. 6(2) route (an Annex III area) only.
+    assert ("Art. 27 AIA" in articles) is (facts.get("annex_iii_area") is not None)
     assert {item.application_date for item in deferred} == {deferred_date}
     assert all(item.application_date_note is None for item in deferred)
 
