@@ -55,6 +55,7 @@ uv run python scripts/build_coverage.py     # docs/coverage.md
 uv run eu-ai-act-classify examples/credit_scoring.json --json > examples/classification-packet.json
 uv run eu-ai-act-classify examples/credit_scoring.json > examples/classification-packet.md
 uv run python scripts/render_demo.py        # docs/demo.png, needs headless Chrome
+uv run python tests/test_golden_json.py     # tests/goldens/, one report per example
 ```
 
 `docs/cockpit.png` is a full-page capture of the production build, taken
@@ -64,7 +65,7 @@ its Status column and notes.
 
 ```bash
 cd web && npm ci && CLASSIFIER_REPO_ROOT=.. npx next build
-CLASSIFIER_REPO_ROOT=.. timeout 600 npx next start -p 3917 &
+CLASSIFIER_REPO_ROOT=.. timeout 600 npx next start -H 127.0.0.1 -p 3917 &
 SERVER=$!
 timeout 120 google-chrome --headless=new --no-sandbox --force-device-scale-factor=1 \
   --virtual-time-budget=20000 --window-size=1180,16000 --screenshot=../docs/cockpit.png http://127.0.0.1:3917/

@@ -28,6 +28,35 @@ facts. The engine applies the rules and makes uncertainty visible.
    (the Art. 4 AI literacy duty of every provider and deployer first), timeline
    and open legal questions.
 
+## Operator Roles
+
+`roles` lists the roles the organisation holds for the system, and every
+obligation and graph item names the role it applies to. A profile holds at
+least one role: the model and the published profile schema (`minItems: 1`)
+reject an empty list, which used to classify with no duty at all. A
+general-purpose AI model provider (`gpai_provider`) is not, as such, an
+operator of the AI system (see Application Dates), so that role counts only
+for the Chapter V items.
+
+Where the roles do not match the facts the profile screens, the engine keeps
+every item it lists and adds an open question, so the disposition becomes
+`requires_review`. It drops no item and does not pick a role for the
+organisation. The questions cover three cases:
+
+1. A high-risk tier where the profile holds no operator role for the system
+   (provider, deployer, importer, distributor or authorized_representative).
+2. `is_gpai_model` without the `gpai_provider` role. The Chapter V items the
+   report lists stay listed.
+3. The `gpai_provider` role without `is_gpai_model`. The report lists no
+   Chapter V item.
+
+An Art. 50 item for a role the profile does not hold raises no question:
+the catalog lists Art. 50(1) and (2) for the provider and Art. 50(3) and (4)
+for the deployer, whatever roles the profile holds.
+
+Outside the AI Act's scope no gate runs and no item is listed, so none of
+these questions is asked there.
+
 ## Source Statuses
 
 Binding Level 1 text drives classification and obligations. The current source
@@ -118,8 +147,8 @@ Art. 6(1), in particular not Art. 6(2), so a
 Section B product that also falls in an Annex III area would get only the
 listed provisions. The report keeps the Annex III obligations as the
 conservative reading, since the system is also classified high-risk under
-Art. 6(2) and Annex III. The Art. 6(1) finding and the Art. 2(2) graph item,
-which is `review_required`, state both after
+Art. 6(2) and Annex III. The Art. 6(1) finding, the Art. 2(2) graph item,
+which is `review_required`, and an open question state both after
 "Literal reading, confirm with counsel". Where an Art. 6(3) derogation is
 asserted, they add that only the Art. 2(2) provisions apply if it is
 established. As for every Section B product, Art. 5 and Art. 50 are kept and
@@ -129,8 +158,20 @@ Art. 2(2) lists neither Art. 5 nor Art. 50, so on its wording neither applies
 to a Section B product. The report keeps the prohibition and the Art. 50
 duties as the conservative reading for every Section B product, Annex III
 area or not, and flags both with "Literal reading, confirm with counsel": the
-Art. 5 finding and an open question, and the `TRANSPARENCY.50` finding and
-each Art. 50 graph item, which is `review_required`.
+Art. 5 finding and an open question, and the `TRANSPARENCY.50` finding, each
+Art. 50 graph item, which is `review_required`, and an open question.
+
+Each of these three Section B flags asks whether a whole set of duties
+reaches the product, so each is also an open question, and the disposition
+becomes `requires_review`. The question opens with the provisions it
+concerns ("Art. 2(2) AIA and Art. 6(2) AIA", "Art. 2(2) AIA and Art. 5 AIA"
+or "Art. 2(2) AIA and Art. 50 AIA") and repeats the flag. The report still
+picks no side: the duties stay listed. A Section B product with no Annex III
+area and no Art. 5 or Art. 50 screen carries none of these flags. Other
+counsel flags, such as the Art. 113 dating flags on the items of a plain
+Annex III report or the Art. 50 flag for a high-risk system already on the
+market, stay on their findings and items and do not by themselves change the
+disposition.
 
 Annex III systems are treated as high-risk unless an Art. 6(3) derogation is
 asserted. An asserted derogation keeps the tier high-risk and changes the
@@ -148,6 +189,10 @@ high-risk and records an unverified citation for review.
 
 ## FRIA Logic
 
+Art. 27(1) reaches only high-risk AI systems referred to in Art. 6(2), that is
+an Annex III area. A system that is high-risk only through Annex I gets no
+FRIA item and no deployer status question.
+
 Art. 27 is automatic for deployers of Annex III point 5(b) creditworthiness and
 point 5(c) life and health insurance.
 
@@ -162,8 +207,14 @@ engine raises a review question instead of asserting a FRIA conclusion.
 
 ## Obligation Graph
 
-The legacy obligation lists remain for compatibility. The richer
-`obligation_graph` is the product surface for review workflows.
+Every duty is written once, as an item of `obligation_graph`, the product
+surface for review workflows. `obligations` lists the same duties in the same
+order for compatibility: the article, actor and requirement of each graph
+item, with a title, apart from the Art. 50 items, which
+`transparency_obligations` lists. Three kinds of entry repeat a counsel flag
+in the requirement that the graph item carries in its date note: the Art. 4
+entry of a Section B product or a prohibited system, and the Art. 2(2) entry
+of a Section B product in an Annex III area.
 
 Each graph item records:
 

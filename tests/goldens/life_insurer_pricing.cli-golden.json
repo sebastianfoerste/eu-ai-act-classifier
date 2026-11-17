@@ -1,0 +1,42 @@
+{
+  "system": "Musterversicherung term-life pricing model",
+  "risk_tier": "high_risk",
+  "disposition": "determined",
+  "scope_status": "in_scope",
+  "finding_citations": [
+    "Annex III(5)(c) AIA"
+  ],
+  "obligation_articles": [
+    "Art. 4 AIA",
+    "Art. 4 AIA",
+    "Art. 9 AIA",
+    "Art. 10 AIA",
+    "Art. 11 AIA",
+    "Art. 12 AIA",
+    "Art. 13 AIA",
+    "Art. 14 AIA",
+    "Art. 15 AIA",
+    "Art. 16 AIA",
+    "Art. 17 AIA",
+    "Art. 18 AIA",
+    "Art. 19 AIA",
+    "Art. 20 AIA",
+    "Art. 21 AIA",
+    "Art. 43 AIA",
+    "Art. 43(2) AIA",
+    "Art. 47 AIA",
+    "Art. 48 AIA",
+    "Art. 49 AIA",
+    "Art. 72 AIA",
+    "Art. 73 AIA",
+    "Art. 26 AIA",
+    "Art. 27 AIA"
+  ],
+  "timeline_source_statuses": [
+    "binding_level_1"
+  ],
+  "source_manifest_statuses": [
+    "binding_level_1",
+    "nonbinding_guidance"
+  ]
+}

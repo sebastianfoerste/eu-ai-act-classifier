@@ -30,6 +30,9 @@ from .models import (
 )
 from .portfolio_workspace import build_example_portfolio_workspace
 
+# The whole stderr line for any failure other than invalid input (exit 1).
+INTERNAL_ERROR = "the classifier bridge failed"
+
 
 def schema_payload() -> dict[str, Any]:
     return {
@@ -104,6 +107,27 @@ def dossier_payload(payload: dict[str, Any]) -> dict[str, Any]:
     ).model_dump(mode="json", by_alias=True)
 
 
+def _print_error(message: str) -> None:
+    print(json.dumps({"error": message}), file=sys.stderr)
+
+
+def _validation_message(exc: ValidationError) -> str:
+    """Pydantic's summary of ``exc`` without the rejected values.
+
+    Pydantic's own message repeats each rejected value (``input_value=...``) and links
+    its documentation. This keeps the header, each field path and each reason only.
+    """
+
+    count = exc.error_count()
+    lines = [f"{count} validation error{'' if count == 1 else 's'} for {exc.title}"]
+    for error in exc.errors(include_url=False, include_context=False, include_input=False):
+        location = ".".join(str(part) for part in error["loc"])
+        if location:
+            lines.append(location)
+        lines.append(f"  {error['msg']}")
+    return "\n".join(lines)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="eu-ai-act-local-api")
     parser.add_argument(
@@ -142,11 +166,19 @@ def main(argv: list[str] | None = None) -> int:
             result = artifacts_payload(payload)
         else:
             result = dossier_payload(payload)
-    except (ValidationError, ValueError) as exc:
+    except ValidationError as exc:
         # Exit 2 with one JSON line on stderr: web/lib/bridge-error.ts reads this as invalid
-        # input (HTTP 400); any other failure of the bridge becomes HTTP 500.
-        print(json.dumps({"error": str(exc)}), file=sys.stderr)
+        # input (HTTP 400) and returns the message; any other exit becomes HTTP 500.
+        _print_error(_validation_message(exc))
         return 2
+    except ValueError as exc:
+        _print_error(str(exc))
+        return 2
+    except Exception:
+        # A traceback would carry absolute paths and the values being processed, and
+        # the cockpit used to pass stderr on to the HTTP client.
+        _print_error(INTERNAL_ERROR)
+        return 1
 
     print(json.dumps(result, indent=2))
     return 0

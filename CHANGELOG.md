@@ -5,6 +5,331 @@ pull requests.
 
 ## Unreleased
 
+### One source for the obligations list and the obligation graph
+
+#### Changed
+
+- `report.obligations` and `report.obligation_graph` came from two places,
+  `catalog.py` and `obligation_graph.py`, and listed different articles for
+  the same role. For a high-risk provider the list had Arts. 9 to 15 and no
+  Arts. 16, 18 to 21, 40 to 42, 43(2) or 44; the graph had the reverse. Only
+  the graph had Art. 49(2), Art. 49(5), Art. 56 and the Art. 111(2) items.
+  Every duty is now written once, as a graph item, and the list is the graph
+  without the Art. 50 items and five review tasks, in the same order
+  (`obligation_graph.listed_obligations`; titles in `catalog.DUTY_TITLES`).
+  The review tasks stay in the graph only (`GRAPH_ONLY_ITEMS`): Arts. 40,
+  41 and 42 grant presumptions of conformity, Art. 44 governs the
+  certificates notified bodies issue and Art. 56 addresses the AI Office and
+  the Board, so none of them is a provider duty.
+- The graph gains items for Arts. 9 to 15 (`high-risk.provider.9` to
+  `high-risk.provider.15`), with the list's wording, dated like the Art. 16
+  item by the Chapter III date of the route and `determined`. Their evidence
+  artifact names are new. A high-risk provider report for an Annex III
+  system now has 21 obligations and 24 graph items (15 and 17 before).
+- The list gains Arts. 16, 18 to 21, 43(2), 49(2), 49(5) and 111(2) wherever
+  the graph has them.
+- Where both had an article with different wording, the list takes the
+  graph's requirement: Arts. 17, 22 to 27, 43, 47, 48, 49, 53(1)(a) and
+  53(1)(c). The Art. 43 entry now carries the Art. 43(1) sentence for an
+  Annex III, point 1 system, as its graph item does.
+- Eight graph requirements are reworded to follow the Official Journal text
+  (both lists carry them): Art. 16 names Section 2 and the name and contact
+  address; Art. 17 and Art. 53(1)(c) say "Put in place"; Art. 18 lists what
+  Art. 18(1) keeps for 10 years, not the logs, which are Art. 19's; Art. 24
+  says "Before making the system available"; Art. 25 names the three
+  Art. 25(1) circumstances; Art. 26 says "assign human oversight to natural
+  persons"; Art. 53(1)(a) says "Draw up and keep up to date".
+- Unchanged over the 19 examples and a matrix of 7,776 further profiles
+  (roles, Annex III points, Annex I sections, dates and screens): tier,
+  disposition, findings, open questions, documentation items, transparency
+  obligations, unverified citations and every graph item but the eight
+  rewordings. No list entry is removed.
+- `tests/test_obligation_catalog.py` holds the two lists to each other. The
+  worked examples, the sample output, the sample dossier, the case study,
+  the goldens and `docs/demo.png` follow the new output.
+
+#### Upgrade notes
+
+- `report.obligations` changes shape: an Annex III provider report has 21
+  entries instead of 15, the new entries among them, and the requirement
+  strings of 13 existing entries change (the graph's wording, reworded for
+  Arts. 17, 24, 25, 26 and 53(1)(a) and (c)). Code that counts the entries, matches
+  their text or keys on the set of articles, such as an inventory export or
+  the cockpit's portfolio count, must be updated. For a conditional entry,
+  read its graph item for the trigger, `review_status` and the date note.
+
+### Inventory outside a clone
+
+#### Fixed
+
+- The example inventory (`eu-ai-act-local-api inventory`, the cockpit's
+  inventory and `build_example_inventory()`) reads `examples/` relative to
+  the working directory, and the installed package does not include it. From
+  any directory but a clone's root, it listed no systems, gave no warning and
+  reported `determined`. It now warns that the directory is missing, or that
+  it holds no valid system profile, says that the inventory therefore lists
+  no systems, and reports `review_required` with that warning as the next
+  action. Run from a clone's root, the inventory is unchanged.
+
+### Version stamp
+
+#### Added
+
+- `eu-ai-act-classify --version` prints `eu-ai-act-classifier` and the
+  installed version, then exits 0.
+- A report did not say which classifier version produced it. Every
+  `ClassificationReport` now carries `classifier_version`, the package
+  version that `--version` prints. The field reaches the `--json` output, the
+  MCP tool, the local API and the cockpit, the playground's JSON export and
+  the review dossier (`report.json` and `dossier.json`). The text report is
+  unchanged. The stamp names the version in `pyproject.toml`, which moves
+  only at a release: a build from `main` between releases, the Pages
+  playground included, carries the last release's number although its output
+  can differ from that release's.
+
+#### Changed
+
+- `schemas/classification-report.v1.schema.json` lists `classifier_version`
+  as a required string. A report written before this change has no such
+  field, so it no longer validates against the report schema.
+- `examples/classification-packet.json` carries the version as well, so a
+  version bump now also regenerates it with the command in
+  `docs/TESTING.md`.
+
+### Collaboration store and bridge errors
+
+#### Fixed
+
+- `save_workspace` wrote `runtime-data/collaboration-workspace.json` in
+  place, so a write that stopped partway left half a JSON document. It now
+  writes a temporary file in the same directory and renames it over the old
+  one, and a failed write leaves the previous file as it was. On POSIX
+  systems the file is now readable and writable by its owner only.
+- A stored workspace that was not valid JSON, or that was built for another
+  inventory (for example before an example was renamed), failed every
+  collaboration action, the page load included, until the file was deleted
+  by hand. The bridge now renames such a file to
+  `collaboration-workspace.unreadable-<UTC time>.json` or
+  `collaboration-workspace.stale-<UTC time>.json`, starts a new workspace and
+  records a `recovered` event that names the renamed file.
+- `review_cell` compared a lock time without a time zone with one that has
+  one and raised `TypeError`, for example after an import of a file with such
+  a lock. It now compares both in UTC, as `lock_cell` does, and answers
+  `409 Conflict` while another reviewer's lock runs.
+- `local_api` printed pydantic's message, which repeats each rejected value
+  and links pydantic's documentation, and a traceback for any other failure.
+  It now prints the number of errors, each field path and each reason, and
+  exits 1 with `{"error": "the classifier bridge failed"}` for any other
+  failure. An `expectedRevision` that is not a number and `answers` that are
+  not an object are now rejected as input instead of failing with a traceback.
+- The cockpit routes returned the bridge's whole stderr, or the text of a
+  JavaScript error, in the HTTP response. They now return local_api's message
+  for rejected input and a fixed text otherwise: `classifier bridge timed out`,
+  `classifier bridge failed` or `request body is not valid JSON`. The JSON
+  parser's message, which quoted the start of the request body, no longer
+  reaches the response.
+
+### Tests cover every example, `--strict` and the cockpit types
+
+#### Changed
+
+- `tests/test_golden_json.py` locks the classification summary of all 19
+  example profiles, not only `examples/credit_scoring.json`, and resolves its
+  paths from the repository root. `uv run python tests/test_golden_json.py`
+  rewrites the goldens after a reviewed rule change.
+- `tests/test_cli.py` checks the `--strict` exit codes: 1 for a prohibited
+  and for a `requires_review` report, 0 otherwise.
+- `tests/test_web_types.py` fails when a type in `web/lib/types.ts` no longer
+  matches the pydantic model it mirrors, field by field. It found four
+  profile fields and one report field missing there (`assessment_date`,
+  `annex_i_legislation`, `intimate_imagery`, `child_sexual_abuse_material`;
+  `scope_assessment.assessment_date`), which `web/lib/types.ts` now declares.
+- `tests/test_ci_workflow.py` also catches an inline `permissions:` value on a
+  job other than `deploy` and a condition on the npm audit step.
+- A test pins the effect text of the Art. 6(3) derogation finding for an
+  Annex I, Section B product in an Annex III area.
+
+### Docs and the cockpit health route say what the code does
+
+#### Fixed
+
+- The cockpit's `/api/health` answered `persistence: "local_in_memory"`, and
+  `PRIVACY.md`, `docs/surfaces.md`, `docs/DESIGN.md` and `docs/FEATURES.md`
+  described the cockpit's state as in-memory or local, while
+  `/api/collaboration` saves reviewer names, overrides and comments to
+  `runtime-data/collaboration-workspace.json`. The route now answers
+  `persistence: "local_file"` with that path as `store`, and the four docs
+  name the file.
+- `docs/coverage.md` said its minimal profiles name no roles. They hold the
+  default `provider` role.
+- `docs/reviewer-notes.md` read as if every Annex I, Section B report were
+  `requires_review`. It now says that a Section B product with no Annex III
+  area and no Art. 5 or Art. 50 screen carries none of the flags.
+- `docs/source-status-model.md` said `verify_sources.py` "checks the source
+  boundary". It now says what the check and `--update` do.
+- `DEPLOYMENT.md` and the Pages entry below said a branch-source Pages build
+  publishes before CI finishes. It publishes without waiting for CI and has
+  finished after it.
+
+### The FRIA follows Art. 27(1)
+
+#### Fixed
+
+- A deployer of a system that is high-risk only through Annex I (no Annex III
+  area) got the Art. 27 FRIA obligation and graph item when it is a body
+  governed by public law or a private entity providing public services.
+  Art. 27(1) AIA reaches only "a high-risk AI system referred to in Article
+  6(2)", and Regulation (EU) 2026/1744 amends only its paragraphs 4 and 5.
+  `engine._fria_required` and the intake's `FRIA_OPEN` condition now require
+  an Annex III area, so such a report lists no Art. 27 item and the guided
+  intake no longer asks the two deployer status questions there. A VERIFIED
+  ledger row quotes the provision. The bundled examples do not change.
+
+### Section B flags reach the review gate
+
+#### Fixed
+
+- A report for an Annex I, Section B product returned `determined` when it
+  also fell in an Annex III area, although Art. 2(2) AIA does not list
+  Art. 6(2) and the report keeps the Annex III duties only as the
+  conservative reading. The counsel flag sat in the finding detail and on
+  the graph item, which the dossier and the cockpit do not list as open
+  questions. `high_risk.evaluate` now adds the open question
+  "Art. 2(2) AIA and Art. 6(2) AIA", repeating the flag, as
+  `prohibited.evaluate` does for Art. 5 and `transparency.evaluate` for
+  Art. 50. Such a report is now `requires_review`. The duties stay listed. Other counsel flags, such as the Art. 113 dating flags on a
+  plain Annex III report and the Art. 50 flag for a high-risk system already
+  on the market, do not change the disposition: `examples/credit_scoring.json`
+  and a plain Annex III(5)(b) provider report stay `determined`.
+  `docs/methodology.md` ("High-Risk Logic") states the rule.
+
+### Cockpit sets every Art. 50 fact
+
+#### Fixed
+
+- The cockpit had toggles for the Art. 50(1) and Art. 50(4) facts only, so a
+  reviewer could not set `generates_synthetic_content` (Art. 50(2)) or
+  `deploys_emotion_or_biometric_categorisation` (Art. 50(3)). Both stayed at
+  `false` from the blank profile, and a system that generates synthetic
+  content classified in the cockpit without its Art. 50(2) duty. The
+  "GPAI And Transparency" group now has an on/off toggle for each, in
+  Art. 50 order. They send booleans only, as `SystemProfile` types both
+  fields as `bool`.
+- The cockpit had no control for `used_for_financial_fraud_detection`
+  (Annex III(5)(b) AIA). It now has a yes, no or unknown control.
+- The cockpit's yes, no or unknown controls (this one, `is_ai_system`,
+  `eu_nexus` and the deployer status) showed the chosen answer only by colour
+  and did not tie the buttons to their question. Each is now a group labelled
+  by its question, and each button sets `aria-pressed`, so a screen reader
+  announces the question and which answer is set.
+
+#### Added
+
+- `web/components/cockpit-controls.test.ts` fails when a key of
+  `SystemProfile` in `web/lib/types.ts` has no cockpit control and is not on
+  the test's hidden list, and when an Art. 50 fact is not set by an on/off
+  toggle. The hidden list names four fields with the reason for each:
+  `assessment_date`, `intimate_imagery`, `child_sexual_abuse_material` and
+  `annex_i_legislation`. The cockpit cannot set these facts.
+
+### npm advisories fail CI
+
+#### Changed
+
+- The `web` job in `.github/workflows/ci.yml` runs
+  `npm audit --omit=dev --audit-level=high` right after `npm ci`. A high or
+  critical advisory in a runtime dependency of `web/package-lock.json` now
+  fails CI before the cockpit's tests and build run. Moderate and low
+  advisories are still listed but do not fail the job. Dev dependencies are
+  left out: the cockpit ships none of them, and on 17 November 2026 a dev-only
+  advisory with no fixed release (picomatch 4.0.7 through vitest,
+  GHSA-fc5q-39xc-vjpf) would have failed every run. The runtime tree passes
+  with 0 vulnerabilities.
+  `tests/test_ci_workflow.py` checks the step and its place in the job.
+
+### Cockpit API routes reject cross-site requests
+
+#### Fixed
+
+- Any web page the reviewer had open could write to the local cockpit. A
+  cross-site POST with `Content-Type: text/plain` reached
+  `/api/collaboration`, stored a reviewer override and, as an import, emptied
+  the activity list. The four POST routes (`/api/classify`,
+  `/api/artifacts`, `/api/dossier`, `/api/collaboration`) now call one guard,
+  `web/lib/local-request-guard.ts`, before they read the body. It answers 415
+  unless the body is `application/json`, and 403 when `Sec-Fetch-Site` marks
+  a request from another origin or when `Host` or `Origin` names anything but
+  `localhost` or `127.0.0.1` at the server's port, which also stops DNS
+  rebinding.
+- A DNS-rebound page could still read what the GET routes return: the
+  review workspace with reviewer names, overrides and comments
+  (`/api/collaboration`), the inventory and the other bridge output. The
+  five GET routes that run the bridge (`/api/collaboration`,
+  `/api/workspace`, `/api/inventory`, `/api/schema`, `/api/sources`) now call
+  `rejectUnsafeLocalRead` from the same guard first, which applies the
+  `Sec-Fetch-Site`, `Host` and `Origin` checks and answers 403.
+  `/api/health` returns fixed text and stays open.
+- An import replaced the whole collaboration workspace, its activity list
+  included. It still replaces the review cells, but the activity list now
+  keeps every earlier entry, adds the file's entries it lacks and ends with
+  an `imported` event that names the actor and counts the added entries.
+
+#### Changed
+
+- `npm run dev` and `npm run start` in `web/` bind to `127.0.0.1`. Next.js
+  binds `0.0.0.0` by default, which put the cockpit on every network the
+  machine joined.
+
+### Operator roles reach the review gate
+
+#### Fixed
+
+- A profile whose roles did not match its facts returned `determined`: a
+  deployer with `is_gpai_model` got the Art. 53 items for the GPAI model
+  provider, and a high-risk profile holding only `gpai_provider` got no
+  duty at all. Each of these mismatches now adds an open question and the
+  result is `requires_review`: a high-risk tier with no operator role for
+  the system, `is_gpai_model` without the `gpai_provider` role, and the
+  `gpai_provider` role without `is_gpai_model`. The items stay listed.
+  An Art. 50 item for a role the profile does not hold raises no question:
+  the legal fixtures for Art. 5(1)(ba) and (bb) fix a deployer of a
+  generating system as `determined`. `docs/methodology.md`
+  ("Operator Roles") states the rule.
+
+#### Changed
+
+- `roles` must hold at least one role. `SystemProfile` rejects an empty list
+  and `schemas/system-profile.v1.schema.json` gives `minItems: 1`. An empty
+  list used to classify with no duty at all.
+
+#### Upgrade notes
+
+- A breaking input change: a saved profile, playground draft, share link,
+  MCP call or inventory file with `"roles": []` is now rejected. The CLI
+  exits 2, and the playground and the local API answer
+  `roles: List should have at least 1 item after validation, not 0`. The
+  example inventory skips such a file with a warning, so an inventory made
+  only of such files lists no systems. Name at least one role; the old
+  result, with no duty at all, matched no role.
+
+### Playground deploys after CI passes
+
+#### Changed
+
+- A `deploy` job in `.github/workflows/ci.yml` publishes `docs/`, the browser
+  playground, to GitHub Pages with `actions/upload-pages-artifact` 5.0.0 and
+  `actions/deploy-pages` 5.0.1, both pinned to a commit SHA. It runs only on
+  a push to `main` and only after the `test`, `lowest-direct`, `package` and
+  `web` jobs pass for that commit, so a pull request run or a failed check
+  publishes nothing. Until now Pages published `docs/` from the branch on
+  every push to `main` without waiting for CI. The job skips until the
+  repository variable `PAGES_SOURCE` is `actions`: the owner sets it when
+  switching the Pages source to GitHub Actions, as `DEPLOYMENT.md` describes.
+  Until then Pages keeps publishing from the branch. Like every other job, it has a
+  15-minute timeout and its checkout does not persist credentials.
+  `tests/test_ci_workflow.py` checks the job's trigger, dependencies,
+  permissions and pins, and the timeout and checkout of every job.
+
 ### Deployer status: "I don't know" goes to review
 
 #### Changed

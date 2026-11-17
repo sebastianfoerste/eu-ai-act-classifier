@@ -52,8 +52,12 @@ Art. 2(2) AIA lists neither Art. 5 nor Art. 50 for a Section B product. The
 report keeps both as the conservative reading, and a Section B product also in
 an Annex III area keeps the Annex III duties. Each kept position is flagged
 "Literal reading, confirm with counsel" for the reviewer to confirm: Art. 5 on
-its finding and an open question, Art. 50 on its finding and items, and the
-Annex III duties on the Art. 6(1) finding and the Art. 2(2) item.
+its finding, Art. 50 on its finding and items, and the Annex III duties on the
+Art. 6(1) finding and the Art. 2(2) item. Each flag is also an open question,
+so a report that carries one is never `determined`. A Section B product with no
+Annex III area and no Art. 5 or Art. 50 screen carries none of the three flags,
+and its report can stay `determined`. Answer each question by confirming
+whether the kept duties apply to the product.
 
 ### Annex III(5)(b) Financial-Fraud Exception
 
@@ -86,6 +90,9 @@ system's date for Art. 111(3) AIA, and its items go to review with an open
 question until the model's date is given.
 
 ### FRIA
+
+The FRIA belongs to the Art. 6(2) route: a system that is high-risk only
+through Annex I carries none (Art. 27(1)).
 
 Creditworthiness and life and health insurance deployer cases receive an
 automatic Art. 27 FRIA obligation.

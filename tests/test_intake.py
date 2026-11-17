@@ -545,6 +545,53 @@ def test_an_unknown_fraud_purpose_is_recorded_as_unknown() -> None:
     assert "the profile states" not in question
 
 
+# Art. 27(1) AIA: the deployer status questions belong to the Art. 6(2) route only.
+@pytest.mark.parametrize(
+    "question_id", ["deployer_public_law_body", "deployer_private_public_service"]
+)
+def test_fria_status_is_asked_on_the_annex_iii_route_only(question_id: str) -> None:
+    question = next(q for q in QUESTIONS if q["id"] == question_id)
+    annex_i = {
+        "name": "x",
+        "roles": ["deployer"],
+        "annex_i_safety_component": True,
+        "annex_i_third_party_assessment": True,
+    }
+    annex_iii_area = AnnexIII.ESSENTIAL_PUBLIC_BENEFITS.value
+
+    assert holds(question["show_if"], _normalised({**annex_i, "annex_iii_area": annex_iii_area}))
+    assert holds(
+        question["show_if"],
+        _normalised({"name": "x", "roles": ["deployer"], "annex_iii_area": annex_iii_area}),
+    )
+    assert not holds(question["show_if"], _normalised(annex_i))
+    assert not holds(question["show_if"], _normalised({**annex_i, "annex_i_section": "A"}))
+
+
+# AIA-07: the establishment and representative questions are expected to be asked for
+# a general-purpose AI model too, once the engine lists the Art. 54 AIA representative
+# duty. Blocked until Arts. 52(1), 53(2), 54(1) and 54(6) AIA are read on EUR-Lex;
+# remove the marker with the show_if change in intake.py and the engine change.
+@pytest.mark.xfail(
+    strict=True,
+    reason="AIA-07 is blocked on the EUR-Lex reading of Arts. 52(1), 53(2), 54(1) and 54(6) AIA",
+)
+@pytest.mark.parametrize(
+    "question_id", ["provider_established_outside_eu", "has_authorised_representative"]
+)
+def test_representative_questions_are_asked_for_a_gpai_model(question_id: str) -> None:
+    question = next(q for q in QUESTIONS if q["id"] == question_id)
+    gpai_model = {
+        "name": "x",
+        "roles": ["gpai_provider"],
+        "is_gpai_model": True,
+        "training_flops": 1e24,
+        "provider_established_outside_eu": True,
+    }
+
+    assert holds(question["show_if"], _normalised(gpai_model))
+
+
 def test_definition_is_json_and_defaults_match_the_model() -> None:
     definition = json.loads(json.dumps(intake_definition()))
     defaults = SystemProfile(name="x").model_dump(mode="json")

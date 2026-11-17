@@ -1,4 +1,10 @@
-"""Structured obligation graph for product and review workflows."""
+"""Structured obligation graph for product and review workflows.
+
+Every duty is written once, as a graph item. ``report.obligations`` lists the same duties
+(:func:`listed_obligations`): the article, actor and requirement of each item that is not
+an Art. 50 item, with the title :data:`.catalog.DUTY_TITLES` gives its article. The
+Art. 50 items come from ``report.transparency_obligations``.
+"""
 
 from __future__ import annotations
 
@@ -15,8 +21,11 @@ from .catalog import (
     ART_72_REQUIREMENT,
     ART_73_REQUIREMENT,
     ART_111_2,
+    DUTY_TITLES,
+    HIGH_RISK_SECTION_2_DUTIES,
     PROHIBITED_LITERACY_FLAG,
     ai_literacy_applies,
+    ai_literacy_listed_requirement,
     ai_literacy_roles,
     eu_database_registration_applies,
     national_registration_for_public_authority_deployer,
@@ -106,7 +115,7 @@ _GPAI_DATE_FALLBACK = (
 # Art. 2(2) AIA lists neither Art. 5 nor Art. 50 for a Section B product. The report keeps
 # the Art. 50 duties (and, in rules/prohibited.py, Art. 5) as the conservative reading.
 _SECTION_B_TRANSPARENCY_FLAG = section_b_kept_flag("Art. 50", "the Art. 50 duties")
-_SECTION_B_LITERACY_FLAG = section_b_kept_flag("Art. 4", "the Art. 4 duty")
+SECTION_B_LITERACY_FLAG = section_b_kept_flag("Art. 4", "the Art. 4 duty")
 _PROVIDER_OR_DEPLOYER = (Role.PROVIDER, Role.DEPLOYER)
 
 
@@ -144,8 +153,8 @@ def build_obligation_graph(
                     Role.DEPLOYER,
                     "Deployer of a high-risk AI system.",
                     (
-                        "Use the system per instructions, assign oversight, monitor operation "
-                        f"and keep logs.{art_26_8}"
+                        "Use the system per instructions, assign human oversight to natural "
+                        f"persons, monitor operation and keep logs.{art_26_8}"
                     ),
                     "Deployer operating procedure and monitoring log.",
                     application_date,
@@ -222,8 +231,8 @@ def build_obligation_graph(
                     Role.DISTRIBUTOR,
                     "Distributor of a high-risk AI system.",
                     (
-                        "Verify CE marking, EU declaration, instructions and provider/importer "
-                        "compliance signals."
+                        "Before making the system available, verify CE marking, EU "
+                        "declaration, instructions and provider/importer compliance signals."
                     ),
                     "Distributor pre-supply checklist.",
                     application_date,
@@ -259,7 +268,10 @@ def build_obligation_graph(
                         "Substantial modification or market placement under own name or "
                         "trademark is asserted."
                     ),
-                    "Assess whether provider responsibilities shift along the AI value chain.",
+                    (
+                        "Assess whether a name or trademark, a substantial modification or a "
+                        "changed intended purpose makes the operator a provider (Art. 25(1))."
+                    ),
                     "Value-chain responsibility assessment.",
                     application_date,
                     ReviewStatus.REVIEW_REQUIRED,
@@ -318,6 +330,40 @@ def build_obligation_graph(
     ]
 
 
+# Graph items that are review tasks, not duties, so ``report.obligations`` leaves them
+# out. Arts. 40(1), 41(3) and 42 grant a presumption of conformity; Art. 44 governs
+# the certificates notified bodies issue; Art. 56 addresses the AI Office and the Board
+# (the provider's duty to show compliance by other means is in Art. 53(4) and 55(2),
+# second subparagraphs, which the Chapter V items already cover).
+GRAPH_ONLY_ITEMS = frozenset(
+    {
+        "high-risk.provider.40",
+        "high-risk.provider.41",
+        "high-risk.provider.42",
+        "high-risk.provider.44",
+        "gpai.provider.56",
+    }
+)
+
+
+def listed_obligations(graph: list[ObligationGraphItem]) -> list[Obligation]:
+    """``report.obligations``: one entry per graph item, in the graph's order, apart from
+    the Art. 50 items, which ``report.transparency_obligations`` lists, and the review
+    tasks in ``GRAPH_ONLY_ITEMS``."""
+
+    return [
+        Obligation(
+            article=item.article,
+            title=DUTY_TITLES[item.article],
+            applies_to=item.actor,
+            requirement=item._listed_requirement or item.requirement,
+        )
+        for item in graph
+        if not item.obligation_id.startswith("transparency.")
+        and item.obligation_id not in GRAPH_ONLY_ITEMS
+    ]
+
+
 def _ai_literacy_items(profile: SystemProfile, final_tier: RiskTier) -> list[ObligationGraphItem]:
     """Art. 4 AIA, one item per provider or deployer role held, dated by Chapter I
     (Art. 113, third paragraph, point (a)). Art. 2(2) AIA does not list Art. 4 for a
@@ -325,13 +371,15 @@ def _ai_literacy_items(profile: SystemProfile, final_tier: RiskTier) -> list[Obl
     reaches Art. 50, and Art. 4 names no exception for a prohibited system: in each case
     the item is kept, flagged and sent to review."""
 
-    section_b_flag = _SECTION_B_LITERACY_FLAG if section_b_product(profile) else None
+    section_b_flag = SECTION_B_LITERACY_FLAG if section_b_product(profile) else None
     prohibited_flag = PROHIBITED_LITERACY_FLAG if final_tier is RiskTier.PROHIBITED else None
     legacy_flag = (
         legacy_transparency_flag(profile, "Art. 4") if final_tier is RiskTier.HIGH else None
     )
     parts = (section_b_flag, prohibited_flag, legacy_flag)
     note = " ".join(part for part in parts if part) or None
+    # The obligations entry repeats the two flags that say the duty is kept at all.
+    listed_flag = " ".join(part for part in (section_b_flag, prohibited_flag) if part)
     items = []
     for actor in ai_literacy_roles(profile.roles):
         item = _item(
@@ -351,6 +399,8 @@ def _ai_literacy_items(profile: SystemProfile, final_tier: RiskTier) -> list[Obl
         # As for Art. 50: on its wording Art. 111(2) AIA reaches Art. 4 for an unchanged
         # legacy system only after a significant change (applies_on).
         item._after_significant_change = legacy_flag is not None
+        if listed_flag:
+            item._listed_requirement = ai_literacy_listed_requirement(listed_flag)
         items.append(item)
     return items
 
@@ -359,12 +409,30 @@ def _high_risk_provider_graph(
     application_date: str, profile: SystemProfile
 ) -> list[ObligationGraphItem]:
     return [
+        # Arts. 9 to 21 are in Chapter III, Sections 2 and 3, which Art. 113, third
+        # paragraph, point (c) AIA defers: each takes the Chapter III date of its route.
+        *(
+            _item(
+                f"high-risk.provider.{article}",
+                f"Art. {article} AIA",
+                Role.PROVIDER,
+                "Provider of a high-risk AI system.",
+                requirement,
+                evidence_artifact,
+                application_date,
+            )
+            for article, requirement, evidence_artifact in HIGH_RISK_SECTION_2_DUTIES
+        ),
         _item(
             "high-risk.provider.16",
             "Art. 16 AIA",
             Role.PROVIDER,
             "Provider of a high-risk AI system.",
-            "Ensure the high-risk system complies with Chapter III requirements.",
+            (
+                "Ensure the system meets the Chapter III, Section 2 requirements, indicate "
+                "the provider's name and contact address on it, and meet the other Art. 16 "
+                "duties."
+            ),
             "Provider compliance responsibility matrix.",
             application_date,
         ),
@@ -373,7 +441,7 @@ def _high_risk_provider_graph(
             "Art. 17 AIA",
             Role.PROVIDER,
             "Provider of a high-risk AI system.",
-            "Maintain a quality management system.",
+            "Put in place a quality management system.",
             "Quality management system file.",
             application_date,
         ),
@@ -382,7 +450,12 @@ def _high_risk_provider_graph(
             "Art. 18 AIA",
             Role.PROVIDER,
             "Provider of a high-risk AI system.",
-            "Keep technical documentation, logs and conformity documentation.",
+            (
+                "Keep the technical documentation, the quality management system "
+                "documentation, the documents of notified bodies and the EU declaration of "
+                "conformity at the disposal of the national competent authorities for 10 "
+                "years after placing on the market or putting into service."
+            ),
             "Document retention register.",
             application_date,
         ),
@@ -757,7 +830,7 @@ def _section_b_items(profile: SystemProfile) -> list[ObligationGraphItem]:
     if annex_iii:
         note = f"{section_b_annex_iii_flag(derogation_asserted(profile))} {note}"
     requirement = section_b_requirement(annex_iii=annex_iii)
-    return [
+    items = [
         _item(
             "high-risk.section-b.2.2",
             ART_2_2,
@@ -771,6 +844,12 @@ def _section_b_items(profile: SystemProfile) -> list[ObligationGraphItem]:
         )
         for actor in operators(profile, (Role.PROVIDER,))
     ]
+    if annex_iii:
+        # The obligations entry repeats the flag that the Annex III duties are kept.
+        flag = section_b_annex_iii_flag(derogation_asserted(profile))
+        for item in items:
+            item._listed_requirement = section_b_requirement(annex_iii=True, flag=flag)
+    return items
 
 
 def _actor_slug(actor: Role) -> str:
@@ -811,7 +890,7 @@ def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphI
             "Art. 53(1)(a) AIA",
             Role.GPAI_PROVIDER,
             "Provider of a general-purpose AI model.",
-            "Keep model technical documentation per Annex XI.",
+            "Draw up and keep up to date model technical documentation per Annex XI.",
             "GPAI model documentation checklist.",
             application_date,
             status,
@@ -833,7 +912,7 @@ def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphI
             "Art. 53(1)(c) AIA",
             Role.GPAI_PROVIDER,
             "Provider of a general-purpose AI model.",
-            "Maintain a policy to comply with Union copyright law.",
+            "Put in place a policy to comply with Union copyright law.",
             "Copyright compliance policy.",
             application_date,
             ReviewStatus.REVIEW_REQUIRED,

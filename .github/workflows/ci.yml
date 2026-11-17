@@ -104,5 +104,35 @@ jobs:
       - run: uv sync --locked
         working-directory: .
       - run: npm ci
+      # Runtime dependencies only: the cockpit ships none of its dev tooling, and a dev
+      # advisory with no fixed release would otherwise turn every run red.
+      - run: npm audit --omit=dev --audit-level=high
       - run: npm test
       - run: npm run build
+
+  # Publishes the playground in docs/ to GitHub Pages, only from a push to main and only
+  # after every check job passes for that commit. Pull request runs skip it. It also
+  # skips until the repository variable PAGES_SOURCE is "actions": set it when the Pages
+  # source is switched to "GitHub Actions". With a branch source, deploy-pages cannot
+  # publish, and Pages already publishes from the branch without CI.
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PAGES_SOURCE == 'actions'
+    needs: [test, lowest-direct, package, web]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
