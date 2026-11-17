@@ -5,6 +5,14 @@ pull requests.
 
 ## Unreleased
 
+### Annex III question in two steps (D5)
+
+- The playground's guided intake asks for the Annex III area first, headed as
+  in Annex III, then lists only that area's points; an area with one point
+  (critical infrastructure) needs no second page. "I don't know" on either
+  page records `III.unsure`, as before. The stored answer and the profile are
+  unchanged.
+
 ### Deployer status: "I don't know" goes to review
 
 #### Changed

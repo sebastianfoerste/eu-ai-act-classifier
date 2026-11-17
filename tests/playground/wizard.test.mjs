@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { answersToProfile, profileToAnswers } from "../../docs/playground/intake.mjs";
+import { UNKNOWN, answersToProfile, profileToAnswers } from "../../docs/playground/intake.mjs";
 import { createWizard } from "../../docs/playground/wizard.mjs";
 
 class FakeElement {
@@ -82,4 +82,88 @@ test("ASCII whitespace around a number is ignored, and whitespace alone is not a
     assert.match(result.error, /Enter a number/, JSON.stringify(typed));
     assert.equal(result.missing, true, JSON.stringify(typed));
   }
+});
+
+// --- D5: the Annex III question in two steps ---------------------------------------
+
+const annex = definition.questions.find(q => q.id === "annex_iii_area");
+const radios = root => [...root.walk()].filter(e => e.tagName === "input" && e.type === "radio");
+
+function openAnnex() {
+  const root = new FakeElement("div");
+  const wizard = createWizard({ root, definition, canClassify: () => true, onClassify() {}, onEditJson() {}, onChange() {} });
+  wizard.review(profileToAnswers(definition, { name: "x", roles: ["provider"] }));
+  const row = root.find(element => element.className.startsWith("answer-row") && element.text.includes(annex.title));
+  row.find(element => element.tagName === "button").dispatch("click");
+  return { root, wizard };
+}
+
+function pick(root, value) {
+  const input = radios(root).find(r => r.value === value);
+  assert.ok(input, `no option ${value}`);
+  input.checked = true;
+  input.dispatch("change");
+}
+const submit = root => root.find(element => element.tagName === "form").dispatch("submit");
+const title = root => root.find(element => element.tagName === "h3").textContent;
+
+test("Annex III: the area page lists the eight areas, None and I don't know", () => {
+  const { root } = openAnnex();
+  assert.equal(title(root), annex.title);
+  assert.deepEqual(radios(root).map(r => r.value), [...annex.groups.map(g => g.value), "none", UNKNOWN]);
+});
+
+test("Annex III: the point page lists only the chosen area's points and stores the point", () => {
+  const { root, wizard } = openAnnex();
+  pick(root, "5");
+  submit(root);
+  assert.equal(title(root), annex.group_title);
+  assert.deepEqual(radios(root).map(r => r.value), ["III.5.a", "III.5.b", "III.5.c", "III.5.d", UNKNOWN]);
+  pick(root, "III.5.b");
+  submit(root);
+  assert.equal(wizard.answers.annex_iii_area, "III.5.b");
+  assert.equal(answersToProfile(definition, wizard.answers).profile.annex_iii_area, "III.5.b");
+  assert.notEqual(title(root), annex.group_title);
+});
+
+test("Annex III: an area with one point needs no second page", () => {
+  const { root, wizard } = openAnnex();
+  pick(root, "2");
+  submit(root);
+  assert.equal(wizard.answers.annex_iii_area, "III.2");
+  assert.notEqual(title(root), annex.group_title);
+});
+
+test("Annex III: I don't know on either page writes the unsettled point", () => {
+  for (const onPointPage of [false, true]) {
+    const { root, wizard } = openAnnex();
+    if (onPointPage) { pick(root, "6"); submit(root); }
+    pick(root, UNKNOWN);
+    submit(root);
+    assert.equal(wizard.answers.annex_iii_area, UNKNOWN);
+    assert.equal(answersToProfile(definition, wizard.answers).profile.annex_iii_area, "III.unsure");
+  }
+});
+
+test("Annex III: no area chosen and no point chosen are both refused", () => {
+  const first = openAnnex();
+  first.wizard.review({ ...first.wizard.answers, annex_iii_area: undefined });
+  const row = first.root.find(element => element.className.startsWith("answer-row") && element.text.includes(annex.title));
+  row.find(element => element.tagName === "button").dispatch("click");
+  submit(first.root);
+  assert.match(first.root.text, /Choose an area/);
+  const second = openAnnex();
+  pick(second.root, "1");
+  submit(second.root);
+  submit(second.root);
+  assert.match(second.root.text, /Choose the point/);
+});
+
+test("Annex III: Back on the point page returns to the area page with the area chosen", () => {
+  const { root } = openAnnex();
+  pick(root, "7");
+  submit(root);
+  root.find(element => element.tagName === "button" && element.textContent === "Back").dispatch("click");
+  assert.equal(title(root), annex.title);
+  assert.equal(radios(root).find(r => r.value === "7").checked, true);
 });

@@ -178,6 +178,38 @@ def _options(enum: type) -> list[dict[str, str]]:
     return [{"value": member.value, "label": option_label(member)} for member in enum]
 
 
+# The eight areas of Annex III, headed as in the Official Journal (Regulation (EU)
+# 2024/1689, Annex III, points 1 to 8; not amended by Regulation (EU) 2026/1744).
+# tests/test_intake.py checks each heading against the pinned text in sources/.
+ANNEX_III_AREAS: dict[str, str] = {
+    "1": "Biometrics, in so far as their use is permitted under relevant Union or national law",
+    "2": "Critical infrastructure",
+    "3": "Education and vocational training",
+    "4": "Employment, workers\u2019 management and access to self-employment",
+    "5": "Access to and enjoyment of essential private services and essential public services "
+    "and benefits",
+    "6": "Law enforcement, in so far as their use is permitted under relevant Union or national "
+    "law",
+    "7": "Migration, asylum and border control management, in so far as their use is permitted "
+    "under relevant Union or national law",
+    "8": "Administration of justice and democratic processes",
+}
+
+
+def _annex_iii_groups() -> list[dict[str, Any]]:
+    """The Annex III question in two steps (D5): the area, then its points.
+
+    Presentation only: the answer stays the point (``annex_iii_area``), so the area
+    never becomes a profile field and the interpreters read the question as one.
+    """
+
+    groups = []
+    for area, heading in ANNEX_III_AREAS.items():
+        points = [m.value for m in AnnexIII if m.value.split(".")[1:2] == [area]]
+        groups.append({"value": area, "label": f"Point {area}: {heading}", "options": points})
+    return groups
+
+
 QUESTIONS: list[dict[str, Any]] = [
     {
         "id": "system",
@@ -287,10 +319,12 @@ QUESTIONS: list[dict[str, Any]] = [
         "kind": "single",
         "field": "annex_iii_area",
         "title": "Is the system intended for a use listed in Annex III?",
-        "hint": "Choose the point that applies. If an area applies but not which point, choose "
-        "the unsettled option; it is treated as high-risk and routed to review.",
+        "hint": "Choose the area that applies, then the point. If an area applies but not "
+        "which point, answer I don't know; it is treated as high-risk and routed to review.",
         "article": "Art. 6(2) AIA",
         "options": _options(AnnexIII),
+        "groups": _annex_iii_groups(),
+        "group_title": "Which use in this area is the system intended for?",
         "none_label": "None of these",
         "show_if": IN_SCOPE,
         "unknown": {"value": AnnexIII.UNSURE.value},
