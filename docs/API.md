@@ -12,6 +12,20 @@ echo '{"profile":{"name":"CreditSightScore"}}' | eu-ai-act-local-api classify
 echo '{"profile":{"name":"CreditSightScore"}}' | eu-ai-act-local-api dossier
 ```
 
+## Errors
+
+`eu-ai-act-local-api` exits 2 with one JSON line, `{"error": "..."}`, on stderr
+when it rejects the input. For a payload that fails validation the message is
+the number of errors, each field path and each reason, without the rejected
+value. Any other failure exits 1 with `{"error": "the classifier bridge
+failed"}` and no traceback.
+
+The cockpit routes answer 400 with local_api's message for rejected input, 409
+for a stale revision or a lock held by another reviewer, and 400 with `request
+body is not valid JSON` for a body that does not parse. Any other failure
+answers 500 with `classifier bridge timed out` or `classifier bridge failed`.
+No response carries stderr, a traceback or the request body.
+
 ## Inventory
 
 `eu-ai-act-local-api inventory` and `GET /api/inventory` return

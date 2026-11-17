@@ -374,7 +374,8 @@ class SystemProfile(BaseModel):
 
     name: str
     description: str = ""
-    roles: list[Role] = Field(default_factory=lambda: [Role.PROVIDER])
+    # Duties attach per role, so a profile holds at least one.
+    roles: list[Role] = Field(default_factory=lambda: [Role.PROVIDER], min_length=1)
     purpose: str = ""
     sector: str = ""
 
@@ -644,6 +645,9 @@ class ObligationGraphItem(BaseModel):
     # after a significant change under Art. 111(2) AIA. applies_on_assessment_date reads them.
     _deferred_date: str | None = PrivateAttr(default=None)
     _after_significant_change: bool = PrivateAttr(default=False)
+    # The requirement of the report.obligations entry where it differs from this item's:
+    # the entry repeats a counsel flag that the item carries in application_date_note.
+    _listed_requirement: str | None = PrivateAttr(default=None)
 
 
 class AdvisoryNote(BaseModel):
@@ -661,6 +665,9 @@ class ClassificationReport(BaseModel):
 
     system: str
     regulation: str
+    classifier_version: str = Field(
+        description="The eu-ai-act-classifier version that produced this report."
+    )
     risk_tier: RiskTier
     disposition: Disposition
     scope: ScopeAssessment = Field(default_factory=ScopeAssessment)

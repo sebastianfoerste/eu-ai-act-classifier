@@ -8,6 +8,29 @@ export type Derogation = {
   performs_profiling: boolean;
 };
 
+/** Art. 5(1)(ba) with Art. 5(1a) and (1b) AIA: the element facts of the intimate-imagery screen. */
+export type IntimateImageryScreen = {
+  intended_purpose: NullableBoolean;
+  foreseeable_and_reproducible: NullableBoolean;
+  adequate_safeguards: NullableBoolean;
+  deployer_uses_for_that_purpose: NullableBoolean;
+  generates_material: NullableBoolean;
+  manipulates_material_increasing_exposure: NullableBoolean;
+  consent_ensured: NullableBoolean;
+};
+
+/** Art. 5(1)(bb) with Art. 5(1a) AIA: the element facts of the child sexual abuse material screen. */
+export type ChildSexualAbuseMaterialScreen = {
+  intended_purpose: NullableBoolean;
+  foreseeable_and_reproducible: NullableBoolean;
+  adequate_safeguards: NullableBoolean;
+  deployer_uses_for_that_purpose: NullableBoolean;
+  generates_or_manipulates: NullableBoolean;
+  without_right_defence_applies: NullableBoolean;
+};
+
+// The optional fields have no cockpit control (components/cockpit-controls.test.ts); the
+// classifier applies its defaults where the profile leaves them out.
 export type SystemProfile = {
   name: string;
   description: string;
@@ -18,6 +41,7 @@ export type SystemProfile = {
   intended_purpose_source: string;
   eu_nexus: NullableBoolean;
   excluded_use_flags: string[];
+  assessment_date?: string | null;
   placing_on_market_date: string | null;
   putting_into_service_date: string | null;
   significant_change_after_application_date: NullableBoolean;
@@ -34,8 +58,11 @@ export type SystemProfile = {
   gpai_systemic_risk_designated: boolean;
   gpai_model_placing_on_market_date: string | null;
   prohibited_practices: string[];
+  intimate_imagery?: IntimateImageryScreen | null;
+  child_sexual_abuse_material?: ChildSexualAbuseMaterialScreen | null;
   annex_i_safety_component: boolean;
   annex_i_third_party_assessment: boolean;
+  annex_i_legislation?: string | null;
   annex_i_section: string | null;
   annex_iii_area: string | null;
   used_for_financial_fraud_detection: NullableBoolean;
@@ -80,6 +107,7 @@ export type ScopeAssessment = {
   intended_purpose_source: string;
   eu_nexus: NullableBoolean;
   excluded_use_flags: string[];
+  assessment_date: string | null;
   transitional_status: string;
   notes: string[];
 };
@@ -131,6 +159,7 @@ export type TimelineItem = {
 export type ClassificationReport = {
   system: string;
   regulation: string;
+  classifier_version: string;
   risk_tier: string;
   disposition: string;
   scope: ScopeAssessment;

@@ -11,9 +11,8 @@ vi.mock("node:child_process", () => ({ spawn: vi.fn() }));
 const spawnMock = vi.mocked(spawn);
 
 // What local_api prints on stderr when it rejects a profile (exit 2).
-const VALIDATION_ERROR_LINE = JSON.stringify({
-  error: "1 validation error for SystemProfile\nroles\n  Input should be a valid list",
-});
+const VALIDATION_ERROR = "1 validation error for SystemProfile\nroles\n  Input should be a valid list";
+const VALIDATION_ERROR_LINE = JSON.stringify({ error: VALIDATION_ERROR });
 
 class FakeChild extends EventEmitter {
   stdout = new EventEmitter();
@@ -79,7 +78,11 @@ describe("classifier bridge exit handling", () => {
 
     child.exit(2, { stderr: `warning: VIRTUAL_ENV does not match\n${VALIDATION_ERROR_LINE}\n` });
 
-    expect(bridgeErrorStatus(await failure(result))).toBe(400);
+    const error = await failure(result);
+    expect(bridgeErrorStatus(error)).toBe(400);
+    // Only local_api's own message, not the rest of stderr.
+    expect(error.message).toBe(VALIDATION_ERROR);
+    expect(error.inputError).toBe(VALIDATION_ERROR);
   });
 
   it("does not mistake uv's own exit 2 for invalid input", async () => {
@@ -90,18 +93,31 @@ describe("classifier bridge exit handling", () => {
     const error = await failure(result);
     expect(error.exitCode).toBe(2);
     expect(error.invalidInput).toBe(false);
+    expect(error.inputError).toBeNull();
+    expect(error.message).toBe("classifier bridge exited with 2");
     expect(bridgeErrorStatus(error)).toBe(500);
   });
 
-  it("treats a crash as a server failure", async () => {
+  it("treats a crash as a server failure and keeps its stderr out of the error", async () => {
     const { child, result } = startBridge();
 
     child.exit(1, {
-      stderr: 'Traceback (most recent call last):\n  File "x.py"\nRuntimeError: boom\n',
+      stderr: 'Traceback (most recent call last):\n  File "/home/x/local_api.py"\nRuntimeError: boom\n',
     });
 
     const error = await failure(result);
     expect(error.exitCode).toBe(1);
+    expect(error.message).toBe("classifier bridge exited with 1");
+    expect(bridgeErrorStatus(error)).toBe(500);
+  });
+
+  it("does not read a JSON line from a crash as rejected input", async () => {
+    const { child, result } = startBridge();
+
+    child.exit(1, { stderr: '{"error": "the classifier bridge failed"}\n' });
+
+    const error = await failure(result);
+    expect(error.inputError).toBeNull();
     expect(bridgeErrorStatus(error)).toBe(500);
   });
 

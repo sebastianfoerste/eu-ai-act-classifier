@@ -34,10 +34,10 @@ obligations.
 
 `rules/` contains pure gate modules.
 
-`engine.py` aggregates gates, resolves tier, attaches obligations and builds the
-report.
+`engine.py` aggregates gates, resolves tier and builds the report.
 
-`obligation_graph.py` expands legal duties into review workflow items.
+`obligation_graph.py` writes each legal duty once, as a review workflow item,
+and derives the report's obligations list from those items.
 
 `artifacts.py` renders draft work products from the report.
 
@@ -80,7 +80,7 @@ Amended application dates are tied to Regulation (EU) 2026/1744 and displayed as
 
 Draft work products always include a review notice and source manifest.
 
-The web cockpit uses local in-memory state for v1.
+The web cockpit keeps no state of its own. The collaboration bridge saves the review workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root.
 
 ## Cockpit Source-of-Truth Boundary
 

@@ -6,23 +6,10 @@ from .advisory import build_advisory_notes
 from .catalog import (
     ANNEX_III,
     ART_50_2,
-    PROHIBITED_LITERACY_FLAG,
-    ai_literacy_applies,
-    ai_literacy_obligations,
     eu_database_registration_applies,
-    gpai_obligations,
-    high_risk_authorized_representative_obligations,
-    high_risk_deployer_obligations,
-    high_risk_distributor_obligations,
     high_risk_documentation,
-    high_risk_importer_obligations,
-    high_risk_provider_obligations,
-    high_risk_value_chain_obligations,
     public_authority_registration_applies,
     public_authority_users,
-    section_b_annex_iii_flag,
-    section_b_kept_flag,
-    section_b_obligations,
 )
 from .citations import (
     AMENDING_APPLICATION_DATES,
@@ -47,7 +34,7 @@ from .models import (
     SystemProfile,
     TimelineItem,
 )
-from .obligation_graph import build_obligation_graph
+from .obligation_graph import build_obligation_graph, listed_obligations
 from .rules import gpai, high_risk, prohibited, scope, transparency
 from .transitions import (
     ANNEX_X_CARVE_OUT,
@@ -55,7 +42,6 @@ from .transitions import (
     before,
     chapter_iii_date,
     cut_off_contested,
-    derogation_asserted,
     derogation_note,
     describe_dates,
     gpai_model_date,
@@ -63,19 +49,16 @@ from .transitions import (
     legacy_note_flag,
     legacy_transparency_flag,
     market_dates,
-    operators,
+    operator_roles,
     public_authority_sentence,
     public_authority_status_used,
     section_b_only,
-    section_b_product,
     start_date_open,
 )
 
 _FRIA_AREAS = {AnnexIII.CREDITWORTHINESS, AnnexIII.INSURANCE_LIFE_HEALTH}
 _FRIA_EXCLUDED_AREAS = {AnnexIII.CRITICAL_INFRASTRUCTURE}
-# Art. 2(2) AIA lists Art. 4 for no Section B product; the report keeps the duty, flagged,
-# as it keeps Art. 5 and Art. 50. The graph item carries the same flag.
-SECTION_B_LITERACY_FLAG = section_b_kept_flag("Art. 4", "the Art. 4 duty")
+_OPERATOR_ROLES = [role.value for role in Role if role is not Role.GPAI_PROVIDER]
 
 
 def classify(profile: SystemProfile, *, include_advisory: bool = False) -> ClassificationReport:
@@ -105,20 +88,13 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         else RiskTier.MINIMAL
     )
 
-    obligations: list[Obligation] = []
+    # The duties themselves are graph items (obligation_graph.py); this block keeps the
+    # documentation list and the open questions.
     documentation: list[Obligation] = []
     fria_required = False
 
-    if final_tier is RiskTier.HIGH and section_b_only(profile):
-        # Art. 2(2) AIA: none of the Chapter III duties below, only the listed provisions.
-        for role in operators(profile, (Role.PROVIDER,)):
-            obligations += section_b_obligations(role)
-    elif final_tier is RiskTier.HIGH:
+    if final_tier is RiskTier.HIGH and not section_b_only(profile):
         if profile.is_provider:
-            obligations += high_risk_provider_obligations(
-                eu_database_registration=eu_database_registration_applies(profile.annex_iii_area),
-                annex_iii_area=profile.annex_iii_area,
-            )
             documentation += high_risk_documentation()
         if profile.is_deployer:
             fria_required = _fria_required(profile)
@@ -127,12 +103,6 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
                 profile.deployer_public_authority,
                 profile.public_authority_use,
             )
-            obligations += high_risk_deployer_obligations(
-                fria_required=fria_required,
-                public_authority_registration=public_authority_registration,
-                annex_iii_area=profile.annex_iii_area,
-                deployer_public_authority=profile.deployer_public_authority,
-            )
             open_questions += _art_49_3_questions(profile, public_authority_registration)
             if _fria_needs_review(profile, fria_required):
                 open_questions.append(
@@ -140,12 +110,6 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
                     "where the deployer is a body governed by public law or a private "
                     "operator providing a public service. Confirm deployer status."
                 )
-        if profile.is_importer:
-            obligations += high_risk_importer_obligations()
-        if profile.is_distributor:
-            obligations += high_risk_distributor_obligations()
-        if profile.is_authorized_representative or profile.provider_established_outside_eu:
-            obligations += high_risk_authorized_representative_obligations()
         if (
             profile.provider_established_outside_eu
             and profile.has_authorised_representative is False
@@ -154,13 +118,6 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
                 "Art. 22 AIA: provider is established outside the EU and no authorised "
                 "representative is confirmed. Confirm representative arrangements."
             )
-        if profile.substantially_modifies_system or profile.puts_name_or_trademark_on_system:
-            obligations += high_risk_value_chain_obligations()
-        if section_b_product(profile):
-            # Also in an Annex III area: the Annex III duties above stay, flagged here.
-            flag = section_b_annex_iii_flag(derogation_asserted(profile))
-            for role in operators(profile, (Role.PROVIDER,)):
-                obligations += section_b_obligations(role, flag)
         open_questions += _art_111_2_questions(profile)
         if legacy_flag := legacy_transparency_flag(profile):
             # The Art. 50 graph items carry the same flag.
@@ -171,25 +128,27 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
                 for finding in findings
             ]
 
+    if scope_assessment.status is not ScopeStatus.OUTSIDE_SCOPE:
+        open_questions += _role_questions(profile, final_tier)
+
     if is_gpai and final_tier is not RiskTier.PROHIBITED:
-        obligations += gpai_obligations(systemic_risk=gpai_systemic)
         open_questions += _gpai_date_questions(profile)
 
     if final_tier is not RiskTier.PROHIBITED:
         open_questions += _art_111_4_questions(profile, transparency_obligations)
 
-    if ai_literacy_applies(final_tier):
-        # Art. 4 AIA (Chapter I) binds every provider and deployer of an AI system within
-        # the Regulation's scope, whatever the tier, so it heads the list. A Section B
-        # product and a prohibited system keep it, flagged.
-        flags = (
-            SECTION_B_LITERACY_FLAG if section_b_product(profile) else "",
-            PROHIBITED_LITERACY_FLAG if final_tier is RiskTier.PROHIBITED else "",
-        )
-        literacy_flag = " ".join(flag for flag in flags if flag)
-        obligations = ai_literacy_obligations(profile.roles, literacy_flag) + obligations
-
     disposition = Disposition.REQUIRES_REVIEW if open_questions else Disposition.DETERMINED
+
+    obligation_graph = build_obligation_graph(
+        profile=profile,
+        final_tier=final_tier,
+        is_gpai=is_gpai,
+        gpai_systemic=gpai_systemic,
+        fria_required=fria_required,
+        transparency_obligations=transparency_obligations,
+    )
+    # One source for both lists: every obligation is a graph item (Art. 4 AIA first).
+    obligations = listed_obligations(obligation_graph)
 
     unverified = sorted(
         {f.citation for f in findings if not f.citation_verified}
@@ -212,15 +171,6 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         for a in sorted(APPLICATION_DATES + AMENDING_APPLICATION_DATES, key=lambda d: d.date)
     ]
 
-    obligation_graph = build_obligation_graph(
-        profile=profile,
-        final_tier=final_tier,
-        is_gpai=is_gpai,
-        gpai_systemic=gpai_systemic,
-        fria_required=fria_required,
-        transparency_obligations=transparency_obligations,
-    )
-
     # The Art. 111(1) carve-out is stated in prose, not as a finding or an obligation, so
     # while its citation is unverified the engine lists it wherever the report states it.
     stated = [scope_assessment.transitional_status]
@@ -228,9 +178,14 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
     if not ART_111_1.verified and any(ANNEX_X_CARVE_OUT in text for text in stated):
         unverified = sorted({*unverified, ART_111_1.ref})
 
+    # Imported here because the package's __init__ imports this module before it sets
+    # __version__.
+    from . import __version__
+
     return ClassificationReport(
         system=profile.name,
         regulation=REGULATION,
+        classifier_version=__version__,
         risk_tier=final_tier,
         disposition=disposition,
         scope=scope_assessment,
@@ -250,7 +205,46 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
     )
 
 
+def _role_questions(profile: SystemProfile, final_tier: RiskTier) -> list[str]:
+    """Duties attach per role. Where the roles do not match the facts the profile screens,
+    the result goes to review instead of resolving silently; the items stay listed.
+    ``rules/transparency.py`` does the same for the Art. 50 items."""
+
+    questions = []
+    if final_tier is RiskTier.HIGH and not operator_roles(profile):
+        roles = f"{', '.join(_OPERATOR_ROLES[:-1])} or {_OPERATOR_ROLES[-1]}"
+        questions.append(
+            f"High-risk AI system: the profile holds no operator role for the system ({roles}), "
+            "and the high-risk duties attach per operator role. Confirm the roles the "
+            "organisation holds for this system (roles)."
+        )
+    gpai_role = Role.GPAI_PROVIDER in profile.roles
+    if profile.is_gpai_model and not gpai_role:
+        # classify() lists no Chapter V item on a prohibited report.
+        listed = (
+            "The report lists no Chapter V item, as the system is prohibited. "
+            if final_tier is RiskTier.PROHIBITED
+            else "Any Chapter V item stays listed for review. "
+        )
+        questions.append(
+            "GPAI model: the profile describes a general-purpose AI model (is_gpai_model) but "
+            f"does not hold the gpai_provider role. {listed}"
+            "Confirm whether the organisation is the model's provider (roles)."
+        )
+    if gpai_role and not profile.is_gpai_model:
+        questions.append(
+            "GPAI model: the profile holds the gpai_provider role but does not describe a "
+            "general-purpose AI model (is_gpai_model), so the report lists no Chapter V item. "
+            "Confirm is_gpai_model and the roles (roles)."
+        )
+    return questions
+
+
 def _fria_required(profile: SystemProfile) -> bool:
+    # Art. 27(1) AIA reaches "a high-risk AI system referred to in Article 6(2)":
+    # a system that is high-risk only through Annex I carries no FRIA.
+    if profile.annex_iii_area is None:
+        return False
     if profile.annex_iii_area in _FRIA_EXCLUDED_AREAS:
         return False
     if profile.annex_iii_area in _FRIA_AREAS:

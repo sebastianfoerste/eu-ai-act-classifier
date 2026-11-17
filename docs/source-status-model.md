@@ -11,7 +11,7 @@ The classifier records source status as part of the product contract. A reviewer
 ## Implementation Surfaces
 
 1. `src/eu_ai_act_classifier/citations.py` defines source metadata.
-2. `src/eu_ai_act_classifier/verify_sources.py` checks the source boundary.
+2. `src/eu_ai_act_classifier/verify_sources.py` checks that each official source URL answers with the page itself. With `--update` it moves the binding and advisory retrieval dates in `citations.py` to today, only in a source checkout and only after every URL was verified. It does not check what a source says or which status category it has.
 3. `src/eu_ai_act_classifier/report.py` renders source material into reports.
 4. `src/eu_ai_act_classifier/artifacts.py` carries source status into draft work products.
 

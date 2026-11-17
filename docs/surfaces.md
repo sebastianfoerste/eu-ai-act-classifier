@@ -7,7 +7,7 @@ Longer reference material moved out of the README. The CLI remains the authorita
 | Surface | Use it for | Details |
 |---|---|---|
 | Browser playground | Zero-install trial, nothing leaves the page | [playground](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/) |
-| CLI (`eu-ai-act-classify`) | Authoritative surface; `--json`, `--strict`, `--sources`, draft artifacts | [Local verification](#local-verification) |
+| CLI (`eu-ai-act-classify`) | Authoritative surface; `--json`, `--strict`, `--sources`, `--version`, draft artifacts | [Local verification](#local-verification) |
 | MCP server | Let an agent call the classifier | [docs/mcp-configuration-guide.md](mcp-configuration-guide.md) |
 | Local API and web cockpit | Local inventory, review and export workflow | [MCP and local API](#mcp-and-local-api), [Optional web cockpit](#optional-web-cockpit) |
 
@@ -65,7 +65,7 @@ Or let uv fetch and run it: `uvx --python 3.13 --from "eu-ai-act-classifier[mcp]
 
 Keep `mcp<2`: the server is built on the 1.x `mcp` SDK, and `mcp` 2.x renamed the API the server imports. The `[mcp]` extra pins `mcp<2` from 0.2.1; the 0.2.0 extra does not.
 
-The local JSON bridge is used by the optional web cockpit. Run it from the repository root, because `inventory` and `workspace` read the synthetic profiles in `examples/`:
+The local JSON bridge is used by the optional web cockpit. Run it from the repository root, because `inventory` and `workspace` read the synthetic profiles in `examples/`, which the installed package does not include. From any other directory, `inventory` lists no systems, gives `review_required` and says why in `warnings` and `nextAction`, and `workspace` is empty:
 
 ```bash
 eu-ai-act-local-api schema
@@ -82,7 +82,7 @@ The inventory payload includes a system review table with classifier-backed rows
 
 ## Optional web cockpit
 
-![Full-page screenshot of the web cockpit in its single-column layout with the CreditSightScore sample: the sample inventory, a guided intake, the review panel (requires_review, high risk, one Art. 111(2) open question), reviewer notes, the AI systems inventory and system review tables, the obligation tracker with 17 graph items (captured before the Art. 4 AI literacy item was added, the "Word package" tile was renamed "Draft package" and the print button was added; the cockpit now shows 18), source provenance and a draft export pack](cockpit.png)
+![Full-page screenshot of the web cockpit in its single-column layout with the CreditSightScore sample: the sample inventory, a guided intake, the review panel (requires_review, high risk, one Art. 111(2) open question), reviewer notes, the AI systems inventory and system review tables, the obligation tracker with 17 graph items (captured before the Art. 4 AI literacy item was added, the "Word package" tile was renamed "Draft package" and the print button was added; the cockpit now shows more items, among them the Arts. 9 to 15 items), source provenance and a draft export pack](cockpit.png)
 
 *Full-page capture of the local web cockpit (`web/`, production build, 1180 px wide) with its CreditSightScore sample loaded, reduced to 256 colours; the steps are in [TESTING.md](TESTING.md#generated-files). The cockpit's sample gives a placing-on-market date of 2026-10-01 and `examples/credit_scoring.json` gives none, so only the cockpit raises the Art. 111(2) question.*
 
@@ -96,7 +96,7 @@ npm install
 npm run dev
 ```
 
-The web app uses in-memory state for v1. It does not persist client, matter, candidate, account or privileged data.
+Only `/api/collaboration`, which the `/self-assessment` page uses, writes to disk. Each review action saves the workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root. The file is git-ignored and stays on the machine until you delete it. A stored file the bridge cannot read, or one built for a different set of examples, is renamed next to it with `unreadable` or `stale` and the time in its name, and a new workspace is started; those copies stay as well (see [COLLABORATION_PROGRAMME.md](COLLABORATION_PROGRAMME.md)). The other routes keep no state. Enter synthetic data only (see [PRIVACY.md](../PRIVACY.md)).
 
 Deployment notes for the playground and the cockpit are in [DEPLOYMENT.md](../DEPLOYMENT.md).
 

@@ -11,7 +11,7 @@ import {
   RefreshCw,
   ShieldCheck,
 } from "lucide-react";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useId, useMemo, useState } from "react";
 import { formatLabel, labelFor, type LabelNamespace } from "../lib/labels";
 import { printDocument } from "../lib/print";
 import { PrintableArtifact } from "./printable-artifact";
@@ -430,6 +430,11 @@ export function Cockpit() {
                   ))}
                 </select>
               </label>
+              <TriStateControl
+                label="Used to detect financial fraud (Annex III(5)(b))"
+                value={profile.used_for_financial_fraud_detection}
+                onChange={(value) => updateProfile("used_for_financial_fraud_detection", value)}
+              />
               <Toggle
                 label="Annex I safety component"
                 checked={profile.annex_i_safety_component}
@@ -492,6 +497,16 @@ export function Cockpit() {
                 label="Natural-person interaction"
                 checked={profile.interacts_with_natural_persons}
                 onChange={(checked) => updateProfile("interacts_with_natural_persons", checked)}
+              />
+              <Toggle
+                label="Synthetic content generation"
+                checked={profile.generates_synthetic_content}
+                onChange={(checked) => updateProfile("generates_synthetic_content", checked)}
+              />
+              <Toggle
+                label="Emotion recognition or biometric categorisation"
+                checked={profile.deploys_emotion_or_biometric_categorisation}
+                onChange={(checked) => updateProfile("deploys_emotion_or_biometric_categorisation", checked)}
               />
               <Toggle
                 label="Deepfake generation"
@@ -1172,12 +1187,16 @@ function TriStateControl({
     { label: "No", value: false },
     { label: "Review", value: null },
   ];
+  // The group carries the question; aria-pressed carries the answer set, which the
+  // "active" class shows only visually.
+  const labelId = useId();
   return (
-    <div className="triState">
-      <span>{label}</span>
+    <div className="triState" role="group" aria-labelledby={labelId}>
+      <span id={labelId}>{label}</span>
       <div>
         {options.map((option) => (
           <button
+            aria-pressed={value === option.value}
             className={value === option.value ? "active" : ""}
             key={option.label}
             type="button"
