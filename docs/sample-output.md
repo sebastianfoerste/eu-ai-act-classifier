@@ -41,7 +41,7 @@ Source manifest:
   ...
 ```
 
-A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons`, and 24 cited obligations, for example:
+A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK (Art. 6 AIA)`, the finding `Annex III(5)(b) AIA: High-risk: Creditworthiness evaluation and credit scoring of natural persons`, and 21 cited obligations, for example:
 
 ```text
 ...
@@ -53,9 +53,9 @@ A high-risk case (`examples/credit_scoring.json`) returns `Risk tier: HIGH-RISK 
 
 When a point is unsettled the disposition becomes `REQUIRES_REVIEW` (see `examples/ambiguous_use_case.json`) and the report says it needs lawyer review before reliance. The full committed sample is in [`examples/classification-packet.md`](../examples/classification-packet.md) and [`examples/classification-packet.json`](../examples/classification-packet.json).
 
-![Actual CLI output of eu-ai-act-classify examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with its 24 obligations, the obligation graph, the binding application timeline and the source manifest](demo.png)
+![Actual CLI output of eu-ai-act-classify examples/credit_scoring.json, rendered as an image: CreditSightScore classified HIGH-RISK, disposition DETERMINED, with its 21 obligations, the obligation graph, the binding application timeline and the source manifest](demo.png)
 
-*All 111 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
+*All 108 lines of `eu-ai-act-classify examples/credit_scoring.json`, hard-wrapped at 120 columns as a terminal of that width shows them, rendered as an image from the real output by [`scripts/render_demo.py`](../scripts/render_demo.py). The same output is committed as text in [`examples/classification-packet.md`](../examples/classification-packet.md).*
 
 This output, the worked examples and the playground reflect `main`, whose changes since the latest release are listed under Unreleased in [`CHANGELOG.md`](../CHANGELOG.md).
 
@@ -151,7 +151,7 @@ Disposition: REQUIRES_REVIEW
 
 Obligations:
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, ... Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
-  - Art. 26 AIA: Deployer obligations. Use the system per instructions, assign oversight, monitor operation and keep logs. Where the deployer is itself a public authority or Union institution, body, ...
+  - Art. 26 AIA: Deployer obligations. Use the system per instructions, assign human oversight to natural persons, monitor operation and keep logs. Where the deployer is itself a public authority or Union institution, body, ...
   - Art. 49(3) AIA: Registration of use by a public-authority deployer. Where the deployer is, or acts on behalf of, a public authority or Union institution, body, office or agency: register as deployer, select the system and register its use in the EU database before putting it into service or using it. Selecting the system presupposes that it is registered there, so do not use a system that is not.
   - Art. 111(2) AIA: System already placed on the market or put into service. Apart from Art. 5, the Regulation applies only if the design changes significantly as from 2027-12-02. Confirm whether it ...
 

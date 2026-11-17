@@ -13,10 +13,10 @@ The table below summarizes the classification status, risk tier, number of direc
 
 | Profile / Model ID | Risk Tier | Scope Status | Roles | Obligations | Next Compliance Deadline |
 | :--- | :--- | :--- | :--- | :---: | :--- |
-| **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 6 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-03-02, so Art. 111(3) AIA does not apply) |
-| **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 10 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2025-09-15, so Art. 111(3) AIA does not apply) |
-| **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 10 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-04-01, so Art. 111(3) AIA does not apply) |
-| **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 24 | 2026-08-02 (Arts. 40-43, 43(2), 47-49, 72 and 73; "Literal reading, confirm with counsel"; 2027-12-02 if they follow the Sections 1 to 3 deferral), then 2027-12-02 (Annex III, Chapter III Sections 1 to 3) |
+| **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 5 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-03-02, so Art. 111(3) AIA does not apply) |
+| **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 9 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2025-09-15, so Art. 111(3) AIA does not apply) |
+| **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 9 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-04-01, so Art. 111(3) AIA does not apply) |
+| **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 21 | 2026-08-02 (Arts. 40-43, 43(2), 47-49, 72 and 73; "Literal reading, confirm with counsel"; 2027-12-02 if they follow the Sections 1 to 3 deferral), then 2027-12-02 (Annex III, Chapter III Sections 1 to 3) |
 
 Each profile above also has the Art. 4 AI literacy item, dated 2025-02-02, the date from which Chapter I applies; the deadline column leaves it out.
 
@@ -43,11 +43,10 @@ Findings:
 
 Obligations:
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
-  - Art. 53(1)(a) AIA: Model technical documentation. Keep model technical documentation per Annex XI.
+  - Art. 53(1)(a) AIA: Model technical documentation. Draw up and keep up to date model technical documentation per Annex XI.
   - Art. 53(1)(b) AIA: Information to downstream providers. Provide downstream providers with information per Annex XII.
-  - Art. 53(1)(c) AIA: Copyright policy. Maintain a policy to comply with Union copyright law.
+  - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
-  - Art. 56 AIA: Code of Practice adherence. Track Code of Practice adherence or alternative means of compliance.
 
 Obligation graph:
   - literacy.provider.4: Art. 4 AIA (provider), evidence: AI literacy measures record: training plan, materials and participation by role., review: determined
@@ -109,11 +108,10 @@ Findings:
 
 Obligations:
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
-  - Art. 53(1)(a) AIA: Model technical documentation. Keep model technical documentation per Annex XI.
+  - Art. 53(1)(a) AIA: Model technical documentation. Draw up and keep up to date model technical documentation per Annex XI.
   - Art. 53(1)(b) AIA: Information to downstream providers. Provide downstream providers with information per Annex XII.
-  - Art. 53(1)(c) AIA: Copyright policy. Maintain a policy to comply with Union copyright law.
+  - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
-  - Art. 56 AIA: Code of Practice adherence. Track Code of Practice adherence or alternative means of compliance.
   - Art. 55(1)(a) AIA: Model evaluation. Perform model evaluation, including adversarial testing.
   - Art. 55(1)(b) AIA: Systemic-risk mitigation. Assess and mitigate systemic risks at Union level.
   - Art. 55(1)(c) AIA: Serious-incident tracking. Track, document and report serious incidents.
@@ -183,11 +181,10 @@ Findings:
 
 Obligations:
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
-  - Art. 53(1)(a) AIA: Model technical documentation. Keep model technical documentation per Annex XI.
+  - Art. 53(1)(a) AIA: Model technical documentation. Draw up and keep up to date model technical documentation per Annex XI.
   - Art. 53(1)(b) AIA: Information to downstream providers. Provide downstream providers with information per Annex XII.
-  - Art. 53(1)(c) AIA: Copyright policy. Maintain a policy to comply with Union copyright law.
+  - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
-  - Art. 56 AIA: Code of Practice adherence. Track Code of Practice adherence or alternative means of compliance.
   - Art. 55(1)(a) AIA: Model evaluation. Perform model evaluation, including adversarial testing.
   - Art. 55(1)(b) AIA: Systemic-risk mitigation. Assess and mitigate systemic risks at Union level.
   - Art. 55(1)(c) AIA: Serious-incident tracking. Track, document and report serious incidents.
@@ -263,15 +260,12 @@ Obligations:
   - Art. 13 AIA: Transparency to deployers. Provide instructions for use enabling deployers to comply.
   - Art. 14 AIA: Human oversight. Design the system for effective oversight by natural persons.
   - Art. 15 AIA: Accuracy, robustness, cybersecurity. Achieve appropriate accuracy, robustness and cybersecurity.
-  - Art. 16 AIA: Provider obligations. Ensure the high-risk system complies with Chapter III requirements.
-  - Art. 17 AIA: Quality management system. Maintain a quality management system.
-  - Art. 18 AIA: Document retention. Keep technical documentation, logs and conformity documentation.
+  - Art. 16 AIA: Provider obligations. Ensure the system meets the Chapter III, Section 2 requirements, indicate the provider's name and contact address on it, and meet the other Art. 16 duties.
+  - Art. 17 AIA: Quality management system. Put in place a quality management system.
+  - Art. 18 AIA: Document retention. Keep the technical documentation, the quality management system documentation, the documents of notified bodies and the EU declaration of conformity at the disposal of the national competent authorities for 10 years after placing on the market or putting into service.
   - Art. 19 AIA: Log retention. Keep automatically generated logs where under provider control.
   - Art. 20 AIA: Corrective action and notification. Take corrective action and inform relevant parties where required.
   - Art. 21 AIA: Authority cooperation. Cooperate with competent authorities and provide requested information.
-  - Art. 40 AIA: Harmonised standards. Track applicable harmonised standards and standardisation deliverables. Implementing Decision (EU) 2026/2274 (OJ L, 2026/2274, 14.10.2026) published the ...
-  - Art. 41 AIA: Common specifications. Assess common specifications where harmonised standards are unavailable or insufficient.
-  - Art. 42 AIA: Presumption of conformity. Map implemented controls to standards, specifications or alternative evidence.
   - Art. 43 AIA: Conformity assessment. Complete the applicable conformity assessment.
   - Art. 43(2) AIA: Conformity assessment based on internal control. Follow the conformity assessment procedure based on internal control (Annex VI), which does not involve a notified body.
   - Art. 47 AIA: EU declaration of conformity. Draw up and keep the EU declaration of conformity.

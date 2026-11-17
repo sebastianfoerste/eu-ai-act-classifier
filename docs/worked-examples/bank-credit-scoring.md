@@ -46,7 +46,7 @@ Findings:
 
 Obligations:
   - Art. 4 AIA: AI literacy. Take measures to support the development of AI literacy of staff and other persons dealing with the operation and use of the system on the operator's behalf, taking into account their technical knowledge, experience, education and training, the context the system is to be used in and the persons or groups of persons it is to be used on. No specific level of AI literacy of any individual has to be guaranteed. Wording: Art. 4(1) AIA as replaced by Art. 1, point (5) of Regulation (EU) 2026/1744, in force 27 July 2026.
-  - Art. 26 AIA: Deployer obligations. Use the system per instructions, assign oversight, monitor operation and keep logs.
+  - Art. 26 AIA: Deployer obligations. Use the system per instructions, assign human oversight to natural persons, monitor operation and keep logs.
   - Art. 27 AIA: Fundamental rights impact assessment. Perform and maintain a fundamental rights impact assessment before first use.
 
 Obligation graph:

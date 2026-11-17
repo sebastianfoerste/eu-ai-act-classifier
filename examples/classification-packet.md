@@ -22,15 +22,12 @@ Obligations:
   - Art. 13 AIA: Transparency to deployers. Provide instructions for use enabling deployers to comply.
   - Art. 14 AIA: Human oversight. Design the system for effective oversight by natural persons.
   - Art. 15 AIA: Accuracy, robustness, cybersecurity. Achieve appropriate accuracy, robustness and cybersecurity.
-  - Art. 16 AIA: Provider obligations. Ensure the high-risk system complies with Chapter III requirements.
-  - Art. 17 AIA: Quality management system. Maintain a quality management system.
-  - Art. 18 AIA: Document retention. Keep technical documentation, logs and conformity documentation.
+  - Art. 16 AIA: Provider obligations. Ensure the system meets the Chapter III, Section 2 requirements, indicate the provider's name and contact address on it, and meet the other Art. 16 duties.
+  - Art. 17 AIA: Quality management system. Put in place a quality management system.
+  - Art. 18 AIA: Document retention. Keep the technical documentation, the quality management system documentation, the documents of notified bodies and the EU declaration of conformity at the disposal of the national competent authorities for 10 years after placing on the market or putting into service.
   - Art. 19 AIA: Log retention. Keep automatically generated logs where under provider control.
   - Art. 20 AIA: Corrective action and notification. Take corrective action and inform relevant parties where required.
   - Art. 21 AIA: Authority cooperation. Cooperate with competent authorities and provide requested information.
-  - Art. 40 AIA: Harmonised standards. Track applicable harmonised standards and standardisation deliverables. Implementing Decision (EU) 2026/2274 (OJ L, 2026/2274, 14.10.2026) published the reference of EN 18286:2026 ("Quality management system for EU AI Act regulatory purposes"). Interpretation (S1): Art. 40(1) presumes conformity with the requirements in Chapter III, Section 2, and the quality management system is Art. 17, in Section 3; the Decision names no article, so whether the standard gives a presumption for Art. 17 is for review.
-  - Art. 41 AIA: Common specifications. Assess common specifications where harmonised standards are unavailable or insufficient.
-  - Art. 42 AIA: Presumption of conformity. Map implemented controls to standards, specifications or alternative evidence.
   - Art. 43 AIA: Conformity assessment. Complete the applicable conformity assessment.
   - Art. 43(2) AIA: Conformity assessment based on internal control. Follow the conformity assessment procedure based on internal control (Annex VI), which does not involve a notified body.
   - Art. 47 AIA: EU declaration of conformity. Draw up and keep the EU declaration of conformity.

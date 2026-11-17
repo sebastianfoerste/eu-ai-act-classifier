@@ -153,8 +153,8 @@ def build_obligation_graph(
                     Role.DEPLOYER,
                     "Deployer of a high-risk AI system.",
                     (
-                        "Use the system per instructions, assign oversight, monitor operation "
-                        f"and keep logs.{art_26_8}"
+                        "Use the system per instructions, assign human oversight to natural "
+                        f"persons, monitor operation and keep logs.{art_26_8}"
                     ),
                     "Deployer operating procedure and monitoring log.",
                     application_date,
@@ -231,8 +231,8 @@ def build_obligation_graph(
                     Role.DISTRIBUTOR,
                     "Distributor of a high-risk AI system.",
                     (
-                        "Verify CE marking, EU declaration, instructions and provider/importer "
-                        "compliance signals."
+                        "Before making the system available, verify CE marking, EU "
+                        "declaration, instructions and provider/importer compliance signals."
                     ),
                     "Distributor pre-supply checklist.",
                     application_date,
@@ -268,7 +268,10 @@ def build_obligation_graph(
                         "Substantial modification or market placement under own name or "
                         "trademark is asserted."
                     ),
-                    "Assess whether provider responsibilities shift along the AI value chain.",
+                    (
+                        "Assess whether a name or trademark, a substantial modification or a "
+                        "changed intended purpose makes the operator a provider (Art. 25(1))."
+                    ),
                     "Value-chain responsibility assessment.",
                     application_date,
                     ReviewStatus.REVIEW_REQUIRED,
@@ -327,9 +330,26 @@ def build_obligation_graph(
     ]
 
 
+# Graph items that are review tasks, not duties, so ``report.obligations`` leaves them
+# out. Arts. 40(1), 41(3) and 42 grant a presumption of conformity; Art. 44 governs
+# the certificates notified bodies issue; Art. 56 addresses the AI Office and the Board
+# (the provider's duty to show compliance by other means is in Art. 53(4) and 55(2),
+# second subparagraphs, which the Chapter V items already cover).
+GRAPH_ONLY_ITEMS = frozenset(
+    {
+        "high-risk.provider.40",
+        "high-risk.provider.41",
+        "high-risk.provider.42",
+        "high-risk.provider.44",
+        "gpai.provider.56",
+    }
+)
+
+
 def listed_obligations(graph: list[ObligationGraphItem]) -> list[Obligation]:
     """``report.obligations``: one entry per graph item, in the graph's order, apart from
-    the Art. 50 items, which ``report.transparency_obligations`` lists."""
+    the Art. 50 items, which ``report.transparency_obligations`` lists, and the review
+    tasks in ``GRAPH_ONLY_ITEMS``."""
 
     return [
         Obligation(
@@ -340,6 +360,7 @@ def listed_obligations(graph: list[ObligationGraphItem]) -> list[Obligation]:
         )
         for item in graph
         if not item.obligation_id.startswith("transparency.")
+        and item.obligation_id not in GRAPH_ONLY_ITEMS
     ]
 
 
@@ -407,7 +428,11 @@ def _high_risk_provider_graph(
             "Art. 16 AIA",
             Role.PROVIDER,
             "Provider of a high-risk AI system.",
-            "Ensure the high-risk system complies with Chapter III requirements.",
+            (
+                "Ensure the system meets the Chapter III, Section 2 requirements, indicate "
+                "the provider's name and contact address on it, and meet the other Art. 16 "
+                "duties."
+            ),
             "Provider compliance responsibility matrix.",
             application_date,
         ),
@@ -416,7 +441,7 @@ def _high_risk_provider_graph(
             "Art. 17 AIA",
             Role.PROVIDER,
             "Provider of a high-risk AI system.",
-            "Maintain a quality management system.",
+            "Put in place a quality management system.",
             "Quality management system file.",
             application_date,
         ),
@@ -425,7 +450,12 @@ def _high_risk_provider_graph(
             "Art. 18 AIA",
             Role.PROVIDER,
             "Provider of a high-risk AI system.",
-            "Keep technical documentation, logs and conformity documentation.",
+            (
+                "Keep the technical documentation, the quality management system "
+                "documentation, the documents of notified bodies and the EU declaration of "
+                "conformity at the disposal of the national competent authorities for 10 "
+                "years after placing on the market or putting into service."
+            ),
             "Document retention register.",
             application_date,
         ),
@@ -860,7 +890,7 @@ def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphI
             "Art. 53(1)(a) AIA",
             Role.GPAI_PROVIDER,
             "Provider of a general-purpose AI model.",
-            "Keep model technical documentation per Annex XI.",
+            "Draw up and keep up to date model technical documentation per Annex XI.",
             "GPAI model documentation checklist.",
             application_date,
             status,
@@ -882,7 +912,7 @@ def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphI
             "Art. 53(1)(c) AIA",
             Role.GPAI_PROVIDER,
             "Provider of a general-purpose AI model.",
-            "Maintain a policy to comply with Union copyright law.",
+            "Put in place a policy to comply with Union copyright law.",
             "Copyright compliance policy.",
             application_date,
             ReviewStatus.REVIEW_REQUIRED,

@@ -92,21 +92,21 @@
       "citation_verified": true,
       "title": "Provider obligations",
       "applies_to": "provider",
-      "requirement": "Ensure the high-risk system complies with Chapter III requirements."
+      "requirement": "Ensure the system meets the Chapter III, Section 2 requirements, indicate the provider's name and contact address on it, and meet the other Art. 16 duties."
     },
     {
       "article": "Art. 17 AIA",
       "citation_verified": true,
       "title": "Quality management system",
       "applies_to": "provider",
-      "requirement": "Maintain a quality management system."
+      "requirement": "Put in place a quality management system."
     },
     {
       "article": "Art. 18 AIA",
       "citation_verified": true,
       "title": "Document retention",
       "applies_to": "provider",
-      "requirement": "Keep technical documentation, logs and conformity documentation."
+      "requirement": "Keep the technical documentation, the quality management system documentation, the documents of notified bodies and the EU declaration of conformity at the disposal of the national competent authorities for 10 years after placing on the market or putting into service."
     },
     {
       "article": "Art. 19 AIA",
@@ -128,27 +128,6 @@
       "title": "Authority cooperation",
       "applies_to": "provider",
       "requirement": "Cooperate with competent authorities and provide requested information."
-    },
-    {
-      "article": "Art. 40 AIA",
-      "citation_verified": true,
-      "title": "Harmonised standards",
-      "applies_to": "provider",
-      "requirement": "Track applicable harmonised standards and standardisation deliverables. Implementing Decision (EU) 2026/2274 (OJ L, 2026/2274, 14.10.2026) published the reference of EN 18286:2026 (\"Quality management system for EU AI Act regulatory purposes\"). Interpretation (S1): Art. 40(1) presumes conformity with the requirements in Chapter III, Section 2, and the quality management system is Art. 17, in Section 3; the Decision names no article, so whether the standard gives a presumption for Art. 17 is for review."
-    },
-    {
-      "article": "Art. 41 AIA",
-      "citation_verified": true,
-      "title": "Common specifications",
-      "applies_to": "provider",
-      "requirement": "Assess common specifications where harmonised standards are unavailable or insufficient."
-    },
-    {
-      "article": "Art. 42 AIA",
-      "citation_verified": true,
-      "title": "Presumption of conformity",
-      "applies_to": "provider",
-      "requirement": "Map implemented controls to standards, specifications or alternative evidence."
     },
     {
       "article": "Art. 43 AIA",
@@ -356,7 +335,7 @@
       "article": "Art. 16 AIA",
       "actor": "provider",
       "trigger": "Provider of a high-risk AI system.",
-      "requirement": "Ensure the high-risk system complies with Chapter III requirements.",
+      "requirement": "Ensure the system meets the Chapter III, Section 2 requirements, indicate the provider's name and contact address on it, and meet the other Art. 16 duties.",
       "evidence_artifact": "Provider compliance responsibility matrix.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
@@ -370,7 +349,7 @@
       "article": "Art. 17 AIA",
       "actor": "provider",
       "trigger": "Provider of a high-risk AI system.",
-      "requirement": "Maintain a quality management system.",
+      "requirement": "Put in place a quality management system.",
       "evidence_artifact": "Quality management system file.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",
@@ -384,7 +363,7 @@
       "article": "Art. 18 AIA",
       "actor": "provider",
       "trigger": "Provider of a high-risk AI system.",
-      "requirement": "Keep technical documentation, logs and conformity documentation.",
+      "requirement": "Keep the technical documentation, the quality management system documentation, the documents of notified bodies and the EU declaration of conformity at the disposal of the national competent authorities for 10 years after placing on the market or putting into service.",
       "evidence_artifact": "Document retention register.",
       "source_status": "binding_level_1",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/2026-07-27/eng",

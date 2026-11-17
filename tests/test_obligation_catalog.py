@@ -15,6 +15,7 @@ import pytest
 
 from eu_ai_act_classifier import AnnexIII, Role, SystemProfile, classify
 from eu_ai_act_classifier.catalog import ART_2_2, ART_4, DUTY_TITLES
+from eu_ai_act_classifier.obligation_graph import GRAPH_ONLY_ITEMS
 
 EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
 FLAG = "Literal reading, confirm with counsel"
@@ -50,7 +51,7 @@ def _profiles() -> list[SystemProfile]:
     return profiles
 
 
-def test_the_obligations_list_is_the_graph_without_the_art_50_items() -> None:
+def test_the_obligations_list_is_the_graph_without_the_art_50_items_and_review_tasks() -> None:
     seen: set[str] = set()
     for profile in _profiles():
         report = classify(profile)
@@ -58,6 +59,7 @@ def test_the_obligations_list_is_the_graph_without_the_art_50_items() -> None:
             item
             for item in report.obligation_graph
             if not item.obligation_id.startswith("transparency.")
+            and item.obligation_id not in GRAPH_ONLY_ITEMS
         ]
         assert [(ob.applies_to, ob.article) for ob in report.obligations] == [
             (item.actor, item.article) for item in items
@@ -89,3 +91,32 @@ def test_a_high_risk_provider_gets_the_section_2_items_in_both_lists(article: in
     # Chapter III, Section 2: the point (c)(i) date for an Annex III system.
     assert item.application_date == "2027-12-02"
     assert name in {ob.article for ob in report.obligations}
+
+
+# Arts. 40(1), 41(3) and 42 grant presumptions of conformity, Art. 44 governs notified
+# bodies' certificates and Art. 56 addresses the AI Office and the Board: none puts a
+# duty on the provider (sources/oj/32024R1689.en.xhtml), so the list leaves them out.
+NOT_PROVIDER_DUTIES = {"Art. 40 AIA", "Art. 41 AIA", "Art. 42 AIA", "Art. 44 AIA", "Art. 56 AIA"}
+
+
+def test_review_tasks_without_a_provider_duty_stay_in_the_graph_only() -> None:
+    graph_articles: set[str] = set()
+    for profile in _profiles():
+        report = classify(profile)
+        assert not NOT_PROVIDER_DUTIES & {ob.article for ob in report.obligations}, profile
+        graph_articles |= {item.article for item in report.obligation_graph}
+    # The grid reaches every one of them, so the check above is not vacuous.
+    assert graph_articles >= NOT_PROVIDER_DUTIES
+
+
+def test_art_18_entry_names_what_art_18_1_requires_and_not_the_logs() -> None:
+    report = classify(
+        SystemProfile(name="x", roles=[Role.PROVIDER], annex_iii_area=AnnexIII.CREDITWORTHINESS)
+    )
+    (entry,) = [ob for ob in report.obligations if ob.article == "Art. 18 AIA"]
+    # Art. 18(1): ten years, at the disposal of the national competent authorities; the
+    # logs are Art. 19's.
+    assert "10 years" in entry.requirement
+    assert "national competent authorities" in entry.requirement
+    assert "EU declaration of conformity" in entry.requirement
+    assert "logs" not in entry.requirement
