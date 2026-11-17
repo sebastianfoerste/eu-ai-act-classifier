@@ -34,10 +34,10 @@ obligations.
 
 `rules/` contains pure gate modules.
 
-`engine.py` aggregates gates, resolves tier, attaches obligations and builds the
-report.
+`engine.py` aggregates gates, resolves tier and builds the report.
 
-`obligation_graph.py` expands legal duties into review workflow items.
+`obligation_graph.py` writes each legal duty once, as a review workflow item,
+and derives the report's obligations list from those items.
 
 `artifacts.py` renders draft work products from the report.
 

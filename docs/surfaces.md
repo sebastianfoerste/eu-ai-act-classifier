@@ -82,7 +82,7 @@ The inventory payload includes a system review table with classifier-backed rows
 
 ## Optional web cockpit
 
-![Full-page screenshot of the web cockpit in its single-column layout with the CreditSightScore sample: the sample inventory, a guided intake, the review panel (requires_review, high risk, one Art. 111(2) open question), reviewer notes, the AI systems inventory and system review tables, the obligation tracker with 17 graph items (captured before the Art. 4 AI literacy item was added, the "Word package" tile was renamed "Draft package" and the print button was added; the cockpit now shows 18), source provenance and a draft export pack](cockpit.png)
+![Full-page screenshot of the web cockpit in its single-column layout with the CreditSightScore sample: the sample inventory, a guided intake, the review panel (requires_review, high risk, one Art. 111(2) open question), reviewer notes, the AI systems inventory and system review tables, the obligation tracker with 17 graph items (captured before the Art. 4 AI literacy item was added, the "Word package" tile was renamed "Draft package" and the print button was added; the cockpit now shows more items, among them the Arts. 9 to 15 items), source provenance and a draft export pack](cockpit.png)
 
 *Full-page capture of the local web cockpit (`web/`, production build, 1180 px wide) with its CreditSightScore sample loaded, reduced to 256 colours; the steps are in [TESTING.md](TESTING.md#generated-files). The cockpit's sample gives a placing-on-market date of 2026-10-01 and `examples/credit_scoring.json` gives none, so only the cockpit raises the Art. 111(2) question.*
 

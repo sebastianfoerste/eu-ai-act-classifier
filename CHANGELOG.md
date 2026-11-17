@@ -5,6 +5,59 @@ pull requests.
 
 ## Unreleased
 
+### One source for the obligations list and the obligation graph
+
+#### Changed
+
+- `report.obligations` and `report.obligation_graph` came from two places,
+  `catalog.py` and `obligation_graph.py`, and listed different articles for
+  the same role. For a high-risk provider the list had Arts. 9 to 15 and no
+  Arts. 16, 18 to 21, 40 to 42, 43(2) or 44; the graph had the reverse. Only
+  the graph had Art. 49(2), Art. 49(5), Art. 56 and the Art. 111(2) items.
+  Every duty is now written once, as a graph item, and the list is the graph
+  without the Art. 50 items and five review tasks, in the same order
+  (`obligation_graph.listed_obligations`; titles in `catalog.DUTY_TITLES`).
+  The review tasks stay in the graph only (`GRAPH_ONLY_ITEMS`): Arts. 40,
+  41 and 42 grant presumptions of conformity, Art. 44 governs the
+  certificates notified bodies issue and Art. 56 addresses the AI Office and
+  the Board, so none of them is a provider duty.
+- The graph gains items for Arts. 9 to 15 (`high-risk.provider.9` to
+  `high-risk.provider.15`), with the list's wording, dated like the Art. 16
+  item by the Chapter III date of the route and `determined`. Their evidence
+  artifact names are new. A high-risk provider report for an Annex III
+  system now has 21 obligations and 24 graph items (15 and 17 before).
+- The list gains Arts. 16, 18 to 21, 43(2), 49(2), 49(5) and 111(2) wherever
+  the graph has them.
+- Where both had an article with different wording, the list takes the
+  graph's requirement: Arts. 17, 22 to 27, 43, 47, 48, 49, 53(1)(a) and
+  53(1)(c). The Art. 43 entry now carries the Art. 43(1) sentence for an
+  Annex III, point 1 system, as its graph item does.
+- Eight graph requirements are reworded to follow the Official Journal text
+  (both lists carry them): Art. 16 names Section 2 and the name and contact
+  address; Art. 17 and Art. 53(1)(c) say "Put in place"; Art. 18 lists what
+  Art. 18(1) keeps for 10 years, not the logs, which are Art. 19's; Art. 24
+  says "Before making the system available"; Art. 25 names the three
+  Art. 25(1) circumstances; Art. 26 says "assign human oversight to natural
+  persons"; Art. 53(1)(a) says "Draw up and keep up to date".
+- Unchanged over the 19 examples and a matrix of 7,776 further profiles
+  (roles, Annex III points, Annex I sections, dates and screens): tier,
+  disposition, findings, open questions, documentation items, transparency
+  obligations, unverified citations and every graph item but the eight
+  rewordings. No list entry is removed.
+- `tests/test_obligation_catalog.py` holds the two lists to each other. The
+  worked examples, the sample output, the sample dossier, the case study,
+  the goldens and `docs/demo.png` follow the new output.
+
+#### Upgrade notes
+
+- `report.obligations` changes shape: an Annex III provider report has 21
+  entries instead of 15, the new entries among them, and the requirement
+  strings of 13 existing entries change (the graph's wording, reworded for
+  Arts. 17, 24, 25, 26 and 53(1)(a) and (c)). Code that counts the entries, matches
+  their text or keys on the set of articles, such as an inventory export or
+  the cockpit's portfolio count, must be updated. For a conditional entry,
+  read its graph item for the trigger, `review_status` and the date note.
+
 ### Inventory outside a clone
 
 #### Fixed

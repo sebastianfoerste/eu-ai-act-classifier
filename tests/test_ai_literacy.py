@@ -24,8 +24,8 @@ from eu_ai_act_classifier import (
 from eu_ai_act_classifier.catalog import ART_4, PROHIBITED_LITERACY_FLAG
 from eu_ai_act_classifier.citations import POINT_A_DATE
 from eu_ai_act_classifier.cli import main
-from eu_ai_act_classifier.engine import SECTION_B_LITERACY_FLAG
 from eu_ai_act_classifier.models import ProhibitedPractice
+from eu_ai_act_classifier.obligation_graph import SECTION_B_LITERACY_FLAG
 from eu_ai_act_classifier.transitions import legacy_transparency_flag
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
