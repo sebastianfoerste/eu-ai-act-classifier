@@ -15,6 +15,7 @@ from enum import StrEnum
 
 from .artifacts import ARTIFACT_NAMES
 from .catalog import ANNEX_III, PROHIBITED
+from .evidence_tracker import EVIDENCE_STATES, LANES, STALE_REASONS
 from .models import (
     AnnexIII,
     AnnexILegislation,
@@ -155,6 +156,28 @@ ARTIFACT_LABELS: dict[str, str] = {
     "training-content-summary": "Training-content summary checklist",
 }
 
+# The cockpit's obligation tracker (ADR 0006): evidence states, lanes and the reasons a
+# saved record has gone stale.
+EVIDENCE_STATE_LABELS: dict[str, str] = {
+    "not_started": "Not started",
+    "in_progress": "In progress",
+    "evidence_attached": "Evidence attached",
+    "reviewed": "Reviewed",
+    "stale": "Stale",
+}
+
+EVIDENCE_LANE_LABELS: dict[str, str] = {
+    "applies_now": "Applies now",
+    "upcoming": "Upcoming",
+    "contested_or_open": "Contested or open",
+}
+
+EVIDENCE_STALE_REASON_LABELS: dict[str, str] = {
+    "report_changed": "Report changed since saved",
+    "item_changed": "This obligation changed since saved",
+    "reviewed_before_source_retrieval": "Reviewed before the source was retrieved",
+}
+
 
 def _short(ref: str) -> str:
     return ref.removesuffix(" AIA")
@@ -206,6 +229,13 @@ def label_catalog() -> dict:
         raise ValueError("DEROGATION_LABELS must cover every Derogation field")
     if set(ARTIFACT_LABELS) != ARTIFACT_NAMES:
         raise ValueError("ARTIFACT_LABELS must cover every artifact")
+    for labels, values, name in (
+        (EVIDENCE_STATE_LABELS, EVIDENCE_STATES, "EVIDENCE_STATE_LABELS"),
+        (EVIDENCE_LANE_LABELS, LANES, "EVIDENCE_LANE_LABELS"),
+        (EVIDENCE_STALE_REASON_LABELS, STALE_REASONS, "EVIDENCE_STALE_REASON_LABELS"),
+    ):
+        if tuple(labels) != values:
+            raise ValueError(f"{name} must cover every value, in order")
     return {
         "locale": LOCALE,
         "namespaces": {
@@ -222,5 +252,8 @@ def label_catalog() -> dict:
             "scope_status": _values(SCOPE_STATUS_LABELS),
             "derogation": dict(DEROGATION_LABELS),
             "artifacts": {name: ARTIFACT_LABELS[name] for name in sorted(ARTIFACT_LABELS)},
+            "evidence_state": dict(EVIDENCE_STATE_LABELS),
+            "evidence_lane": dict(EVIDENCE_LANE_LABELS),
+            "evidence_stale_reason": dict(EVIDENCE_STALE_REASON_LABELS),
         },
     }

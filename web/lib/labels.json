@@ -122,6 +122,23 @@
       "post-market-monitoring-plan": "Post-market monitoring plan",
       "serious-incident-register": "Serious-incident register",
       "training-content-summary": "Training-content summary checklist"
+    },
+    "evidence_state": {
+      "not_started": "Not started",
+      "in_progress": "In progress",
+      "evidence_attached": "Evidence attached",
+      "reviewed": "Reviewed",
+      "stale": "Stale"
+    },
+    "evidence_lane": {
+      "applies_now": "Applies now",
+      "upcoming": "Upcoming",
+      "contested_or_open": "Contested or open"
+    },
+    "evidence_stale_reason": {
+      "report_changed": "Report changed since saved",
+      "item_changed": "This obligation changed since saved",
+      "reviewed_before_source_retrieval": "Reviewed before the source was retrieved"
     }
   }
 }

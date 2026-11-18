@@ -101,6 +101,8 @@ Implementation:
 
 Provides a local Next.js reviewer surface over the Python bridge. It keeps the Python classifier as the source of truth. The collaboration bridge saves the review workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root.
 
+The Obligation Tracker shows each sample system's obligation graph in three lanes (applies now, upcoming, contested or open) with an evidence state, an owner and a reviewed-on date per item, saved to the same `runtime-data/collaboration-workspace.json`. A saved item turns stale when the report or the item changes, or when it was reviewed before its source was retrieved; the bridge works this out, not the browser. The tracker downloads as JSON with the draft notice first ([ADR 0006](adr/0006-evidence-model.md)).
+
 Implementation:
 
 1. `web/app`

@@ -9,8 +9,6 @@ import { baseProfile } from "../lib/samples";
  * reviewer cannot set that fact at all.
  */
 const HIDDEN_FIELDS: Record<string, string> = {
-  assessment_date:
-    "Left null: results that turn on a later application date stay open and go to review.",
   intimate_imagery:
     "The Art. 5(1)(ba) element facts are a nested screen; without them a generating system gets the engine's open question.",
   child_sexual_abuse_material:

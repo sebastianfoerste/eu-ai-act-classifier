@@ -87,6 +87,69 @@ describe("local collaboration workspace route", () => {
     });
   });
 
+  it("passes an evidence action to the bridge unchanged", async () => {
+    bridge.mockResolvedValue({ draftNotice: "Draft only.", lanes: [] });
+    const payload = {
+      action: "evidence",
+      systemId: "credit-provider",
+      profile: { name: "CreditSightScore" },
+      obligationId: "high-risk.provider.9",
+      obligationActor: "provider",
+      state: "in_progress",
+      owner: "Owner A",
+      reviewedOn: null,
+      expectedRevision: 0,
+      actor: "Local reviewer",
+    };
+
+    const response = await POST(post(payload));
+
+    expect(response.status).toBe(200);
+    expect(bridge).toHaveBeenCalledWith("collaboration", payload);
+  });
+
+  it("answers 409 when the bridge rejects a stale evidence revision", async () => {
+    const line = JSON.stringify({ error: "409 Conflict: stale evidence revision" });
+    bridge.mockRejectedValue(new ClassifierBridgeError(line, 2, `${line}\n`));
+
+    const response = await POST(post({ action: "evidence", expectedRevision: 0 }));
+
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual({ error: "409 Conflict: stale evidence revision" });
+  });
+
+  it("answers 400 when the bridge rejects stale as an input state", async () => {
+    const message = "stale is derived from the report and the source dates and cannot be set";
+    const line = JSON.stringify({ error: message });
+    bridge.mockRejectedValue(new ClassifierBridgeError(line, 2, `${line}\n`));
+
+    const response = await POST(post({ action: "evidence", state: "stale", expectedRevision: 1 }));
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({ error: message });
+  });
+
+  it("answers 403 to a cross-site evidence write without running the bridge", async () => {
+    const response = await POST(
+      post(
+        { action: "evidence", systemId: "credit-provider", state: "reviewed", expectedRevision: 0 },
+        { origin: "https://evil.example", "sec-fetch-site": "cross-site" },
+      ),
+    );
+
+    expect(response.status).toBe(403);
+    expect(bridge).not.toHaveBeenCalled();
+  });
+
+  it("answers 415 to a text/plain evidence write", async () => {
+    const response = await POST(
+      post({ action: "evidence", systemId: "credit-provider", expectedRevision: 0 }, { "content-type": "text/plain" }),
+    );
+
+    expect(response.status).toBe(415);
+    expect(bridge).not.toHaveBeenCalled();
+  });
+
   it("does not take a crash whose output mentions a conflict for a conflict", async () => {
     // A conflict is local_api rejecting the action. Any other error that happens to
     // contain the words is a server failure, and its text stays out of the response.

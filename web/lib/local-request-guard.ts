@@ -3,7 +3,8 @@
  * and for POST routes JSON bodies only.
  *
  * The cockpit is a local tool. Its POST routes run the Python bridge, and
- * /api/collaboration writes reviewer names, overrides and comments to runtime-data/.
+ * /api/collaboration writes reviewer names, overrides and comments, and the obligation
+ * tracker's evidence states, owners and reviewed-on dates, to runtime-data/.
  * Any web page the reviewer has open could otherwise post to them:
  *
  * - A cross-site form or fetch with a CORS-safelisted Content-Type (text/plain, a form
@@ -17,9 +18,10 @@
  *   403 too.
  *
  * The same rebinding lets a page read what a GET route returns, so the routes that
- * return the inventory, the review workspace (reviewer names, overrides, comments) or
- * other bridge output call rejectUnsafeLocalRead, which applies the Sec-Fetch-Site,
- * Host and Origin checks without the body check.
+ * return the inventory, the review workspace (reviewer names, overrides, comments,
+ * evidence states, owners and reviewed-on dates) or other bridge output call
+ * rejectUnsafeLocalRead, which applies the Sec-Fetch-Site, Host and Origin checks
+ * without the body check.
  *
  * A client outside the browser, such as curl, sends no Origin or Sec-Fetch-Site and is
  * judged by Host and Content-Type alone.

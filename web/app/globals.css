@@ -276,7 +276,7 @@ small {
   align-items: start;
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.65fr) minmax(320px, 0.9fr);
+  grid-template-columns: minmax(280px, 0.65fr) minmax(320px, 0.9fr);
   margin-top: 16px;
 }
 
@@ -289,6 +289,47 @@ small {
 
 .inventoryTrackerPanel {
   margin-top: 16px;
+}
+
+/* The obligation tracker (ADR 0006) runs the full width: nine columns with a select,
+   two inputs and a button per row. */
+.evidenceTrackerPanel {
+  margin-top: 16px;
+}
+
+.evidenceTrackerPanel .meta {
+  margin: 10px 0;
+}
+
+.laneSection + .laneSection {
+  margin-top: 16px;
+}
+
+.laneSection h3 {
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.evidenceControls select,
+.evidenceControls input {
+  min-width: 9rem;
+}
+
+.evidenceControls .statusPill {
+  margin-bottom: 6px;
+}
+
+.evidenceControls small + select {
+  margin-top: 6px;
+}
+
+.orphanedEvidence {
+  margin-top: 16px;
+}
+
+.orphanedEvidence summary {
+  cursor: pointer;
+  font-weight: 680;
 }
 
 .reviewTableHeader {

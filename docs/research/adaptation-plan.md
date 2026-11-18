@@ -107,13 +107,14 @@ Hypothesis tested: the only free, offline, deterministic classifier whose citati
 - **Acceptance.** No Tailwind class left; axe clean at 1280 and 375 px; no page overflow at 375 px; labelled inputs.
 - **Files.** `web/app/globals.css`, `web/app/workspace/page.tsx`, `web/app/self-assessment/*`. See [ADR 0004](../adr/0004-cockpit-styling-without-tailwind.md).
 
-### S4. Obligation evidence state (next)
+### S4. Obligation evidence state (built)
 
 - **Story.** As a governance lead I mark each obligation graph item with an evidence state, an owner and the date it was last reviewed, grouped in applies-now, upcoming and contested lanes.
 - **References.** OpenComplAI control states and TTL (pattern only, AGPL); ComplianceLint commit-bound evidence (pattern only, BSL); Stripe Tax status chips (Claimed).
-- **Different.** State lives in the cockpit's local workspace, keyed by `obligation_id`; the engine's `ObligationGraphItem` stays unchanged, so the binding result never depends on tracker state (rule 6). States: `not_started`, `in_progress`, `evidence_attached`, `reviewed`, `stale` (reviewed-on older than the source manifest's retrieval date). No LLM judges evidence.
+- **Different.** State lives in the cockpit's local workspace, keyed by cockpit system, `obligation_id` and actor; the engine's `ObligationGraphItem` stays unchanged, so the binding result never depends on tracker state (rule 6). States: `not_started`, `in_progress`, `evidence_attached`, `reviewed`, `stale` (reviewed-on older than the source manifest's retrieval date). No LLM judges evidence.
 - **Acceptance.** Lanes derive from `application_date` and `application_date_note`; a changed report marks affected items stale; export carries `DRAFT_NOTICE`.
-- **Files.** `web/components/cockpit.tsx`, `web/lib/types.ts`, `collaboration_workspace.py` (local persistence), tests. [ADR 0006](../adr/0006-evidence-model.md).
+- **Built.** The cockpit's Obligation Tracker shows one table per lane with each item's evidence state, owner and reviewed-on date, saved per row with a revision. The bridge derives the lanes, the report and item digests, the retrieval date and the stale reasons; the browser computes no date. The intake has an assessment-date control, which fills the applies-now lane. The tracker downloads as JSON with `draftNotice` first.
+- **Files.** `src/eu_ai_act_classifier/evidence_tracker.py`, `src/eu_ai_act_classifier/collaboration_workspace.py` (local persistence), `src/eu_ai_act_classifier/labels.py`, `web/lib/evidence.ts`, `web/components/obligation-tracker.tsx`, `web/components/cockpit.tsx`, `web/app/self-assessment/workspace-client.tsx`; tests in `tests/test_evidence_tracker.py`, `tests/test_collaboration_workspace.py`, `tests/test_local_api.py`, `web/lib/evidence.test.ts`, `web/components/obligation-tracker.test.tsx`. [ADR 0006](../adr/0006-evidence-model.md).
 
 ### S5. Annex III synthetic benchmark (next)
 

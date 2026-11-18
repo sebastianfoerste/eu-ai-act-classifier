@@ -10,10 +10,21 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from . import __version__
+from .artifacts import DRAFT_NOTICE
+from .engine import classify
+from .evidence_tracker import (
+    EvidenceRecord,
+    build_evidence_view,
+    check_system_id,
+    find_item,
+    item_digest,
+    report_digest,
+)
 from .inventory import AISystemInventory, build_example_inventory
+from .models import ClassificationReport, SystemProfile
 
 
 class ReviewComment(BaseModel):
@@ -54,8 +65,18 @@ class CollaborationWorkspace(BaseModel):
     schema_id: Literal["review.collaboration.v1"] = Field("review.collaboration.v1", alias="schema")
     inventory_digest: str
     cells: list[ReviewCellState]
+    # The obligation tracker's records (ADR 0006). Additive: a file saved before the
+    # tracker existed loads with none, under the same schema id.
+    evidence: list[EvidenceRecord] = Field(default_factory=list)
     activity: list[dict[str, str]] = Field(default_factory=list)
     external_action_allowed: bool = Field(False, alias="externalActionAllowed")
+
+    @model_validator(mode="after")
+    def _evidence_keys_are_unique(self) -> CollaborationWorkspace:
+        keys = [record.key() for record in self.evidence]
+        if len(keys) != len(set(keys)):
+            raise ValueError("duplicate evidence record")
+        return self
 
 
 class PolicyWorkflowDefinition(BaseModel):
@@ -123,7 +144,15 @@ def _inventory_digest(inventory: AISystemInventory) -> str:
 
 
 class StaleWorkspaceError(ValueError):
-    """A workspace built for another inventory than the current one."""
+    """A workspace built for another inventory than the current one.
+
+    ``workspace`` is the parsed file, so a recovery can carry over what does not depend
+    on the inventory (the evidence records).
+    """
+
+    def __init__(self, message: str, workspace: CollaborationWorkspace | None = None) -> None:
+        super().__init__(message)
+        self.workspace = workspace
 
 
 def _as_utc(moment: datetime) -> datetime:
@@ -328,7 +357,7 @@ def load_workspace(path: Path, inventory: AISystemInventory) -> CollaborationWor
     workspace = CollaborationWorkspace.model_validate_json(path.read_text(encoding="utf-8"))
     if workspace.inventory_digest != _inventory_digest(inventory):
         raise StaleWorkspaceError(
-            "workspace state is stale for the current deterministic inventory"
+            "workspace state is stale for the current deterministic inventory", workspace
         )
     return workspace
 
@@ -357,28 +386,37 @@ def _load_or_recover(
     ``<name>.stale-<UTC time>.json``. A new workspace whose activity starts with a
     "recovered" event naming that file is saved at once. A file the process cannot
     read at all (an OSError) is an operator problem and still fails.
+
+    A stale file's evidence records are carried into the new workspace, since their key
+    (cockpit system, obligation and actor) does not depend on the inventory; the
+    recovered event then counts them as "evidenceCarried". An unreadable file carries
+    nothing.
     """
 
     if not path.exists():
         return build_collaboration_state(inventory)
+    carried: list[EvidenceRecord] = []
     try:
         return load_workspace(path, inventory)
-    except StaleWorkspaceError:
+    except StaleWorkspaceError as stale:
         reason = "stale"
+        carried = list(stale.workspace.evidence) if stale.workspace is not None else []
     except ValueError:
         # Invalid JSON or not a workspace (a pydantic ValidationError), or not UTF-8.
         reason = "unreadable"
     archive = _archive_path(path, reason, now)
     path.replace(archive)
     workspace = build_collaboration_state(inventory)
-    workspace.activity.append(
-        {
-            "event": "recovered",
-            "reason": reason,
-            "archivedAs": archive.name,
-            "occurredAt": now.isoformat(),
-        }
-    )
+    workspace.evidence = carried
+    recovered = {
+        "event": "recovered",
+        "reason": reason,
+        "archivedAs": archive.name,
+        "occurredAt": now.isoformat(),
+    }
+    if carried:
+        recovered["evidenceCarried"] = str(len(carried))
+    workspace.activity.append(recovered)
     save_workspace(workspace, path)
     return workspace
 
@@ -391,7 +429,7 @@ def import_workspace(payload: str, inventory: AISystemInventory) -> Collaboratio
     workspace = CollaborationWorkspace.model_validate_json(payload)
     if workspace.inventory_digest != _inventory_digest(inventory):
         raise StaleWorkspaceError(
-            "workspace state is stale for the current deterministic inventory"
+            "workspace state is stale for the current deterministic inventory", workspace
         )
     return workspace
 
@@ -405,9 +443,11 @@ def _record_import(
 ) -> CollaborationWorkspace:
     """Take the imported cells and keep the activity trail.
 
-    The imported file replaces the review cells. The activity list only grows: the
-    entries already recorded stay, the file's entries the trail lacks follow them, and
-    an "imported" event closes the import and counts the entries it added.
+    The imported file replaces the review cells. It replaces the evidence records only
+    when it carries an ``evidence`` key; a file exported before the tracker existed
+    keeps the current records. The activity list only grows: the entries already
+    recorded stay, the file's entries the trail lacks follow them, and an "imported"
+    event closes the import and counts the entries it added.
     """
 
     added = [entry for entry in imported.activity if entry not in current.activity]
@@ -421,7 +461,8 @@ def _record_import(
             "importedEntries": str(len(added)),
         },
     ]
-    return imported.model_copy(update={"activity": activity})
+    evidence = imported.evidence if "evidence" in imported.model_fields_set else current.evidence
+    return imported.model_copy(update={"activity": activity, "evidence": evidence})
 
 
 def build_policy_workflows(
@@ -524,6 +565,7 @@ def build_collaboration_workspace(
     definitions, runs = build_policy_workflows(inventory)
     return {
         "schema": "eu-ai-act.collaboration-workspace.v1",
+        "draftNotice": DRAFT_NOTICE,
         "collaboration": (collaboration or build_collaboration_state(inventory)).model_dump(
             mode="json", by_alias=True
         ),
@@ -559,6 +601,99 @@ def _expected_revision(payload: dict[str, object]) -> int:
         raise ValueError("expectedRevision must be an integer") from None
 
 
+def set_evidence(
+    workspace: CollaborationWorkspace,
+    *,
+    system_id: str,
+    report: ClassificationReport,
+    obligation_id: str,
+    obligation_actor: str,
+    state: str,
+    owner: str | None,
+    reviewed_on: str | None,
+    actor: str,
+    expected_revision: int,
+    now: datetime,
+) -> CollaborationWorkspace:
+    """Record the evidence state of one obligation graph item of one cockpit system.
+
+    The record stores the digests of ``report`` and of the item, so a later change to
+    either marks it stale. ``now`` is the bridge's clock: a reviewed-on date after its
+    day is rejected.
+    """
+
+    check_system_id(system_id)
+    item = find_item(report, obligation_id, obligation_actor)
+    if item is None:
+        raise ValueError("unknown obligation graph item for this report")
+    if state == "stale":
+        raise ValueError("stale is derived from the report and the source dates and cannot be set")
+    updated = workspace.model_copy(deep=True)
+    key = (system_id, obligation_id, obligation_actor)
+    index = next((i for i, record in enumerate(updated.evidence) if record.key() == key), None)
+    current_revision = updated.evidence[index].revision if index is not None else 0
+    if current_revision != expected_revision:
+        raise ValueError("409 Conflict: stale evidence revision")
+    record = EvidenceRecord.model_validate(
+        {
+            "system_id": system_id,
+            "obligation_id": obligation_id,
+            "obligation_actor": obligation_actor,
+            "state": state,
+            "owner": (owner or "").strip() or None,
+            "reviewed_on": reviewed_on or None,
+            "report_digest": report_digest(report),
+            "item_digest": item_digest(item),
+            "revision": current_revision + 1,
+            "updated_by": actor,
+            "updated_at": now.isoformat(),
+        }
+    )
+    if record.reviewed_on is not None and record.reviewed_on > _as_utc(now).date().isoformat():
+        raise ValueError("reviewedOn must not be after the current date")
+    if index is None:
+        updated.evidence.append(record)
+    else:
+        updated.evidence[index] = record
+    updated.activity.append(
+        {
+            "event": "evidence_updated",
+            "targetId": f"evidence:{system_id}:{obligation_id}:{obligation_actor}",
+            "actor": actor,
+            "state": state,
+            "occurredAt": now.isoformat(),
+        }
+    )
+    return updated
+
+
+def _evidence_report(payload: dict[str, object]) -> ClassificationReport:
+    """The report for the profile the cockpit classified, without the advisory overlay."""
+
+    profile = payload.get("profile")
+    if not isinstance(profile, dict):
+        raise ValueError("profile must be a JSON object")
+    return classify(SystemProfile.model_validate(profile))
+
+
+def _evidence_view(
+    current: CollaborationWorkspace, system_id: str, report: ClassificationReport
+) -> dict[str, object]:
+    return build_evidence_view(
+        system_id=system_id,
+        report=report,
+        records=[record for record in current.evidence if record.system_id == system_id],
+        draft_notice=DRAFT_NOTICE,
+    )
+
+
+def _optional_text(payload: dict[str, object], key: str) -> str | None:
+    value = payload.get(key)
+    if value is not None and not isinstance(value, str):
+        raise ValueError(f"{key} must be text")
+    return value
+
+
 def apply_workspace_action(
     payload: dict[str, object], runtime_path: Path, *, now: datetime | None = None
 ) -> dict[str, object]:
@@ -568,6 +703,10 @@ def apply_workspace_action(
     workspace is checked against leaves that timestamp out, so actions at different
     times operate on the same workspace. A stored file that is unreadable or stale is
     set aside and a new workspace started (see ``_load_or_recover``).
+
+    "evidence_view" and "evidence" classify the payload's ``profile`` (the one the
+    cockpit shows) and return the obligation tracker for ``systemId`` instead of the
+    workspace snapshot; "evidence_view" saves nothing.
     """
 
     inventory = build_example_inventory(generated_at=_inventory_timestamp(now))
@@ -616,6 +755,27 @@ def apply_workspace_action(
             expected_revision=expected_revision,
             now=occurred_at,
         )
+    elif action == "evidence_view":
+        system_id = check_system_id(str(payload.get("systemId", "")))
+        return _evidence_view(current, system_id, _evidence_report(payload))
+    elif action == "evidence":
+        system_id = check_system_id(str(payload.get("systemId", "")))
+        report = _evidence_report(payload)
+        current = set_evidence(
+            current,
+            system_id=system_id,
+            report=report,
+            obligation_id=str(payload.get("obligationId", "")),
+            obligation_actor=str(payload.get("obligationActor", "")),
+            state=str(payload.get("state", "")),
+            owner=_optional_text(payload, "owner"),
+            reviewed_on=_optional_text(payload, "reviewedOn"),
+            actor=actor,
+            expected_revision=expected_revision,
+            now=occurred_at,
+        )
+        save_workspace(current, runtime_path)
+        return _evidence_view(current, system_id, report)
     elif action == "import":
         raw = payload.get("workspace")
         if raw is None:

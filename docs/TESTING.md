@@ -43,8 +43,47 @@ uv run eu-ai-act-classify examples/credit_scoring.json --artifact all --artifact
 
 ```bash
 cd web
+npm test
 npm run build
 ```
+
+## Obligation Tracker
+
+The tracker's rules are tested where they are computed, in Python:
+
+- `tests/test_evidence_tracker.py`: the report and item digests (pinned
+  algorithm, what they ignore and what changes them), the lane precedence over
+  every example and eight assessment dates, the retrieval date per item, the
+  stale reasons matrix, the view's shape and order, and record validation.
+- `tests/test_collaboration_workspace.py`: saving with revisions and conflicts,
+  rejected input leaving the file unchanged, the stale reasons after a profile
+  change, an assessment date that stales nothing, a pre-tracker file, evidence
+  carried through a stale-workspace recovery, and import with and without an
+  `evidence` key.
+- `tests/test_local_api.py`: the round trip, the 409 and a rejected `stale`
+  through the bridge's exit codes.
+
+On the web side, `web/lib/evidence.test.ts` covers the payloads, row names and
+export, and checks that `evidence.ts` and `obligation-tracker.tsx` contain no
+date logic; `web/components/obligation-tracker.test.tsx` renders the tracker
+(lanes, columns, accessible names, the stale row, the disabled state, orphaned
+records, the fallback table) and checks the cockpit wiring in its source; the
+collaboration route test covers the evidence actions' 200, 400, 403, 409 and
+415 answers.
+
+A change to `labels.py` or anything else under `src/` needs
+`uv run python scripts/build_playground.py`, which rewrites
+`web/lib/labels.json` and the playground wheel.
+
+Accessibility runs with axe-core from a scratch directory outside the
+repository (Playwright with `@axe-core/playwright`, or the browser extension),
+so no dependency is added: at 1280 and 375 px, each in light and dark, with the
+`wcag2a` and `wcag2aa` tags, on the tracker with a stale row, a saved row, the
+blank intake, an error message and the orphaned records open. Expect no
+violations. By hand: every control has a unique name, the lane headings appear
+in the heading outline, the state pills carry text, Tab reaches each scroll
+region and row control with a visible focus, the page does not scroll sideways
+at 375 px, and the date and state controls work from the keyboard.
 
 ## Generated Files
 

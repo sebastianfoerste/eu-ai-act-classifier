@@ -11,9 +11,20 @@ import {
   RefreshCw,
   ShieldCheck,
 } from "lucide-react";
-import { Fragment, useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  evidenceExport,
+  evidenceFilename,
+  evidencePayload,
+  evidenceViewPayload,
+  rowNames,
+  type EvidenceDraft,
+  type EvidenceView,
+  type EvidenceViewItem,
+} from "../lib/evidence";
 import { formatLabel, labelFor, type LabelNamespace } from "../lib/labels";
 import { printDocument } from "../lib/print";
+import { ObligationTracker, StatusPill } from "./obligation-tracker";
 import { PrintableArtifact } from "./printable-artifact";
 import { baseProfile, emptyDerogation, inventory } from "../lib/samples";
 import { ThemeToggle } from "./theme-toggle";
@@ -63,6 +74,14 @@ export function Cockpit() {
   const [error, setError] = useState("");
   const [reviewNote, setReviewNote] = useState("");
   const [reviewNotes, setReviewNotes] = useState<string[]>([]);
+  // The obligation tracker (ADR 0006): the bridge's view for the system on screen, and
+  // the cleaned profile that produced the report it describes.
+  const [evidenceView, setEvidenceView] = useState<EvidenceView | null>(null);
+  const [classifiedProfile, setClassifiedProfile] = useState<SystemProfile | null>(null);
+  const [evidenceBusy, setEvidenceBusy] = useState(false);
+  const [evidenceMessage, setEvidenceMessage] = useState("");
+  // Counts classification runs, so a slow tracker answer for an earlier run is dropped.
+  const latestRun = useRef(0);
 
   useEffect(() => {
     void loadMetadata();
@@ -135,10 +154,33 @@ export function Cockpit() {
     }
   }
 
-  async function runClassification(nextProfile = profile, advisory = includeAdvisory) {
+  // systemId is passed by selectInventoryItem: it sets selectedId in the same tick, and
+  // this closure would still read the previous system.
+  async function runClassification(nextProfile = profile, advisory = includeAdvisory, systemId = selectedId) {
     setStatus("Classifying");
     setError("");
-    const payload = { profile: cleanProfile(nextProfile), include_advisory: advisory };
+    setEvidenceView(null);
+    setEvidenceMessage("");
+    const clean = cleanProfile(nextProfile);
+    const run = ++latestRun.current;
+    const payload = { profile: clean, include_advisory: advisory };
+    if (systemId !== "new") {
+      // Runs alongside the dossier request; the bridge classifies the same profile.
+      void postJson<EvidenceView>("/api/collaboration", evidenceViewPayload(systemId, clean))
+        .then((view) => {
+          if (run === latestRun.current) {
+            setEvidenceView(view);
+            setClassifiedProfile(clean);
+          }
+        })
+        .catch((viewError: unknown) => {
+          if (run === latestRun.current) {
+            setEvidenceMessage(`The evidence tracker could not load: ${errorText(viewError)}`);
+          }
+        });
+    } else {
+      setClassifiedProfile(null);
+    }
     try {
       const dossierResult = await postJson<ReviewDossier>("/api/dossier", { ...payload, artifact: "all" });
       const artifactResult = artifactResponseFromDossier(dossierResult);
@@ -160,7 +202,7 @@ export function Cockpit() {
     setSelectedId(item.id);
     setProfile(cloned);
     setReviewNotes([]);
-    void runClassification(cloned);
+    void runClassification(cloned, includeAdvisory, item.id);
   }
 
   function updateProfile<K extends keyof SystemProfile>(key: K, value: SystemProfile[K]) {
@@ -204,6 +246,66 @@ export function Cockpit() {
     setArtifacts(null);
     setDossier(null);
     setReviewNotes([]);
+    latestRun.current += 1;
+    setEvidenceView(null);
+    setClassifiedProfile(null);
+    setEvidenceMessage("");
+  }
+
+  async function saveEvidence(item: EvidenceViewItem, draft: EvidenceDraft) {
+    if (!evidenceView || !classifiedProfile || evidenceBusy) {
+      return;
+    }
+    const systemId = evidenceView.systemId;
+    const profileOnScreen = classifiedProfile;
+    const name =
+      rowNames(
+        evidenceView.lanes.flatMap((lane) => lane.items),
+        (actor) => labelFor("roles", actor),
+      ).get(`${item.obligationId}|${item.actor}`) ?? item.article;
+    // A classification started while the save runs makes its answer out of date.
+    const run = latestRun.current;
+    setEvidenceBusy(true);
+    setEvidenceMessage("");
+    try {
+      // The profile that produced the report on screen, never the live intake, so the
+      // stored digest is the one for the rows the reviewer saw.
+      const view = await postJson<EvidenceView>("/api/collaboration", evidencePayload(systemId, profileOnScreen, item, draft));
+      if (run === latestRun.current) {
+        setEvidenceView(view);
+      }
+      setEvidenceMessage(`Saved evidence for ${name}.`);
+    } catch (saveError) {
+      const text = errorText(saveError);
+      if (text.startsWith("409 Conflict")) {
+        try {
+          const reloaded = await postJson<EvidenceView>("/api/collaboration", evidenceViewPayload(systemId, profileOnScreen));
+          if (run === latestRun.current) {
+            setEvidenceView(reloaded);
+          }
+        } catch {
+          // The message below still asks for the change again.
+        }
+        setEvidenceMessage("Another save reached this item first. The tracker was reloaded; enter your change again.");
+      } else {
+        setEvidenceMessage(text);
+      }
+    } finally {
+      setEvidenceBusy(false);
+    }
+  }
+
+  function downloadEvidence() {
+    if (!evidenceView) {
+      return;
+    }
+    const blob = new Blob([evidenceExport(evidenceView)], { type: "application/json;charset=utf-8" });
+    const href = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.download = evidenceFilename(evidenceView);
+    anchor.click();
+    URL.revokeObjectURL(href);
   }
 
   function downloadArtifact(artifact: ArtifactPreview | null) {
@@ -368,6 +470,11 @@ export function Cockpit() {
                 label="Put into service (YYYY-MM-DD)"
                 value={profile.putting_into_service_date ?? ""}
                 onChange={(value) => updateProfile("putting_into_service_date", value)}
+              />
+              <TextField
+                label="Assessment date (YYYY-MM-DD)"
+                value={profile.assessment_date ?? ""}
+                onChange={(value) => updateProfile("assessment_date", value)}
               />
               <MultiCheck
                 label="Excluded-use flags"
@@ -605,56 +712,16 @@ export function Cockpit() {
 
       {systemInventory ? <SystemInventoryPanel inventory={systemInventory} /> : null}
 
-      <div className="lowerGrid">
-        <section className="panel trackerPanel" aria-labelledby="tracker-heading">
-          <div className="panelHeader">
-            <div>
-              <h2 id="tracker-heading">Obligation Tracker</h2>
-              <p>{report?.obligation_graph.length ?? 0} graph items</p>
-            </div>
-            <FileText size={18} aria-hidden />
-          </div>
-          <div className="tableWrap" role="group" aria-labelledby="tracker-heading" tabIndex={0}>
-            <table>
-              <thead>
-                <tr>
-                  <th>Article</th>
-                  <th>Actor</th>
-                  <th>Evidence</th>
-                  <th>Due</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {report?.obligation_graph.length ? (
-                  report.obligation_graph.map((item) => (
-                    <Fragment key={item.obligation_id}>
-                      <tr>
-                        <td>{item.article}</td>
-                        <td>{labelFor("roles", item.actor)}</td>
-                        <td>{item.evidence_artifact}</td>
-                        <td>{item.application_date ?? "Open: see note"}</td>
-                        <td>{labelFor("review_status", item.review_status)}</td>
-                      </tr>
-                      {item.application_date_note ? (
-                        <tr>
-                          <td colSpan={5}>
-                            <small>{item.application_date_note}</small>
-                          </td>
-                        </tr>
-                      ) : null}
-                    </Fragment>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5}>No obligation graph available.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
+      <ObligationTracker
+        report={report}
+        view={evidenceView}
+        disabled={isClassifying || evidenceBusy || selectedId === "new"}
+        message={selectedId === "new" ? "The blank intake keeps no evidence. Pick an inventory system to track evidence." : evidenceMessage}
+        onSave={(item, draft) => void saveEvidence(item, draft)}
+        onExport={downloadEvidence}
+      />
 
+      <div className="lowerGrid">
         <section className="panel provenancePanel" aria-labelledby="provenance-heading">
           <div className="panelHeader">
             <div>
@@ -1246,10 +1313,6 @@ function MultiCheck({
   );
 }
 
-function StatusPill({ label, tone }: { label: string; tone: string }) {
-  return <span className={`statusPill ${tone}`}>{label}</span>;
-}
-
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url);
   return readJsonResponse<T>(response);
@@ -1281,6 +1344,7 @@ function cleanProfile(profile: SystemProfile): SystemProfile {
     placing_on_market_date: normalizeOptional(profile.placing_on_market_date),
     putting_into_service_date: normalizeOptional(profile.putting_into_service_date),
     gpai_model_placing_on_market_date: normalizeOptional(profile.gpai_model_placing_on_market_date),
+    assessment_date: normalizeOptional(profile.assessment_date ?? null),
     derogation: { ...profile.derogation },
   };
 }
@@ -1290,6 +1354,10 @@ function normalizeOptional(value: string | null): string | null {
     return null;
   }
   return value.trim();
+}
+
+function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function cloneProfile(profile: SystemProfile): SystemProfile {

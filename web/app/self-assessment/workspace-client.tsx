@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { FALLBACK_DRAFT_NOTICE } from "../../lib/print";
 
 type Cell = {
   target_id: string;
@@ -11,7 +12,8 @@ type Cell = {
 };
 
 export type Workspace = {
-  collaboration: { cells: Cell[]; activity: Array<Record<string, string>> };
+  draftNotice?: string;
+  collaboration: { cells: Cell[]; evidence?: unknown[]; activity: Array<Record<string, string>> };
   workflowDefinitions: Array<{ id: string; name: string; version: number; steps: string[] }>;
   workflowRuns: Array<{ id: string; status: string; definition_snapshot: Record<string, unknown> }>;
   selfAssessmentPortal: {
@@ -22,6 +24,14 @@ export type Workspace = {
     exportAllowed: boolean;
   };
 };
+
+/**
+ * The exported file: the draft notice first, then the collaboration workspace (review
+ * cells, obligation evidence and activity). An import ignores the notice.
+ */
+export function workspaceExportPayload(w: Workspace) {
+  return { draftNotice: w.draftNotice || FALLBACK_DRAFT_NOTICE, ...w.collaboration };
+}
 
 async function mutate(payload: Record<string, unknown>): Promise<Workspace> {
   const response = await fetch("/api/collaboration", {
@@ -59,7 +69,7 @@ export function WorkspaceClient({ initial }: { initial: Workspace }) {
   }
 
   function exportWorkspace() {
-    const blob = new Blob([JSON.stringify(workspace.collaboration, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(workspaceExportPayload(workspace), null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
