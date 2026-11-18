@@ -447,7 +447,10 @@ def test_local_api_evidence_rejects_stale_with_exit_2_and_no_traceback(
         monkeypatch, capsys, "collaboration", _evidence_payload(state="reviewed")
     )
     assert code == 2
-    assert "a reviewed item needs a reviewed-on date" in error
+    # A plain sentence that names the row, not pydantic's validation summary.
+    assert error.endswith("a reviewed item needs a reviewed-on date; enter the date of review")
+    assert error.startswith("Art. ")
+    assert "validation error" not in error
     assert "Traceback" not in error
 
 

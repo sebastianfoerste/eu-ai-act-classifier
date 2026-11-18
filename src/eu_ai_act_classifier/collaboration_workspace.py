@@ -628,6 +628,12 @@ def set_evidence(
         raise ValueError("unknown obligation graph item for this report")
     if state == "stale":
         raise ValueError("stale is derived from the report and the source dates and cannot be set")
+    if state == "reviewed" and not reviewed_on:
+        # Checked here too, so the message reaches the cockpit as a sentence, not as
+        # pydantic's validation summary.
+        raise ValueError(
+            f"{item.article}: a reviewed item needs a reviewed-on date; enter the date of review"
+        )
     updated = workspace.model_copy(deep=True)
     key = (system_id, obligation_id, obligation_actor)
     index = next((i for i, record in enumerate(updated.evidence) if record.key() == key), None)
