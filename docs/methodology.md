@@ -458,12 +458,16 @@ Under Art. 111(3), providers of general-purpose AI models placed on the market
 before that date take the necessary steps to comply with the obligations
 laid down in the Regulation by 2 August 2027. The model is dated by its
 own date, `gpai_model_placing_on_market_date`. If it is before
-2 August 2025, every GPAI item (Arts. 53, 55 and 56) carries 2027-08-02 and
-the Art. 111(3) note. If it is on or after that date, the items carry
+2 August 2025, every Chapter V item (Arts. 53, 55 and 56) carries 2027-08-02
+and the Art. 111(3) note. If it is on or after that date, the items carry
 2025-08-02 and no note. If the profile gives neither the model's date nor the
 system's `placing_on_market_date`, their `application_date` is null, the note
 names both dates, they are `review_required` and an open question asks for the
 model's date, unless the assessment date falls on or after both dates (C9).
+The GPAI Art. 41(5) item is in Chapter III, Section 5, which applies from
+2 August 2026 (Art. 113, second paragraph): it carries 2026-08-02, or
+2027-08-02 for a model placed before 2 August 2025, and with no date its note
+names 2026-08-02 and 2027-08-02.
 
 Art. 111(3) dates the model, Art. 111(4) the system, so the profile has two
 fields. `gpai_model_placing_on_market_date` is the model's date and drives

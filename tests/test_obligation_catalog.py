@@ -181,7 +181,42 @@ def test_gpai_provider_lists_the_art_41_5_chapter_v_duty() -> None:
         for ob in report.obligations
         if ob.article == "Art. 41 AIA" and ob.applies_to is Role.GPAI_PROVIDER
     ]
-    assert "Chapter V, Sections 2 and 3" in entry.requirement
+    assert "Chapter V, Section 2 " in entry.requirement
     assert "Art. 41(5)" in entry.requirement
     (item,) = [i for i in report.obligation_graph if i.obligation_id == "gpai.provider.41"]
     assert item.review_status.value == "review_required"
+    # Only Art. 55 (Chapter V, Section 3) binds a model with systemic risk.
+    assert "Section 3" not in entry.requirement
+
+
+@pytest.mark.parametrize(
+    ("placed", "expected"),
+    [("2025-09-01", "2026-08-02"), ("2025-01-01", "2027-08-02"), (None, None)],
+)
+def test_gpai_art_41_item_takes_the_chapter_iii_section_5_date(
+    placed: str | None, expected: str | None
+) -> None:
+    # Art. 41 is in Chapter III, Section 5: Art. 113, second paragraph (2 August 2026), not
+    # the Chapter V date of point (b); Art. 111(3) gives a model placed before 2 August 2025
+    # until 2 August 2027.
+    report = classify(
+        SystemProfile(
+            name="m",
+            roles=[Role.GPAI_PROVIDER],
+            is_gpai_model=True,
+            training_flops=1e26,
+            gpai_model_placing_on_market_date=placed,
+        )
+    )
+    items = {i.obligation_id: i for i in report.obligation_graph}
+    item = items["gpai.provider.41"]
+    assert item.application_date == expected
+    assert "Chapter III, Section 5" in (item.application_date_note or "")
+    assert "Chapter V, Sections 2 and 3" in item.requirement
+    # The high-risk limb of the same article takes the same Section 5 date.
+    if placed == "2025-09-01":
+        assert items["gpai.provider.53.a"].application_date == "2025-08-02"
+    if placed is None:
+        assert "2026-08-02 for placing on the market on or after 2025-08-02" in (
+            item.application_date_note or ""
+        )

@@ -48,7 +48,7 @@ Obligations:
   - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
   - Art. 53(4) AIA: Alternative means of compliance. Demonstrate alternative adequate means of compliance with the Art. 53(1) obligations for assessment by the Commission.
-  - Art. 41 AIA: Common specifications. Where such common specifications are not followed, justify compliance with the obligations in Chapter V, Sections 2 and 3, to a level at least equivalent (Art. 41(5)).
+  - Art. 41 AIA: Common specifications. Where such common specifications are not followed, justify compliance with the obligations in Chapter V, Section 2 to a level at least equivalent (Art. 41(5)).
 
 Obligation graph:
   - literacy.provider.4: Art. 4 AIA (provider), evidence: AI literacy measures record: training plan, materials and participation by role., review: determined
@@ -58,6 +58,7 @@ Obligation graph:
   - gpai.provider.53.d: Art. 53(1)(d) AIA (gpai_provider), evidence: Training-content summary., review: review_required
   - gpai.provider.53.4: Art. 53(4) AIA (gpai_provider), evidence: Alternative means of compliance file., review: review_required
   - gpai.provider.41: Art. 41 AIA (gpai_provider), evidence: Common specifications assessment., review: review_required
+      Art. 41 AIA is in Chapter III, Section 5, which applies from 2026-08-02 (Art. 113, second paragraph), not from the Chapter V date.
   - gpai.provider.56: Art. 56 AIA (gpai_provider), evidence: GPAI Code of Practice adherence record., review: review_required
 
 Binding application timeline:
@@ -117,7 +118,7 @@ Obligations:
   - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
   - Art. 53(4) AIA: Alternative means of compliance. Demonstrate alternative adequate means of compliance with the Art. 53(1) obligations for assessment by the Commission.
-  - Art. 41 AIA: Common specifications. Where such common specifications are not followed, justify compliance with the obligations in Chapter V, Sections 2 and 3, to a level at least equivalent (Art. 41(5)).
+  - Art. 41 AIA: Common specifications. Where such common specifications are not followed, justify compliance with the obligations in Chapter V, Sections 2 and 3 to a level at least equivalent (Art. 41(5)).
   - Art. 55(1)(a) AIA: Model evaluation. Perform model evaluation, including adversarial testing.
   - Art. 55(1)(b) AIA: Systemic-risk mitigation. Assess and mitigate systemic risks at Union level.
   - Art. 55(1)(c) AIA: Serious-incident tracking. Track, document and report serious incidents.
@@ -132,6 +133,7 @@ Obligation graph:
   - gpai.provider.53.d: Art. 53(1)(d) AIA (gpai_provider), evidence: Training-content summary., review: review_required
   - gpai.provider.53.4: Art. 53(4) AIA (gpai_provider), evidence: Alternative means of compliance file., review: review_required
   - gpai.provider.41: Art. 41 AIA (gpai_provider), evidence: Common specifications assessment., review: review_required
+      Art. 41 AIA is in Chapter III, Section 5, which applies from 2026-08-02 (Art. 113, second paragraph), not from the Chapter V date.
   - gpai.provider.56: Art. 56 AIA (gpai_provider), evidence: GPAI Code of Practice adherence record., review: review_required
   - gpai.provider.55.a: Art. 55(1)(a) AIA (gpai_provider), evidence: Systemic model evaluation file., review: review_required
   - gpai.provider.55.b: Art. 55(1)(b) AIA (gpai_provider), evidence: Systemic risk assessment and mitigation plan., review: review_required
@@ -196,7 +198,7 @@ Obligations:
   - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
   - Art. 53(4) AIA: Alternative means of compliance. Demonstrate alternative adequate means of compliance with the Art. 53(1) obligations for assessment by the Commission.
-  - Art. 41 AIA: Common specifications. Where such common specifications are not followed, justify compliance with the obligations in Chapter V, Sections 2 and 3, to a level at least equivalent (Art. 41(5)).
+  - Art. 41 AIA: Common specifications. Where such common specifications are not followed, justify compliance with the obligations in Chapter V, Sections 2 and 3 to a level at least equivalent (Art. 41(5)).
   - Art. 55(1)(a) AIA: Model evaluation. Perform model evaluation, including adversarial testing.
   - Art. 55(1)(b) AIA: Systemic-risk mitigation. Assess and mitigate systemic risks at Union level.
   - Art. 55(1)(c) AIA: Serious-incident tracking. Track, document and report serious incidents.
@@ -211,6 +213,7 @@ Obligation graph:
   - gpai.provider.53.d: Art. 53(1)(d) AIA (gpai_provider), evidence: Training-content summary., review: review_required
   - gpai.provider.53.4: Art. 53(4) AIA (gpai_provider), evidence: Alternative means of compliance file., review: review_required
   - gpai.provider.41: Art. 41 AIA (gpai_provider), evidence: Common specifications assessment., review: review_required
+      Art. 41 AIA is in Chapter III, Section 5, which applies from 2026-08-02 (Art. 113, second paragraph), not from the Chapter V date.
   - gpai.provider.56: Art. 56 AIA (gpai_provider), evidence: GPAI Code of Practice adherence record., review: review_required
   - gpai.provider.55.a: Art. 55(1)(a) AIA (gpai_provider), evidence: Systemic model evaluation file., review: review_required
   - gpai.provider.55.b: Art. 55(1)(b) AIA (gpai_provider), evidence: Systemic risk assessment and mitigation plan., review: review_required

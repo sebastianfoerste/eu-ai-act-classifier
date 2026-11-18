@@ -883,13 +883,56 @@ def _gpai_dating(profile: SystemProfile) -> tuple[str | None, str | None, bool]:
     return applies_from, note, fallback
 
 
+_SECTION_5_GPAI_NOTE = (
+    f"Art. 41 AIA is in Chapter III, Section 5, which applies from {GENERAL_APPLICATION_DATE} "
+    "(Art. 113, second paragraph), not from the Chapter V date."
+)
+
+
+def _gpai_art_41_item(systemic: bool, profile: SystemProfile) -> ObligationGraphItem:
+    """Art. 41(5) AIA for a general-purpose AI model provider: the later of the Chapter III,
+    Section 5 date and the model's Art. 111(3) date. Only Chapter V, Section 3 (Art. 55)
+    binds a model with systemic risk, so the item names it only then ("as applicable")."""
+
+    model_date, fallback = gpai_model_date(profile)
+    if model_date is None:
+        application_date = None
+        note = (
+            f"{_SECTION_5_GPAI_NOTE} {_ART_111_3_NOTE} The placing date is not given, so the "
+            f"application date is open: {GENERAL_APPLICATION_DATE} for placing on the market "
+            f"on or after {POINT_B_DATE}, {ART_111_3_DEADLINE} for placing before it."
+        )
+    elif before(model_date, POINT_B_DATE):
+        application_date, note = ART_111_3_DEADLINE, f"{_SECTION_5_GPAI_NOTE} {_ART_111_3_NOTE}"
+    else:
+        application_date, note = GENERAL_APPLICATION_DATE, _SECTION_5_GPAI_NOTE
+    if fallback:
+        note = f"{note} As {_GPAI_DATE_FALLBACK}"
+    sections = "Chapter V, Sections 2 and 3" if systemic else "Chapter V, Section 2"
+    return _item(
+        "gpai.provider.41",
+        "Art. 41 AIA",
+        Role.GPAI_PROVIDER,
+        f"Common specifications adopted under Art. 41(1) cover obligations in {sections}.",
+        (
+            "Where such common specifications are not followed, justify compliance with the "
+            f"obligations in {sections} to a level at least equivalent (Art. 41(5))."
+        ),
+        "Common specifications assessment.",
+        application_date,
+        ReviewStatus.REVIEW_REQUIRED,
+        note,
+    )
+
+
 def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphItem]:
     application_date, note, fallback = _gpai_dating(profile)
     # The fallback date is not the model's own, and an open date is no date: nothing dated
     # by either is determined.
     open_date = application_date is None
     status = ReviewStatus.REVIEW_REQUIRED if fallback or open_date else ReviewStatus.DETERMINED
-    # Every Chapter V item takes the same date and Art. 111(3) AIA note (_art_111_dating).
+    # Every Chapter V item takes the same date and Art. 111(3) AIA note (_art_111_dating);
+    # the Art. 41(5) item is in Chapter III, Section 5 and is dated by _gpai_art_41_item.
     items = [
         _item(
             "gpai.provider.53.a",
@@ -952,21 +995,7 @@ def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphI
             ReviewStatus.REVIEW_REQUIRED,
             note,
         ),
-        _item(
-            "gpai.provider.41",
-            "Art. 41 AIA",
-            Role.GPAI_PROVIDER,
-            "Common specifications adopted under Art. 41(1) cover the Chapter V obligations.",
-            (
-                "Where such common specifications are not followed, justify compliance with "
-                "the obligations in Chapter V, Sections 2 and 3, to a level at least "
-                "equivalent (Art. 41(5))."
-            ),
-            "Common specifications assessment.",
-            application_date,
-            ReviewStatus.REVIEW_REQUIRED,
-            note,
-        ),
+        _gpai_art_41_item(systemic, profile),
         _item(
             "gpai.provider.56",
             "Art. 56 AIA",
@@ -1130,6 +1159,8 @@ def dating_window(item: ObligationGraphItem) -> tuple[str, str] | None:
 
     if item.application_date is not None:
         return None
+    if item.obligation_id == "gpai.provider.41":
+        return GENERAL_APPLICATION_DATE, ART_111_3_DEADLINE
     if item.obligation_id.startswith("gpai."):
         return POINT_B_DATE, ART_111_3_DEADLINE
     if item.article == ART_50_2:

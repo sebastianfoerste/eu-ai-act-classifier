@@ -26,18 +26,22 @@ pull requests.
   item by the Chapter III date of the route and `determined`. Their evidence
   artifact names are new. A high-risk provider report for an Annex III
   system now has 22 obligations and 24 graph items (15 and 17 before).
-- The graph gains three GPAI items, all `review_required` and dated like the
-  other Chapter V items. `gpai.provider.53.4` and, with systemic risk,
-  `gpai.provider.55.2` state the third sentence of Art. 53(4) and of
-  Art. 55(2): a provider that does not adhere to an approved code of
-  practice or does not comply with a European harmonised standard
-  demonstrates alternative adequate means of compliance for assessment by
-  the Commission. `gpai.provider.41` states the Art. 41(5) duty of a
-  general-purpose AI model provider: where common specifications cover the
-  Chapter V obligations and are not followed, justify compliance with
-  Chapter V, Sections 2 and 3, to a level at least equivalent. A GPAI
-  provider's list has 6 Chapter V entries (11 with systemic risk), two
-  (three) more than before, plus the Art. 4 entry where the profile also
+- The graph gains three GPAI items, all `review_required`.
+  `gpai.provider.53.4` and, with systemic risk, `gpai.provider.55.2` are
+  dated like the other Chapter V items and state the third sentence of
+  Art. 53(4) and of Art. 55(2): a provider that does not adhere to an
+  approved code of practice or does not comply with a European harmonised
+  standard demonstrates alternative adequate means of compliance for
+  assessment by the Commission. `gpai.provider.41` states the Art. 41(5)
+  duty of a general-purpose AI model provider: where common specifications
+  cover its Chapter V obligations and are not followed, justify compliance
+  with Chapter V, Section 2 (and Section 3 with systemic risk) to a level at
+  least equivalent. Art. 41 is in Chapter III, Section 5, so the item takes
+  the general date, 2 August 2026 (Art. 113, second paragraph), or
+  2 August 2027 for a model placed before 2 August 2025 (Art. 111(3)), not
+  the Chapter V date. A GPAI provider's list has 6 entries (11 with
+  systemic risk), 5 (10) under Chapter V plus the Art. 41 entry, two
+  (three) more than before, and the Art. 4 entry where the profile also
   holds an operator role.
 - The list gains Arts. 16, 18 to 21, 41, 43(2), 49(2), 49(5), 53(4), 55(2)
   and 111(2) wherever the graph has them. The high-risk provider's Art. 41
