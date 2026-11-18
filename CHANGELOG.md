@@ -26,26 +26,32 @@ pull requests.
   item by the Chapter III date of the route and `determined`. Their evidence
   artifact names are new. A high-risk provider report for an Annex III
   system now has 22 obligations and 24 graph items (15 and 17 before).
-- The graph gains two GPAI items, both `review_required` and dated like the
-  other Chapter V items: `gpai.provider.53.4` and, with systemic risk,
-  `gpai.provider.55.2`. They state the third sentence of Art. 53(4) and of
+- The graph gains three GPAI items, all `review_required` and dated like the
+  other Chapter V items. `gpai.provider.53.4` and, with systemic risk,
+  `gpai.provider.55.2` state the third sentence of Art. 53(4) and of
   Art. 55(2): a provider that does not adhere to an approved code of
   practice or does not comply with a European harmonised standard
   demonstrates alternative adequate means of compliance for assessment by
-  the Commission. A GPAI provider's list has 5 entries (10 with systemic
-  risk), one more (two more) than before.
+  the Commission. `gpai.provider.41` states the Art. 41(5) duty of a
+  general-purpose AI model provider: where common specifications cover the
+  Chapter V obligations and are not followed, justify compliance with
+  Chapter V, Sections 2 and 3, to a level at least equivalent. A GPAI
+  provider's list has 6 Chapter V entries (11 with systemic risk), two
+  (three) more than before, plus the Art. 4 entry where the profile also
+  holds an operator role.
 - The list gains Arts. 16, 18 to 21, 41, 43(2), 49(2), 49(5), 53(4), 55(2)
-  and 111(2) wherever the graph has them. The Art. 41 entry states the
-  Art. 41(5) duty: where common specifications apply and are not followed,
-  justify technical solutions that meet Section 2 to an equivalent level.
+  and 111(2) wherever the graph has them. The high-risk provider's Art. 41
+  entry states the Art. 41(5) duty: where common specifications apply and
+  are not followed, justify technical solutions that meet the Section 2
+  requirements to a level at least equivalent.
 - Where both had an article with different wording, the list takes the
   graph's requirement: Arts. 17, 22 to 27, 43, 47, 48, 49 and 53(1)(a). The
   Art. 43 entry now carries the Art. 43(1) sentence for an Annex III, point 1
   system, as its graph item does.
 - Nine graph requirements are reworded to follow the Official Journal text
   (both lists carry them): Art. 16 names Section 2 and Art. 16(b) (name,
-  registered trade name or trade mark and contact address, on the system or
-  its packaging or documentation); Art. 17 and Art. 53(1)(c) say "Put in
+  registered trade name or registered trade mark and contact address, on the
+  system or its packaging or documentation); Art. 17 and Art. 53(1)(c) say "Put in
   place"; Art. 18 lists the five Art. 18(1) items kept for 10 years, not the
   logs, which are Art. 19's; Art. 24 says "Before making the system
   available"; Art. 25 names the three Art. 25(1) circumstances; Art. 26 says
@@ -54,8 +60,8 @@ pull requests.
 - Unchanged over the 19 examples and a matrix of 7,776 further profiles
   (roles, Annex III points, Annex I sections, dates and screens): tier,
   disposition, findings, documentation items, transparency obligations,
-  unverified citations and every graph item but the nine rewordings. No
-  list entry is removed.
+  unverified citations and every existing graph item but the nine
+  rewordings. No list entry is removed.
 - `tests/test_obligation_catalog.py` holds the two lists to each other. The
   worked examples, the sample output, the sample dossier, the case study,
   the goldens and `docs/demo.png` follow the new output.
@@ -63,8 +69,9 @@ pull requests.
 #### Upgrade notes
 
 - `report.obligations` changes shape: an Annex III provider report has 22
-  entries instead of 15, and up to 11 kinds of entry are new (Arts. 16, 18
-  to 21, 41, 43(2), 49(2), 49(5), 53(4) and 55(2)). The requirement strings
+  entries instead of 15, and entries for up to 12 articles are new (Arts.
+  16, 18 to 21, 41, 43(2), 49(2), 49(5), 53(4), 55(2) and 111(2); Art. 41
+  for both a high-risk and a GPAI model provider). The requirement strings
   of 12 existing kinds of entry change: Arts. 17, 22 to 27, 43, 47, 48, 49
   and 53(1)(a). Code that counts the entries, matches their text or keys on
   the set of articles, such as an inventory export or the cockpit's

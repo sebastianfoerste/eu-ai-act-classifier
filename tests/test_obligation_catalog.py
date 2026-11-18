@@ -162,3 +162,26 @@ def test_gpai_provider_lists_the_alternative_means_duty(flops: float, expected: 
         if item.article in expected:
             assert item.review_status.value == "review_required"
             assert "alternative adequate means of compliance" in item.requirement
+
+
+def test_gpai_provider_lists_the_art_41_5_chapter_v_duty() -> None:
+    # Art. 41(5) binds "providers of high-risk AI systems or general-purpose AI models"; for
+    # the latter the duty is to justify compliance with Chapter V, Sections 2 and 3.
+    report = classify(
+        SystemProfile(
+            name="m",
+            roles=[Role.GPAI_PROVIDER],
+            is_gpai_model=True,
+            training_flops=1e24,
+            gpai_model_placing_on_market_date="2025-09-01",
+        )
+    )
+    (entry,) = [
+        ob
+        for ob in report.obligations
+        if ob.article == "Art. 41 AIA" and ob.applies_to is Role.GPAI_PROVIDER
+    ]
+    assert "Chapter V, Sections 2 and 3" in entry.requirement
+    assert "Art. 41(5)" in entry.requirement
+    (item,) = [i for i in report.obligation_graph if i.obligation_id == "gpai.provider.41"]
+    assert item.review_status.value == "review_required"

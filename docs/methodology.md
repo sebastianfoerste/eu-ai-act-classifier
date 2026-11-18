@@ -225,8 +225,10 @@ the provider: Arts. 40 and 42 (presumptions of conformity), Art. 44
 (certificates of notified bodies) and Art. 56 (codes of practice, addressed to
 the AI Office and the Board). The graph keeps them
 (`obligation_graph.GRAPH_ONLY_ITEMS`). Art. 41 is listed with its Art. 41(5)
-duty, and a GPAI provider's list names the Art. 53(4) and, with systemic risk,
-the Art. 55(2) duty to show alternative adequate means of compliance. Three kinds of entry repeat a counsel flag
+duty, for a provider of a high-risk AI system (Section 2) and for a provider of
+a general-purpose AI model (Chapter V, Sections 2 and 3). A GPAI provider's list
+also names the Art. 53(4) and, with systemic risk, the Art. 55(2) duty to show
+alternative adequate means of compliance. Three kinds of entry repeat a counsel flag
 in the requirement that the graph item carries in its date note: the Art. 4
 entry of a Section B product or a prohibited system, and the Art. 2(2) entry
 of a Section B product in an Annex III area.

@@ -336,8 +336,9 @@ def build_obligation_graph(
 # certificates notified bodies issue; Art. 56 addresses the AI Office and the Board. The
 # provider's duty to show compliance by other means is in Art. 53(4) and Art. 55(2), third
 # sentence each, which the gpai.provider.53.4 and gpai.provider.55.2 items state. Art. 41
-# stays listed: Art. 41(5) puts a duty on a provider that does not follow common
-# specifications.
+# stays listed: Art. 41(5) puts a duty on a provider of a high-risk AI system or of a
+# general-purpose AI model that does not follow common specifications, so both the
+# high-risk.provider.41 and the gpai.provider.41 items are listed.
 GRAPH_ONLY_ITEMS = frozenset(
     {
         "high-risk.provider.40",
@@ -947,6 +948,21 @@ def _gpai_graph(systemic: bool, profile: SystemProfile) -> list[ObligationGraphI
                 "obligations for assessment by the Commission."
             ),
             "Alternative means of compliance file.",
+            application_date,
+            ReviewStatus.REVIEW_REQUIRED,
+            note,
+        ),
+        _item(
+            "gpai.provider.41",
+            "Art. 41 AIA",
+            Role.GPAI_PROVIDER,
+            "Common specifications adopted under Art. 41(1) cover the Chapter V obligations.",
+            (
+                "Where such common specifications are not followed, justify compliance with "
+                "the obligations in Chapter V, Sections 2 and 3, to a level at least "
+                "equivalent (Art. 41(5))."
+            ),
+            "Common specifications assessment.",
             application_date,
             ReviewStatus.REVIEW_REQUIRED,
             note,

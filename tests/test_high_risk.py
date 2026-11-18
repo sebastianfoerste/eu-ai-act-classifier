@@ -269,3 +269,54 @@ def test_no_fria_route_question_without_a_derogation_or_an_annex_i_route() -> No
     ):
         report = classify(SystemProfile(name="x", roles=[Role.DEPLOYER], **facts))
         assert not [q for q in report.open_questions if "Art. 6(2) route" in q], facts
+
+
+def test_unsettled_point_with_a_fria_already_required_raises_no_point_question() -> None:
+    # A public-law deployer already needs the FRIA on any Art. 6(2) point but point 2, so
+    # the 5(b)/(c) question would add nothing.
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.DEPLOYER],
+            annex_iii_area=AnnexIII.UNSURE,
+            deployer_public_law_body=True,
+        )
+    )
+    assert "Art. 27 AIA" in {ob.article for ob in report.obligations}
+    assert not [q for q in report.open_questions if q.startswith("Art. 27 AIA: the Annex III")]
+
+
+def test_unsettled_point_with_a_derogation_on_the_annex_i_route_keeps_the_route_question() -> None:
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.DEPLOYER],
+            annex_i_safety_component=True,
+            annex_i_third_party_assessment=True,
+            annex_i_section="A",
+            annex_iii_area=AnnexIII.UNSURE,
+            deployer_public_law_body=True,
+            derogation={"narrow_procedural_task": True},
+        )
+    )
+    assert [q for q in report.open_questions if "Art. 6(2) route" in q]
+
+
+def test_no_route_question_where_no_fria_is_listed() -> None:
+    # Annex III point 4(a) with a private deployer needs no FRIA, so there is nothing for
+    # an established derogation to remove.
+    report = classify(
+        SystemProfile(
+            name="x",
+            roles=[Role.DEPLOYER],
+            annex_i_safety_component=True,
+            annex_i_third_party_assessment=True,
+            annex_i_section="A",
+            annex_iii_area=AnnexIII.EMPLOYMENT_SELECTION,
+            deployer_public_law_body=False,
+            deployer_private_public_service=False,
+            derogation={"narrow_procedural_task": True},
+        )
+    )
+    assert "Art. 27 AIA" not in {ob.article for ob in report.obligations}
+    assert not [q for q in report.open_questions if "Art. 6(2) route" in q]

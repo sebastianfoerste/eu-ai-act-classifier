@@ -13,9 +13,9 @@ The table below summarizes the classification status, risk tier, number of direc
 
 | Profile / Model ID | Risk Tier | Scope Status | Roles | Obligations | Next Compliance Deadline |
 | :--- | :--- | :--- | :--- | :---: | :--- |
-| **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 6 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-03-02, so Art. 111(3) AIA does not apply) |
-| **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 11 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2025-09-15, so Art. 111(3) AIA does not apply) |
-| **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 11 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-04-01, so Art. 111(3) AIA does not apply) |
+| **NexusLite-13B** | MINIMAL RISK | in_scope | gpai_provider, provider | 7 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-03-02, so Art. 111(3) AIA does not apply) |
+| **NexusUltra-Large** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 12 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2025-09-15, so Art. 111(3) AIA does not apply) |
+| **NexusCustom-Reason** | MINIMAL RISK (Systemic) | in_scope | gpai_provider, provider | 12 | 2025-08-02 (Chapter V general-purpose AI models; the model was placed on the market on 2026-04-01, so Art. 111(3) AIA does not apply) |
 | **CreditSightScore** | HIGH-RISK (Annex III) | in_scope | provider | 22 | 2026-08-02 (Arts. 40-43, 43(2), 47-49, 72 and 73; "Literal reading, confirm with counsel"; 2027-12-02 if they follow the Sections 1 to 3 deferral), then 2027-12-02 (Annex III, Chapter III Sections 1 to 3) |
 
 Each profile above also has the Art. 4 AI literacy item, dated 2025-02-02, the date from which Chapter I applies; the deadline column leaves it out.
@@ -48,6 +48,7 @@ Obligations:
   - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
   - Art. 53(4) AIA: Alternative means of compliance. Demonstrate alternative adequate means of compliance with the Art. 53(1) obligations for assessment by the Commission.
+  - Art. 41 AIA: Common specifications. Where such common specifications are not followed, justify compliance with the obligations in Chapter V, Sections 2 and 3, to a level at least equivalent (Art. 41(5)).
 
 Obligation graph:
   - literacy.provider.4: Art. 4 AIA (provider), evidence: AI literacy measures record: training plan, materials and participation by role., review: determined
@@ -56,6 +57,7 @@ Obligation graph:
   - gpai.provider.53.c: Art. 53(1)(c) AIA (gpai_provider), evidence: Copyright compliance policy., review: review_required
   - gpai.provider.53.d: Art. 53(1)(d) AIA (gpai_provider), evidence: Training-content summary., review: review_required
   - gpai.provider.53.4: Art. 53(4) AIA (gpai_provider), evidence: Alternative means of compliance file., review: review_required
+  - gpai.provider.41: Art. 41 AIA (gpai_provider), evidence: Common specifications assessment., review: review_required
   - gpai.provider.56: Art. 56 AIA (gpai_provider), evidence: GPAI Code of Practice adherence record., review: review_required
 
 Binding application timeline:
@@ -115,6 +117,7 @@ Obligations:
   - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
   - Art. 53(4) AIA: Alternative means of compliance. Demonstrate alternative adequate means of compliance with the Art. 53(1) obligations for assessment by the Commission.
+  - Art. 41 AIA: Common specifications. Where such common specifications are not followed, justify compliance with the obligations in Chapter V, Sections 2 and 3, to a level at least equivalent (Art. 41(5)).
   - Art. 55(1)(a) AIA: Model evaluation. Perform model evaluation, including adversarial testing.
   - Art. 55(1)(b) AIA: Systemic-risk mitigation. Assess and mitigate systemic risks at Union level.
   - Art. 55(1)(c) AIA: Serious-incident tracking. Track, document and report serious incidents.
@@ -128,6 +131,7 @@ Obligation graph:
   - gpai.provider.53.c: Art. 53(1)(c) AIA (gpai_provider), evidence: Copyright compliance policy., review: review_required
   - gpai.provider.53.d: Art. 53(1)(d) AIA (gpai_provider), evidence: Training-content summary., review: review_required
   - gpai.provider.53.4: Art. 53(4) AIA (gpai_provider), evidence: Alternative means of compliance file., review: review_required
+  - gpai.provider.41: Art. 41 AIA (gpai_provider), evidence: Common specifications assessment., review: review_required
   - gpai.provider.56: Art. 56 AIA (gpai_provider), evidence: GPAI Code of Practice adherence record., review: review_required
   - gpai.provider.55.a: Art. 55(1)(a) AIA (gpai_provider), evidence: Systemic model evaluation file., review: review_required
   - gpai.provider.55.b: Art. 55(1)(b) AIA (gpai_provider), evidence: Systemic risk assessment and mitigation plan., review: review_required
@@ -192,6 +196,7 @@ Obligations:
   - Art. 53(1)(c) AIA: Copyright policy. Put in place a policy to comply with Union copyright law.
   - Art. 53(1)(d) AIA: Training-content summary. Publish a sufficiently detailed summary of training content.
   - Art. 53(4) AIA: Alternative means of compliance. Demonstrate alternative adequate means of compliance with the Art. 53(1) obligations for assessment by the Commission.
+  - Art. 41 AIA: Common specifications. Where such common specifications are not followed, justify compliance with the obligations in Chapter V, Sections 2 and 3, to a level at least equivalent (Art. 41(5)).
   - Art. 55(1)(a) AIA: Model evaluation. Perform model evaluation, including adversarial testing.
   - Art. 55(1)(b) AIA: Systemic-risk mitigation. Assess and mitigate systemic risks at Union level.
   - Art. 55(1)(c) AIA: Serious-incident tracking. Track, document and report serious incidents.
@@ -205,6 +210,7 @@ Obligation graph:
   - gpai.provider.53.c: Art. 53(1)(c) AIA (gpai_provider), evidence: Copyright compliance policy., review: review_required
   - gpai.provider.53.d: Art. 53(1)(d) AIA (gpai_provider), evidence: Training-content summary., review: review_required
   - gpai.provider.53.4: Art. 53(4) AIA (gpai_provider), evidence: Alternative means of compliance file., review: review_required
+  - gpai.provider.41: Art. 41 AIA (gpai_provider), evidence: Common specifications assessment., review: review_required
   - gpai.provider.56: Art. 56 AIA (gpai_provider), evidence: GPAI Code of Practice adherence record., review: review_required
   - gpai.provider.55.a: Art. 55(1)(a) AIA (gpai_provider), evidence: Systemic model evaluation file., review: review_required
   - gpai.provider.55.b: Art. 55(1)(b) AIA (gpai_provider), evidence: Systemic risk assessment and mitigation plan., review: review_required
