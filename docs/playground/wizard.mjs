@@ -29,6 +29,8 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
   let pointStep = false;
   let groupPick = {};
   let areaDraft;
+  // The answer a Continue to another area cleared, so the point page's Back restores it.
+  let held = null;
   const byId = Object.fromEntries(definition.questions.map(q => [q.id, q]));
 
   const pages = () => askedQuestions(definition, answers);
@@ -38,6 +40,7 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
     page = next;
     pointStep = step;
     areaDraft = undefined;
+    held = null;
     error = "";
     render();
     if (focus) root.querySelector("[data-focus]")?.focus();
@@ -77,10 +80,11 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
     if (page === CHECK) return go(list.at(-1)?.id ?? CHECK);
     const index = list.findIndex(q => q.id === page);
     if (index < 1) return;
-    // Back into a grouped question whose answer is one of its options lands on the
-    // option page the user left, not on the group page.
+    // Back into a grouped question the user last left from an option page (a point,
+    // None of these or I don't know which point) lands on that page, not on the group page.
     const previous = list[index - 1];
-    go(previous.id, { step: Boolean(previous.groups && groupOf(previous, answers[previous.id])) });
+    const onOptions = previous.groups?.some(g => g.value === settledGroup(previous)) ?? false;
+    go(previous.id, { step: onOptions });
   }
 
   // Checkbox groups re-render to keep "None" and "I don't know" exclusive;
@@ -146,8 +150,29 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
     // before clears an answer that lies outside it; continuing with the same one keeps
     // what its option page holds, None of these or I don't know included.
     const group = question.groups.find(g => g.value === picked);
-    if (picked !== before && !group.options.includes(answers[question.id])) setAnswer(question.id, undefined);
+    if (picked !== before && !group.options.includes(answers[question.id])) {
+      held = { value: answers[question.id], group: before };
+      setAnswer(question.id, undefined);
+    }
     pointStep = true;
+    error = "";
+    render();
+    root.querySelector("[data-focus]")?.focus();
+  }
+
+  // The option page's Back: the group page again, with the answer that a Continue to
+  // another area cleared restored if no option was chosen since.
+  function backToGroups(question) {
+    let shown;
+    if (held && answers[question.id] === undefined) {
+      // The area just looked at stays selected, as an unsubmitted choice.
+      shown = groupPick[question.id];
+      groupPick = { ...groupPick, [question.id]: held.group };
+      setAnswer(question.id, held.value);
+    }
+    held = null;
+    pointStep = false;
+    areaDraft = shown;
     error = "";
     render();
     root.querySelector("[data-focus]")?.focus();
@@ -182,7 +207,7 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
 
     const top = node("div", "question-top");
     top.append(node("span", "progress", `Question ${position} of ${list.length}${grouped ? (onPoints ? ": the use" : ": the area") : ""}`));
-    if (onPoints) top.append(button("Back", "text-button back-link", () => { pointStep = false; areaDraft = undefined; error = ""; render(); root.querySelector("[data-focus]")?.focus(); }));
+    if (onPoints) top.append(button("Back", "text-button back-link", () => backToGroups(question)));
     else if (position > 1) top.append(button("Back", "text-button back-link", back));
     form.append(top);
 

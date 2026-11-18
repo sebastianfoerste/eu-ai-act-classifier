@@ -246,10 +246,42 @@ test("Annex III: I don't know which point keeps the area for Back and Change", (
   pick(root, UNKNOWN);
   submit(root);
   assert.equal(wizard.answers.annex_iii_area, UNKNOWN);
-  assert.equal(backToAnnex(root), annex.title);
+  // Back from the next question returns to the point page the answer was given on.
+  assert.equal(backToAnnex(root), annex.group_title);
+  assert.deepEqual(checked(root), [UNKNOWN]);
+  back(root);
+  assert.equal(title(root), annex.title);
   assert.deepEqual(checked(root), ["3"]);
   submit(root);
   assert.deepEqual(checked(root), [UNKNOWN]);
+});
+
+test("Annex III: None of these on a point page is where Back from the next question returns", () => {
+  const { root, wizard } = openWith({ annex_iii_area: "III.4.a" });
+  submit(root);
+  pick(root, "none");
+  submit(root);
+  assert.equal(wizard.answers.annex_iii_area, "none");
+  assert.equal(backToAnnex(root), annex.group_title);
+  assert.deepEqual(checked(root), ["none"]);
+});
+
+test("Annex III: peeking at another area's points and going Back keeps the saved point", () => {
+  const { root, wizard } = openWith({ annex_iii_area: "III.5.b" });
+  pick(root, "4");
+  submit(root);
+  assert.equal(title(root), annex.group_title);
+  assert.deepEqual(checked(root), []);
+  back(root);
+  assert.equal(wizard.answers.annex_iii_area, "III.5.b");
+  // The area just looked at stays selected, unsubmitted; going back to area 5 shows the
+  // saved point, and leaving the page keeps it.
+  assert.deepEqual(checked(root), ["4"]);
+  pick(root, "5");
+  submit(root);
+  assert.deepEqual(checked(root), ["III.5.b"]);
+  submit(root);
+  assert.equal(wizard.answers.annex_iii_area, "III.5.b");
 });
 
 test("Annex III: loading new answers drops the area chosen before", () => {
