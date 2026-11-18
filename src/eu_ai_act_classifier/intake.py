@@ -208,7 +208,8 @@ def _annex_iii_groups() -> list[dict[str, Any]]:
     groups = []
     for area, heading in ANNEX_III_AREAS.items():
         points = [m.value for m in AnnexIII if m.value.split(".")[1:2] == [area]]
-        groups.append({"value": area, "label": f"Point {area}: {heading}", "options": points})
+        # The citation form of the point labels on the next page ("Annex III(4)(a): ...").
+        groups.append({"value": area, "label": f"Annex III({area}): {heading}", "options": points})
     return groups
 
 

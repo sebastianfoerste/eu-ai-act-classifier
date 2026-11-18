@@ -7,10 +7,16 @@ pull requests.
 
 ### Annex III question in two steps (D5)
 
+#### Changed
+
 - The playground's guided intake asks for the Annex III area first, headed as
-  in Annex III, then lists only that area's points; an area with one point
-  (critical infrastructure) needs no second page. "I don't know" on either
-  page records `III.unsure`, as before. The stored answer and the profile are
+  in Annex III ("Annex III(4): Employment, ..."), then lists only that area's
+  points with "None of these" and "I don't know which point". Critical
+  infrastructure, the area with one point, gets the second page too, so its
+  safety-component condition is read before it is chosen. "I don't know" on
+  either page records `III.unsure`, as before. Selecting area radios, by
+  click or arrow key, changes no answer until Continue; Back from the next
+  question returns to the point page. The stored answer and the profile are
   unchanged.
 
 ### One source for the obligations list and the obligation graph

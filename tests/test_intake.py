@@ -822,6 +822,8 @@ def test_annex_iii_groups_hold_every_point_once_under_its_own_area() -> None:
     # either page writes the point the question already writes.
     assert question["field"] == "annex_iii_area"
     assert question["unknown"] == {"value": AnnexIII.UNSURE.value}
+    # The second page's heading; the wizard has no other text for it.
+    assert isinstance(question["group_title"], str) and question["group_title"].strip()
 
 
 def test_annex_iii_area_headings_quote_the_official_journal() -> None:
@@ -831,4 +833,9 @@ def test_annex_iii_area_headings_quote_the_official_journal() -> None:
     labels = {g["value"]: g["label"] for g in question["groups"]}
     for area, heading in ANNEX_III_AREAS.items():
         assert re.search(rf"\b{area}\. {re.escape(heading)}:", text), area
-        assert labels[area] == f"Point {area}: {heading}"
+        assert labels[area] == f"Annex III({area}): {heading}"
+    # Every point label on the second page cites the same area.
+    points = {o["value"]: o["label"] for o in question["options"]}
+    for group in question["groups"]:
+        for value in group["options"]:
+            assert points[value].startswith(f"Annex III({group['value']})"), value
