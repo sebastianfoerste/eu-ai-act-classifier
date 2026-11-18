@@ -512,6 +512,10 @@ pull requests.
   list. A file saved before it loads with no evidence and is not archived.
 - The collaboration snapshot carries `draftNotice`, and the self-assessment
   page's "Export local workspace" writes it first; an import ignores it.
+- `/self-assessment` renders on each request instead of at build time, so
+  its export carries the review cells and evidence saved since the build. An
+  export from the build-time snapshot, imported back, would have replaced
+  them with older ones.
 - A workspace archived as stale for the inventory hands its evidence records
   to the new workspace; the `recovered` event counts them in
   `evidenceCarried`.

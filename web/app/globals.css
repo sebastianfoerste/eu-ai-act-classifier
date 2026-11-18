@@ -301,6 +301,12 @@ small {
   margin: 10px 0;
 }
 
+/* Below the full desktop width the lane tables scroll sideways inside .tableWrap
+   rather than squeeze nine columns, which stacked each date note a few words per line. */
+.evidenceTrackerPanel table {
+  min-width: 1100px;
+}
+
 .laneSection + .laneSection {
   margin-top: 16px;
 }

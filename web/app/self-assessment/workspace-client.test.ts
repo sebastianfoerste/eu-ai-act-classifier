@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { FALLBACK_DRAFT_NOTICE } from "../../lib/print";
@@ -30,5 +31,12 @@ describe("self-assessment workspace export", () => {
   it("falls back to the engine's notice when the snapshot carries none", () => {
     expect(workspaceExportPayload(workspace()).draftNotice).toBe(FALLBACK_DRAFT_NOTICE);
     expect(workspaceExportPayload(workspace("")).draftNotice).toBe(FALLBACK_DRAFT_NOTICE);
+  });
+});
+
+describe("self-assessment page", () => {
+  it("renders per request, so an export carries the evidence saved since the build", () => {
+    const source = readFileSync(new URL("./page.tsx", import.meta.url), "utf8");
+    expect(source).toMatch(/^export const dynamic = "force-dynamic";$/m);
   });
 });
