@@ -467,8 +467,10 @@ def _gpai_date_questions(profile: SystemProfile) -> list[str]:
         return [
             "Art. 111(3) AIA: neither gpai_model_placing_on_market_date nor "
             "placing_on_market_date is given. A model placed on the market before "
-            f"{POINT_B_DATE} complies by {ART_111_3_DEADLINE}; a later one is bound from "
-            f"{POINT_B_DATE}. Give the model's own date (gpai_model_placing_on_market_date)."
+            f"{POINT_B_DATE} complies by {ART_111_3_DEADLINE}; a later one is bound by the "
+            f"Chapter V items from {POINT_B_DATE} and by the Art. 41(5) item from "
+            f"{GENERAL_APPLICATION_DATE}. Give the model's own date "
+            "(gpai_model_placing_on_market_date)."
         ]
     if fallback:
         return [

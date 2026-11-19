@@ -213,10 +213,33 @@ def test_gpai_art_41_item_takes_the_chapter_iii_section_5_date(
     assert item.application_date == expected
     assert "Chapter III, Section 5" in (item.application_date_note or "")
     assert "Chapter V, Sections 2 and 3" in item.requirement
-    # The high-risk limb of the same article takes the same Section 5 date.
+    # The Chapter V items keep the Chapter V date.
     if placed == "2025-09-01":
         assert items["gpai.provider.53.a"].application_date == "2025-08-02"
     if placed is None:
         assert "2026-08-02 for placing on the market on or after 2025-08-02" in (
             item.application_date_note or ""
         )
+
+
+def test_gpai_art_41_open_date_uses_the_section_5_window() -> None:
+    # With no placing date the item's date is open between 2026-08-02 and 2027-08-02, so on
+    # 2026-01-01 it does not yet apply on either reading; a Chapter V item's window starts
+    # on 2025-08-02, so its answer is unknown.
+    report = classify(
+        SystemProfile(
+            name="m",
+            roles=[Role.GPAI_PROVIDER],
+            is_gpai_model=True,
+            training_flops=1e24,
+            assessment_date="2026-01-01",
+        )
+    )
+    items = {i.obligation_id: i for i in report.obligation_graph}
+    assert items["gpai.provider.41"].application_date is None
+    assert items["gpai.provider.41"].applies_on_assessment_date is False
+    assert items["gpai.provider.53.a"].applies_on_assessment_date is None
+    # The C9 question names both dates a later model is bound from.
+    (question,) = [q for q in report.open_questions if q.startswith("Art. 111(3) AIA: neither")]
+    assert "Chapter V items from 2025-08-02" in question
+    assert "Art. 41(5) item from 2026-08-02" in question

@@ -226,7 +226,8 @@ the provider: Arts. 40 and 42 (presumptions of conformity), Art. 44
 the AI Office and the Board). The graph keeps them
 (`obligation_graph.GRAPH_ONLY_ITEMS`). Art. 41 is listed with its Art. 41(5)
 duty, for a provider of a high-risk AI system (Section 2) and for a provider of
-a general-purpose AI model (Chapter V, Sections 2 and 3). A GPAI provider's list
+a general-purpose AI model (Chapter V, Section 2, and with systemic risk also
+Section 3, "as applicable"). A GPAI provider's list
 also names the Art. 53(4) and, with systemic risk, the Art. 55(2) duty to show
 alternative adequate means of compliance. Three kinds of entry repeat a counsel flag
 in the requirement that the graph item carries in its date note: the Art. 4
