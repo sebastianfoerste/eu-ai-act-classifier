@@ -52,6 +52,7 @@ changes: read the 0.3.0 upgrade notes below as well. Pinning
   `review_required` with a warning instead of an empty `determined`
   inventory ("Inventory outside a clone").
 - The example inventory changes in 0.4.0, so the first collaboration action
+  that saves or takes a snapshot (not the cockpit's read-only evidence view)
   sets a workspace saved by an earlier release aside as
   `collaboration-workspace.stale-<UTC time>.json` and starts a new one. Its
   review cells, overrides and comments do not carry over, and an import
@@ -62,10 +63,11 @@ changes: read the 0.3.0 upgrade notes below as well. Pinning
   (S4)"). `local_api` prints a short error summary instead of pydantic's
   message and a traceback.
 - The cockpit listens on `127.0.0.1` only (`npm run dev` and `npm run
-  start`). Its API routes answer 415 to a body that is not
-  `application/json` and 403 to a `Host` or `Origin` other than `localhost`
-  or `127.0.0.1` at the server's port, so reach it from the same machine and
-  send JSON. `/api/health` reports `persistence: "local_file"` ("Cockpit API
+  start`). Its POST routes answer 415 to a body that is not
+  `application/json`, and every API route but `/api/health` answers 403 to a
+  `Host` or `Origin` other than `localhost` or `127.0.0.1` at the server's
+  port, so reach it from the same machine and send JSON. `/api/health`
+  reports `persistence: "local_file"` ("Cockpit API
   routes reject cross-site requests", "Docs and the cockpit health route say
   what the code does").
 
