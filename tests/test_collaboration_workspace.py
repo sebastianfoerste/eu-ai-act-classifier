@@ -936,8 +936,20 @@ def test_evidence_view_leaves_an_unusable_store_untouched(tmp_path, stored: str)
 
     assert runtime_path.read_bytes() == before
     assert sorted(tmp_path.iterdir()) == listing
-    assert view["counts"]["not_started"] == sum(len(lane["items"]) for lane in view["lanes"])
     assert view["orphanedRecords"] == []
+    total = sum(len(lane["items"]) for lane in view["lanes"])
+    entry = _entry(view, "high-risk.provider.9")
+    if stored == "unreadable":
+        # Recovery carries nothing from an unreadable file, so the view shows nothing.
+        assert view["counts"]["not_started"] == total
+        assert entry["revision"] == 0
+    else:
+        # Recovery carries a stale file's evidence, so the view shows it: a save based
+        # on the view is checked against the same revision.
+        assert view["counts"]["not_started"] == total - 1
+        assert (entry["owner"], entry["revision"]) == ("Owner A", 1)
+        saved = _evidence(runtime_path, owner="Owner B", revision=entry["revision"])
+        assert _entry(saved, "high-risk.provider.9")["owner"] == "Owner B"
 
 
 def test_recovery_goes_on_when_another_process_archived_the_file_first(

@@ -480,12 +480,19 @@ def _load_read_only(path: Path, inventory: AISystemInventory) -> CollaborationWo
     """The saved workspace for reading only; a new, unsaved one when it cannot be used.
 
     Unlike ``_load_or_recover`` this never archives or writes: an unreadable or stale
-    file is left as it is (the next saving action recovers it) and reads as a
-    workspace with no evidence.
+    file is left as it is (the next saving action recovers it). A stale file reads as
+    the workspace that recovery would build, with its evidence records carried over, so
+    the view shows the revisions a save will be checked against; an unreadable file
+    reads as a workspace with no evidence.
     """
 
     try:
         return load_workspace(path, inventory)
+    except StaleWorkspaceError as stale:
+        workspace = build_collaboration_state(inventory)
+        if stale.workspace is not None:
+            workspace.evidence = list(stale.workspace.evidence)
+        return workspace
     except (FileNotFoundError, ValueError):
         return build_collaboration_state(inventory)
 

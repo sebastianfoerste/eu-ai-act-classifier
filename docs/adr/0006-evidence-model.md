@@ -43,7 +43,7 @@ D9. Export. The tracker downloads the bridge's view as JSON with `draftNotice` (
 
 D10. Labels. The wording of states, lanes and stale reasons lives in the label catalog (`labels.py`, namespaces `evidence_state`, `evidence_lane` and `evidence_stale_reason`), which `scripts/build_playground.py` writes to `web/lib/labels.json`.
 
-D11. Concurrency. Each row has a revision, and a stale one answers 409. Every action that writes holds an exclusive file lock (`<workspace>.lock` in `runtime-data/`) from the load through the save, so the revision check holds across bridge processes: two saves of the same row from the same revision give one save and one 409, and saves of different rows no longer lose a write. Review cells get the same lock. `evidence_view` is read-only and takes no lock: it never sets a stored file aside, and an unreadable or stale file reads as no saved evidence. Not in scope: reviewer locks on evidence rows, a per-row history beyond the activity log, and a printed tracker.
+D11. Concurrency. Each row has a revision, and a stale one answers 409. Every action that writes holds an exclusive file lock (`<workspace>.lock` in `runtime-data/`) from the load through the save, so the revision check holds across bridge processes: two saves of the same row from the same revision give one save and one 409, and saves of different rows no longer lose a write. Review cells get the same lock. `evidence_view` is read-only and takes no lock: it never sets a stored file aside. A stale file reads with the evidence records the next save will carry over; an unreadable file reads as no saved evidence. Not in scope: reviewer locks on evidence rows, a per-row history beyond the activity log, and a printed tracker.
 
 ## Consequences
 

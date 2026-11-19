@@ -37,8 +37,9 @@ overlay and answers with the tracker view, not the workspace snapshot.
 
 - `{"action": "evidence_view", "systemId": ..., "profile": {...}}` returns the
   view and is read-only: it saves nothing and never sets a stored file aside.
-  An unreadable or stale workspace file reads as no saved evidence. The
-  cockpit posts it on each classification.
+  A stale workspace file reads with its evidence records, as the next saving
+  action will carry them over; an unreadable one reads as no saved evidence.
+  The cockpit posts it on each classification.
 - `{"action": "evidence", "systemId": ..., "profile": {...}, "obligationId":
   ..., "obligationActor": "provider", "state": "in_progress", "owner": "Owner
   A", "reviewedOn": null, "expectedRevision": 0, "actor": "Local reviewer"}`
