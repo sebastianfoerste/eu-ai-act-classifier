@@ -5,6 +5,18 @@ pull requests.
 
 ## Unreleased
 
+### Documentation upkeep
+
+#### Changed
+
+- `docs/playground.png` is recaptured from the current playground (theme
+  button, Binding result heading, the Art. 4 AI literacy item first), and its
+  alt texts in `docs/overview.md` and `docs/surfaces.md` say what it shows.
+- The adaptation plan marks H4 (dark mode) and H5 (share link) as built and
+  owner decisions 3 (the Art. 50(2) date) and 4 (the H7 screens) as resolved.
+  axe (WCAG 2.2 AA and best-practice rules, 19 November 2026) reports no
+  violation on the classified playground in either scheme at 1280 and 375 px.
+
 ### Annex III question in two steps (D5)
 
 #### Changed
