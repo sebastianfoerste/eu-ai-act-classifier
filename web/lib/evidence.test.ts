@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   EVIDENCE_STATES,
+  SAVE_CONFLICT_RELOADED,
   SETTABLE_STATES,
   draftFor,
   evidenceExport,
@@ -11,7 +12,9 @@ import {
   evidencePayload,
   evidenceTone,
   evidenceViewPayload,
+  focusAfterSave,
   rowNames,
+  settleEvidenceSave,
   type EvidenceView,
   type EvidenceViewItem,
 } from "./evidence";
@@ -155,6 +158,111 @@ describe("evidence export", () => {
     expect(JSON.parse(text).draftNotice).toBe(FALLBACK_DRAFT_NOTICE);
     expect(evidenceFilename(evidenceView())).toBe("creditsightscore-obligation-evidence.json");
     expect(evidenceFilename(evidenceView({ system: "  " }))).toBe("credit-provider-obligation-evidence.json");
+  });
+});
+
+describe("settleEvidenceSave", () => {
+  const saved = evidenceView({ reportDigest: "b".repeat(64) });
+  const reloaded = evidenceView({ reportDigest: "c".repeat(64) });
+  const conflict = () => Promise.reject(new Error("409 Conflict: stale evidence revision"));
+
+  function steps(overrides: Partial<Parameters<typeof settleEvidenceSave>[0]> = {}) {
+    return {
+      name: "Art. 9 AIA, Provider",
+      save: () => Promise.resolve(saved),
+      reload: () => Promise.resolve(reloaded),
+      isCurrent: () => true,
+      ...overrides,
+    };
+  }
+
+  it("returns the saved view and a success message for the row", async () => {
+    expect(await settleEvidenceSave(steps())).toEqual({
+      view: saved,
+      feedback: { kind: "saved", text: "Saved evidence for Art. 9 AIA, Provider.", invalidField: null },
+    });
+  });
+
+  it("reloads the tracker on a 409 and says so", async () => {
+    expect(await settleEvidenceSave(steps({ save: conflict }))).toEqual({
+      view: reloaded,
+      feedback: { kind: "error", text: SAVE_CONFLICT_RELOADED, invalidField: null },
+    });
+  });
+
+  it("says the tracker could not reload when the reload after a 409 fails", async () => {
+    const result = await settleEvidenceSave(
+      steps({ save: conflict, reload: () => Promise.reject(new Error("classifier bridge timed out")) }),
+    );
+    expect(result).toEqual({
+      view: null,
+      feedback: {
+        kind: "error",
+        text: "Another save reached this item first, and the tracker could not reload: classifier bridge timed out. Classify again to refresh.",
+        invalidField: null,
+      },
+    });
+    expect(result?.feedback.text).not.toContain("was reloaded");
+  });
+
+  it.each([
+    ["reviewedOn must not be after the current date", "reviewedOn"],
+    ["Art. 9 AIA: a reviewed item needs a reviewed-on date; enter the date of review", "reviewedOn"],
+    ["reviewed_on: Input should be a valid date", "reviewedOn"],
+    ["unknown obligation graph item for this report", null],
+  ])("marks the reviewed-on input invalid only for a date error: %s", async (message, field) => {
+    const result = await settleEvidenceSave(steps({ save: () => Promise.reject(new Error(message)) }));
+    expect(result).toEqual({ view: null, feedback: { kind: "error", text: message, invalidField: field } });
+  });
+
+  it.each([
+    ["a save", {}],
+    ["a 409", { save: conflict }],
+    ["a failed reload", { save: conflict, reload: () => Promise.reject(new Error("boom")) }],
+    ["an error", { save: () => Promise.reject(new Error("reviewedOn must not be after the current date")) }],
+  ])("drops %s that settles after a newer classification", async (_name, overrides) => {
+    let current = true;
+    const save = vi.fn((overrides as { save?: () => Promise<EvidenceView> }).save ?? (() => Promise.resolve(saved)));
+    const result = settleEvidenceSave(
+      steps({
+        ...overrides,
+        save: () => {
+          // The reviewer picks another system while the save runs.
+          current = false;
+          return save();
+        },
+        isCurrent: () => current,
+      }),
+    );
+    expect(await result).toBeNull();
+    expect(save).toHaveBeenCalledOnce();
+  });
+});
+
+describe("focusAfterSave", () => {
+  function targets() {
+    return { button: { focus: vi.fn() }, message: { focus: vi.fn() } };
+  }
+
+  it("returns focus to the row's Save button after a save", () => {
+    const row = targets();
+    expect(focusAfterSave({ kind: "saved", text: "Saved.", invalidField: null }, row)).toBe("button");
+    expect(row.button.focus).toHaveBeenCalledOnce();
+    expect(row.message.focus).not.toHaveBeenCalled();
+  });
+
+  it("moves focus to the row's message after a failure", () => {
+    const row = targets();
+    expect(focusAfterSave({ kind: "error", text: "No.", invalidField: "reviewedOn" }, row)).toBe("message");
+    expect(row.message.focus).toHaveBeenCalledOnce();
+    expect(row.button.focus).not.toHaveBeenCalled();
+  });
+
+  it("falls back to the button, and to nothing once the row is gone", () => {
+    const button = { focus: vi.fn() };
+    expect(focusAfterSave({ kind: "error", text: "No.", invalidField: null }, { button, message: null })).toBe("button");
+    expect(button.focus).toHaveBeenCalledOnce();
+    expect(focusAfterSave({ kind: "saved", text: "Saved.", invalidField: null }, { button: null, message: null })).toBeNull();
   });
 });
 

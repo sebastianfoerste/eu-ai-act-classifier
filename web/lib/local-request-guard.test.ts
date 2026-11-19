@@ -1,7 +1,8 @@
+import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import packageJson from "../package.json";
-import { rejectUnsafeLocalPost } from "./local-request-guard";
+import { rejectUnsafeLocalPost, unsafeLocalReadReason } from "./local-request-guard";
 
 type HeaderMap = Record<string, string>;
 type Case = { name: string; headers: HeaderMap };
@@ -148,6 +149,48 @@ describe("rejectUnsafeLocalPost", () => {
 
     expect(rejectUnsafeLocalPost(local)).toBeNull();
     expect(rejectUnsafeLocalPost(foreign)?.status).toBe(403);
+  });
+});
+
+describe("unsafeLocalReadReason", () => {
+  // The /self-assessment page renders the live workspace per request (force-dynamic).
+  beforeEach(() => {
+    vi.stubEnv("PORT", "3000");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it.each<Case>([
+    { name: "a top-level navigation on 127.0.0.1", headers: { host: "127.0.0.1:3000", "sec-fetch-site": "none" } },
+    { name: "a same-origin load on localhost", headers: { host: "localhost:3000", "sec-fetch-site": "same-origin" } },
+    { name: "curl on the loopback address", headers: { host: "127.0.0.1:3000" } },
+  ])("lets $name through", ({ headers }) => {
+    expect(unsafeLocalReadReason(new Headers(headers))).toBeNull();
+  });
+
+  it.each<Case>([
+    { name: "a foreign Host (DNS rebinding)", headers: { host: "evil.example", "sec-fetch-site": "same-origin" } },
+    { name: "a foreign Host at the cockpit's port", headers: { host: "evil.example:3000" } },
+    { name: "a cross-site request", headers: { host: "127.0.0.1:3000", "sec-fetch-site": "cross-site" } },
+    {
+      name: "a foreign Origin",
+      headers: { host: "127.0.0.1:3000", origin: "http://evil.example", "sec-fetch-site": "same-origin" },
+    },
+    { name: "no Host at all", headers: {} },
+  ])("refuses $name", ({ headers }) => {
+    expect(unsafeLocalReadReason(new Headers(headers))).toMatch(/^the cockpit (accepts|answers)/);
+  });
+
+  it("guards the self-assessment page before the bridge snapshot runs", () => {
+    const page = readFileSync(new URL("../app/self-assessment/page.tsx", import.meta.url), "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/^\s*\/\/.*$/gm, "");
+    const guard = page.indexOf("if (unsafeLocalReadReason(await headers())) {\n    notFound();\n  }");
+    expect(guard).toBeGreaterThan(-1);
+    expect(guard).toBeLessThan(page.indexOf("runClassifierBridge("));
+    expect(page).toContain('export const dynamic = "force-dynamic";');
   });
 });
 

@@ -151,3 +151,74 @@ export function evidenceFilename(view: EvidenceView): string {
       .replace(/(^-|-$)/g, "") || view.systemId;
   return `${slug}-obligation-evidence.json`;
 }
+
+/**
+ * The outcome of one row's save, shown in that row (ADR 0006). An error that names the
+ * reviewed-on date marks that input invalid.
+ */
+export type EvidenceRowFeedback = {
+  kind: "saved" | "error";
+  text: string;
+  invalidField: "reviewedOn" | null;
+};
+
+export const SAVE_CONFLICT_RELOADED =
+  "Another save reached this item first. The tracker was reloaded; enter your change again.";
+
+export function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+/**
+ * Runs one row's save and, on a 409, reloads the tracker. Returns the view to show and
+ * the row's feedback, or null when `isCurrent()` says a newer classification or a new
+ * intake took over while it ran: then neither belongs on screen.
+ */
+export async function settleEvidenceSave(steps: {
+  name: string;
+  save: () => Promise<EvidenceView>;
+  reload: () => Promise<EvidenceView>;
+  isCurrent: () => boolean;
+}): Promise<{ view: EvidenceView | null; feedback: EvidenceRowFeedback } | null> {
+  let view: EvidenceView | null = null;
+  let feedback: EvidenceRowFeedback;
+  try {
+    view = await steps.save();
+    feedback = { kind: "saved", text: `Saved evidence for ${steps.name}.`, invalidField: null };
+  } catch (saveError) {
+    const text = errorText(saveError);
+    if (text.startsWith("409 Conflict")) {
+      try {
+        view = await steps.reload();
+        feedback = { kind: "error", text: SAVE_CONFLICT_RELOADED, invalidField: null };
+      } catch (reloadError) {
+        feedback = {
+          kind: "error",
+          text: `Another save reached this item first, and the tracker could not reload: ${errorText(reloadError)}. Classify again to refresh.`,
+          invalidField: null,
+        };
+      }
+    } else {
+      // The bridge names the field reviewedOn, reviewed_on or "reviewed-on date".
+      feedback = { kind: "error", text, invalidField: /reviewed[-_ ]?on/i.test(text) ? "reviewedOn" : null };
+    }
+  }
+  return steps.isCurrent() ? { view, feedback } : null;
+}
+
+type Focusable = { focus: () => void };
+
+/**
+ * Where focus goes once a row's save settles: back to its Save button after a save,
+ * to its message after a failure. Returns the target it focused.
+ */
+export function focusAfterSave(
+  feedback: EvidenceRowFeedback,
+  targets: { button: Focusable | null; message: Focusable | null },
+): "button" | "message" | null {
+  const target = feedback.kind === "error" && targets.message ? "message" : targets.button ? "button" : null;
+  if (target) {
+    targets[target]?.focus();
+  }
+  return target;
+}

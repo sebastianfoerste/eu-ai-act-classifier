@@ -1,4 +1,7 @@
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { ThemeToggle } from "../../components/theme-toggle";
+import { unsafeLocalReadReason } from "../../lib/local-request-guard";
 import { runClassifierBridge } from "../../lib/python";
 import { WorkspaceClient, type Workspace } from "./workspace-client";
 
@@ -8,6 +11,12 @@ import { WorkspaceClient, type Workspace } from "./workspace-client";
 export const dynamic = "force-dynamic";
 
 export default async function SelfAssessmentPage() {
+  // The page carries the workspace (reviewer names, evidence owners and dates), so it
+  // gets the Host, Origin and Sec-Fetch-Site checks of GET /api/collaboration before
+  // the bridge runs: a DNS-rebound name gets a 404, not the workspace.
+  if (unsafeLocalReadReason(await headers())) {
+    notFound();
+  }
   const workspace = (await runClassifierBridge("collaboration", {
     action: "snapshot",
   })) as Workspace;

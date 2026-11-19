@@ -13,12 +13,16 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  errorText,
   evidenceExport,
   evidenceFilename,
+  evidenceKey,
   evidencePayload,
   evidenceViewPayload,
   rowNames,
+  settleEvidenceSave,
   type EvidenceDraft,
+  type EvidenceRowFeedback,
   type EvidenceView,
   type EvidenceViewItem,
 } from "../lib/evidence";
@@ -81,7 +85,10 @@ export function Cockpit() {
   const [classifiedProfile, setClassifiedProfile] = useState<SystemProfile | null>(null);
   const [evidenceBusy, setEvidenceBusy] = useState(false);
   const [evidenceMessage, setEvidenceMessage] = useState("");
-  // Counts classification runs, so a slow tracker answer for an earlier run is dropped.
+  // Each row's last save outcome, by evidenceKey.
+  const [evidenceFeedback, setEvidenceFeedback] = useState<Record<string, EvidenceRowFeedback>>({});
+  // Counts classification runs and new intakes, so a slow answer (tracker, dossier or
+  // save) for an earlier selection is dropped.
   const latestRun = useRef(0);
 
   useEffect(() => {
@@ -162,6 +169,7 @@ export function Cockpit() {
     setError("");
     setEvidenceView(null);
     setEvidenceMessage("");
+    setEvidenceFeedback({});
     const clean = cleanProfile(nextProfile);
     const run = ++latestRun.current;
     const payload = { profile: clean, include_advisory: advisory };
@@ -184,6 +192,9 @@ export function Cockpit() {
     }
     try {
       const dossierResult = await postJson<ReviewDossier>("/api/dossier", { ...payload, artifact: "all" });
+      if (run !== latestRun.current) {
+        return;
+      }
       const artifactResult = artifactResponseFromDossier(dossierResult);
       setReport(dossierResult.classification_report);
       setArtifacts(artifactResult);
@@ -193,6 +204,9 @@ export function Cockpit() {
       }
       setStatus("Reviewed by engine");
     } catch (classificationError) {
+      if (run !== latestRun.current) {
+        return;
+      }
       setError(String(classificationError));
       setStatus("Needs attention");
     }
@@ -247,50 +261,49 @@ export function Cockpit() {
     setArtifacts(null);
     setDossier(null);
     setReviewNotes([]);
+    // Drops any classification still running, so its dossier cannot land on the blank intake.
     latestRun.current += 1;
+    setStatus("Ready");
     setEvidenceView(null);
     setClassifiedProfile(null);
     setEvidenceMessage("");
+    setEvidenceFeedback({});
   }
 
-  async function saveEvidence(item: EvidenceViewItem, draft: EvidenceDraft) {
+  async function saveEvidence(item: EvidenceViewItem, draft: EvidenceDraft): Promise<EvidenceRowFeedback | null> {
     if (!evidenceView || !classifiedProfile || evidenceBusy) {
-      return;
+      return null;
     }
     const systemId = evidenceView.systemId;
     const profileOnScreen = classifiedProfile;
+    const key = evidenceKey(item);
     const name =
       rowNames(
         evidenceView.lanes.flatMap((lane) => lane.items),
         (actor) => labelFor("roles", actor),
-      ).get(`${item.obligationId}|${item.actor}`) ?? item.article;
-    // A classification started while the save runs makes its answer out of date.
+      ).get(key) ?? item.article;
+    // A classification or new intake started while the save runs makes its answer, and
+    // any message about it, out of date.
     const run = latestRun.current;
     setEvidenceBusy(true);
-    setEvidenceMessage("");
+    setEvidenceFeedback(({ [key]: _previous, ...others }) => others);
     try {
       // The profile that produced the report on screen, never the live intake, so the
       // stored digest is the one for the rows the reviewer saw.
-      const view = await postJson<EvidenceView>("/api/collaboration", evidencePayload(systemId, profileOnScreen, item, draft));
-      if (run === latestRun.current) {
-        setEvidenceView(view);
+      const result = await settleEvidenceSave({
+        name,
+        save: () => postJson<EvidenceView>("/api/collaboration", evidencePayload(systemId, profileOnScreen, item, draft)),
+        reload: () => postJson<EvidenceView>("/api/collaboration", evidenceViewPayload(systemId, profileOnScreen)),
+        isCurrent: () => run === latestRun.current,
+      });
+      if (!result) {
+        return null;
       }
-      setEvidenceMessage(`Saved evidence for ${name}.`);
-    } catch (saveError) {
-      const text = errorText(saveError);
-      if (text.startsWith("409 Conflict")) {
-        try {
-          const reloaded = await postJson<EvidenceView>("/api/collaboration", evidenceViewPayload(systemId, profileOnScreen));
-          if (run === latestRun.current) {
-            setEvidenceView(reloaded);
-          }
-        } catch {
-          // The message below still asks for the change again.
-        }
-        setEvidenceMessage("Another save reached this item first. The tracker was reloaded; enter your change again.");
-      } else {
-        setEvidenceMessage(text);
+      if (result.view) {
+        setEvidenceView(result.view);
       }
+      setEvidenceFeedback((current) => ({ ...current, [key]: result.feedback }));
+      return result.feedback;
     } finally {
       setEvidenceBusy(false);
     }
@@ -718,7 +731,8 @@ export function Cockpit() {
         view={evidenceView}
         disabled={isClassifying || evidenceBusy || selectedId === "new"}
         message={selectedId === "new" ? "The blank intake keeps no evidence. Pick an inventory system to track evidence." : evidenceMessage}
-        onSave={(item, draft) => void saveEvidence(item, draft)}
+        feedback={evidenceFeedback}
+        onSave={saveEvidence}
         onExport={downloadEvidence}
       />
 
@@ -1318,10 +1332,6 @@ function normalizeOptional(value: string | null): string | null {
     return null;
   }
   return value.trim();
-}
-
-function errorText(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }
 
 function cloneProfile(profile: SystemProfile): SystemProfile {

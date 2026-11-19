@@ -329,6 +329,28 @@ small {
   margin-top: 6px;
 }
 
+/* A row's save outcome, under its Save button. The button stays focusable while a save
+   runs (aria-disabled, not disabled), so it is dimmed here instead. */
+.rowMessage {
+  font-size: 13px;
+  margin: 6px 0 0;
+  max-width: 14rem;
+}
+
+.rowMessage:empty {
+  margin: 0;
+}
+
+.rowMessage.error {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.secondaryButton[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .orphanedEvidence {
   margin-top: 16px;
 }

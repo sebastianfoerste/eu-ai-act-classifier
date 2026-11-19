@@ -1,15 +1,17 @@
 "use client";
 
 import { Download, FileText } from "lucide-react";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useId, useRef, useState } from "react";
 import {
   EVIDENCE_STATES,
   SETTABLE_STATES,
   draftFor,
   evidenceKey,
   evidenceTone,
+  focusAfterSave,
   rowNames,
   type EvidenceDraft,
+  type EvidenceRowFeedback,
   type EvidenceView,
   type EvidenceViewItem,
   type SettableEvidenceState,
@@ -37,8 +39,12 @@ export type ObligationTrackerProps = {
   report: ClassificationReport | null;
   view: EvidenceView | null;
   disabled: boolean;
+  /** The tracker-wide status (a load failure, the blank intake), shown above the lanes. */
   message: string;
-  onSave: (item: EvidenceViewItem, draft: EvidenceDraft) => void;
+  /** Each row's last save outcome, by evidenceKey; shown in that row. */
+  feedback: Record<string, EvidenceRowFeedback>;
+  /** Resolves to the row's outcome, or null when a newer classification took over. */
+  onSave: (item: EvidenceViewItem, draft: EvidenceDraft) => Promise<EvidenceRowFeedback | null>;
   onExport: () => void;
 };
 
@@ -46,9 +52,9 @@ export type ObligationTrackerProps = {
  * The obligation tracker (ADR 0006): one table per lane, each row with its evidence
  * state, owner and reviewed-on date. Lanes, staleness and its reasons come from the
  * bridge. Without a tracker view (loading, the blank intake, or a bridge failure) the
- * report's obligation graph still shows, read-only.
+ * report's obligation graph still shows, read-only. A save's outcome shows in its row.
  */
-export function ObligationTracker({ report, view, disabled, message, onSave, onExport }: ObligationTrackerProps) {
+export function ObligationTracker({ report, view, disabled, message, feedback, onSave, onExport }: ObligationTrackerProps) {
   const items = view ? view.lanes.flatMap((lane) => lane.items) : [];
   const names = rowNames(items, (actor) => labelFor("roles", actor));
   const graphItems = view ? items.length : (report?.obligation_graph.length ?? 0);
@@ -78,13 +84,16 @@ export function ObligationTracker({ report, view, disabled, message, onSave, onE
           <FileText size={18} aria-hidden />
         </div>
       </div>
+      <p className="meta" role="status" aria-live="polite">
+        {message}
+      </p>
       {view ? (
         <>
-          {view.assessmentDate ? (
-            <p className="meta">Assessment date {view.assessmentDate}.</p>
-          ) : (
-            <p className="meta">No assessment date: dated items without a note are listed as upcoming.</p>
-          )}
+          <p className="meta">
+            {view.assessmentDate ? `Assessment date ${view.assessmentDate}.` : "No assessment date set."} Lanes are
+            placed against the assessment date; while none is set, dated items wait under &ldquo;
+            {labelFor("evidence_lane", "no_assessment_date")}&rdquo;.
+          </p>
           {view.lanes.map((lane) => {
             const laneId = `tracker-lane-${lane.lane}`;
             return (
@@ -107,10 +116,11 @@ export function ObligationTracker({ report, view, disabled, message, onSave, onE
                       {lane.items.length ? (
                         lane.items.map((item) => (
                           <EvidenceRow
-                            key={`${evidenceKey(item)}:${item.revision}`}
+                            key={evidenceKey(item)}
                             item={item}
                             name={names.get(evidenceKey(item)) ?? item.article}
                             disabled={disabled}
+                            feedback={feedback[evidenceKey(item)] ?? null}
                             onSave={onSave}
                           />
                         ))
@@ -144,25 +154,59 @@ export function ObligationTracker({ report, view, disabled, message, onSave, onE
       ) : (
         <GraphTable report={report} />
       )}
-      <p className="meta" role="status" aria-live="polite">
-        {message}
-      </p>
     </section>
   );
 }
 
+/**
+ * One tracker row. It is keyed by evidenceKey alone, so a save keeps the row mounted
+ * and its Save button focusable; the draft resets when the saved revision changes.
+ */
 function EvidenceRow({
   item,
   name,
   disabled,
+  feedback,
   onSave,
 }: {
   item: EvidenceViewItem;
   name: string;
   disabled: boolean;
-  onSave: (item: EvidenceViewItem, draft: EvidenceDraft) => void;
+  feedback: EvidenceRowFeedback | null;
+  onSave: ObligationTrackerProps["onSave"];
 }) {
   const [draft, setDraft] = useState<EvidenceDraft>(() => draftFor(item));
+  const [settled, setSettled] = useState<EvidenceRowFeedback | null>(null);
+  const messageId = useId();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const messageRef = useRef<HTMLParagraphElement>(null);
+  const reviewedOnInvalid = feedback?.kind === "error" && feedback.invalidField === "reviewedOn";
+
+  useEffect(() => {
+    setDraft(draftFor(item));
+    // Only a new saved revision replaces what the reviewer typed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item.revision]);
+
+  // Runs after the outcome has rendered, so the message is there to take focus.
+  useEffect(() => {
+    if (settled) {
+      focusAfterSave(settled, { button: buttonRef.current, message: messageRef.current });
+      setSettled(null);
+    }
+  }, [settled]);
+
+  async function save() {
+    // aria-disabled, not disabled: a disabled button would drop focus to <body>.
+    if (disabled) {
+      return;
+    }
+    const outcome = await onSave(item, draft);
+    if (outcome) {
+      setSettled(outcome);
+    }
+  }
+
   return (
     <tr>
       <th scope="row">{item.article}</th>
@@ -205,20 +249,33 @@ function EvidenceRow({
           aria-label={`Reviewed on, ${name}`}
           type="date"
           value={draft.reviewedOn}
+          aria-invalid={reviewedOnInvalid || undefined}
+          aria-describedby={reviewedOnInvalid ? messageId : undefined}
           disabled={disabled}
           onChange={(event) => setDraft({ ...draft, reviewedOn: event.target.value })}
         />
       </td>
       <td>
         <button
+          ref={buttonRef}
           className="secondaryButton"
           type="button"
           aria-label={`Save evidence, ${name}`}
-          disabled={disabled}
-          onClick={() => onSave(item, draft)}
+          aria-describedby={messageId}
+          aria-disabled={disabled || undefined}
+          onClick={() => void save()}
         >
           Save
         </button>
+        <p
+          ref={messageRef}
+          id={messageId}
+          className={feedback?.kind === "error" ? "rowMessage error" : "rowMessage"}
+          role={feedback?.kind === "error" ? "alert" : "status"}
+          tabIndex={-1}
+        >
+          {feedback?.text}
+        </p>
       </td>
     </tr>
   );
