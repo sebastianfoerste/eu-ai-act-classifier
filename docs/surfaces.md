@@ -42,7 +42,7 @@ The page installs a wheel of this package, so it applies the same rules as the C
 uv run python scripts/build_playground.py
 ```
 
-[![Browser playground: CreditSightScore classified high-risk under Art. 6 AIA, with the cited provider obligations from Article 9 onwards; captured before the Art. 4 AI literacy item was added, which the live playground now lists first](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
+[![Browser playground in the JSON editor: CreditSightScore classified high-risk under Art. 6 AIA, with its Annex III(5)(b) finding under Binding result and 27 obligation entries; the provider obligations open with the Art. 4 AI literacy item](playground.png)](https://sebastianfoerste.github.io/eu-ai-act-classifier/playground/)
 
 ## MCP and local API
 
