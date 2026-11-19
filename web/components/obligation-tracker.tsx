@@ -50,7 +50,8 @@ export type ObligationTrackerProps = {
 };
 
 /**
- * The obligation tracker (ADR 0006): one table per lane, each row with its evidence
+ * The obligation tracker (ADR 0006): one table per lane that can hold an item for the
+ * assessment date given (`shownLanes`), each row with its evidence
  * state, owner and reviewed-on date. Lanes, staleness and its reasons come from the
  * bridge. Without a tracker view (loading, the blank intake, or a bridge failure) the
  * report's obligation graph still shows, read-only. A save's outcome shows in its row.

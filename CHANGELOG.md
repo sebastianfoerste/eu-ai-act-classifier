@@ -574,11 +574,11 @@ pull requests.
   says, where every reading agrees, whether an item applies on it; an item
   with a date note or no date stays in Contested or open unless the engine
   says it applies on that date, which places it under Applies on the
-  assessment date. The tracker leaves out the lanes that cannot hold an item for
-  the date given: the two placed against the date while none is set, and
-  the "no assessment date" lane once one is. The report digest leaves out the date the engine writes
-  into Art. 5(1)(ba)/(bb) prose, so a new date stales saved rows only where
-  the outcome changes.
+  assessment date. The tracker leaves out the lanes that cannot hold an item
+  for the date given: the two placed against the date while none is set, and
+  "Dated; no assessment date set" once one is. The report digest leaves out
+  the date the engine writes into Art. 5(1)(ba)/(bb) prose, so a new date
+  stales saved rows only where the outcome changes.
 - `/api/collaboration` takes two actions, `evidence_view` and `evidence`
   (docs/API.md). `evidence_view` is read-only, and the cockpit page now reads
   the workspace through it on each classification. The label catalog gains

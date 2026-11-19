@@ -1140,3 +1140,26 @@ def test_a_replace_that_stays_blocked_still_fails(tmp_path, monkeypatch) -> None
     assert len(calls) == collaboration_module._REPLACE_ATTEMPTS
     assert not runtime_path.exists()
     assert not list(tmp_path.glob(".workspace.json.*.tmp"))
+
+
+def test_recovery_waits_for_a_reader_that_briefly_blocks_the_archive(tmp_path, monkeypatch) -> None:
+    # The archive step of a recovery is a replace too, so it waits for a reader the same way.
+    runtime_path = tmp_path / "workspace.json"
+    runtime_path.write_text(TRUNCATED, encoding="utf-8")
+    real_replace = os.replace
+    blocked: list[str] = []
+
+    def archive_busy_once(source, target):
+        if ".unreadable-" in str(target) and not blocked:
+            blocked.append(str(target))
+            raise PermissionError(13, "The process cannot access the file")
+        real_replace(source, target)
+
+    monkeypatch.setattr(collaboration_module, "_REPLACE_PAUSE", 0)
+    monkeypatch.setattr(collaboration_module.os, "replace", archive_busy_once)
+    _evidence(runtime_path, owner="Owner A")
+
+    archives = sorted(tmp_path.glob("workspace.unreadable-*.json"))
+    assert blocked and [path.name for path in archives] == [Path(blocked[0]).name]
+    assert archives[0].read_text(encoding="utf-8") == TRUNCATED
+    assert _entry(_view(runtime_path), "high-risk.provider.9")["owner"] == "Owner A"

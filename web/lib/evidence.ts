@@ -109,7 +109,8 @@ export function evidencePayload(
 }
 
 /**
- * The lanes worth a table: with an assessment date, the "no assessment date" lane can
+ * The lanes worth a table: with an assessment date, `no_assessment_date` ("Dated; no
+ * assessment date set") can
  * hold nothing; without one, the two lanes placed against the date can hold nothing.
  * A lane that holds items is always shown.
  */
