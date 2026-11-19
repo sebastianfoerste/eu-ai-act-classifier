@@ -215,7 +215,7 @@ exit 0 (1 if prohibited or requires_review)
 
 ### Accessibility and i18n
 
-All new wizard pages pass axe with WCAG 2.2 AA tags at 1280 and 375 px; the only finding is the pre-existing `label-content-name-mismatch` on the brand link (Observed, measured). Focus moves to the question heading on each page and to the error summary on a validation error. `lang="en"` throughout; German labels wait for review of their terms (H2).
+All new wizard pages pass axe with WCAG 2.2 AA tags at 1280 and 375 px; the only finding is the pre-existing `label-content-name-mismatch` on the brand link (Observed, measured). Update 2026-11-19: fixed with D1 (dark mode); axe now reports no violation. Focus moves to the question heading on each page and to the error summary on a validation error. `lang="en"` throughout; German labels wait for review of their terms (H2).
 
 ```text
 Focus order on a question page (both widths)
