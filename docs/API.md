@@ -36,20 +36,24 @@ cockpit classified. The bridge classifies that profile without the advisory
 overlay and answers with the tracker view, not the workspace snapshot.
 
 - `{"action": "evidence_view", "systemId": ..., "profile": {...}}` returns the
-  view and saves nothing.
+  view and is read-only: it saves nothing and never sets a stored file aside.
+  An unreadable or stale workspace file reads as no saved evidence. The
+  cockpit posts it on each classification.
 - `{"action": "evidence", "systemId": ..., "profile": {...}, "obligationId":
   ..., "obligationActor": "provider", "state": "in_progress", "owner": "Owner
   A", "reviewedOn": null, "expectedRevision": 0, "actor": "Local reviewer"}`
   saves one item's record and returns the view. `state` is `not_started`,
   `in_progress`, `evidence_attached` or `reviewed`; `reviewed` needs
-  `reviewedOn` (YYYY-MM-DD, not after the bridge's date). `owner` holds at most
+  `reviewedOn` (YYYY-MM-DD). In every state a `reviewedOn` may not be after
+  the bridge's local calendar date. `owner` holds at most
   120 characters. `expectedRevision` is the row's `revision` (0 before the
   first save).
 
 The view, `cockpit.obligation-evidence.v1`, starts with `draftNotice`, then
 `schema`, `systemId`, `system`, `classifierVersion`, `assessmentDate`,
 `reportDigest`, `counts` per state, `lanes` (`applies_now`, `upcoming`,
-`contested_or_open`, in that order, each with its items in the engine's order)
+`no_assessment_date`, `contested_or_open`, in that order, each with its items
+in the engine's order)
 and `orphanedRecords` (saved records whose item is no longer in the report).
 Each item carries the graph item's article, actor, evidence artifact, dates and
 review status, `sourceRetrievedOn`, `state`, `storedState`, `staleReasons`,
@@ -61,7 +65,16 @@ when `reviewedOn` is before the retrieval date of the item's source in the
 report's source manifest. [ADR 0006](adr/0006-evidence-model.md) defines the
 digests and the lane precedence. Posting `stale`, an unknown item, a bad id or
 a bad date answers 400; a stale `expectedRevision` answers 409 (`409 Conflict:
-stale evidence revision`).
+stale evidence revision`). The bridge holds a file lock from the load through
+the save, so of two saves of one row from the same revision, across processes
+too, one is saved and the other answers 409.
+
+Lanes are placed against the assessment date, not against today:
+`applies_now` applies on the assessment date, `upcoming` applies after it,
+`no_assessment_date` holds dated items while no assessment date is set, and
+`contested_or_open` holds items with a date note or no date. With a date the
+engine says, where every reading agrees, whether an item applies on it; items
+whose date is contested stay in Contested or open.
 
 ## Inventory
 

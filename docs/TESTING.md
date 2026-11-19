@@ -52,14 +52,18 @@ npm run build
 The tracker's rules are tested where they are computed, in Python:
 
 - `tests/test_evidence_tracker.py`: the report and item digests (pinned
-  algorithm, what they ignore and what changes them), the lane precedence over
-  every example and eight assessment dates, the retrieval date per item, the
+  algorithm, what they ignore and what changes them, the Art. 5(1)(ba) date
+  prose that moves the digest only where the outcome changes), the lane
+  precedence over every example and eight assessment dates (the
+  `no_assessment_date` lane without one), the retrieval date per item, the
   stale reasons matrix, the view's shape and order, and record validation.
 - `tests/test_collaboration_workspace.py`: saving with revisions and conflicts,
-  rejected input leaving the file unchanged, the stale reasons after a profile
-  change, an assessment date that stales nothing, a pre-tracker file, evidence
-  carried through a stale-workspace recovery, and import with and without an
-  `evidence` key.
+  two concurrent saves of one row under the file lock, rejected input leaving
+  the file unchanged, the reviewed-on date checked against the bridge's local
+  date, the stale reasons after a profile change, an assessment date that
+  stales nothing, a read-only `evidence_view` on an unreadable or stale file, a
+  pre-tracker file, evidence carried through a stale-workspace recovery, and
+  import with and without an `evidence` key.
 - `tests/test_local_api.py`: the round trip, the 409 and a rejected `stale`
   through the bridge's exit codes.
 
@@ -107,7 +111,7 @@ cd web && npm ci && CLASSIFIER_REPO_ROOT=.. npx next build
 CLASSIFIER_REPO_ROOT=.. timeout 600 npx next start -H 127.0.0.1 -p 3917 &
 SERVER=$!
 timeout 120 google-chrome --headless=new --no-sandbox --force-device-scale-factor=1 \
-  --virtual-time-budget=20000 --window-size=1180,16000 --screenshot=../docs/cockpit.png http://127.0.0.1:3917/
+  --virtual-time-budget=20000 --window-size=1180,18000 --screenshot=../docs/cockpit.png http://127.0.0.1:3917/
 kill "$SERVER"
 ```
 
@@ -115,7 +119,7 @@ The scroll bars stay visible, so the roles, Art. 5 and source lists show that
 they scroll rather than looking cut off. Crop the empty space below the page to
 a 24 px margin, then reduce the image to 256 colours (for example with Pillow:
 `quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)`,
-saved with `optimize=True`), which keeps it near 0.75 MB instead of 1.9 MB.
+saved with `optimize=True`), which keeps it near 1 MB instead of 3 MB.
 
 ## Quality Expectations
 
