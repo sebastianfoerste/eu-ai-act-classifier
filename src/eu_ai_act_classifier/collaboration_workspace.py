@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 import os
 import tempfile
+from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Literal
+from typing import IO, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -25,6 +27,15 @@ from .evidence_tracker import (
 )
 from .inventory import AISystemInventory, build_example_inventory
 from .models import ClassificationReport, SystemProfile
+
+try:
+    import fcntl
+except ImportError:  # Windows
+    fcntl = None  # type: ignore[assignment]
+try:
+    import msvcrt
+except ImportError:  # POSIX
+    msvcrt = None  # type: ignore[assignment]
 
 
 class ReviewComment(BaseModel):
@@ -347,6 +358,47 @@ def save_workspace(workspace: CollaborationWorkspace, path: Path) -> Path:
     return path
 
 
+def _lock_file(handle: IO[bytes]) -> None:
+    if fcntl is not None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+    elif msvcrt is not None:  # pragma: no cover - Windows only
+        handle.seek(0)
+        while True:
+            try:
+                # LK_LOCK retries for about ten seconds, then raises; keep waiting.
+                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+                return
+            except OSError:
+                continue
+
+
+def _unlock_file(handle: IO[bytes]) -> None:
+    if fcntl is not None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    elif msvcrt is not None:  # pragma: no cover - Windows only
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+
+
+@contextlib.contextmanager
+def _workspace_lock(path: Path) -> Iterator[None]:
+    """Hold an exclusive advisory lock on ``<path>.lock`` for one load-check-save.
+
+    Without it two bridge processes could both read revision N of a row, both pass the
+    revision check and both save, and one write was lost without a conflict. The lock
+    file stays next to the workspace (in ignored runtime-data/) and holds nothing; a
+    platform without fcntl or msvcrt runs unlocked, as before.
+    """
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path.with_name(f"{path.name}.lock"), "a+b") as handle:
+        _lock_file(handle)
+        try:
+            yield
+        finally:
+            _unlock_file(handle)
+
+
 def load_workspace(path: Path, inventory: AISystemInventory) -> CollaborationWorkspace:
     """The workspace saved at ``path``.
 
@@ -405,7 +457,10 @@ def _load_or_recover(
         # Invalid JSON or not a workspace (a pydantic ValidationError), or not UTF-8.
         reason = "unreadable"
     archive = _archive_path(path, reason, now)
-    path.replace(archive)
+    # Another process (one without the lock, such as an older bridge) may have set the
+    # file aside already; start the new workspace all the same.
+    with contextlib.suppress(FileNotFoundError):
+        path.replace(archive)
     workspace = build_collaboration_state(inventory)
     workspace.evidence = carried
     recovered = {
@@ -419,6 +474,20 @@ def _load_or_recover(
     workspace.activity.append(recovered)
     save_workspace(workspace, path)
     return workspace
+
+
+def _load_read_only(path: Path, inventory: AISystemInventory) -> CollaborationWorkspace:
+    """The saved workspace for reading only; a new, unsaved one when it cannot be used.
+
+    Unlike ``_load_or_recover`` this never archives or writes: an unreadable or stale
+    file is left as it is (the next saving action recovers it) and reads as a
+    workspace with no evidence.
+    """
+
+    try:
+        return load_workspace(path, inventory)
+    except (FileNotFoundError, ValueError):
+        return build_collaboration_state(inventory)
 
 
 def export_workspace(workspace: CollaborationWorkspace) -> str:
@@ -619,7 +688,8 @@ def set_evidence(
 
     The record stores the digests of ``report`` and of the item, so a later change to
     either marks it stale. ``now`` is the bridge's clock: a reviewed-on date after its
-    day is rejected.
+    local calendar day (the day the reviewer's date input shows; a naive ``now`` counts
+    as UTC) is rejected.
     """
 
     check_system_id(system_id)
@@ -655,7 +725,8 @@ def set_evidence(
             "updated_at": now.isoformat(),
         }
     )
-    if record.reviewed_on is not None and record.reviewed_on > _as_utc(now).date().isoformat():
+    today = _as_utc(now).astimezone().date().isoformat()
+    if record.reviewed_on is not None and record.reviewed_on > today:
         raise ValueError("reviewedOn must not be after the current date")
     if index is None:
         updated.evidence.append(record)
@@ -708,17 +779,34 @@ def apply_workspace_action(
     The inventory is stamped with ``now`` (or the clock). The digest the stored
     workspace is checked against leaves that timestamp out, so actions at different
     times operate on the same workspace. A stored file that is unreadable or stale is
-    set aside and a new workspace started (see ``_load_or_recover``).
+    set aside and a new workspace started (see ``_load_or_recover``). Every action but
+    "evidence_view" holds the workspace lock from the load through the save, so a
+    revision check and the write it guards cannot interleave with another process.
 
     "evidence_view" and "evidence" classify the payload's ``profile`` (the one the
     cockpit shows) and return the obligation tracker for ``systemId`` instead of the
-    workspace snapshot; "evidence_view" saves nothing.
+    workspace snapshot. "evidence_view" only reads: it never archives, recovers or
+    writes, and a stored file that is unreadable or stale reads as no saved evidence.
     """
 
     inventory = build_example_inventory(generated_at=_inventory_timestamp(now))
-    occurred_at = now or datetime.now(UTC)
-    current = _load_or_recover(runtime_path, inventory, occurred_at)
     action = str(payload.get("action", "snapshot"))
+    if action == "evidence_view":
+        system_id = check_system_id(str(payload.get("systemId", "")))
+        report = _evidence_report(payload)
+        return _evidence_view(_load_read_only(runtime_path, inventory), system_id, report)
+    with _workspace_lock(runtime_path):
+        return _apply_locked(payload, runtime_path, inventory, action, now or datetime.now(UTC))
+
+
+def _apply_locked(
+    payload: dict[str, object],
+    runtime_path: Path,
+    inventory: AISystemInventory,
+    action: str,
+    occurred_at: datetime,
+) -> dict[str, object]:
+    current = _load_or_recover(runtime_path, inventory, occurred_at)
     if action == "snapshot":
         return build_collaboration_workspace(collaboration=current)
     target_id = str(payload.get("targetId", ""))
@@ -761,9 +849,6 @@ def apply_workspace_action(
             expected_revision=expected_revision,
             now=occurred_at,
         )
-    elif action == "evidence_view":
-        system_id = check_system_id(str(payload.get("systemId", "")))
-        return _evidence_view(current, system_id, _evidence_report(payload))
     elif action == "evidence":
         system_id = check_system_id(str(payload.get("systemId", "")))
         report = _evidence_report(payload)

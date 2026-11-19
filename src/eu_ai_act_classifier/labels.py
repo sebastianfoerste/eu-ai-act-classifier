@@ -167,8 +167,9 @@ EVIDENCE_STATE_LABELS: dict[str, str] = {
 }
 
 EVIDENCE_LANE_LABELS: dict[str, str] = {
-    "applies_now": "Applies now",
-    "upcoming": "Upcoming",
+    "applies_now": "Applies on the assessment date",
+    "upcoming": "Applies after the assessment date",
+    "no_assessment_date": "Dated; no assessment date set",
     "contested_or_open": "Contested or open",
 }
 

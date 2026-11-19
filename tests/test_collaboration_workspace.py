@@ -1,7 +1,10 @@
+import contextlib
 import errno
 import io
 import json
 import shutil
+import threading
+import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -482,7 +485,11 @@ def test_a_workspace_that_cannot_be_read_from_disk_is_not_archived(tmp_path) -> 
     with pytest.raises(OSError):
         apply_workspace_action({"action": "snapshot"}, runtime_path)
 
-    assert [entry.name for entry in tmp_path.iterdir()] == ["workspace.json"]
+    # Nothing archived; only the (empty) lock file the action held sits next to it.
+    assert sorted(entry.name for entry in tmp_path.iterdir()) == [
+        "workspace.json",
+        "workspace.json.lock",
+    ]
 
 
 def _workspace_with_lock_time(lock_expires_at: str) -> dict:
@@ -621,7 +628,8 @@ def test_a_pre_s4_workspace_file_loads_with_no_evidence(tmp_path) -> None:
     assert loaded.evidence == []
     assert snapshot["collaboration"]["evidence"] == []
     assert [entry["event"] for entry in snapshot["collaboration"]["activity"]] == ["reviewed"]
-    assert list(tmp_path.iterdir()) == [runtime_path]
+    # Not archived: only the workspace and the lock file the snapshot held.
+    assert sorted(tmp_path.iterdir()) == [runtime_path, tmp_path / "workspace.json.lock"]
 
 
 def test_evidence_is_saved_per_system_obligation_and_actor_with_revisions(tmp_path) -> None:
@@ -725,7 +733,28 @@ def test_evidence_rejects_invalid_input(tmp_path, changes: dict, message: str) -
     assert runtime_path.read_bytes() == before
 
 
-def test_reviewed_evidence_needs_a_date_not_after_the_bridge_date(tmp_path) -> None:
+@pytest.fixture
+def local_zone(monkeypatch):
+    """Set the process's local time zone for one test and restore it afterwards."""
+
+    if not hasattr(time, "tzset"):
+        pytest.skip("time.tzset is not available on this platform")
+
+    def set_zone(zone: str, offset_hours: int) -> None:
+        monkeypatch.setenv("TZ", zone)
+        time.tzset()
+        if datetime(2026, 11, 18, tzinfo=UTC).astimezone().utcoffset() != timedelta(
+            hours=offset_hours
+        ):
+            pytest.skip(f"time zone {zone} is not installed")
+
+    yield set_zone
+    monkeypatch.undo()
+    time.tzset()
+
+
+def test_reviewed_evidence_needs_a_date_not_after_the_bridge_date(tmp_path, local_zone) -> None:
+    local_zone("UTC", 0)
     runtime_path = tmp_path / "workspace.json"
     with pytest.raises(ValueError, match="a reviewed item needs a reviewed-on date"):
         _evidence(runtime_path, state="reviewed")
@@ -738,6 +767,58 @@ def test_reviewed_evidence_needs_a_date_not_after_the_bridge_date(tmp_path) -> N
 
     view = _evidence(runtime_path, state="reviewed", reviewed_on="2026-11-17")
     assert _entry(view, "high-risk.provider.9")["state"] == "reviewed"
+
+
+def test_the_future_date_check_uses_the_bridge_local_date(tmp_path, local_zone) -> None:
+    # The cockpit's date input gives the reviewer's local day. At 23:30 UTC it is
+    # already the next day in Tokyo: that day is today there, not a future date.
+    local_zone("Asia/Tokyo", 9)
+    runtime_path = tmp_path / "workspace.json"
+    late_utc = datetime(2026, 11, 18, 23, 30, tzinfo=UTC)
+
+    with pytest.raises(ValueError, match="reviewedOn must not be after the current date"):
+        _evidence(runtime_path, state="reviewed", reviewed_on="2026-11-20", now=late_utc)
+    view = _evidence(runtime_path, state="reviewed", reviewed_on="2026-11-19", now=late_utc)
+
+    assert _entry(view, "high-risk.provider.9")["reviewedOn"] == "2026-11-19"
+
+
+def test_two_concurrent_saves_of_one_row_give_one_conflict(tmp_path, monkeypatch) -> None:
+    # Both requests hold revision 1. Without the workspace lock both read revision 1,
+    # both passed the check and both saved, and one write was lost without a 409.
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path)
+    barrier = threading.Barrier(2, timeout=0.5)
+    real_load = collaboration_module._load_or_recover
+
+    def load_then_meet(*args):
+        workspace = real_load(*args)
+        # Unlocked, both threads meet here holding revision 1. Locked, the second
+        # cannot load until the first has saved, so the wait times out instead.
+        with contextlib.suppress(threading.BrokenBarrierError):
+            barrier.wait()
+        return workspace
+
+    monkeypatch.setattr(collaboration_module, "_load_or_recover", load_then_meet)
+    outcomes: list[str] = []
+
+    def save(owner: str) -> None:
+        try:
+            _evidence(runtime_path, state="evidence_attached", revision=1, owner=owner)
+            outcomes.append("saved")
+        except ValueError as error:
+            outcomes.append(str(error))
+
+    threads = [threading.Thread(target=save, args=(owner,)) for owner in ("A", "B")]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=30)
+
+    assert sorted(outcomes) == ["409 Conflict: stale evidence revision", "saved"]
+    stored = load_workspace(runtime_path, build_example_inventory())
+    assert [record.revision for record in stored.evidence] == [2]
+    assert [entry["event"] for entry in stored.activity] == ["evidence_updated"] * 2
 
 
 def test_evidence_owner_is_trimmed_and_a_blank_owner_cleared(tmp_path) -> None:
@@ -834,6 +915,64 @@ def test_evidence_view_saves_nothing(tmp_path) -> None:
     assert not (tmp_path / "fresh.json").exists()
     _view(tmp_path / "fresh.json")
     assert not (tmp_path / "fresh.json").exists()
+
+
+@pytest.mark.parametrize("stored", ["unreadable", "stale"])
+def test_evidence_view_leaves_an_unusable_store_untouched(tmp_path, stored: str) -> None:
+    # evidence_view only reads: it neither archives nor rewrites the store. The next
+    # saving action recovers it as before.
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path, owner="Owner A")
+    if stored == "unreadable":
+        runtime_path.write_text(TRUNCATED, encoding="utf-8")
+    else:
+        data = json.loads(runtime_path.read_text(encoding="utf-8"))
+        data["inventory_digest"] = "0" * 64
+        runtime_path.write_text(json.dumps(data), encoding="utf-8")
+    before = runtime_path.read_bytes()
+    listing = sorted(tmp_path.iterdir())
+
+    view = _view(runtime_path)
+
+    assert runtime_path.read_bytes() == before
+    assert sorted(tmp_path.iterdir()) == listing
+    assert view["counts"]["not_started"] == sum(len(lane["items"]) for lane in view["lanes"])
+    assert view["orphanedRecords"] == []
+
+
+def test_recovery_goes_on_when_another_process_archived_the_file_first(
+    tmp_path, monkeypatch
+) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    runtime_path.write_text(TRUNCATED, encoding="utf-8")
+    real_archive_path = collaboration_module._archive_path
+
+    def moved_meanwhile(path: Path, reason: str, now: datetime) -> Path:
+        candidate = real_archive_path(path, reason, now)
+        path.rename(tmp_path / "set-aside-by-another-process.json")
+        return candidate
+
+    monkeypatch.setattr(collaboration_module, "_archive_path", moved_meanwhile)
+
+    snapshot = apply_workspace_action({"action": "snapshot"}, runtime_path, now=EVIDENCE_NOW)
+
+    assert [entry["event"] for entry in snapshot["collaboration"]["activity"]] == ["recovered"]
+    stored = load_workspace(runtime_path, build_example_inventory())
+    assert stored.activity == snapshot["collaboration"]["activity"]
+
+
+def test_a_lone_surrogate_in_profile_text_still_gives_a_view(tmp_path) -> None:
+    # The engine copies intended_purpose_source into the report; JSON "\ud800" parses
+    # to a lone surrogate, which plain UTF-8 encoding of the digest input refused.
+    runtime_path = tmp_path / "workspace.json"
+    profile = {**COCKPIT_CREDIT, "intended_purpose_source": "Brief \ud800"}
+
+    view = _view(runtime_path, profile)
+    saved = _evidence(runtime_path, profile=profile)
+
+    assert len(view["reportDigest"]) == 64
+    assert saved["reportDigest"] == view["reportDigest"]
+    assert _entry(saved, "high-risk.provider.9")["state"] == "in_progress"
 
 
 def test_evidence_survives_a_stale_workspace_recovery(tmp_path, monkeypatch) -> None:

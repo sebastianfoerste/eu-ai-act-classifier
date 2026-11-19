@@ -24,7 +24,8 @@ from .models import ClassificationReport, IsoDate, ObligationGraphItem, Role
 EVIDENCE_STATES = ("not_started", "in_progress", "evidence_attached", "reviewed", "stale")
 # "stale" is derived from the report and the source dates, never stored.
 SettableState = Literal["not_started", "in_progress", "evidence_attached", "reviewed"]
-LANES = ("applies_now", "upcoming", "contested_or_open")
+# Lanes are relative to the report's assessment date (ADR 0006 D6).
+LANES = ("applies_now", "upcoming", "no_assessment_date", "contested_or_open")
 STALE_REASONS = ("report_changed", "item_changed", "reviewed_before_source_retrieval")
 VIEW_SCHEMA = "cockpit.obligation-evidence.v1"
 BINDING_SOURCE_ID = "ai-act-2024-1689"
@@ -82,7 +83,10 @@ def check_system_id(system_id: str) -> str:
 
 
 def _canonical(data: object) -> bytes:
-    return json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+    # surrogatepass: a lone surrogate copied from profile text still hashes; valid text
+    # encodes exactly as with plain UTF-8.
+    text = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return text.encode("utf-8", errors="surrogatepass")
 
 
 def _digest(data: object) -> str:
@@ -95,16 +99,25 @@ def report_digest(report: ClassificationReport) -> str:
     Left out: the advisory notes (non-binding, they follow the advisory toggle), the
     classifier version (a version bump that changes no content changes nothing here),
     the system name (the record's key names the system) and the assessment date with
-    the per-item ``applies_on_assessment_date`` flags (lane inputs). Where the
-    assessment date changes substance, other fields change and so does the digest.
+    the per-item ``applies_on_assessment_date`` flags (lane inputs). The engine also
+    writes the date into the prose of Art. 5(1)(ba)/(bb) findings and open questions
+    ("the assessment date 2027-08-02"); that value is removed from the hashed text, so
+    only a change of substance (other fields, other sentences) moves the digest.
     """
 
     view = report.model_dump(
         mode="json", exclude={"advisory_notes", "classifier_version", "system"}
     )
-    view["scope"].pop("assessment_date", None)
+    day = view["scope"].pop("assessment_date", None)
     for item in view["obligation_graph"]:
         item.pop("applies_on_assessment_date", None)
+    if day:
+        dated, undated = f"assessment date {day}", "assessment date"
+        for finding in view["findings"]:
+            for field, value in finding.items():
+                if isinstance(value, str):
+                    finding[field] = value.replace(dated, undated)
+        view["open_questions"] = [text.replace(dated, undated) for text in view["open_questions"]]
     return _digest(view)
 
 
@@ -122,10 +135,11 @@ def lane_for(item: ObligationGraphItem, assessment_date: str | None) -> str:
     1. The engine says the item applies on the assessment date: applies now, even with
        a note, since it applies on every reading.
     2. A note or no application date: contested or open.
-    3. The engine says it does not apply yet: upcoming.
+    3. The engine says it does not apply yet: upcoming (after the assessment date).
     4. A defensive fallback the engine's output does not reach today: a date on or
        before the assessment date applies now.
-    5. Otherwise upcoming.
+    5. Otherwise upcoming, or ``no_assessment_date`` when the report has none: without
+       it the tracker cannot place a dated item before or after anything.
     """
 
     if item.applies_on_assessment_date is True:
@@ -134,7 +148,9 @@ def lane_for(item: ObligationGraphItem, assessment_date: str | None) -> str:
         return "contested_or_open"
     if item.applies_on_assessment_date is False:
         return "upcoming"
-    if assessment_date is not None and item.application_date <= assessment_date:
+    if assessment_date is None:
+        return "no_assessment_date"
+    if item.application_date <= assessment_date:
         return "applies_now"
     return "upcoming"
 

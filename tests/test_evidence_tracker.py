@@ -188,6 +188,36 @@ def test_report_digest_changes_where_the_assessment_date_changes_substance() -> 
     assert report_digest(before) != report_digest(after)
 
 
+def test_report_digest_ignores_the_date_written_into_art_5_1_ba_prose() -> None:
+    # The engine writes the assessment date into the (ba)/(bb) finding and open
+    # question ("on the assessment date 2027-08-02 ..."). The digest leaves that value
+    # out, so a new date stales nothing unless the outcome changes (2026-12-02).
+    path = _example("intimate_imagery_generator")
+    digests = {
+        day: report_digest(_report(path, assessment_date=day))
+        for day in ("2026-06-01", "2026-12-01", "2026-12-02", "2027-08-02", "2027-08-03")
+    }
+    assert digests["2026-06-01"] == digests["2026-12-01"]
+    assert digests["2026-12-02"] == digests["2027-08-02"] == digests["2027-08-03"]
+    assert digests["2026-12-01"] != digests["2026-12-02"]
+
+    saved_on = _report(path, assessment_date="2027-08-02")
+    first = saved_on.obligation_graph[0]
+    record = _record(
+        obligation_id=first.obligation_id,
+        obligation_actor=first.actor.value,
+        report_digest=report_digest(saved_on),
+        item_digest=item_digest(first),
+    )
+    view = build_evidence_view(
+        system_id="credit-provider",
+        report=_report(path, assessment_date="2027-08-03"),
+        records=[record],
+        draft_notice=DRAFT_NOTICE,
+    )
+    assert view["counts"]["stale"] == 0
+
+
 @pytest.mark.parametrize("path", EXAMPLES, ids=lambda path: path.stem)
 def test_item_digests_are_distinct_within_every_example_report(path: Path) -> None:
     report = _report(path)
@@ -229,6 +259,14 @@ def test_lane_grid_over_examples_and_assessment_dates(
             assert lane == "contested_or_open"
         if item.applies_on_assessment_date is False:
             assert lane != "applies_now"
+        # The lanes are relative to the assessment date: without one nothing is
+        # "upcoming" or "applies now" unless the engine itself says it applies.
+        if assessment_date is None:
+            assert lane in ("applies_now", "no_assessment_date", "contested_or_open")
+            if lane == "applies_now":
+                assert item.applies_on_assessment_date is True
+        else:
+            assert lane != "no_assessment_date"
     view = build_evidence_view(
         system_id="grid", report=report, records=[], draft_notice=DRAFT_NOTICE
     )
@@ -248,7 +286,10 @@ def test_lane_grid_over_examples_and_assessment_dates(
         (None, "2025-02-02", None, "2026-11-17", "applies_now"),
         (None, "2026-11-17", None, "2026-11-17", "applies_now"),
         (None, "2027-08-02", None, "2026-11-17", "upcoming"),
-        (None, "2025-02-02", None, None, "upcoming"),
+        # Without an assessment date a dated item is neither before nor after it.
+        (None, "2025-02-02", None, None, "no_assessment_date"),
+        (None, "2027-08-02", None, None, "no_assessment_date"),
+        (None, "2025-02-02", "A note.", None, "contested_or_open"),
     ],
 )
 def test_lane_precedence_on_handmade_items(applies, date, note, assessment_date, lane) -> None:

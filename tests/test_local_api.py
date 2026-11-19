@@ -471,6 +471,7 @@ def test_local_api_evidence_view_returns_lanes_and_the_notice(
     assert [lane["lane"] for lane in view["lanes"]] == [
         "applies_now",
         "upcoming",
+        "no_assessment_date",
         "contested_or_open",
     ]
     assert view["counts"]["not_started"] == sum(len(lane["items"]) for lane in view["lanes"])

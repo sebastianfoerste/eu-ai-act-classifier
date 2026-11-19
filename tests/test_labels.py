@@ -73,6 +73,13 @@ def test_evidence_tracker_labels_cover_its_states_lanes_and_reasons() -> None:
     assert tuple(NAMESPACES["evidence_lane"]) == LANES
     assert tuple(NAMESPACES["evidence_stale_reason"]) == STALE_REASONS
     assert NAMESPACES["evidence_state"]["stale"] == "Stale"
+    # Lanes are named relative to the assessment date (ADR 0006 D6), not as legal timing.
+    assert NAMESPACES["evidence_lane"] == {
+        "applies_now": "Applies on the assessment date",
+        "upcoming": "Applies after the assessment date",
+        "no_assessment_date": "Dated; no assessment date set",
+        "contested_or_open": "Contested or open",
+    }
     assert NAMESPACES["evidence_stale_reason"]["reviewed_before_source_retrieval"] == (
         "Reviewed before the source was retrieved"
     )

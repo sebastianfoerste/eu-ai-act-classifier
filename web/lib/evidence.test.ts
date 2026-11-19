@@ -54,7 +54,8 @@ function evidenceView(overrides: Partial<EvidenceView> = {}): EvidenceView {
     counts: { not_started: 1, in_progress: 0, evidence_attached: 0, reviewed: 0, stale: 0 },
     lanes: [
       { lane: "applies_now", items: [] },
-      { lane: "upcoming", items: [viewItem()] },
+      { lane: "upcoming", items: [] },
+      { lane: "no_assessment_date", items: [viewItem()] },
       { lane: "contested_or_open", items: [] },
     ],
     orphanedRecords: [],
@@ -75,7 +76,7 @@ describe("evidence states", () => {
   it("labels every state, lane and stale reason from the catalog", () => {
     const cases: Array<[Parameters<typeof labelFor>[0], string[]]> = [
       ["evidence_state", [...EVIDENCE_STATES]],
-      ["evidence_lane", ["applies_now", "upcoming", "contested_or_open"]],
+      ["evidence_lane", ["applies_now", "upcoming", "no_assessment_date", "contested_or_open"]],
       ["evidence_stale_reason", ["report_changed", "item_changed", "reviewed_before_source_retrieval"]],
     ];
     // From the catalog, not the formatLabel fallback ("reviewed" and "stale" would read

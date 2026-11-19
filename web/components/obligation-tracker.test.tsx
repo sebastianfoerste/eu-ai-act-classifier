@@ -102,8 +102,8 @@ describe("ObligationTracker", () => {
   it("renders one headed table per lane, in order, with counts", () => {
     const markup = render();
     expect(all(markup, /<h3 id="tracker-lane-[a-z_]+">([^<]*)<\/h3>/g)).toEqual([
-      "Applies now (1)",
-      "Upcoming (1)",
+      "Applies on the assessment date (1)",
+      "Applies after the assessment date (1)",
       "Contested or open (2)",
     ]);
     expect(markup.match(/<table>/g)).toHaveLength(3);

@@ -6,7 +6,8 @@ import type { SystemProfile } from "./types";
 
 export type SettableEvidenceState = "not_started" | "in_progress" | "evidence_attached" | "reviewed";
 export type EvidenceState = SettableEvidenceState | "stale";
-export type EvidenceLane = "applies_now" | "upcoming" | "contested_or_open";
+// Relative to the report's assessment date; "no_assessment_date" holds dated items when it is unset.
+export type EvidenceLane = "applies_now" | "upcoming" | "no_assessment_date" | "contested_or_open";
 export type EvidenceStaleReason = "report_changed" | "item_changed" | "reviewed_before_source_retrieval";
 
 export type EvidenceViewItem = {
