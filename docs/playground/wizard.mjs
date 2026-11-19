@@ -22,13 +22,25 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
   let answers = {};
   let page = null;
   let error = "";
+  // A question with groups (the Annex III point, D5) shows two pages: the group,
+  // then its options. Only the option is an answer; the group is page state.
+  // groupPick holds the group the user continued with; areaDraft the radio selected on
+  // the area page before Continue, so browsing the radios never changes an answer.
+  let pointStep = false;
+  let groupPick = {};
+  let areaDraft;
+  // The answer a Continue to another area cleared, so the point page's Back restores it.
+  let held = null;
   const byId = Object.fromEntries(definition.questions.map(q => [q.id, q]));
 
   const pages = () => askedQuestions(definition, answers);
   const firstPage = () => pages()[0]?.id ?? CHECK;
 
-  function go(next, { focus = true } = {}) {
+  function go(next, { focus = true, step = false } = {}) {
     page = next;
+    pointStep = step;
+    areaDraft = undefined;
+    held = null;
     error = "";
     render();
     if (focus) root.querySelector("[data-focus]")?.focus();
@@ -67,7 +79,12 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
     const list = pages();
     if (page === CHECK) return go(list.at(-1)?.id ?? CHECK);
     const index = list.findIndex(q => q.id === page);
-    if (index > 0) go(list[index - 1].id);
+    if (index < 1) return;
+    // Back into a grouped question the user last left from an option page (a point,
+    // None of these or I don't know which point) lands on that page, not on the group page.
+    const previous = list[index - 1];
+    const onOptions = previous.groups?.some(g => g.value === settledGroup(previous)) ?? false;
+    go(previous.id, { step: onOptions });
   }
 
   // Checkbox groups re-render to keep "None" and "I don't know" exclusive;
@@ -89,17 +106,109 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
     return wrap;
   }
 
+  const groupOf = (question, value) => question.groups.find(g => g.options.includes(value));
+
+  // The group the area page shows as chosen: the radio selected on this visit, else the
+  // group the user last continued with, else the one the answer implies. An unsettled
+  // answer ("III.unsure") names no area, so it shows as "I don't know".
+  function pickedGroup(question) {
+    if (page === question.id && areaDraft !== undefined) return areaDraft;
+    return settledGroup(question);
+  }
+
+  function settledGroup(question) {
+    if (groupPick[question.id] !== undefined) return groupPick[question.id];
+    const answer = answers[question.id];
+    if (answer === "none") return "none";
+    if (answer === UNKNOWN || (answer !== undefined && !groupOf(question, answer) && question.unknown?.value === answer)) return UNKNOWN;
+    return groupOf(question, answer)?.value;
+  }
+
+  // Selecting an area radio (by click or arrow key) changes no answer.
+  function draftGroup(value) {
+    areaDraft = value;
+    error = "";
+  }
+
+  function nextFromGroups(question) {
+    const picked = pickedGroup(question);
+    if (picked === undefined) {
+      error = "Choose an area, None of these, or I don't know.";
+      render();
+      root.querySelector(".error-summary")?.focus();
+      return;
+    }
+    const before = settledGroup(question);
+    groupPick = { ...groupPick, [question.id]: picked };
+    areaDraft = undefined;
+    if (picked === "none" || picked === UNKNOWN) {
+      setAnswer(question.id, picked);
+      return next();
+    }
+    // Every area has an option page, a one-point area too, so the point's own wording
+    // (its conditions) is seen before it is stored. Continuing with another area than
+    // before clears an answer that lies outside it; continuing with the same one keeps
+    // what its option page holds, None of these or I don't know included.
+    const group = question.groups.find(g => g.value === picked);
+    if (picked !== before && !group.options.includes(answers[question.id])) {
+      held = { value: answers[question.id], group: before };
+      setAnswer(question.id, undefined);
+    }
+    pointStep = true;
+    error = "";
+    render();
+    root.querySelector("[data-focus]")?.focus();
+  }
+
+  // The option page's Back: the group page again, with the answer that a Continue to
+  // another area cleared restored if no option was chosen since.
+  function backToGroups(question) {
+    let shown;
+    if (held && answers[question.id] === undefined) {
+      // The area just looked at stays selected, as an unsubmitted choice.
+      shown = groupPick[question.id];
+      groupPick = { ...groupPick, [question.id]: held.group };
+      setAnswer(question.id, held.value);
+    }
+    held = null;
+    pointStep = false;
+    areaDraft = shown;
+    error = "";
+    render();
+    root.querySelector("[data-focus]")?.focus();
+  }
+
+  function nextFromPoints(question) {
+    const group = question.groups.find(g => g.value === pickedGroup(question));
+    const answer = answers[question.id];
+    if (answer !== UNKNOWN && answer !== "none" && !group?.options.includes(answer)) {
+      error = "Choose the point that applies, None of these, or I don't know.";
+      render();
+      root.querySelector(".error-summary")?.focus();
+      return;
+    }
+    next();
+  }
+
   function renderQuestion(question) {
     const answer = answers[question.id];
     const list = pages();
     const position = list.findIndex(q => q.id === question.id) + 1;
     const form = node("form", "question");
     form.noValidate = true;
-    form.addEventListener("submit", event => { event.preventDefault(); next(); });
+    const grouped = Boolean(question.groups);
+    const onPoints = grouped && pointStep;
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      if (onPoints) nextFromPoints(question);
+      else if (grouped) nextFromGroups(question);
+      else next();
+    });
 
     const top = node("div", "question-top");
-    top.append(node("span", "progress", `Question ${position} of ${list.length}`));
-    if (position > 1) top.append(button("Back", "text-button back-link", back));
+    top.append(node("span", "progress", `Question ${position} of ${list.length}${grouped ? (onPoints ? ": the use" : ": the area") : ""}`));
+    if (onPoints) top.append(button("Back", "text-button back-link", () => backToGroups(question)));
+    else if (position > 1) top.append(button("Back", "text-button back-link", back));
     form.append(top);
 
     if (error) {
@@ -112,13 +221,15 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
 
     const fieldset = node("fieldset");
     const legend = node("legend");
-    const heading = node("h3", "question-title", question.title);
+    const group = onPoints ? question.groups.find(g => g.value === pickedGroup(question)) : null;
+    const heading = node("h3", "question-title", onPoints ? question.group_title : question.title);
     heading.tabIndex = -1;
     heading.dataset.focus = "";
     legend.append(heading);
     fieldset.append(legend);
     if (question.article) fieldset.append(node("p", "question-article", question.article));
-    if (question.hint) fieldset.append(node("p", "question-hint", question.hint));
+    if (onPoints) fieldset.append(node("p", "question-hint", group.label));
+    else if (question.hint) fieldset.append(node("p", "question-hint", question.hint));
 
     const name = `q-${question.id}`;
     const unknownLabel = definition.answers.unknown;
@@ -150,6 +261,22 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
       // around a number is ignored (isNumber in intake.mjs).
       input.addEventListener("input", () => setAnswer(question.id, input.value));
       fieldset.append(label, input);
+    } else if (grouped) {
+      const group_ = node("div", "choices");
+      if (onPoints) {
+        const labels = Object.fromEntries(question.options.map(o => [o.value, o.label]));
+        for (const value of group.options) group_.append(choice("radio", name, value, labels[value], answer === value, () => setAnswer(question.id, value)));
+        if (question.none_label) group_.append(choice("radio", name, "none", question.none_label, answer === "none", () => setAnswer(question.id, "none")));
+        group_.append(node("p", "choice-divider", "or"));
+        group_.append(choice("radio", name, UNKNOWN, `${unknownLabel} which point`, answer === UNKNOWN, () => setAnswer(question.id, UNKNOWN)));
+      } else {
+        const picked = pickedGroup(question);
+        for (const g of question.groups) group_.append(choice("radio", name, g.value, g.label, picked === g.value, () => draftGroup(g.value)));
+        if (question.none_label) group_.append(choice("radio", name, "none", question.none_label, picked === "none", () => draftGroup("none")));
+        group_.append(node("p", "choice-divider", "or"));
+        group_.append(choice("radio", name, UNKNOWN, unknownLabel, picked === UNKNOWN, () => draftGroup(UNKNOWN)));
+      }
+      fieldset.append(group_);
     } else if (question.kind === "boolean" || question.kind === "single") {
       const options = question.kind === "boolean"
         ? [["yes", definition.answers.yes], ["no", definition.answers.no]]
@@ -284,8 +411,8 @@ export function createWizard({ root, definition, canClassify, onClassify, onEdit
     // Re-render the check-answers page when the engine becomes ready; other
     // pages are left alone so focus and typing are not disturbed.
     refresh() { if (page === CHECK) render(); },
-    reset() { answers = {}; go(firstPage(), { focus: false }); onChange(); },
-    review(newAnswers) { answers = structuredClone(newAnswers); go(CHECK, { focus: false }); onChange(); },
+    reset() { answers = {}; groupPick = {}; go(firstPage(), { focus: false }); onChange(); },
+    review(newAnswers) { answers = structuredClone(newAnswers); groupPick = {}; go(CHECK, { focus: false }); onChange(); },
     get answers() { return answers; },
   };
 }
