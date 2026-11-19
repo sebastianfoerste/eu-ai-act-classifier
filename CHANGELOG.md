@@ -12,8 +12,10 @@ Nothing yet.
 #### Upgrade notes
 
 Profiles, reports and CI jobs that pass on 0.3.0 can fail or change on 0.4.0.
-Pinning `eu-ai-act-classifier==0.3.0` keeps the 0.3.0 behaviour while you
-update them. The sections below give the detail.
+The sections below give the detail. 0.3.0 was not published to PyPI, where
+0.2.2 is the latest release, so an upgrade from PyPI also brings the 0.3.0
+changes: read the 0.3.0 upgrade notes below as well. Pinning
+`eu-ai-act-classifier==0.2.2` keeps the 0.2.2 behaviour while you update.
 
 - A breaking input change: `roles` must hold at least one role. A profile,
   playground draft, share link, MCP call or inventory file with
@@ -38,19 +40,34 @@ update them. The sections below give the detail.
 - `report.obligations` changes shape: an Annex III provider report has 22
   entries instead of 15, entries for up to 12 articles are new and the
   requirement strings of 12 existing kinds of entry change. The obligation
-  graph gains the Arts. 9 to 15 items and three GPAI items. Code that
-  counts entries, matches their text or keys on the set of articles must be
-  updated ("One source for the obligations list and the obligation graph").
+  graph gains the Arts. 9 to 15 items and three GPAI items, and the
+  requirement text of nine existing graph items (Arts. 16, 17, 18, 24, 25,
+  26, 41, 53(1)(a) and 53(1)(c)) follows the Official Journal wording. Code
+  that counts entries, matches their text or keys on the set of articles
+  must be updated ("One source for the obligations list and the obligation
+  graph").
 - A deployer of a system that is high-risk only through Annex I no longer
   gets the Art. 27 FRIA item ("The FRIA follows Art. 27(1)").
 - The example inventory run outside a clone's root reports
   `review_required` with a warning instead of an empty `determined`
   inventory ("Inventory outside a clone").
-- The collaboration workspace gains an `evidence` list. A build from before
-  0.4.0 drops it on its next save, so export the workspace before going back
-  to one ("Obligation evidence tracker (S4)"). `local_api` prints a short
-  error summary instead of pydantic's message and a traceback ("Collaboration
-  store and bridge errors").
+- The example inventory changes in 0.4.0, so the first collaboration action
+  sets a workspace saved by an earlier release aside as
+  `collaboration-workspace.stale-<UTC time>.json` and starts a new one. Its
+  review cells, overrides and comments do not carry over, and an import
+  rejects the file as stale, so copy what you need from it by hand. An
+  earlier release rejects a workspace saved by 0.4.0 as stale on every
+  action: move `runtime-data/collaboration-workspace.json` aside before going
+  back ("Collaboration store and bridge errors", "Obligation evidence tracker
+  (S4)"). `local_api` prints a short error summary instead of pydantic's
+  message and a traceback.
+- The cockpit listens on `127.0.0.1` only (`npm run dev` and `npm run
+  start`). Its API routes answer 415 to a body that is not
+  `application/json` and 403 to a `Host` or `Origin` other than `localhost`
+  or `127.0.0.1` at the server's port, so reach it from the same machine and
+  send JSON. `/api/health` reports `persistence: "local_file"` ("Cockpit API
+  routes reject cross-site requests", "Docs and the cockpit health route say
+  what the code does").
 
 ### Documentation upkeep
 
@@ -646,8 +663,10 @@ update them. The sections below give the detail.
   `evidenceCarried`.
 - An import replaces the evidence only when the file has an `evidence` key; a
   file without one keeps the current records.
-- A build from before the tracker drops the `evidence` list on its next save.
-  Export the workspace before going back to one.
+- A build of `main` from before the tracker drops the `evidence` list on its
+  next save; export the workspace before going back to one. A released
+  version rejects a workspace saved by 0.4.0 as stale instead (see the
+  upgrade notes above).
 - `docs/cockpit.png` is recaptured with the lane-based tracker and the
   Assessment date field.
 
