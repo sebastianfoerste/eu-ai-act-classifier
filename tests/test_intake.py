@@ -15,6 +15,7 @@ Three guarantees back the playground's guided mode:
 from __future__ import annotations
 
 import copy
+import html
 import itertools
 import json
 import re
@@ -25,6 +26,7 @@ import pytest
 
 from eu_ai_act_classifier import SystemProfile, classify
 from eu_ai_act_classifier.intake import (
+    ANNEX_III_AREAS,
     BLOCK,
     CHANGE_OPEN,
     IN_SCOPE,
@@ -44,6 +46,7 @@ from eu_ai_act_classifier.models import AnnexIII, Derogation, ProhibitedPractice
 from eu_ai_act_classifier.transitions import change_used, public_authority_status_used
 
 ROOT = Path(__file__).resolve().parents[1]
+SOURCES = ROOT / "sources"
 EXAMPLES = {
     path.stem: json.loads(path.read_text(encoding="utf-8"))
     for path in sorted((ROOT / "examples").glob("*.json"))
@@ -796,3 +799,43 @@ def test_question_articles_are_citations_the_engine_already_makes() -> None:
                 # A whole pinpoint, not the prefix of a longer one ("Art. 5" in "Art. 50").
                 made = re.search(re.escape(pinpoint) + r"(?![\w(])", corpus)
                 assert made, (question["id"], pinpoint)
+
+
+# --- D5: the Annex III question in two steps ---------------------------------------
+
+
+def _annex_iii_question() -> dict:
+    return next(q for q in QUESTIONS if q["id"] == "annex_iii_area")
+
+
+def test_annex_iii_groups_hold_every_point_once_under_its_own_area() -> None:
+    question = _annex_iii_question()
+    grouped = [value for group in question["groups"] for value in group["options"]]
+    points = [o["value"] for o in question["options"] if o["value"] != AnnexIII.UNSURE.value]
+    assert sorted(grouped) == sorted(points)
+    assert len(grouped) == len(set(grouped))
+    for group in question["groups"]:
+        assert group["options"], group["value"]
+        assert all(value.split(".")[1] == group["value"] for value in group["options"])
+    assert [g["value"] for g in question["groups"]] == [str(n) for n in range(1, 9)]
+    # The area is page state in the wizard, never a profile field: "I don't know" on
+    # either page writes the point the question already writes.
+    assert question["field"] == "annex_iii_area"
+    assert question["unknown"] == {"value": AnnexIII.UNSURE.value}
+    # The second page's heading; the wizard has no other text for it.
+    assert isinstance(question["group_title"], str) and question["group_title"].strip()
+
+
+def test_annex_iii_area_headings_quote_the_official_journal() -> None:
+    raw = (SOURCES / "oj" / "32024R1689.en.xhtml").read_text(encoding="utf-8")
+    text = " ".join(html.unescape(re.sub(r"<[^>]+>", " ", raw)).split())
+    question = _annex_iii_question()
+    labels = {g["value"]: g["label"] for g in question["groups"]}
+    for area, heading in ANNEX_III_AREAS.items():
+        assert re.search(rf"\b{area}\. {re.escape(heading)}:", text), area
+        assert labels[area] == f"Annex III({area}): {heading}"
+    # Every point label on the second page cites the same area.
+    points = {o["value"]: o["label"] for o in question["options"]}
+    for group in question["groups"]:
+        for value in group["options"]:
+            assert points[value].startswith(f"Annex III({group['value']})"), value

@@ -423,7 +423,7 @@
       "kind": "single",
       "field": "annex_iii_area",
       "title": "Is the system intended for a use listed in Annex III?",
-      "hint": "Choose the point that applies. If an area applies but not which point, choose the unsettled option; it is treated as high-risk and routed to review.",
+      "hint": "Choose the area that applies, then the point. If an area applies but not which point, answer I don't know; it is treated as high-risk and routed to review.",
       "article": "Art. 6(2) AIA",
       "options": [
         {
@@ -531,6 +531,82 @@
           "label": "Annex III, point unsettled: An Annex III area is implicated but the specific point is unsettled"
         }
       ],
+      "groups": [
+        {
+          "value": "1",
+          "label": "Annex III(1): Biometrics, in so far as their use is permitted under relevant Union or national law",
+          "options": [
+            "III.1.a",
+            "III.1.b",
+            "III.1.c"
+          ]
+        },
+        {
+          "value": "2",
+          "label": "Annex III(2): Critical infrastructure",
+          "options": [
+            "III.2"
+          ]
+        },
+        {
+          "value": "3",
+          "label": "Annex III(3): Education and vocational training",
+          "options": [
+            "III.3.a",
+            "III.3.b",
+            "III.3.c",
+            "III.3.d"
+          ]
+        },
+        {
+          "value": "4",
+          "label": "Annex III(4): Employment, workers’ management and access to self-employment",
+          "options": [
+            "III.4.a",
+            "III.4.b"
+          ]
+        },
+        {
+          "value": "5",
+          "label": "Annex III(5): Access to and enjoyment of essential private services and essential public services and benefits",
+          "options": [
+            "III.5.a",
+            "III.5.b",
+            "III.5.c",
+            "III.5.d"
+          ]
+        },
+        {
+          "value": "6",
+          "label": "Annex III(6): Law enforcement, in so far as their use is permitted under relevant Union or national law",
+          "options": [
+            "III.6.a",
+            "III.6.b",
+            "III.6.c",
+            "III.6.d",
+            "III.6.e"
+          ]
+        },
+        {
+          "value": "7",
+          "label": "Annex III(7): Migration, asylum and border control management, in so far as their use is permitted under relevant Union or national law",
+          "options": [
+            "III.7.a",
+            "III.7.b",
+            "III.7.c",
+            "III.7.d"
+          ]
+        },
+        {
+          "value": "8",
+          "label": "Annex III(8): Administration of justice and democratic processes",
+          "options": [
+            "III.8.a",
+            "III.8.b"
+          ]
+        }
+      ],
+      "group_title": "Which use in this area is the system intended for?",
       "none_label": "None of these",
       "show_if": {
         "all": [
