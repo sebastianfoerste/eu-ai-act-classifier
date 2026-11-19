@@ -30,34 +30,56 @@ pull requests.
   Arts. 16, 18 to 21, 40 to 42, 43(2) or 44; the graph had the reverse. Only
   the graph had Art. 49(2), Art. 49(5), Art. 56 and the Art. 111(2) items.
   Every duty is now written once, as a graph item, and the list is the graph
-  without the Art. 50 items and five review tasks, in the same order
+  without the Art. 50 items and four review tasks, in the same order
   (`obligation_graph.listed_obligations`; titles in `catalog.DUTY_TITLES`).
-  The review tasks stay in the graph only (`GRAPH_ONLY_ITEMS`): Arts. 40,
-  41 and 42 grant presumptions of conformity, Art. 44 governs the
-  certificates notified bodies issue and Art. 56 addresses the AI Office and
-  the Board, so none of them is a provider duty.
+  The review tasks stay in the graph only (`GRAPH_ONLY_ITEMS`): Arts. 40(1)
+  and 42 grant presumptions of conformity, Art. 44 governs the certificates
+  notified bodies issue and Art. 56 addresses the AI Office and the Board,
+  so none of them is a provider duty.
 - The graph gains items for Arts. 9 to 15 (`high-risk.provider.9` to
   `high-risk.provider.15`), with the list's wording, dated like the Art. 16
   item by the Chapter III date of the route and `determined`. Their evidence
   artifact names are new. A high-risk provider report for an Annex III
-  system now has 21 obligations and 24 graph items (15 and 17 before).
-- The list gains Arts. 16, 18 to 21, 43(2), 49(2), 49(5) and 111(2) wherever
-  the graph has them.
+  system now has 22 obligations and 24 graph items (15 and 17 before).
+- The graph gains three GPAI items, all `review_required`.
+  `gpai.provider.53.4` and, with systemic risk, `gpai.provider.55.2` are
+  dated like the other Chapter V items and state the third sentence of
+  Art. 53(4) and of Art. 55(2): a provider that does not adhere to an
+  approved code of practice or does not comply with a European harmonised
+  standard demonstrates alternative adequate means of compliance for
+  assessment by the Commission. `gpai.provider.41` states the Art. 41(5)
+  duty of a general-purpose AI model provider: where common specifications
+  cover its Chapter V obligations and are not followed, justify compliance
+  with Chapter V, Section 2 (and Section 3 with systemic risk) to a level at
+  least equivalent. Art. 41 is in Chapter III, Section 5, so the item takes
+  the general date, 2 August 2026 (Art. 113, second paragraph), or
+  2 August 2027 for a model placed before 2 August 2025 (Art. 111(3)), not
+  the Chapter V date. A GPAI provider's list has 6 entries (11 with
+  systemic risk), 5 (10) under Chapter V plus the Art. 41 entry, two
+  (three) more than before, and the Art. 4 entry where the profile also
+  holds an operator role.
+- The list gains Arts. 16, 18 to 21, 41, 43(2), 49(2), 49(5), 53(4), 55(2)
+  and 111(2) wherever the graph has them. The high-risk provider's Art. 41
+  entry states the Art. 41(5) duty: where common specifications apply and
+  are not followed, justify technical solutions that meet the Section 2
+  requirements to a level at least equivalent.
 - Where both had an article with different wording, the list takes the
-  graph's requirement: Arts. 17, 22 to 27, 43, 47, 48, 49, 53(1)(a) and
-  53(1)(c). The Art. 43 entry now carries the Art. 43(1) sentence for an
-  Annex III, point 1 system, as its graph item does.
-- Eight graph requirements are reworded to follow the Official Journal text
-  (both lists carry them): Art. 16 names Section 2 and the name and contact
-  address; Art. 17 and Art. 53(1)(c) say "Put in place"; Art. 18 lists what
-  Art. 18(1) keeps for 10 years, not the logs, which are Art. 19's; Art. 24
-  says "Before making the system available"; Art. 25 names the three
-  Art. 25(1) circumstances; Art. 26 says "assign human oversight to natural
-  persons"; Art. 53(1)(a) says "Draw up and keep up to date".
+  graph's requirement: Arts. 17, 22 to 27, 43, 47, 48, 49 and 53(1)(a). The
+  Art. 43 entry now carries the Art. 43(1) sentence for an Annex III, point 1
+  system, as its graph item does.
+- Nine graph requirements are reworded to follow the Official Journal text
+  (both lists carry them): Art. 16 names Section 2 and Art. 16(b) (name,
+  registered trade name or registered trade mark and contact address, on the
+  system or its packaging or documentation); Art. 17 and Art. 53(1)(c) say "Put in
+  place"; Art. 18 lists the five Art. 18(1) items kept for 10 years, not the
+  logs, which are Art. 19's; Art. 24 says "Before making the system
+  available"; Art. 25 names the three Art. 25(1) circumstances; Art. 26 says
+  "assign human oversight to natural persons"; Art. 41 states Art. 41(5);
+  Art. 53(1)(a) says "Draw up and keep up to date".
 - Unchanged over the 19 examples and a matrix of 7,776 further profiles
   (roles, Annex III points, Annex I sections, dates and screens): tier,
-  disposition, findings, open questions, documentation items, transparency
-  obligations, unverified citations and every graph item but the eight
+  disposition, findings, documentation items, transparency obligations,
+  unverified citations and every existing graph item but the nine
   rewordings. No list entry is removed.
 - `tests/test_obligation_catalog.py` holds the two lists to each other. The
   worked examples, the sample output, the sample dossier, the case study,
@@ -65,13 +87,29 @@ pull requests.
 
 #### Upgrade notes
 
-- `report.obligations` changes shape: an Annex III provider report has 21
-  entries instead of 15, the new entries among them, and the requirement
-  strings of 13 existing entries change (the graph's wording, reworded for
-  Arts. 17, 24, 25, 26 and 53(1)(a) and (c)). Code that counts the entries, matches
-  their text or keys on the set of articles, such as an inventory export or
-  the cockpit's portfolio count, must be updated. For a conditional entry,
-  read its graph item for the trigger, `review_status` and the date note.
+- `report.obligations` changes shape: an Annex III provider report has 22
+  entries instead of 15, and entries for up to 12 articles are new (Arts.
+  16, 18 to 21, 41, 43(2), 49(2), 49(5), 53(4), 55(2) and 111(2); Art. 41
+  for both a high-risk and a GPAI model provider). The requirement strings
+  of 12 existing kinds of entry change: Arts. 17, 22 to 27, 43, 47, 48, 49
+  and 53(1)(a). Code that counts the entries, matches their text or keys on
+  the set of articles, such as an inventory export or the cockpit's
+  portfolio count, must be updated. For a conditional entry, read its graph
+  item for the trigger, `review_status` and the date note.
+
+### Art. 27 review questions for an unsettled route
+
+#### Changed
+
+- Two cases now add an Art. 27 open question. With `III.unsure`, a deployer
+  whose status does not require a FRIA learns that Annex III, points 5(b)
+  and 5(c) would require one whatever the status (Art. 27(1) AIA). With an
+  asserted Art. 6(3) derogation on a system also on the Annex I route
+  (Section A or not given), the FRIA stays listed and the question says it
+  falls away if the derogation is established, as the system would then be
+  high-risk only under Art. 6(1). Both reports were already
+  `requires_review`; the disposition does not change. `docs/methodology.md`
+  ("FRIA Logic") states the rule.
 
 ### Inventory outside a clone
 

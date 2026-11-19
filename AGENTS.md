@@ -15,7 +15,7 @@ uv run ruff format --check .
 uv run pytest --cov=eu_ai_act_classifier --cov-report=term --cov-fail-under=96
 for file in docs/playground/*.mjs; do node --check "$file"; done
 node --test tests/playground/*.test.mjs
-(cd web && npm ci && npm audit --audit-level=high && npm test && npm run build)
+(cd web && npm ci && npm audit --omit=dev --audit-level=high && npm test && npm run build)
 wc -w README.md   # at most 350 words; tests/test_docs.py enforces it
 # The other CI jobs: the suite on Python 3.14 as well, the declared dependency floors,
 # and the built wheel run from a clean environment.

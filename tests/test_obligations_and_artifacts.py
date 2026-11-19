@@ -293,7 +293,14 @@ def test_gpai_and_transparency_items_keep_their_chapter_dates() -> None:
             gpai_model_placing_on_market_date="2026-01-15",
         )
     )
-    gpai = [item for item in report.obligation_graph if item.actor is Role.GPAI_PROVIDER]
+    # Chapter V items; the Art. 41(5) item is in Chapter III, Section 5 (dated below).
+    gpai = [
+        item
+        for item in report.obligation_graph
+        if item.actor is Role.GPAI_PROVIDER and item.obligation_id != "gpai.provider.41"
+    ]
+    (art_41,) = [i for i in report.obligation_graph if i.obligation_id == "gpai.provider.41"]
+    assert art_41.application_date == "2026-08-02"
     transparency = [item for item in report.obligation_graph if item.article.startswith("Art. 50")]
 
     assert gpai and {item.application_date for item in gpai} == {"2025-08-02"}
@@ -353,6 +360,8 @@ ART_111_3_CASES = [
 
 
 def _gpai_items(**dates: str | None) -> list[ObligationGraphItem]:
+    """The Chapter V items. The Art. 41(5) item is in Chapter III, Section 5 and has its
+    own date (tests/test_obligation_catalog.py)."""
     report = classify(
         SystemProfile(
             name="model",
@@ -362,7 +371,11 @@ def _gpai_items(**dates: str | None) -> list[ObligationGraphItem]:
             **dates,
         )
     )
-    gpai = [item for item in report.obligation_graph if item.actor is Role.GPAI_PROVIDER]
+    gpai = [
+        item
+        for item in report.obligation_graph
+        if item.actor is Role.GPAI_PROVIDER and item.obligation_id != "gpai.provider.41"
+    ]
     assert {item.article for item in gpai} >= {
         "Art. 53(1)(a) AIA",
         "Art. 55(1)(d) AIA",

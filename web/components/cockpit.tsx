@@ -11,7 +11,7 @@ import {
   RefreshCw,
   ShieldCheck,
 } from "lucide-react";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   evidenceExport,
   evidenceFilename,
@@ -28,6 +28,7 @@ import { ObligationTracker, StatusPill } from "./obligation-tracker";
 import { PrintableArtifact } from "./printable-artifact";
 import { baseProfile, emptyDerogation, inventory } from "../lib/samples";
 import { ThemeToggle } from "./theme-toggle";
+import { TriStateControl } from "./tri-state-control";
 import type {
   ArtifactPreview,
   ArtifactResponse,
@@ -1237,43 +1238,6 @@ function Toggle({
       <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
       <span>{label}</span>
     </label>
-  );
-}
-
-function TriStateControl({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: NullableBoolean;
-  onChange: (value: NullableBoolean) => void;
-}) {
-  const options: Array<{ label: string; value: NullableBoolean }> = [
-    { label: "Yes", value: true },
-    { label: "No", value: false },
-    { label: "Review", value: null },
-  ];
-  // The group carries the question; aria-pressed carries the answer set, which the
-  // "active" class shows only visually.
-  const labelId = useId();
-  return (
-    <div className="triState" role="group" aria-labelledby={labelId}>
-      <span id={labelId}>{label}</span>
-      <div>
-        {options.map((option) => (
-          <button
-            aria-pressed={value === option.value}
-            className={value === option.value ? "active" : ""}
-            key={option.label}
-            type="button"
-            onClick={() => onChange(option.value)}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }
 
