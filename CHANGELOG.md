@@ -549,6 +549,61 @@ pull requests.
 - The obligation graph cards also show the assessment-date answer, so a search
   keeps it.
 
+### Obligation evidence tracker (S4)
+
+#### Added
+
+- The cockpit's Obligation Tracker keeps an evidence state (`not_started`,
+  `in_progress`, `evidence_attached`, `reviewed`), an owner and a
+  reviewed-on date for each obligation graph item of each sample system, in
+  four lanes placed against the assessment date: "Applies on the assessment
+  date", "Applies after the assessment date", "Dated; no assessment date set"
+  and "Contested or open". Each row saves on its own with a revision; a
+  second save from an older view answers 409 and the tracker reloads. A file
+  lock makes this hold across bridge processes too. A reviewed-on date may
+  not be after the bridge's local calendar date. A saved item shows as `stale`, with the reason in text,
+  when the report or the item has changed since it was saved, or when it was
+  reviewed before its source was retrieved. The Python bridge works out the
+  lanes, the digests, the retrieval dates and the reasons
+  (`evidence_tracker.py`); the browser computes no date. The tracker downloads
+  as JSON with `draftNotice` first. It runs the full width of the cockpit
+  below the AI systems inventory. The blank intake keeps no evidence
+  ([ADR 0006](docs/adr/0006-evidence-model.md), now Accepted).
+- The cockpit's intake has an "Assessment date" field for
+  `SystemProfile.assessment_date`, empty by default. With a date the engine
+  says, where every reading agrees, whether an item applies on it; an item
+  with a date note or no date stays in Contested or open unless the engine
+  says it applies on that date, which places it under Applies on the
+  assessment date. The tracker leaves out the lanes that cannot hold an item
+  for the date given: the two placed against the date while none is set, and
+  "Dated; no assessment date set" once one is. The report digest leaves out
+  the date the engine writes into Art. 5(1)(ba)/(bb) prose, so a new date
+  stales saved rows only where the outcome changes.
+- `/api/collaboration` takes two actions, `evidence_view` and `evidence`
+  (docs/API.md). `evidence_view` is read-only, and the cockpit page now reads
+  the workspace through it on each classification. The label catalog gains
+  `evidence_state`, `evidence_lane` and `evidence_stale_reason`.
+
+#### Changed
+
+- The collaboration workspace (`review.collaboration.v1`) gains an `evidence`
+  list. A file saved before it loads with no evidence and is not archived.
+- The collaboration snapshot carries `draftNotice`, and the self-assessment
+  page's "Export local workspace" writes it first; an import ignores it.
+- `/self-assessment` renders on each request instead of at build time, so
+  its export carries the review cells and evidence saved since the build. An
+  export from the build-time snapshot, imported back, would have replaced
+  them with older ones.
+- A workspace archived as stale for the inventory hands its evidence records
+  to the new workspace; the `recovered` event counts them in
+  `evidenceCarried`.
+- An import replaces the evidence only when the file has an `evidence` key; a
+  file without one keeps the current records.
+- A build from before the tracker drops the `evidence` list on its next save.
+  Export the workspace before going back to one.
+- `docs/cockpit.png` is recaptured with the lane-based tracker and the
+  Assessment date field.
+
 ### CI
 
 - The coverage floor rises from 95 % to 96 % (`--cov-fail-under=96`), the

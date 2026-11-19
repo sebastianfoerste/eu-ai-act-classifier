@@ -158,6 +158,11 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "workspace":
             result = workspace_payload()
         elif args.command == "collaboration":
+            # Review cells (snapshot, lock, comment, resolve_comment, review, import,
+            # self_assess) and the cockpit's obligation tracker: "evidence_view" returns
+            # the tracker for a cockpit system and "evidence" saves one item's state. A
+            # stale revision is a "409 Conflict" ValueError, and invalid input (a stale
+            # state, an unknown item) a ValueError or ValidationError: exit 2 either way.
             result = apply_workspace_action(
                 payload,
                 Path("runtime-data/collaboration-workspace.json"),

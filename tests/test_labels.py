@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from eu_ai_act_classifier.catalog import ANNEX_III, PROHIBITED
 from eu_ai_act_classifier.labels import label_catalog, option_label
 from eu_ai_act_classifier.models import (
@@ -62,3 +64,32 @@ def test_labels_are_never_raw_values_and_have_no_long_dashes() -> None:
 def test_web_cockpit_labels_are_current() -> None:
     on_disk = json.loads((ROOT / "web" / "lib" / "labels.json").read_text(encoding="utf-8"))
     assert on_disk == label_catalog(), "web/lib/labels.json is stale: rebuild the playground"
+
+
+def test_evidence_tracker_labels_cover_its_states_lanes_and_reasons() -> None:
+    from eu_ai_act_classifier.evidence_tracker import EVIDENCE_STATES, LANES, STALE_REASONS
+
+    assert tuple(NAMESPACES["evidence_state"]) == EVIDENCE_STATES
+    assert tuple(NAMESPACES["evidence_lane"]) == LANES
+    assert tuple(NAMESPACES["evidence_stale_reason"]) == STALE_REASONS
+    assert NAMESPACES["evidence_state"]["stale"] == "Stale"
+    # Lanes are named relative to the assessment date (ADR 0006 D6), not as legal timing.
+    assert NAMESPACES["evidence_lane"] == {
+        "applies_now": "Applies on the assessment date",
+        "upcoming": "Applies after the assessment date",
+        "no_assessment_date": "Dated; no assessment date set",
+        "contested_or_open": "Contested or open",
+    }
+    assert NAMESPACES["evidence_stale_reason"]["reviewed_before_source_retrieval"] == (
+        "Reviewed before the source was retrieved"
+    )
+
+
+def test_label_catalog_refuses_an_evidence_label_set_that_misses_a_value(monkeypatch) -> None:
+    import eu_ai_act_classifier.labels as labels_module
+
+    monkeypatch.setattr(
+        labels_module, "EVIDENCE_LANE_LABELS", {"applies_now": "Applies now", "upcoming": "Up"}
+    )
+    with pytest.raises(ValueError, match="EVIDENCE_LANE_LABELS must cover every value"):
+        label_catalog()

@@ -30,7 +30,8 @@ export async function POST(request: Request) {
   try {
     return Response.json(await runClassifierBridge("collaboration", payload));
   } catch (error) {
-    // A stale revision or a lock is local_api rejecting the action with a 409 message.
+    // A stale revision (of a review cell or an obligation tracker row) or a lock is
+    // local_api rejecting the action with a 409 message.
     const body = bridgeErrorBody(error);
     const status = bridgeErrorStatus(error);
     return Response.json(body, {

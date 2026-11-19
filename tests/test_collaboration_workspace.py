@@ -1,7 +1,11 @@
+import contextlib
 import errno
 import io
 import json
+import os
 import shutil
+import threading
+import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -10,6 +14,7 @@ import pytest
 import eu_ai_act_classifier.collaboration_workspace as collaboration_module
 import eu_ai_act_classifier.inventory as inventory_module
 from eu_ai_act_classifier import __version__
+from eu_ai_act_classifier.artifacts import DRAFT_NOTICE
 from eu_ai_act_classifier.collaboration_workspace import (
     add_comment,
     apply_workspace_action,
@@ -21,7 +26,9 @@ from eu_ai_act_classifier.collaboration_workspace import (
     review_cell,
     save_workspace,
 )
+from eu_ai_act_classifier.engine import classify
 from eu_ai_act_classifier.inventory import build_example_inventory
+from eu_ai_act_classifier.models import SystemProfile
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -479,7 +486,11 @@ def test_a_workspace_that_cannot_be_read_from_disk_is_not_archived(tmp_path) -> 
     with pytest.raises(OSError):
         apply_workspace_action({"action": "snapshot"}, runtime_path)
 
-    assert [entry.name for entry in tmp_path.iterdir()] == ["workspace.json"]
+    # Nothing archived; only the (empty) lock file the action held sits next to it.
+    assert sorted(entry.name for entry in tmp_path.iterdir()) == [
+        "workspace.json",
+        "workspace.json.lock",
+    ]
 
 
 def _workspace_with_lock_time(lock_expires_at: str) -> dict:
@@ -525,3 +536,630 @@ def test_import_keeps_a_well_formed_lock_time(tmp_path) -> None:
         now=datetime(2026, 7, 13, 9, 0, tzinfo=UTC),
     )
     assert result["collaboration"]["cells"][0]["lock_expires_at"] == "2026-07-13T09:15:00+00:00"
+
+
+# The obligation tracker (ADR 0006). The profile is the cockpit's "credit-provider"
+# sample (web/lib/samples.ts), as the cockpit posts it; the clock is injected.
+EVIDENCE_NOW = datetime(2026, 11, 17, 10, 0, tzinfo=UTC)
+COCKPIT_CREDIT = {
+    "name": "CreditSightScore",
+    "description": "Scores consumer creditworthiness for loan origination.",
+    "roles": ["provider"],
+    "purpose": "Consumer creditworthiness scoring",
+    "sector": "Financial services",
+    "intended_purpose_source": "Product requirements document",
+    "annex_iii_area": "III.5.b",
+    "placing_on_market_date": "2026-10-01",
+}
+COCKPIT_CHATBOT = {
+    "name": "SupportDeskBot",
+    "description": "Customer support chatbot for first-line ticket handling.",
+    "roles": ["provider"],
+    "purpose": "Customer support interaction",
+    "sector": "SaaS operations",
+    "intended_purpose_source": "Feature brief",
+    "interacts_with_natural_persons": True,
+}
+
+
+def _evidence(
+    runtime_path: Path,
+    *,
+    obligation_id: str = "high-risk.provider.9",
+    state: str = "in_progress",
+    revision: int = 0,
+    system_id: str = "credit-provider",
+    profile: object = None,
+    actor: str = "provider",
+    owner: object = None,
+    reviewed_on: object = None,
+    now: datetime = EVIDENCE_NOW,
+) -> dict[str, object]:
+    return apply_workspace_action(
+        {
+            "action": "evidence",
+            "systemId": system_id,
+            "profile": COCKPIT_CREDIT if profile is None else profile,
+            "obligationId": obligation_id,
+            "obligationActor": actor,
+            "state": state,
+            "owner": owner,
+            "reviewedOn": reviewed_on,
+            "expectedRevision": revision,
+            "actor": "Reviewer A",
+        },
+        runtime_path,
+        now=now,
+    )
+
+
+def _view(
+    runtime_path: Path, profile: dict[str, object] | None = None, system_id: str = "credit-provider"
+) -> dict[str, object]:
+    return apply_workspace_action(
+        {
+            "action": "evidence_view",
+            "systemId": system_id,
+            "profile": COCKPIT_CREDIT if profile is None else profile,
+        },
+        runtime_path,
+        now=EVIDENCE_NOW,
+    )
+
+
+def _entry(view: dict[str, object], obligation_id: str, actor: str = "provider") -> dict:
+    return next(
+        entry
+        for lane in view["lanes"]
+        for entry in lane["items"]
+        if entry["obligationId"] == obligation_id and entry["actor"] == actor
+    )
+
+
+def test_a_pre_s4_workspace_file_loads_with_no_evidence(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    _reviewed_workspace(runtime_path, datetime(2026, 7, 13, tzinfo=UTC))
+    stored = json.loads(runtime_path.read_text(encoding="utf-8"))
+    stored.pop("evidence")
+    runtime_path.write_text(json.dumps(stored), encoding="utf-8")
+
+    loaded = load_workspace(runtime_path, build_example_inventory())
+    snapshot = apply_workspace_action({"action": "snapshot"}, runtime_path, now=EVIDENCE_NOW)
+
+    assert loaded.evidence == []
+    assert snapshot["collaboration"]["evidence"] == []
+    assert [entry["event"] for entry in snapshot["collaboration"]["activity"]] == ["reviewed"]
+    # Not archived: only the workspace and the lock file the snapshot held.
+    assert sorted(tmp_path.iterdir()) == [runtime_path, tmp_path / "workspace.json.lock"]
+
+
+def test_evidence_is_saved_per_system_obligation_and_actor_with_revisions(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    first = _evidence(runtime_path, owner="Owner A")
+    assert _entry(first, "high-risk.provider.9")["revision"] == 1
+    second = _evidence(runtime_path, state="evidence_attached", revision=1, owner="Owner A")
+
+    entry = _entry(second, "high-risk.provider.9")
+    assert (entry["state"], entry["storedState"], entry["revision"]) == (
+        "evidence_attached",
+        "evidence_attached",
+        2,
+    )
+    assert (entry["owner"], entry["updatedBy"], entry["updatedAt"]) == (
+        "Owner A",
+        "Reviewer A",
+        EVIDENCE_NOW.isoformat(),
+    )
+    assert _entry(_view(runtime_path), "high-risk.provider.9") == entry
+    stored = load_workspace(runtime_path, build_example_inventory())
+    assert len(stored.evidence) == 1
+    assert stored.activity[-1] == {
+        "event": "evidence_updated",
+        "targetId": "evidence:credit-provider:high-risk.provider.9:provider",
+        "actor": "Reviewer A",
+        "state": "evidence_attached",
+        "occurredAt": EVIDENCE_NOW.isoformat(),
+    }
+
+
+def test_evidence_rejects_a_stale_revision_as_a_conflict(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path)
+    before = runtime_path.read_bytes()
+
+    with pytest.raises(ValueError, match=r"^409 Conflict: stale evidence revision$"):
+        _evidence(runtime_path, state="evidence_attached", revision=0)
+
+    assert runtime_path.read_bytes() == before
+
+
+def test_evidence_keys_do_not_collide_across_systems_and_actors(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    deployer_profile = {**COCKPIT_CREDIT, "roles": ["provider", "deployer"]}
+    _evidence(runtime_path, profile=deployer_profile, obligation_id="literacy.provider.4")
+    deployer = next(
+        item.obligation_id
+        for item in classify(SystemProfile.model_validate(deployer_profile)).obligation_graph
+        if item.actor.value == "deployer"
+    )
+    _evidence(runtime_path, profile=deployer_profile, obligation_id=deployer, actor="deployer")
+    _evidence(
+        runtime_path,
+        system_id="chatbot",
+        profile=COCKPIT_CHATBOT,
+        obligation_id="transparency.1",
+        state="reviewed",
+        reviewed_on="2026-11-01",
+    )
+
+    stored = load_workspace(runtime_path, build_example_inventory())
+    assert [record.key() for record in stored.evidence] == [
+        ("credit-provider", "literacy.provider.4", "provider"),
+        ("credit-provider", deployer, "deployer"),
+        ("chatbot", "transparency.1", "provider"),
+    ]
+    credit = _view(runtime_path, deployer_profile)
+    assert credit["counts"]["in_progress"] == 2
+    assert credit["orphanedRecords"] == []
+    chatbot = _view(runtime_path, COCKPIT_CHATBOT, "chatbot")
+    assert chatbot["counts"]["reviewed"] == 1
+    assert chatbot["orphanedRecords"] == []
+
+
+@pytest.mark.parametrize(
+    ("changes", "message"),
+    [
+        ({"state": "stale"}, "stale is derived"),
+        ({"state": "done"}, "validation error"),
+        ({"system_id": "new"}, "the blank intake keeps no evidence"),
+        ({"system_id": "../x"}, "systemId is not a cockpit system id"),
+        ({"system_id": "a:b"}, "systemId is not a cockpit system id"),
+        ({"obligation_id": "high-risk.provider.999"}, "unknown obligation graph item"),
+        ({"actor": "lawyer"}, "unknown obligation graph item"),
+        ({"reviewed_on": "2026-13-01"}, "validation error"),
+        ({"owner": "x" * 121}, "validation error"),
+        ({"owner": 7}, "owner must be text"),
+        ({"reviewed_on": ["2026-11-01"]}, "reviewedOn must be text"),
+        ({"profile": "CreditSightScore"}, "profile must be a JSON object"),
+    ],
+)
+def test_evidence_rejects_invalid_input(tmp_path, changes: dict, message: str) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path, obligation_id="high-risk.provider.10")
+    before = runtime_path.read_bytes()
+
+    with pytest.raises(ValueError, match=message):
+        _evidence(runtime_path, **changes)
+
+    assert runtime_path.read_bytes() == before
+
+
+@pytest.fixture
+def local_zone(monkeypatch):
+    """Set the process's local time zone for one test and restore it afterwards."""
+
+    if not hasattr(time, "tzset"):
+        pytest.skip("time.tzset is not available on this platform")
+
+    def set_zone(zone: str, offset_hours: int) -> None:
+        monkeypatch.setenv("TZ", zone)
+        time.tzset()
+        if datetime(2026, 11, 18, tzinfo=UTC).astimezone().utcoffset() != timedelta(
+            hours=offset_hours
+        ):
+            pytest.skip(f"time zone {zone} is not installed")
+
+    yield set_zone
+    monkeypatch.undo()
+    time.tzset()
+
+
+def test_reviewed_evidence_needs_a_date_not_after_the_bridge_date(tmp_path, local_zone) -> None:
+    local_zone("UTC", 0)
+    runtime_path = tmp_path / "workspace.json"
+    with pytest.raises(ValueError, match="a reviewed item needs a reviewed-on date"):
+        _evidence(runtime_path, state="reviewed")
+    with pytest.raises(ValueError, match="reviewedOn must not be after the current date"):
+        _evidence(runtime_path, state="reviewed", reviewed_on="2026-11-18")
+    assert (
+        not runtime_path.exists()
+        or load_workspace(runtime_path, build_example_inventory()).evidence == []
+    )
+
+    view = _evidence(runtime_path, state="reviewed", reviewed_on="2026-11-17")
+    assert _entry(view, "high-risk.provider.9")["state"] == "reviewed"
+
+
+def test_the_future_date_check_uses_the_bridge_local_date(tmp_path, local_zone) -> None:
+    # The cockpit's date input gives the reviewer's local day. At 23:30 UTC it is
+    # already the next day in Tokyo: that day is today there, not a future date.
+    local_zone("Asia/Tokyo", 9)
+    runtime_path = tmp_path / "workspace.json"
+    late_utc = datetime(2026, 11, 18, 23, 30, tzinfo=UTC)
+
+    with pytest.raises(ValueError, match="reviewedOn must not be after the current date"):
+        _evidence(runtime_path, state="reviewed", reviewed_on="2026-11-20", now=late_utc)
+    view = _evidence(runtime_path, state="reviewed", reviewed_on="2026-11-19", now=late_utc)
+
+    assert _entry(view, "high-risk.provider.9")["reviewedOn"] == "2026-11-19"
+
+
+def test_two_concurrent_saves_of_one_row_give_one_conflict(tmp_path, monkeypatch) -> None:
+    # Both requests hold revision 1. Without the workspace lock both read revision 1,
+    # both passed the check and both saved, and one write was lost without a 409.
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path)
+    barrier = threading.Barrier(2, timeout=0.5)
+    real_load = collaboration_module._load_or_recover
+
+    def load_then_meet(*args):
+        workspace = real_load(*args)
+        # Unlocked, both threads meet here holding revision 1. Locked, the second
+        # cannot load until the first has saved, so the wait times out instead.
+        with contextlib.suppress(threading.BrokenBarrierError):
+            barrier.wait()
+        return workspace
+
+    monkeypatch.setattr(collaboration_module, "_load_or_recover", load_then_meet)
+    outcomes: list[str] = []
+
+    def save(owner: str) -> None:
+        try:
+            _evidence(runtime_path, state="evidence_attached", revision=1, owner=owner)
+            outcomes.append("saved")
+        except ValueError as error:
+            outcomes.append(str(error))
+
+    threads = [threading.Thread(target=save, args=(owner,)) for owner in ("A", "B")]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=30)
+
+    assert sorted(outcomes) == ["409 Conflict: stale evidence revision", "saved"]
+    stored = load_workspace(runtime_path, build_example_inventory())
+    assert [record.revision for record in stored.evidence] == [2]
+    assert [entry["event"] for entry in stored.activity] == ["evidence_updated"] * 2
+
+
+def test_evidence_owner_is_trimmed_and_a_blank_owner_cleared(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    view = _evidence(runtime_path, owner="  Owner A  ", reviewed_on="")
+    entry = _entry(view, "high-risk.provider.9")
+    assert (entry["owner"], entry["reviewedOn"]) == ("Owner A", None)
+
+    view = _evidence(runtime_path, owner="   ", revision=1)
+    assert _entry(view, "high-risk.provider.9")["owner"] is None
+
+
+def test_a_changed_profile_marks_items_stale_with_reasons(tmp_path) -> None:
+    # Answering the Art. 111(2) significant-change question changes the report and,
+    # of the items, only the Art. 111(2) item.
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path, obligation_id="high-risk.provider.9")
+    _evidence(runtime_path, obligation_id="high-risk.provider.111.2", state="evidence_attached")
+    unchanged = _view(runtime_path)
+    assert unchanged["counts"]["stale"] == 0
+
+    changed = _view(
+        runtime_path, {**COCKPIT_CREDIT, "significant_change_after_application_date": False}
+    )
+
+    assert changed["reportDigest"] != unchanged["reportDigest"]
+    art_9 = _entry(changed, "high-risk.provider.9")
+    art_111 = _entry(changed, "high-risk.provider.111.2")
+    assert (art_9["state"], art_9["storedState"], art_9["staleReasons"]) == (
+        "stale",
+        "in_progress",
+        ["report_changed"],
+    )
+    assert (art_111["state"], art_111["staleReasons"]) == (
+        "stale",
+        ["report_changed", "item_changed"],
+    )
+    assert changed["counts"]["stale"] == 2
+    # Saving the row again stores the current digests and clears the reasons.
+    resaved = _evidence(
+        runtime_path,
+        profile={**COCKPIT_CREDIT, "significant_change_after_application_date": False},
+        revision=1,
+    )
+    assert _entry(resaved, "high-risk.provider.9")["staleReasons"] == []
+
+
+def test_a_removed_item_is_listed_as_orphaned_and_kept(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path, obligation_id="high-risk.provider.111.2", owner="Owner A")
+
+    view = _view(runtime_path, {**COCKPIT_CREDIT, "placing_on_market_date": None})
+
+    assert [record["obligationId"] for record in view["orphanedRecords"]] == [
+        "high-risk.provider.111.2"
+    ]
+    assert len(load_workspace(runtime_path, build_example_inventory()).evidence) == 1
+
+
+def test_entering_an_assessment_date_does_not_stale_evidence(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path)
+
+    view = _view(runtime_path, {**COCKPIT_CREDIT, "assessment_date": "2026-11-17"})
+
+    assert view["assessmentDate"] == "2026-11-17"
+    assert view["counts"]["stale"] == 0
+    assert _entry(view, "high-risk.provider.9")["state"] == "in_progress"
+
+
+def test_an_old_reviewed_on_date_marks_the_item_stale(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    old = _evidence(runtime_path, state="reviewed", reviewed_on="2026-10-01")
+    entry = _entry(old, "high-risk.provider.9")
+    assert entry["sourceRetrievedOn"] == "2026-10-18"
+    assert (entry["state"], entry["staleReasons"]) == (
+        "stale",
+        ["reviewed_before_source_retrieval"],
+    )
+
+    same_day = _evidence(runtime_path, state="reviewed", reviewed_on="2026-10-18", revision=1)
+    assert _entry(same_day, "high-risk.provider.9")["state"] == "reviewed"
+
+
+def test_evidence_view_saves_nothing(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path)
+    before = runtime_path.read_bytes()
+
+    view = _view(runtime_path)
+
+    assert runtime_path.read_bytes() == before
+    assert view["draftNotice"] == DRAFT_NOTICE
+    assert not (tmp_path / "fresh.json").exists()
+    _view(tmp_path / "fresh.json")
+    assert not (tmp_path / "fresh.json").exists()
+
+
+@pytest.mark.parametrize("stored", ["unreadable", "stale"])
+def test_evidence_view_leaves_an_unusable_store_untouched(tmp_path, stored: str) -> None:
+    # evidence_view only reads: it neither archives nor rewrites the store. The next
+    # saving action recovers it as before.
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path, owner="Owner A")
+    if stored == "unreadable":
+        runtime_path.write_text(TRUNCATED, encoding="utf-8")
+    else:
+        data = json.loads(runtime_path.read_text(encoding="utf-8"))
+        data["inventory_digest"] = "0" * 64
+        runtime_path.write_text(json.dumps(data), encoding="utf-8")
+    before = runtime_path.read_bytes()
+    listing = sorted(tmp_path.iterdir())
+
+    view = _view(runtime_path)
+
+    assert runtime_path.read_bytes() == before
+    assert sorted(tmp_path.iterdir()) == listing
+    assert view["orphanedRecords"] == []
+    total = sum(len(lane["items"]) for lane in view["lanes"])
+    entry = _entry(view, "high-risk.provider.9")
+    if stored == "unreadable":
+        # Recovery carries nothing from an unreadable file, so the view shows nothing.
+        assert view["counts"]["not_started"] == total
+        assert entry["revision"] == 0
+    else:
+        # Recovery carries a stale file's evidence, so the view shows it: a save based
+        # on the view is checked against the same revision.
+        assert view["counts"]["not_started"] == total - 1
+        assert (entry["owner"], entry["revision"]) == ("Owner A", 1)
+        saved = _evidence(runtime_path, owner="Owner B", revision=entry["revision"])
+        assert _entry(saved, "high-risk.provider.9")["owner"] == "Owner B"
+
+
+def test_recovery_goes_on_when_another_process_archived_the_file_first(
+    tmp_path, monkeypatch
+) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    runtime_path.write_text(TRUNCATED, encoding="utf-8")
+    real_archive_path = collaboration_module._archive_path
+
+    def moved_meanwhile(path: Path, reason: str, now: datetime) -> Path:
+        candidate = real_archive_path(path, reason, now)
+        path.rename(tmp_path / "set-aside-by-another-process.json")
+        return candidate
+
+    monkeypatch.setattr(collaboration_module, "_archive_path", moved_meanwhile)
+
+    snapshot = apply_workspace_action({"action": "snapshot"}, runtime_path, now=EVIDENCE_NOW)
+
+    assert [entry["event"] for entry in snapshot["collaboration"]["activity"]] == ["recovered"]
+    stored = load_workspace(runtime_path, build_example_inventory())
+    assert stored.activity == snapshot["collaboration"]["activity"]
+
+
+def test_a_lone_surrogate_in_profile_text_still_gives_a_view(tmp_path) -> None:
+    # The engine copies intended_purpose_source into the report; JSON "\ud800" parses
+    # to a lone surrogate, which plain UTF-8 encoding of the digest input refused.
+    runtime_path = tmp_path / "workspace.json"
+    profile = {**COCKPIT_CREDIT, "intended_purpose_source": "Brief \ud800"}
+
+    view = _view(runtime_path, profile)
+    saved = _evidence(runtime_path, profile=profile)
+
+    assert len(view["reportDigest"]) == 64
+    assert saved["reportDigest"] == view["reportDigest"]
+    assert _entry(saved, "high-risk.provider.9")["state"] == "in_progress"
+
+
+def test_evidence_survives_a_stale_workspace_recovery(tmp_path, monkeypatch) -> None:
+    shutil.copytree(ROOT / "examples", tmp_path / "examples")
+    monkeypatch.chdir(tmp_path)
+    runtime_path = Path("runtime-data/collaboration-workspace.json")
+    _reviewed_workspace(runtime_path, datetime(2026, 7, 13, tzinfo=UTC))
+    _evidence(runtime_path, owner="Owner A")
+    stored_before = runtime_path.read_text(encoding="utf-8")
+    spam_filter = Path("examples/spam_filter.json")
+    profile = json.loads(spam_filter.read_text(encoding="utf-8"))
+    spam_filter.write_text(json.dumps({**profile, "name": "InboxGuard 2"}), encoding="utf-8")
+
+    snapshot = apply_workspace_action(
+        {"action": "snapshot"}, runtime_path, now=datetime(2026, 11, 17, 11, 0, tzinfo=UTC)
+    )
+
+    archive = Path("runtime-data/collaboration-workspace.stale-20261117T110000Z.json")
+    assert archive.read_text(encoding="utf-8") == stored_before
+    assert snapshot["collaboration"]["activity"] == [
+        {
+            "event": "recovered",
+            "reason": "stale",
+            "archivedAs": archive.name,
+            "occurredAt": "2026-11-17T11:00:00+00:00",
+            "evidenceCarried": "1",
+        }
+    ]
+    assert all(cell["revision"] == 1 for cell in snapshot["collaboration"]["cells"])
+    assert all(cell["reviewer"] is None for cell in snapshot["collaboration"]["cells"])
+    assert [record["owner"] for record in snapshot["collaboration"]["evidence"]] == ["Owner A"]
+    assert _entry(_view(runtime_path), "high-risk.provider.9")["revision"] == 1
+
+
+def test_import_without_evidence_keeps_the_current_evidence(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path)
+    blank = build_collaboration_workspace()["collaboration"]
+    blank.pop("evidence")
+
+    imported = apply_workspace_action(
+        {"action": "import", "workspace": blank}, runtime_path, now=EVIDENCE_NOW
+    )
+
+    assert [record["obligation_id"] for record in imported["collaboration"]["evidence"]] == [
+        "high-risk.provider.9"
+    ]
+
+
+def test_import_with_evidence_replaces_it(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    exported = _evidence(runtime_path, obligation_id="high-risk.provider.10")
+    assert exported["counts"]["in_progress"] == 1
+    file = apply_workspace_action({"action": "snapshot"}, runtime_path)["collaboration"]
+    _evidence(runtime_path, obligation_id="high-risk.provider.9")
+
+    imported = apply_workspace_action(
+        {"action": "import", "workspace": file}, runtime_path, now=EVIDENCE_NOW
+    )
+    assert [record["obligation_id"] for record in imported["collaboration"]["evidence"]] == [
+        "high-risk.provider.10"
+    ]
+
+    emptied = apply_workspace_action(
+        {"action": "import", "workspace": {**file, "evidence": []}}, runtime_path, now=EVIDENCE_NOW
+    )
+    assert emptied["collaboration"]["evidence"] == []
+
+
+def test_import_ignores_a_draft_notice_key(tmp_path) -> None:
+    # The self-assessment page's export puts draftNotice first in the file.
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path)
+    collaboration = apply_workspace_action({"action": "snapshot"}, runtime_path)["collaboration"]
+    exported = {"draftNotice": DRAFT_NOTICE, **collaboration}
+
+    imported = apply_workspace_action(
+        {"action": "import", "workspace": exported}, runtime_path, now=EVIDENCE_NOW
+    )
+
+    assert "draftNotice" not in imported["collaboration"]
+    assert len(imported["collaboration"]["evidence"]) == 1
+    assert "draftNotice" not in json.loads(runtime_path.read_text(encoding="utf-8"))
+
+
+def test_duplicate_evidence_records_make_a_stored_file_unreadable(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    _evidence(runtime_path)
+    stored = json.loads(runtime_path.read_text(encoding="utf-8"))
+    stored["evidence"].append(dict(stored["evidence"][0]))
+    runtime_path.write_text(json.dumps(stored), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="duplicate evidence record"):
+        load_workspace(runtime_path, build_example_inventory())
+    snapshot = apply_workspace_action({"action": "snapshot"}, runtime_path, now=EVIDENCE_NOW)
+    assert [entry["reason"] for entry in snapshot["collaboration"]["activity"]] == ["unreadable"]
+    assert "evidenceCarried" not in snapshot["collaboration"]["activity"][0]
+    assert snapshot["collaboration"]["evidence"] == []
+
+
+def test_evidence_leaves_cells_workflows_and_portal_unchanged(tmp_path) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    before = apply_workspace_action({"action": "snapshot"}, runtime_path, now=EVIDENCE_NOW)
+    _evidence(runtime_path)
+
+    after = apply_workspace_action({"action": "snapshot"}, runtime_path, now=EVIDENCE_NOW)
+
+    for key in ("workflowDefinitions", "workflowRuns", "selfAssessmentPortal"):
+        assert after[key] == before[key]
+    assert after["collaboration"]["cells"] == before["collaboration"]["cells"]
+    assert after["collaboration"]["inventory_digest"] == before["collaboration"]["inventory_digest"]
+    assert len(after["collaboration"]["evidence"]) == 1
+
+
+def test_snapshot_carries_the_draft_notice() -> None:
+    snapshot = build_collaboration_workspace()
+    assert snapshot["draftNotice"] == DRAFT_NOTICE
+    assert snapshot["collaboration"]["evidence"] == []
+
+
+def test_a_save_waits_for_a_reader_that_briefly_blocks_the_replace(tmp_path, monkeypatch) -> None:
+    # On Windows an open reader (an unlocked evidence_view) makes os.replace fail with
+    # PermissionError for the length of one read; the save retries instead of failing.
+    runtime_path = tmp_path / "workspace.json"
+    real_replace = os.replace
+    failures = iter([True, True])
+
+    def busy_then_free(source, target):
+        if next(failures, False):
+            raise PermissionError(13, "The process cannot access the file")
+        real_replace(source, target)
+
+    monkeypatch.setattr(collaboration_module, "_REPLACE_PAUSE", 0)
+    monkeypatch.setattr(collaboration_module.os, "replace", busy_then_free)
+    _evidence(runtime_path, owner="Owner A")
+
+    assert _entry(_view(runtime_path), "high-risk.provider.9")["owner"] == "Owner A"
+
+
+def test_a_replace_that_stays_blocked_still_fails(tmp_path, monkeypatch) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    calls: list[object] = []
+
+    def always_busy(source, target):
+        calls.append(target)
+        raise PermissionError(13, "The process cannot access the file")
+
+    monkeypatch.setattr(collaboration_module, "_REPLACE_PAUSE", 0)
+    monkeypatch.setattr(collaboration_module.os, "replace", always_busy)
+    with pytest.raises(PermissionError):
+        _evidence(runtime_path, owner="Owner A")
+    assert len(calls) == collaboration_module._REPLACE_ATTEMPTS
+    assert not runtime_path.exists()
+    assert not list(tmp_path.glob(".workspace.json.*.tmp"))
+
+
+def test_recovery_waits_for_a_reader_that_briefly_blocks_the_archive(tmp_path, monkeypatch) -> None:
+    # The archive step of a recovery is a replace too, so it waits for a reader the same way.
+    runtime_path = tmp_path / "workspace.json"
+    runtime_path.write_text(TRUNCATED, encoding="utf-8")
+    real_replace = os.replace
+    blocked: list[str] = []
+
+    def archive_busy_once(source, target):
+        if ".unreadable-" in str(target) and not blocked:
+            blocked.append(str(target))
+            raise PermissionError(13, "The process cannot access the file")
+        real_replace(source, target)
+
+    monkeypatch.setattr(collaboration_module, "_REPLACE_PAUSE", 0)
+    monkeypatch.setattr(collaboration_module.os, "replace", archive_busy_once)
+    _evidence(runtime_path, owner="Owner A")
+
+    archives = sorted(tmp_path.glob("workspace.unreadable-*.json"))
+    assert blocked and [path.name for path in archives] == [Path(blocked[0]).name]
+    assert archives[0].read_text(encoding="utf-8") == TRUNCATED
+    assert _entry(_view(runtime_path), "high-risk.provider.9")["owner"] == "Owner A"

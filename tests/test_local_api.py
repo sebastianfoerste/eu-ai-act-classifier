@@ -12,7 +12,7 @@ import pytest
 import eu_ai_act_classifier.collaboration_workspace as collaboration_workspace_module
 import eu_ai_act_classifier.inventory as inventory_module
 from eu_ai_act_classifier import SystemProfile, classify
-from eu_ai_act_classifier.artifacts import write_artifacts
+from eu_ai_act_classifier.artifacts import DRAFT_NOTICE, write_artifacts
 from eu_ai_act_classifier.local_api import (
     artifacts_payload,
     classify_payload,
@@ -378,3 +378,101 @@ def test_local_api_collaboration_recovers_from_a_truncated_store(
         '{"schema": "review.collaboration.v1", "cells": ['
     )
     assert json.loads(store.read_text(encoding="utf-8")) == snapshot["collaboration"]
+
+
+# The cockpit's "credit-provider" sample (web/lib/samples.ts), as the tracker posts it.
+COCKPIT_CREDIT = {
+    "name": "CreditSightScore",
+    "roles": ["provider"],
+    "purpose": "Consumer creditworthiness scoring",
+    "annex_iii_area": "III.5.b",
+    "placing_on_market_date": "2026-10-01",
+}
+
+
+def _evidence_payload(**changes: Any) -> dict[str, Any]:
+    return {
+        "action": "evidence",
+        "systemId": "credit-provider",
+        "profile": COCKPIT_CREDIT,
+        "obligationId": "high-risk.provider.9",
+        "obligationActor": "provider",
+        "state": "in_progress",
+        "owner": "Owner A",
+        "reviewedOn": None,
+        "expectedRevision": 0,
+        "actor": "Local reviewer",
+        **changes,
+    }
+
+
+def _tracker_entry(view: dict[str, Any], obligation_id: str) -> dict[str, Any]:
+    return next(
+        entry
+        for lane in view["lanes"]
+        for entry in lane["items"]
+        if entry["obligationId"] == obligation_id
+    )
+
+
+def test_local_api_evidence_round_trip_and_conflict(tmp_path, monkeypatch, capsys) -> None:
+    _collaboration_checkout(tmp_path, monkeypatch)
+
+    view = _run_local_api(monkeypatch, capsys, "collaboration", _evidence_payload())
+    entry = _tracker_entry(view, "high-risk.provider.9")
+    assert (entry["state"], entry["owner"], entry["revision"]) == ("in_progress", "Owner A", 1)
+    stored = json.loads(Path("runtime-data/collaboration-workspace.json").read_text("utf-8"))
+    assert [record["obligation_id"] for record in stored["evidence"]] == ["high-risk.provider.9"]
+
+    code, error = _run_local_api_error(monkeypatch, capsys, "collaboration", _evidence_payload())
+    assert (code, error) == (2, "409 Conflict: stale evidence revision")
+
+
+def test_local_api_evidence_rejects_stale_with_exit_2_and_no_traceback(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    _collaboration_checkout(tmp_path, monkeypatch)
+
+    code, error = _run_local_api_error(
+        monkeypatch, capsys, "collaboration", _evidence_payload(state="stale")
+    )
+
+    assert (code, error) == (
+        2,
+        "stale is derived from the report and the source dates and cannot be set",
+    )
+    assert not Path("runtime-data/collaboration-workspace.json").exists()
+
+    code, error = _run_local_api_error(
+        monkeypatch, capsys, "collaboration", _evidence_payload(state="reviewed")
+    )
+    assert code == 2
+    # A plain sentence that names the row, not pydantic's validation summary.
+    assert error.endswith("a reviewed item needs a reviewed-on date; enter the date of review")
+    assert error.startswith("Art. ")
+    assert "validation error" not in error
+    assert "Traceback" not in error
+
+
+def test_local_api_evidence_view_returns_lanes_and_the_notice(
+    tmp_path, monkeypatch, capsys
+) -> None:
+    _collaboration_checkout(tmp_path, monkeypatch)
+
+    view = _run_local_api(
+        monkeypatch,
+        capsys,
+        "collaboration",
+        {"action": "evidence_view", "systemId": "credit-provider", "profile": COCKPIT_CREDIT},
+    )
+
+    assert next(iter(view)) == "draftNotice"
+    assert view["draftNotice"] == DRAFT_NOTICE
+    assert [lane["lane"] for lane in view["lanes"]] == [
+        "applies_now",
+        "upcoming",
+        "no_assessment_date",
+        "contested_or_open",
+    ]
+    assert view["counts"]["not_started"] == sum(len(lane["items"]) for lane in view["lanes"])
+    assert not Path("runtime-data/collaboration-workspace.json").exists()

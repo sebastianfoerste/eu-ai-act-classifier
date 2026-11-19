@@ -1,0 +1,235 @@
+// The cockpit's obligation tracker (ADR 0006). The Python bridge derives every lane,
+// digest, retrieval date and stale reason (src/eu_ai_act_classifier/evidence_tracker.py);
+// this module only shapes what the cockpit displays, posts and exports. It reads no
+// clock and decides no lane or staleness.
+import type { SystemProfile } from "./types";
+
+export type SettableEvidenceState = "not_started" | "in_progress" | "evidence_attached" | "reviewed";
+export type EvidenceState = SettableEvidenceState | "stale";
+// Relative to the report's assessment date; "no_assessment_date" holds dated items when it is unset.
+export type EvidenceLane = "applies_now" | "upcoming" | "no_assessment_date" | "contested_or_open";
+export type EvidenceStaleReason = "report_changed" | "item_changed" | "reviewed_before_source_retrieval";
+
+export type EvidenceViewItem = {
+  obligationId: string;
+  article: string;
+  actor: string;
+  evidenceArtifact: string;
+  applicationDate: string | null;
+  applicationDateNote: string | null;
+  reviewStatus: string;
+  sourceRetrievedOn: string | null;
+  state: EvidenceState;
+  storedState: SettableEvidenceState;
+  staleReasons: EvidenceStaleReason[];
+  owner: string | null;
+  reviewedOn: string | null;
+  revision: number;
+  updatedBy: string | null;
+  updatedAt: string | null;
+};
+
+export type EvidenceLaneView = { lane: EvidenceLane; items: EvidenceViewItem[] };
+
+export type OrphanedEvidence = {
+  obligationId: string;
+  obligationActor: string;
+  state: SettableEvidenceState;
+  owner: string | null;
+  reviewedOn: string | null;
+  revision: number;
+};
+
+export type EvidenceView = {
+  draftNotice: string;
+  schema: string;
+  systemId: string;
+  system: string;
+  classifierVersion: string;
+  assessmentDate: string | null;
+  reportDigest: string;
+  counts: Record<EvidenceState, number>;
+  lanes: EvidenceLaneView[];
+  orphanedRecords: OrphanedEvidence[];
+};
+
+export type EvidenceDraft = { state: SettableEvidenceState; owner: string; reviewedOn: string };
+
+export const SETTABLE_STATES: SettableEvidenceState[] = ["not_started", "in_progress", "evidence_attached", "reviewed"];
+export const EVIDENCE_STATES: EvidenceState[] = [...SETTABLE_STATES, "stale"];
+
+export type EvidenceTone = "neutral" | "info" | "success" | "warning";
+
+/** The .statusPill tone for a state; the pill always carries the state's text too. */
+export function evidenceTone(state: EvidenceState): EvidenceTone {
+  switch (state) {
+    case "in_progress":
+    case "evidence_attached":
+      return "info";
+    case "reviewed":
+      return "success";
+    case "stale":
+      return "warning";
+    default:
+      return "neutral";
+  }
+}
+
+/** The editable values for a row. A stale row starts from the state it was saved with. */
+export function draftFor(item: EvidenceViewItem): EvidenceDraft {
+  return {
+    state: item.state === "stale" ? item.storedState : item.state,
+    owner: item.owner ?? "",
+    reviewedOn: item.reviewedOn ?? "",
+  };
+}
+
+export function evidenceViewPayload(systemId: string, profile: SystemProfile) {
+  return { action: "evidence_view", systemId, profile };
+}
+
+export function evidencePayload(
+  systemId: string,
+  profile: SystemProfile,
+  item: EvidenceViewItem,
+  draft: EvidenceDraft,
+) {
+  return {
+    action: "evidence",
+    systemId,
+    profile,
+    obligationId: item.obligationId,
+    obligationActor: item.actor,
+    state: draft.state,
+    owner: draft.owner.trim() || null,
+    reviewedOn: draft.reviewedOn || null,
+    expectedRevision: item.revision,
+    actor: "Local reviewer",
+  };
+}
+
+/**
+ * The lanes worth a table: with an assessment date, `no_assessment_date` ("Dated; no
+ * assessment date set") can
+ * hold nothing; without one, the two lanes placed against the date can hold nothing.
+ * A lane that holds items is always shown.
+ */
+export function shownLanes(view: Pick<EvidenceView, "assessmentDate" | "lanes">): EvidenceLaneView[] {
+  const unusable = view.assessmentDate ? ["no_assessment_date"] : ["applies_now", "upcoming"];
+  return view.lanes.filter((lane) => lane.items.length > 0 || !unusable.includes(lane.lane));
+}
+
+export function evidenceKey(item: Pick<EvidenceViewItem, "obligationId" | "actor">): string {
+  return `${item.obligationId}|${item.actor}`;
+}
+
+/**
+ * An accessible name per row: "Art. 9 AIA, Provider", with ", item n" appended where
+ * the same article and actor repeat, so every control's label is unique.
+ */
+export function rowNames(items: EvidenceViewItem[], actorLabel: (actor: string) => string): Map<string, string> {
+  const base = items.map((item) => `${item.article}, ${actorLabel(item.actor)}`);
+  const totals = new Map<string, number>();
+  for (const name of base) {
+    totals.set(name, (totals.get(name) ?? 0) + 1);
+  }
+  const seen = new Map<string, number>();
+  const names = new Map<string, string>();
+  items.forEach((item, index) => {
+    const name = base[index];
+    if ((totals.get(name) ?? 0) > 1) {
+      const position = (seen.get(name) ?? 0) + 1;
+      seen.set(name, position);
+      names.set(evidenceKey(item), `${name}, item ${position}`);
+    } else {
+      names.set(evidenceKey(item), name);
+    }
+  });
+  return names;
+}
+
+/** The tracker as a JSON download; the bridge puts draftNotice first. */
+export function evidenceExport(view: EvidenceView): string {
+  return `${JSON.stringify(view, null, 2)}\n`;
+}
+
+export function evidenceFilename(view: EvidenceView): string {
+  const slug =
+    view.system
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") || view.systemId;
+  return `${slug}-obligation-evidence.json`;
+}
+
+/**
+ * The outcome of one row's save, shown in that row (ADR 0006). An error that names the
+ * reviewed-on date marks that input invalid.
+ */
+export type EvidenceRowFeedback = {
+  kind: "saved" | "error";
+  text: string;
+  invalidField: "reviewedOn" | null;
+};
+
+export const SAVE_CONFLICT_RELOADED =
+  "Another save reached this item first. The tracker was reloaded; enter your change again.";
+
+export function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+/**
+ * Runs one row's save and, on a 409, reloads the tracker. Returns the view to show and
+ * the row's feedback, or null when `isCurrent()` says a newer classification or a new
+ * intake took over while it ran: then neither belongs on screen.
+ */
+export async function settleEvidenceSave(steps: {
+  name: string;
+  save: () => Promise<EvidenceView>;
+  reload: () => Promise<EvidenceView>;
+  isCurrent: () => boolean;
+}): Promise<{ view: EvidenceView | null; feedback: EvidenceRowFeedback } | null> {
+  let view: EvidenceView | null = null;
+  let feedback: EvidenceRowFeedback;
+  try {
+    view = await steps.save();
+    feedback = { kind: "saved", text: `Saved evidence for ${steps.name}.`, invalidField: null };
+  } catch (saveError) {
+    const text = errorText(saveError);
+    if (text.startsWith("409 Conflict")) {
+      try {
+        view = await steps.reload();
+        feedback = { kind: "error", text: SAVE_CONFLICT_RELOADED, invalidField: null };
+      } catch (reloadError) {
+        feedback = {
+          kind: "error",
+          text: `Another save reached this item first, and the tracker could not reload: ${errorText(reloadError)}. Classify again to refresh.`,
+          invalidField: null,
+        };
+      }
+    } else {
+      // The bridge names the field reviewedOn, reviewed_on or "reviewed-on date".
+      feedback = { kind: "error", text, invalidField: /reviewed[-_ ]?on/i.test(text) ? "reviewedOn" : null };
+    }
+  }
+  return steps.isCurrent() ? { view, feedback } : null;
+}
+
+type Focusable = { focus: () => void };
+
+/**
+ * Where focus goes once a row's save settles: back to its Save button after a save,
+ * to its message after a failure. Returns the target it focused.
+ */
+export function focusAfterSave(
+  feedback: EvidenceRowFeedback,
+  targets: { button: Focusable | null; message: Focusable | null },
+): "button" | "message" | null {
+  const target = feedback.kind === "error" && targets.message ? "message" : targets.button ? "button" : null;
+  if (target) {
+    targets[target]?.focus();
+  }
+  return target;
+}

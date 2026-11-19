@@ -9,5 +9,5 @@ Each record states a decision, its context and its consequences. Status is Accep
 | [0003](0003-export-route.md) | Print stylesheet PDF, DOCX only as an optional extra | Accepted (PDF and label); DOCX proposed |
 | [0004](0004-cockpit-styling-without-tailwind.md) | Cockpit pages use plain CSS classes, not Tailwind | Accepted |
 | [0005](0005-url-state-encoding.md) | Share links encode the profile in the URL hash with native compression | Accepted |
-| [0006](0006-evidence-model.md) | Evidence state lives in the cockpit workspace, not in the report | Proposed |
+| [0006](0006-evidence-model.md) | Evidence state lives in the cockpit workspace, not in the report | Accepted |
 | [0007](0007-systemprofile-change-proposals.md) | SystemProfile changes that would let fewer intake runs block | Proposed |

@@ -82,11 +82,11 @@ The inventory payload includes a system review table with classifier-backed rows
 
 ## Optional web cockpit
 
-![Full-page screenshot of the web cockpit in its single-column layout with the CreditSightScore sample: the sample inventory, a guided intake, the review panel (requires_review, high risk, one Art. 111(2) open question), reviewer notes, the AI systems inventory and system review tables, the obligation tracker with 17 graph items (captured before the Art. 4 AI literacy item was added, the "Word package" tile was renamed "Draft package" and the print button was added; the cockpit now shows more items, among them the Arts. 9 to 15 items), source provenance and a draft export pack](cockpit.png)
+![Full-page screenshot of the web cockpit in its single-column layout with the CreditSightScore sample: the sample inventory, a guided intake with an empty Assessment date field, the review panel (requires_review, high risk, one Art. 111(2) open question), reviewer notes, the AI systems inventory, system inventory controls and system review tables, the Obligation Tracker with 25 graph items in two lane tables (no assessment date is set, so the two lanes placed against the date are left out, "Dated; no assessment date set" is empty and all 25 sit under Contested or open), each row with an evidence state, an owner, a reviewed-on date and a Save button, source provenance and a draft export pack](cockpit.png)
 
 *Full-page capture of the local web cockpit (`web/`, production build, 1180 px wide) with its CreditSightScore sample loaded, reduced to 256 colours; the steps are in [TESTING.md](TESTING.md#generated-files). The cockpit's sample gives a placing-on-market date of 2026-10-01 and `examples/credit_scoring.json` gives none, so only the cockpit raises the Art. 111(2) question.*
 
-The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview.
+The `web/` folder contains a local Next.js App Router cockpit with system inventory, guided questionnaire, risk map, open legal questions, reviewer notes, source provenance, obligation tracker and export pack preview. The obligation tracker lists the report's obligation graph in lanes placed against the assessment date (applies on it, applies after it, dated but no assessment date set, contested or open) and keeps an evidence state, an owner and a reviewed-on date per item for each sample system; a saved item turns stale when the report or the item changes or when it was reviewed before its source was retrieved. Lanes and staleness come from the Python bridge, and the tracker downloads as JSON with the draft notice first ([ADR 0006](adr/0006-evidence-model.md)). With an assessment date in the intake the engine says, where every reading agrees, whether an item applies on it; an item with a date note or no date stays in Contested or open unless the engine says it applies on that date, which places it under Applies on the assessment date. The cockpit reads the workspace, without writing it, on each classification.
 
 The cockpit runs locally. Its API routes spawn the Python classifier from the repository root, so it is not hosted:
 
@@ -96,13 +96,13 @@ npm install
 npm run dev
 ```
 
-Only `/api/collaboration`, which the `/self-assessment` page uses, writes to disk. Each review action saves the workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root. The file is git-ignored and stays on the machine until you delete it. A stored file the bridge cannot read, or one built for a different set of examples, is renamed next to it with `unreadable` or `stale` and the time in its name, and a new workspace is started; those copies stay as well (see [COLLABORATION_PROGRAMME.md](COLLABORATION_PROGRAMME.md)). The other routes keep no state. Enter synthetic data only (see [PRIVACY.md](../PRIVACY.md)).
+Only `/api/collaboration`, which the `/self-assessment` page and the cockpit's Obligation Tracker use, writes to disk. Each review action and each tracker save writes the workspace, with reviewer names, overrides and comments, and evidence owners and reviewed-on dates, to `runtime-data/collaboration-workspace.json` under the repository root. The file is git-ignored and stays on the machine until you delete it. A stored file the bridge cannot read, or one built for a different set of examples, is renamed next to it with `unreadable` or `stale` and the time in its name, and a new workspace is started; those copies stay as well (see [COLLABORATION_PROGRAMME.md](COLLABORATION_PROGRAMME.md)). The other routes keep no state. Enter synthetic data only (see [PRIVACY.md](../PRIVACY.md)).
 
 Deployment notes for the playground and the cockpit are in [DEPLOYMENT.md](../DEPLOYMENT.md).
 
 ## Collaborative assessment workspace
 
-The local `collaboration` bridge command and `/self-assessment` route add stable inventory review cells, optimistic locks, versioned classification and policy workflows, and a synthetic self-assessment portal. Mutable state exports as `review.collaboration.v1`; deterministic classifier results remain separate from reviewer overrides and blocked classifications remain deployment-blocking.
+The local `collaboration` bridge command and `/self-assessment` route add stable inventory review cells, optimistic locks, versioned classification and policy workflows, and a synthetic self-assessment portal. Mutable state, the obligation tracker's evidence list included, exports as `review.collaboration.v1`; deterministic classifier results remain separate from reviewer overrides and blocked classifications remain deployment-blocking.
 
 ## Eval set
 

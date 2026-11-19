@@ -101,6 +101,8 @@ Implementation:
 
 Provides a local Next.js reviewer surface over the Python bridge. It keeps the Python classifier as the source of truth. The collaboration bridge saves the review workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root.
 
+The Obligation Tracker shows each sample system's obligation graph in lanes placed against the assessment date (applies on it, applies after it, dated but no assessment date set, contested or open) with an evidence state, an owner and a reviewed-on date per item, saved to the same `runtime-data/collaboration-workspace.json`. A saved item turns stale when the report or the item changes, or when it was reviewed before its source was retrieved; the bridge works this out, not the browser. With a date the engine says, where every reading agrees, whether an item applies on it; an item with a date note or no date stays in Contested or open unless the engine says it applies on that date, which places it under Applies on the assessment date. The cockpit reads the workspace (read-only) on each classification, and a reviewed-on date may not be after the bridge's local calendar date. The tracker downloads as JSON with the draft notice first ([ADR 0006](adr/0006-evidence-model.md)).
+
 Implementation:
 
 1. `web/app`

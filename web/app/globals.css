@@ -276,7 +276,7 @@ small {
   align-items: start;
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.65fr) minmax(320px, 0.9fr);
+  grid-template-columns: minmax(280px, 0.65fr) minmax(320px, 0.9fr);
   margin-top: 16px;
 }
 
@@ -289,6 +289,75 @@ small {
 
 .inventoryTrackerPanel {
   margin-top: 16px;
+}
+
+/* The obligation tracker (ADR 0006) runs the full width: nine columns with a select,
+   two inputs and a button per row. */
+.evidenceTrackerPanel {
+  margin-top: 16px;
+}
+
+.evidenceTrackerPanel .meta {
+  margin: 10px 0;
+}
+
+/* Below the full desktop width the lane tables scroll sideways inside .tableWrap
+   rather than squeeze nine columns, which stacked each date note a few words per line. */
+.evidenceTrackerPanel table {
+  min-width: 1100px;
+}
+
+.laneSection + .laneSection {
+  margin-top: 16px;
+}
+
+.laneSection h3 {
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.evidenceControls select,
+.evidenceControls input {
+  min-width: 9rem;
+}
+
+.evidenceControls .statusPill {
+  margin-bottom: 6px;
+}
+
+.evidenceControls small + select {
+  margin-top: 6px;
+}
+
+/* A row's save outcome, under its Save button. The button stays focusable while a save
+   runs (aria-disabled, not disabled), so it is dimmed here instead. */
+.rowMessage {
+  font-size: 13px;
+  margin: 6px 0 0;
+  max-width: 14rem;
+}
+
+.rowMessage:empty {
+  margin: 0;
+}
+
+.rowMessage.error {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.secondaryButton[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.orphanedEvidence {
+  margin-top: 16px;
+}
+
+.orphanedEvidence summary {
+  cursor: pointer;
+  font-weight: 680;
 }
 
 .reviewTableHeader {

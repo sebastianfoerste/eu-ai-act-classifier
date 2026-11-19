@@ -80,7 +80,9 @@ Amended application dates are tied to Regulation (EU) 2026/1744 and displayed as
 
 Draft work products always include a review notice and source manifest.
 
-The web cockpit keeps no state of its own. The collaboration bridge saves the review workspace, with reviewer names, overrides and comments, to `runtime-data/collaboration-workspace.json` under the repository root.
+The web cockpit keeps no state of its own. The collaboration bridge saves the review workspace, with reviewer names, overrides and comments, and the obligation tracker's evidence states, owners and reviewed-on dates, to `runtime-data/collaboration-workspace.json` under the repository root.
+
+Obligation evidence state lives in that workspace, keyed by cockpit system, obligation and actor, never in the report ([ADR 0006](adr/0006-evidence-model.md)). The Python bridge derives the tracker's lanes, digests, retrieval dates and stale reasons; the browser displays and posts them.
 
 ## Cockpit Source-of-Truth Boundary
 
