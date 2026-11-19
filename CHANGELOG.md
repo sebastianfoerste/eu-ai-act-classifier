@@ -5,6 +5,53 @@ pull requests.
 
 ## Unreleased
 
+Nothing yet.
+
+## 0.4.0 (2026-11-19)
+
+#### Upgrade notes
+
+Profiles, reports and CI jobs that pass on 0.3.0 can fail or change on 0.4.0.
+Pinning `eu-ai-act-classifier==0.3.0` keeps the 0.3.0 behaviour while you
+update them. The sections below give the detail.
+
+- A breaking input change: `roles` must hold at least one role. A profile,
+  playground draft, share link, MCP call or inventory file with
+  `"roles": []` is rejected; the CLI exits 2 ("Operator roles reach the
+  review gate").
+- `--strict` exits 1 for more profiles, because each now has an open
+  question and the disposition is `requires_review`:
+  - a high-risk tier with no operator role for the system, `is_gpai_model`
+    without the `gpai_provider` role, or `gpai_provider` without
+    `is_gpai_model` ("Operator roles reach the review gate");
+  - an Annex I, Section B product that also falls in an Annex III area
+    ("Section B flags reach the review gate");
+  - a deployer whose `deployer_public_authority` is not given where it
+    changes the result: every Annex III point, and an Annex I route for a
+    legacy or undated system as the section on the deployer status
+    describes. State the status to keep such a profile `determined`.
+
+  The two new Art. 27 questions change no disposition.
+- Every report carries `classifier_version`, and the report schema requires
+  it, so a report written before 0.4.0 no longer validates against
+  `schemas/classification-report.v1.schema.json` ("Version stamp").
+- `report.obligations` changes shape: an Annex III provider report has 22
+  entries instead of 15, entries for up to 12 articles are new and the
+  requirement strings of 12 existing kinds of entry change. The obligation
+  graph gains the Arts. 9 to 15 items and three GPAI items. Code that
+  counts entries, matches their text or keys on the set of articles must be
+  updated ("One source for the obligations list and the obligation graph").
+- A deployer of a system that is high-risk only through Annex I no longer
+  gets the Art. 27 FRIA item ("The FRIA follows Art. 27(1)").
+- The example inventory run outside a clone's root reports
+  `review_required` with a warning instead of an empty `determined`
+  inventory ("Inventory outside a clone").
+- The collaboration workspace gains an `evidence` list. A build from before
+  0.4.0 drops it on its next save, so export the workspace before going back
+  to one ("Obligation evidence tracker (S4)"). `local_api` prints a short
+  error summary instead of pydantic's message and a traceback ("Collaboration
+  store and bridge errors").
+
 ### Documentation upkeep
 
 #### Changed
