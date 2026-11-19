@@ -12,10 +12,11 @@ Nothing yet.
 #### Upgrade notes
 
 Profiles, reports and CI jobs that pass on 0.3.0 can fail or change on 0.4.0.
-The sections below give the detail. 0.3.0 was not published to PyPI, where
-0.2.2 is the latest release, so an upgrade from PyPI also brings the 0.3.0
-changes: read the 0.3.0 upgrade notes below as well. Pinning
-`eu-ai-act-classifier==0.2.2` keeps the 0.2.2 behaviour while you update.
+The sections below give the detail. 0.3.0 was not published to PyPI and will
+not be: 0.4.0 is the first PyPI release since 0.2.2, so an upgrade from PyPI
+also brings the 0.3.0 changes. Read the 0.3.0 upgrade notes below as well.
+Pinning `eu-ai-act-classifier==0.2.2` keeps the 0.2.2 behaviour while you
+update.
 
 - A breaking input change: `roles` must hold at least one role. A profile,
   playground draft, share link, MCP call or inventory file with
@@ -677,7 +678,7 @@ changes: read the 0.3.0 upgrade notes below as well. Pinning
 - The coverage floor rises from 95 % to 96 % (`--cov-fail-under=96`), the
   integer part of the measured total of 96.37 %.
 
-## 0.3.0 (2026-11-16)
+## 0.3.0 (2026-11-16, not published)
 
 #### Upgrade notes
 
