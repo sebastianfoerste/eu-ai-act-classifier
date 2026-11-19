@@ -22,12 +22,13 @@ Obligations:
   - Art. 13 AIA: Transparency to deployers. Provide instructions for use enabling deployers to comply.
   - Art. 14 AIA: Human oversight. Design the system for effective oversight by natural persons.
   - Art. 15 AIA: Accuracy, robustness, cybersecurity. Achieve appropriate accuracy, robustness and cybersecurity.
-  - Art. 16 AIA: Provider obligations. Ensure the system meets the Chapter III, Section 2 requirements, indicate the provider's name and contact address on it, and meet the other Art. 16 duties.
+  - Art. 16 AIA: Provider obligations. Ensure the system meets the Chapter III, Section 2 requirements, indicate the provider's name, registered trade name or registered trade mark and contact address on the system or, where that is not possible, on its packaging or accompanying documentation, and meet the other Art. 16 duties.
   - Art. 17 AIA: Quality management system. Put in place a quality management system.
-  - Art. 18 AIA: Document retention. Keep the technical documentation, the quality management system documentation, the documents of notified bodies and the EU declaration of conformity at the disposal of the national competent authorities for 10 years after placing on the market or putting into service.
+  - Art. 18 AIA: Document retention. Keep the technical documentation, the quality management system documentation, where applicable the changes approved by and the decisions and other documents issued by notified bodies, and the EU declaration of conformity at the disposal of the national competent authorities for 10 years after placing on the market or putting into service.
   - Art. 19 AIA: Log retention. Keep automatically generated logs where under provider control.
   - Art. 20 AIA: Corrective action and notification. Take corrective action and inform relevant parties where required.
   - Art. 21 AIA: Authority cooperation. Cooperate with competent authorities and provide requested information.
+  - Art. 41 AIA: Common specifications. Where common specifications adopted under Art. 41(1) apply and are not followed, justify that the technical solutions adopted meet the Section 2 requirements to a level at least equivalent (Art. 41(5)).
   - Art. 43 AIA: Conformity assessment. Complete the applicable conformity assessment.
   - Art. 43(2) AIA: Conformity assessment based on internal control. Follow the conformity assessment procedure based on internal control (Annex VI), which does not involve a notified body.
   - Art. 47 AIA: EU declaration of conformity. Draw up and keep the EU declaration of conformity.

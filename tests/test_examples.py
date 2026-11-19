@@ -114,7 +114,7 @@ def test_life_insurer_carries_provider_and_deployer_duties() -> None:
         else:
             expected = "2026-08-02" if item.article in literal else "2027-12-02"
         assert item.application_date == expected, item.obligation_id
-    assert len([ob for ob in report.obligations if ob.applies_to.value == "provider"]) == 21
+    assert len([ob for ob in report.obligations if ob.applies_to.value == "provider"]) == 22
     assert len([ob for ob in report.obligations if ob.applies_to.value == "deployer"]) == 3
     assert len(report.documentation_required) == 5
     assert len(report.obligation_graph) == 27

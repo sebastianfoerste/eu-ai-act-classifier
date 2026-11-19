@@ -22,7 +22,8 @@ facts. The engine applies the rules and makes uncertainty visible.
    (bb), which apply from 2 December 2026. A hit is a hard stop.
 3. High-risk classification: Art. 6(1), Art. 6(2), Art. 6(3), Annex I and
    Annex III.
-4. GPAI: Art. 51 systemic threshold and Arts. 53, 55 and 56 obligations.
+4. GPAI: Art. 51 systemic threshold, Arts. 53 and 55 obligations, and the Art. 56
+   code-of-practice review task.
 5. Transparency: Art. 50(1) to (4) AIA.
 6. Resolution: highest tier, review disposition, source-backed obligations
    (the Art. 4 AI literacy duty of every provider and deployer first), timeline
@@ -205,13 +206,30 @@ The engine suppresses the generic FRIA open question for that case.
 Where the deployment is high-risk and the deployer status is incomplete, the
 engine raises a review question instead of asserting a FRIA conclusion.
 
+Two further cases raise an Art. 27 review question. With `III.unsure`, a
+deployer whose status does not require a FRIA is told that points 5(b) and
+5(c) would require one whatever the status. With an asserted Art. 6(3)
+derogation on a system that is also on the Annex I route (Section A or not
+given), the FRIA stays listed and the question says it falls away if the
+derogation is established, since the system would then be high-risk only
+under Art. 6(1).
+
 ## Obligation Graph
 
 Every duty is written once, as an item of `obligation_graph`, the product
 surface for review workflows. `obligations` lists the same duties in the same
 order for compatibility: the article, actor and requirement of each graph
 item, with a title, apart from the Art. 50 items, which
-`transparency_obligations` lists. Three kinds of entry repeat a counsel flag
+`transparency_obligations` lists, and four review tasks that state no duty of
+the provider: Arts. 40 and 42 (presumptions of conformity), Art. 44
+(certificates of notified bodies) and Art. 56 (codes of practice, addressed to
+the AI Office and the Board). The graph keeps them
+(`obligation_graph.GRAPH_ONLY_ITEMS`). Art. 41 is listed with its Art. 41(5)
+duty, for a provider of a high-risk AI system (Section 2) and for a provider of
+a general-purpose AI model (Chapter V, Section 2, and with systemic risk also
+Section 3, "as applicable"). A GPAI provider's list
+also names the Art. 53(4) and, with systemic risk, the Art. 55(2) duty to show
+alternative adequate means of compliance. Three kinds of entry repeat a counsel flag
 in the requirement that the graph item carries in its date note: the Art. 4
 entry of a Section B product or a prohibited system, and the Art. 2(2) entry
 of a Section B product in an Annex III area.
@@ -441,12 +459,16 @@ Under Art. 111(3), providers of general-purpose AI models placed on the market
 before that date take the necessary steps to comply with the obligations
 laid down in the Regulation by 2 August 2027. The model is dated by its
 own date, `gpai_model_placing_on_market_date`. If it is before
-2 August 2025, every GPAI item (Arts. 53, 55 and 56) carries 2027-08-02 and
-the Art. 111(3) note. If it is on or after that date, the items carry
+2 August 2025, every Chapter V item (Arts. 53, 55 and 56) carries 2027-08-02
+and the Art. 111(3) note. If it is on or after that date, the items carry
 2025-08-02 and no note. If the profile gives neither the model's date nor the
 system's `placing_on_market_date`, their `application_date` is null, the note
 names both dates, they are `review_required` and an open question asks for the
 model's date, unless the assessment date falls on or after both dates (C9).
+The GPAI Art. 41(5) item is in Chapter III, Section 5, which applies from
+2 August 2026 (Art. 113, second paragraph): it carries 2026-08-02, or
+2027-08-02 for a model placed before 2 August 2025, and with no date its note
+names 2026-08-02 and 2027-08-02.
 
 Art. 111(3) dates the model, Art. 111(4) the system, so the profile has two
 fields. `gpai_model_placing_on_market_date` is the model's date and drives
