@@ -54,8 +54,8 @@ The tracker's rules are tested where they are computed, in Python:
 - `tests/test_evidence_tracker.py`: the report and item digests (pinned
   algorithm, what they ignore and what changes them, the Art. 5(1)(ba) date
   prose that moves the digest only where the outcome changes), the lane
-  precedence over every example and eight assessment dates (the
-  `no_assessment_date` lane without one), the retrieval date per item, the
+  precedence over every example, seven assessment dates and none (the
+  `no_assessment_date` lane), the retrieval date per item, the
   stale reasons matrix, the view's shape and order, and record validation.
 - `tests/test_collaboration_workspace.py`: saving with revisions and conflicts,
   two concurrent saves of one row under the file lock, rejected input leaving

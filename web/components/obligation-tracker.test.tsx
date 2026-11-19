@@ -118,6 +118,33 @@ describe("ObligationTracker", () => {
     expect(markup).toContain("5 graph items: Not started 4, In progress 0, Evidence attached 0, Reviewed 0, Stale 1");
   });
 
+  it("leaves out the lanes that cannot hold an item for the date given, unless they hold one", () => {
+    const heads = (markup: string) => all(markup, /<h3 id="tracker-lane-[a-z_]+">([^<]*)<\/h3>/g);
+    const undated = view({
+      lanes: [
+        { lane: "applies_now", items: [] },
+        { lane: "upcoming", items: [] },
+        { lane: "no_assessment_date", items: [UNDATED] },
+        { lane: "contested_or_open", items: [OPEN] },
+      ],
+    });
+    expect(heads(render({ view: undated }))).toEqual(["Dated; no assessment date set (1)", "Contested or open (1)"]);
+    const dated = view({
+      assessmentDate: "2026-11-17",
+      lanes: [
+        { lane: "applies_now", items: [NOW] },
+        { lane: "upcoming", items: [] },
+        { lane: "no_assessment_date", items: [] },
+        { lane: "contested_or_open", items: [] },
+      ],
+    });
+    expect(heads(render({ view: dated }))).toEqual([
+      "Applies on the assessment date (1)",
+      "Applies after the assessment date (0)",
+      "Contested or open (0)",
+    ]);
+  });
+
   it("heads every lane table with the nine columns", () => {
     const markup = render();
     const headers = all(markup, /<th scope="col">([^<]*)<\/th>/g);
@@ -242,6 +269,7 @@ describe("ObligationTracker", () => {
   it("shows an empty lane as a row of text", () => {
     const markup = render({
       view: view({
+        assessmentDate: "2026-11-17",
         lanes: [
           { lane: "applies_now", items: [] },
           { lane: "upcoming", items: [STALE] },
@@ -250,7 +278,8 @@ describe("ObligationTracker", () => {
         ],
       }),
     });
-    expect(markup.match(/<td colSpan="9">No items in this lane\.<\/td>/gi)).toHaveLength(3);
+    // applies_now and contested_or_open are empty; no_assessment_date is left out with a date.
+    expect(markup.match(/<td colSpan="9">No items in this lane\.<\/td>/gi)).toHaveLength(2);
   });
 });
 

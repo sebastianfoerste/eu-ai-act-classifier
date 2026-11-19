@@ -73,9 +73,10 @@ too, one is saved and the other answers 409.
 Lanes are placed against the assessment date, not against today:
 `applies_now` applies on the assessment date, `upcoming` applies after it,
 `no_assessment_date` holds dated items while no assessment date is set, and
-`contested_or_open` holds items with a date note or no date. With a date the
-engine says, where every reading agrees, whether an item applies on it; items
-whose date is contested stay in Contested or open.
+`contested_or_open` holds items with a date note or no date, unless the engine
+says they apply on the assessment date. With a date the engine says, where
+every reading agrees, whether an item applies on it, and such an item sits
+under `applies_now` even with a date note.
 
 ## Inventory
 

@@ -38,7 +38,7 @@ npm run dev
 
 The web app shells out to the Python bridge through `uv`. Keep `CLASSIFIER_REPO_ROOT` pointed at the repository root if the web app runs from another working directory.
 
-`npm run dev` and `npm run start` listen on `127.0.0.1` only; open the cockpit at `http://127.0.0.1:3000` or `http://localhost:3000`. The POST routes accept a request only when its body is `application/json` (415 otherwise) and when it comes from the cockpit's own origin: `Host` and `Origin` must name `localhost` or `127.0.0.1` at the port the server listens on, and `Sec-Fetch-Site`, when sent, must be `same-origin` or `none` (403 otherwise). A web page on another site, or one that rebinds its DNS name to `127.0.0.1`, cannot write to the review workspace.
+`npm run dev` and `npm run start` listen on `127.0.0.1` only; open the cockpit at `http://127.0.0.1:3000` or `http://localhost:3000`. The POST routes accept a request only when its body is `application/json` (415 otherwise) and when it comes from the cockpit's own origin: `Host` and `Origin` must name `localhost` or `127.0.0.1` at the port the server listens on, and `Sec-Fetch-Site`, when sent, must be `same-origin` or `none` (403 otherwise). A web page on another site, or one that rebinds its DNS name to `127.0.0.1`, cannot write to the review workspace. The `/self-assessment` page, which shows the workspace, applies the same `Host`, `Origin` and `Sec-Fetch-Site` check before it reads it and otherwise answers 404: open it from the cockpit, a bookmark or the address bar, not from a link on another site or port.
 
 ## Hosting the Cockpit
 

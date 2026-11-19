@@ -108,6 +108,16 @@ export function evidencePayload(
   };
 }
 
+/**
+ * The lanes worth a table: with an assessment date, the "no assessment date" lane can
+ * hold nothing; without one, the two lanes placed against the date can hold nothing.
+ * A lane that holds items is always shown.
+ */
+export function shownLanes(view: Pick<EvidenceView, "assessmentDate" | "lanes">): EvidenceLaneView[] {
+  const unusable = view.assessmentDate ? ["no_assessment_date"] : ["applies_now", "upcoming"];
+  return view.lanes.filter((lane) => lane.items.length > 0 || !unusable.includes(lane.lane));
+}
+
 export function evidenceKey(item: Pick<EvidenceViewItem, "obligationId" | "actor">): string {
   return `${item.obligationId}|${item.actor}`;
 }

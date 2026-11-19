@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import tempfile
+import time
 from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -333,6 +334,26 @@ def review_cell(
     return updated
 
 
+# On Windows a file another process has open for reading cannot be replaced or renamed
+# (Python opens files without FILE_SHARE_DELETE), and "evidence_view" reads without the
+# lock. Such a reader holds the file for one read, so a replace waits briefly for it.
+_REPLACE_ATTEMPTS = 20
+_REPLACE_PAUSE = 0.05
+
+
+def _replace(source: Path | str, target: Path) -> None:
+    """``os.replace``, retried for a short while on PermissionError (see above)."""
+
+    for attempt in range(_REPLACE_ATTEMPTS):
+        try:
+            os.replace(source, target)
+            return
+        except PermissionError:
+            if attempt == _REPLACE_ATTEMPTS - 1:
+                raise
+            time.sleep(_REPLACE_PAUSE)
+
+
 def save_workspace(workspace: CollaborationWorkspace, path: Path) -> Path:
     """Write the workspace to ``path`` in one step.
 
@@ -351,7 +372,7 @@ def save_workspace(workspace: CollaborationWorkspace, path: Path) -> Path:
             handle.write(payload)
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(temporary, path)
+        _replace(temporary, path)
     except BaseException:
         Path(temporary).unlink(missing_ok=True)
         raise
@@ -460,7 +481,7 @@ def _load_or_recover(
     # Another process (one without the lock, such as an older bridge) may have set the
     # file aside already; start the new workspace all the same.
     with contextlib.suppress(FileNotFoundError):
-        path.replace(archive)
+        _replace(path, archive)
     workspace = build_collaboration_state(inventory)
     workspace.evidence = carried
     recovered = {
@@ -793,7 +814,8 @@ def apply_workspace_action(
     "evidence_view" and "evidence" classify the payload's ``profile`` (the one the
     cockpit shows) and return the obligation tracker for ``systemId`` instead of the
     workspace snapshot. "evidence_view" only reads: it never archives, recovers or
-    writes, and a stored file that is unreadable or stale reads as no saved evidence.
+    writes; a stored file that is stale reads with the evidence records a recovery would
+    carry over, and an unreadable one reads as no saved evidence.
     """
 
     inventory = build_example_inventory(generated_at=_inventory_timestamp(now))

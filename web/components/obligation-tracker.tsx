@@ -10,6 +10,7 @@ import {
   evidenceTone,
   focusAfterSave,
   rowNames,
+  shownLanes,
   type EvidenceDraft,
   type EvidenceRowFeedback,
   type EvidenceView,
@@ -94,7 +95,7 @@ export function ObligationTracker({ report, view, disabled, message, feedback, o
             placed against the assessment date; while none is set, dated items wait under &ldquo;
             {labelFor("evidence_lane", "no_assessment_date")}&rdquo;.
           </p>
-          {view.lanes.map((lane) => {
+          {shownLanes(view).map((lane) => {
             const laneId = `tracker-lane-${lane.lane}`;
             return (
               <section className="laneSection" key={lane.lane} aria-labelledby={laneId}>

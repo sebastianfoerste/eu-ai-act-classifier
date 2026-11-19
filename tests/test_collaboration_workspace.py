@@ -2,6 +2,7 @@ import contextlib
 import errno
 import io
 import json
+import os
 import shutil
 import threading
 import time
@@ -1103,3 +1104,39 @@ def test_snapshot_carries_the_draft_notice() -> None:
     snapshot = build_collaboration_workspace()
     assert snapshot["draftNotice"] == DRAFT_NOTICE
     assert snapshot["collaboration"]["evidence"] == []
+
+
+def test_a_save_waits_for_a_reader_that_briefly_blocks_the_replace(tmp_path, monkeypatch) -> None:
+    # On Windows an open reader (an unlocked evidence_view) makes os.replace fail with
+    # PermissionError for the length of one read; the save retries instead of failing.
+    runtime_path = tmp_path / "workspace.json"
+    real_replace = os.replace
+    failures = iter([True, True])
+
+    def busy_then_free(source, target):
+        if next(failures, False):
+            raise PermissionError(13, "The process cannot access the file")
+        real_replace(source, target)
+
+    monkeypatch.setattr(collaboration_module, "_REPLACE_PAUSE", 0)
+    monkeypatch.setattr(collaboration_module.os, "replace", busy_then_free)
+    _evidence(runtime_path, owner="Owner A")
+
+    assert _entry(_view(runtime_path), "high-risk.provider.9")["owner"] == "Owner A"
+
+
+def test_a_replace_that_stays_blocked_still_fails(tmp_path, monkeypatch) -> None:
+    runtime_path = tmp_path / "workspace.json"
+    calls: list[object] = []
+
+    def always_busy(source, target):
+        calls.append(target)
+        raise PermissionError(13, "The process cannot access the file")
+
+    monkeypatch.setattr(collaboration_module, "_REPLACE_PAUSE", 0)
+    monkeypatch.setattr(collaboration_module.os, "replace", always_busy)
+    with pytest.raises(PermissionError):
+        _evidence(runtime_path, owner="Owner A")
+    assert len(calls) == collaboration_module._REPLACE_ATTEMPTS
+    assert not runtime_path.exists()
+    assert not list(tmp_path.glob(".workspace.json.*.tmp"))
