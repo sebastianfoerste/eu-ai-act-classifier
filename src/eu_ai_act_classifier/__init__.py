@@ -27,7 +27,7 @@ from .models import (
 )
 from .report import render_report
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __all__ = [
     "AnnexIII",
     "AnnexISection",
