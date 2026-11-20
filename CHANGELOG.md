@@ -7,7 +7,7 @@ pull requests.
 
 Nothing yet.
 
-## 0.4.0 (2026-11-19)
+## 0.4.0 (2026-11-20)
 
 #### Upgrade notes
 
