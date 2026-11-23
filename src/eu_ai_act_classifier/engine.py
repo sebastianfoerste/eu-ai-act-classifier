@@ -6,6 +6,8 @@ from .advisory import build_advisory_notes
 from .catalog import (
     ANNEX_III,
     ART_50_2,
+    SECTION_B_ANNEX_III_KEPT,
+    SECTION_B_ANNEX_III_QUESTION,
     eu_database_registration_applies,
     high_risk_documentation,
     public_authority_registration_applies,
@@ -90,6 +92,21 @@ def classify(profile: SystemProfile, *, include_advisory: bool = False) -> Class
         if votes
         else RiskTier.MINIMAL
     )
+
+    if final_tier is RiskTier.PROHIBITED:
+        # A prohibited report lists no Annex III duties, so it cannot say it keeps them.
+        # The Art. 5 Section B question still sends such a report to review.
+        open_questions = [
+            q for q in open_questions if not q.startswith(SECTION_B_ANNEX_III_QUESTION)
+        ]
+        findings = [
+            finding.model_copy(
+                update={"detail": finding.detail.replace(SECTION_B_ANNEX_III_KEPT, ".")}
+            )
+            if finding.rule_id == "HIGHRISK.6.1"
+            else finding
+            for finding in findings
+        ]
 
     # The duties themselves are graph items (obligation_graph.py); this block keeps the
     # documentation list and the open questions.

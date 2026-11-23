@@ -117,6 +117,8 @@ test("renders exactly the model: dates, milestones, items, markers and answers",
     const model = timelineModel(report);
     const view = renderTimeline(fakeDocument, report, LABELS);
     assert.equal(view.attributes.role, "region", key);
+    // The region scrolls sideways, so the keyboard must be able to reach it.
+    assert.equal(view.tabIndex, 0, key);
     const headers = view.all("timeline-when").map(e => e.textContent);
     assert.deepEqual(headers, [...shownDates(model), ...(model.open.length ? ["Date open"] : [])], key);
     assert.deepEqual(view.all("timeline-milestone").map(e => e.textContent), model.columns.flatMap(c => c.milestones.map(m => m.provision)), key);

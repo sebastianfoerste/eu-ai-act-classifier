@@ -15,7 +15,12 @@ counsel flag, so the result goes to review.
 
 from __future__ import annotations
 
-from ..catalog import ANNEX_III, SECTION_B_PROVISIONS, section_b_annex_iii_flag
+from ..catalog import (
+    ANNEX_III,
+    SECTION_B_ANNEX_III_QUESTION,
+    SECTION_B_PROVISIONS,
+    section_b_annex_iii_flag,
+)
 from ..citations import ART_2_13, ART_6_1C, Citation
 from ..models import AnnexIII, AnnexILegislation, AnnexISection, Finding, RiskTier, Severity
 from ..transitions import (
@@ -104,7 +109,7 @@ def evaluate(profile) -> GateOutput:
             flag = section_b_annex_iii_flag(derogation_asserted(profile))
             detail += f" {flag}"
             # The dossier and the cockpit list open questions, not finding details.
-            out.open_questions.append(f"Art. 2(2) AIA and Art. 6(2) AIA: {flag}")
+            out.open_questions.append(f"{SECTION_B_ANNEX_III_QUESTION} {flag}")
         out.findings.append(
             Finding(
                 rule_id="HIGHRISK.6.1",
