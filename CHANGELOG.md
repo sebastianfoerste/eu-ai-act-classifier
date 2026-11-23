@@ -5,27 +5,86 @@ pull requests.
 
 ## Unreleased
 
+Nothing yet.
+
+## 0.4.0 (2026-11-24)
+
 #### Upgrade notes
 
-- A report for an Annex I, Section B product in an Annex III area whose
-  result is prohibited no longer carries the open question
-  "Art. 2(2) AIA and Art. 6(2) AIA", and its Art. 6(1) finding
-  (`HIGHRISK.6.1`) no longer ends with the clause that the report keeps the
-  Annex III duties. The disposition stays `requires_review`. Code that
-  matches that question or the finding detail must be updated ("A
-  prohibited Section B report keeps no Annex III duties").
+Profiles, reports and CI jobs that pass on 0.3.0 can fail or change on 0.4.0.
+The sections below give the detail. 0.3.0 was not published to PyPI and will
+not be: 0.4.0 is the first PyPI release since 0.2.2, so an upgrade from PyPI
+also brings the 0.3.0 changes. Read the 0.3.0 upgrade notes below as well.
+Pinning `eu-ai-act-classifier==0.2.2` keeps the 0.2.2 behaviour while you
+update.
+
+- A breaking input change: `roles` must hold at least one role. A profile,
+  playground draft, share link, MCP call or inventory file with
+  `"roles": []` is rejected; the CLI exits 2 ("Operator roles reach the
+  review gate").
+- `--strict` exits 1 for more profiles, because each now has an open
+  question and the disposition is `requires_review`:
+  - a high-risk tier with no operator role for the system, `is_gpai_model`
+    without the `gpai_provider` role, or `gpai_provider` without
+    `is_gpai_model` ("Operator roles reach the review gate");
+  - an Annex I, Section B product that also falls in an Annex III area,
+    where the result is high-risk ("Section B flags reach the review
+    gate");
+  - a deployer whose `deployer_public_authority` is not given where it
+    changes the result: every Annex III point, and an Annex I route for a
+    legacy or undated system as the section on the deployer status
+    describes. State the status to keep such a profile `determined`.
+
+  The two new Art. 27 questions change no disposition.
+- Every report carries `classifier_version`, and the report schema requires
+  it, so a report written before 0.4.0 no longer validates against
+  `schemas/classification-report.v1.schema.json` ("Version stamp").
+- `report.obligations` changes shape: an Annex III provider report has 22
+  entries instead of 15, entries for up to 12 articles are new and the
+  requirement strings of 12 existing kinds of entry change. The obligation
+  graph gains the Arts. 9 to 15 items and three GPAI items, and the
+  requirement text of nine existing graph items (Arts. 16, 17, 18, 24, 25,
+  26, 41, 53(1)(a) and 53(1)(c)) follows the Official Journal wording. Code
+  that counts entries, matches their text or keys on the set of articles
+  must be updated ("One source for the obligations list and the obligation
+  graph").
+- A deployer of a system that is high-risk only through Annex I no longer
+  gets the Art. 27 FRIA item ("The FRIA follows Art. 27(1)").
+- The example inventory run outside a clone's root reports
+  `review_required` with a warning instead of an empty `determined`
+  inventory ("Inventory outside a clone").
+- The example inventory changes in 0.4.0, so the first collaboration action
+  that saves or takes a snapshot (not the cockpit's read-only evidence view)
+  sets a workspace saved by an earlier release aside as
+  `collaboration-workspace.stale-<UTC time>.json` and starts a new one. Its
+  review cells, overrides and comments do not carry over, and an import
+  rejects the file as stale, so copy what you need from it by hand. An
+  earlier release rejects a workspace saved by 0.4.0 as stale on every
+  action: move `runtime-data/collaboration-workspace.json` aside before going
+  back ("Collaboration store and bridge errors", "Obligation evidence tracker
+  (S4)"). `local_api` prints a short error summary instead of pydantic's
+  message and a traceback.
+- The cockpit listens on `127.0.0.1` only (`npm run dev` and `npm run
+  start`). Its POST routes answer 415 to a body that is not
+  `application/json`, and every API route but `/api/health` answers 403 to a
+  `Host` or `Origin` other than `localhost` or `127.0.0.1` at the server's
+  port, so reach it from the same machine and send JSON. `/api/health`
+  reports `persistence: "local_file"` ("Cockpit API
+  routes reject cross-site requests", "Docs and the cockpit health route say
+  what the code does").
 
 ### A prohibited Section B report keeps no Annex III duties
 
 #### Fixed
 
 - A report for an Annex I, Section B product that also falls in an Annex III
-  area said in its Art. 6(1) finding, and since 0.4.0 also in the open
-  question "Art. 2(2) AIA and Art. 6(2) AIA", that the report keeps the
-  Annex III duties as the conservative reading. Where a prohibited practice
-  made the result prohibited, the report listed no Annex III duties, so both
-  statements were untrue. `engine.classify` now drops that question and that
-  clause where the final tier is prohibited. Where the result is high-risk,
+  area said in its Art. 6(1) finding, and in the open question
+  "Art. 2(2) AIA and Art. 6(2) AIA" that "Section B flags reach the review
+  gate" introduces, that the report keeps the Annex III duties as the
+  conservative reading. Where a prohibited practice made the result
+  prohibited, the report listed no Annex III duties, so both statements
+  were untrue. `engine.classify` now drops that question and that clause
+  where the final tier is prohibited. Where the result is high-risk,
   both stay, also when a point (ba) or (bb) is declared before it applies
   on 2 December 2026. The Art. 5 Section B question still sends a prohibited
   report to review, so no disposition changes. `catalog.py` holds the
@@ -45,12 +104,121 @@ pull requests.
   prohibited report lists none. The ledger's note of
   23 November 2026 records that the row's classifier statements were
   updated against the changed code and that the provision was not re-read.
-- The 0.4.0 entry "Section B flags reach the review gate" below says that
-  `high_risk.evaluate` adds the open question
-  "Art. 2(2) AIA and Art. 6(2) AIA" and that the duties stay listed. The
-  report keeps both only where the result is high-risk:
-  `high_risk.evaluate` still adds the question, and `engine.classify` drops
-  it from a prohibited report, which lists no Annex III duties.
+
+#### Upgrade notes
+
+- A report for an Annex I, Section B product in an Annex III area whose
+  result is prohibited: its Art. 6(1) finding (`HIGHRISK.6.1`) no longer
+  ends with the clause that the report keeps the Annex III duties, which
+  0.2.2 and 0.3.0 wrote there. As in 0.3.0, such a report has no open
+  question "Art. 2(2) AIA and Art. 6(2) AIA", and its disposition stays
+  `requires_review`. Code that matches the finding detail must be updated.
+
+### Not-yet-applicable Art. 5(1)(ba) and (bb) points
+
+#### Changed
+
+- Whether a system is prohibited is now the Art. 5 gate's vote
+  (`transitions.prohibition_applies`), not the list of declared practices,
+  wherever the engine decides whether the Art. 111(2) change answer and the
+  deployer's public-authority status are used (`transitions.change_used`,
+  `transitions.public_authority_status_used`) and whether the Art. 111(2)
+  and Art. 111(3) checks run. A declared Art. 5(1)(ba) or (bb) point leaves
+  the system at its other tier, high-risk on a high-risk route, where it
+  does not yet apply on the assessment date (before 2 December 2026) or
+  where the profile holds it in no provider, importer or deployer role.
+  Earlier in this release ("Deployer status: 'I don't know' goes to
+  review") the engine already read both answers there, except the status
+  of a deployer of an undated system on an Annex I route without an
+  Annex III area, and already asked for an unset change answer and, on an
+  Annex III point, for an unset status. The report now runs the
+  Art. 111(2) and Art. 111(3) checks there and no longer says that the
+  answers are not used. The one open question this change adds is the
+  status question for a deployer on an Annex I route without an Annex III
+  area (the Art. 111(2) 2030 date). Against 0.3.0, see the upgrade notes
+  below.
+- Where the element facts in `intimate_imagery` or
+  `child_sexual_abuse_material` establish point (ba) or (bb) without a
+  declared practice for a provider, importer or deployer role, and the
+  assessment date is on or after 2 December 2026 or not given, the result
+  is prohibited, and the status and change
+  answers are now not used: the reports for a status of true, false and
+  unset are equal apart from the "not used" sentence, and neither the
+  Art. 111(2) comparison nor the Art. 111(3) check runs.
+- The two "not used" sentences of the Art. 111(2) check say "a high-risk
+  system that is not prohibited" instead of "with no prohibited practice
+  screened".
+- The guided intake follows the engine. It asks the change answer and the
+  status exactly where the engine reads them, for a declared point (ba) or
+  (bb) too (`intake.HIGH_RISK_ROUTE` now reads the assessment date and the
+  roles). The high-risk questions asked before the assessment date (the two
+  Art. 27 status questions, establishment outside the EU, the authorised
+  representative and the value chain) use a condition without the date
+  (`intake.HIGH_RISK_ROUTE_EARLY`): they are asked for every declared point
+  (ba) or (bb) without a point (a) to (h).
+- `docs/methodology.md`, `docs/reviewer-notes.md` and the Art. 111(2) row
+  of `docs/REGULATORY_CLAIM_LEDGER.md` (reworded against the code on
+  23 November 2026; the provision was not re-read) say what the engine
+  does now.
+- `tests/test_intake.py` adds the declared points (ba), (bb), both, and (ba)
+  with (c), assessed on 2026-12-01, on 2026-12-02 and undated, and a
+  distributor role to both grids, so the skip check, the fail-closed check
+  and the checks of the "not used" sentences cover them; the first grid
+  grows from 1,041 to 3,237 states and the second from 4,870 to 9,478, and
+  the file runs about two and a half times as long.
+  `tests/test_deployer_status.py` covers a declared point that does not yet
+  apply and a point the element facts establish on or after
+  2 December 2026. `tests/test_intake.py` also checks every point (a) to
+  (h) against both route conditions. The browser fixtures add
+  five declared-point profiles.
+
+#### Upgrade notes
+
+- A deployer profile with a declared `5.1.ba` or `5.1.bb` and no point (a)
+  to (h), assessed before 2026-12-02, that leaves `deployer_public_authority`
+  unset now has the status open question that the section on the deployer
+  status describes: on an Annex III point, and on an Annex I route without
+  an Annex III area for a system placed on the market or put into service
+  before its Chapter III date, or undated, that is no Section B product and
+  has no `public_authority_use`. 0.3.0 had no such question. These profiles
+  already ended `requires_review` in 0.3.0 on the point's own open question,
+  so the disposition does not change; a reviewer who settles the point must
+  now answer the status question as well to reach a determined result.
+- A profile with a declared `5.1.ba` or `5.1.bb` and no point (a) to (h),
+  assessed before 2026-12-02 or holding the point in none of the provider,
+  importer and deployer roles, now gets the Art. 111(2) comparison where it
+  is on a high-risk route and gives a placing-on-market or
+  putting-into-service date, `public_authority_use` or a
+  `deployer_public_authority` of true that the engine uses. It now gets the
+  Art. 111(3) check where it is a general-purpose AI model, on a high-risk
+  route or not. Where such a profile gave a date or `public_authority_use`,
+  0.3.0 said that the Art. 111(2) check was not applied; it also said that
+  a given change answer or deployer status was not used, and it gave no
+  Art. 111(3) check. 0.2.2 said that the check was not applied where a date
+  was given, and it gave no Art. 111(3) check.
+- In the guided intake the same profiles now get the Art. 27 status, the
+  establishment, authorised representative and value-chain questions, the
+  change question and the status question where they apply. A profile with a
+  declared point (ba) or (bb) and no point (a) to (h), held in a provider,
+  importer or deployer role and assessed on or after 2026-12-02, or undated,
+  is prohibited and also gets the questions asked before the assessment
+  date, although its result does not change with them. 0.3.0 asked none of
+  these questions where a practice was declared. 0.2.2 asked only the
+  change question there, because it asked that question of every profile.
+- The 0.3.0 upgrade notes below say that a declared `5.1.ba` or `5.1.bb`
+  without `assessment_date` keeps the tier `prohibited`. That holds where
+  the profile holds the point in a provider, importer or deployer role.
+  With none of these roles, 0.3.0 and 0.4.0 report the tier of the
+  profile's other facts and go to review, where 0.2.2 reported
+  `prohibited`.
+- A JSON profile whose element facts in `intimate_imagery` or
+  `child_sexual_abuse_material` establish point (ba) or (bb) for a provider,
+  importer or deployer role, assessed on or after 2026-12-02 or undated, is
+  prohibited as in 0.3.0, but no longer gets the Art. 111(2) comparison or
+  the Art. 111(3) check. Where it gives `deployer_public_authority` or a
+  dated legacy system's `significant_change_after_application_date`, the
+  report says that the answer is not used. The tier and the disposition do
+  not change.
 
 ### Records say what the code does
 
@@ -69,8 +237,8 @@ pull requests.
   compare with whenever the profile gives `public_authority_use` or
   `deployer_public_authority`. It names the date where `public_authority_use`
   is true, or where a deployer's `deployer_public_authority` is true and the
-  engine uses it, for a high-risk system with no prohibited practice
-  screened that is not a Section B product without an Annex III area.
+  engine uses it, for a high-risk system that is not prohibited and is not
+  a Section B product without an Annex III area.
 - `PRIVACY.md` names the empty lock file
   `runtime-data/collaboration-workspace.json.lock`, which the bridge keeps
   from the first time the workspace is opened, and says that comments,
@@ -83,8 +251,6 @@ pull requests.
   record the new value ("Cockpit: muted text and new guards").
 - `tests/test_deployer_status.py` pins the article label of the intake's
   deployer status question, "Art. 49(3), Art. 49(5) and Art. 111(2) AIA".
-- The CI comment on the coverage floor gives the measured total of 96.89 %
-  on 23 November 2026. The floor stays at 96 %.
 
 ### Playground: focus rings and theme tests
 
@@ -127,12 +293,6 @@ pull requests.
   line, the primary button and a checked guided-answer card take the accent,
   and the JSON field, the text buttons and the finding summaries have no
   line.
-- The 0.4.0 entry "Dark mode on the playground and the cockpit" below says
-  that the playground's search field and guided-answer cards keep the
-  divider line. In full: the search field and the guided-answer cards at rest keep the divider
-  line, the primary button and a checked guided-answer card take the accent,
-  and the JSON field, the text buttons and the finding summaries have no
-  line.
 
 ### Cockpit: muted text and new guards
 
@@ -140,14 +300,12 @@ pull requests.
 
 - The light `--muted` changes from `#64717f` to `#63707e`: 4.54:1 on
   `--surface-muted`, 5.06:1 on `--surface` and 4.72:1 on `--background`.
-  The old value measured 4.48:1 on `--surface-muted`, below 4.5:1. The
-  0.4.0 entry "Dark mode on the playground and the cockpit" below gives that
-  old value as 4.47:1. `--muted-on-tint` stays for muted text on tinted
-  containers.
+  The old value measured 4.48:1 on `--surface-muted`, below 4.5:1.
+  `--muted-on-tint` stays for muted text on tinted containers.
 - Text fields, selects and text areas now draw their line with
   `--input-border`, and its light value changes from `#9aa6b2` to
   `#7a8794`, the dark value: 3.67:1 on `--surface`, 3.29:1 on
-  `--surface-muted`, 3.45:1 on `--background` and 3.34:1 on `--danger-bg`.
+  `--surface-muted`, 3.42:1 on `--background` and 3.31:1 on `--danger-bg`.
   Before, the `input, select, textarea` rule used `--control-border`
   (1.23 to 1.37:1 in light), and `.textInput` reached 2.48:1. Where the
   line alone shows the field, WCAG 2.2 SC 1.4.11 asks for 3:1; this is the
@@ -192,171 +350,6 @@ pull requests.
   and pages, all but the print-only one, and checks that each has a role, a
   name that resolves in its file and `tabIndex={0}`, and that the
   stylesheet keeps their focus ring.
-
-### Not-yet-applicable Art. 5(1)(ba) and (bb) points
-
-#### Changed
-
-- Whether a system is prohibited is now the Art. 5 gate's vote
-  (`transitions.prohibition_applies`), not the list of declared practices,
-  wherever the engine decides whether the Art. 111(2) change answer and the
-  deployer's public-authority status are used (`transitions.change_used`,
-  `transitions.public_authority_status_used`) and whether the Art. 111(2)
-  and Art. 111(3) checks run. A declared Art. 5(1)(ba) or (bb) point leaves
-  the system at its other tier, high-risk on a high-risk route, where it
-  does not yet apply on the assessment date (before 2 December 2026) or
-  where the profile holds it in no provider, importer or deployer role. The
-  engine already read both answers there, except the status of a deployer
-  of an undated system on an Annex I route without an Annex III area, and
-  already asked for an unset change answer and, on an Annex III point, for
-  an unset status. The report now runs the Art. 111(2) and Art. 111(3)
-  checks there and no longer says that the answers are not used. The one
-  new open question is the status question for a deployer on an Annex I
-  route without an Annex III area (the Art. 111(2) 2030 date).
-- Where the element facts in `intimate_imagery` or
-  `child_sexual_abuse_material` establish point (ba) or (bb) without a
-  declared practice for a provider, importer or deployer role, and the
-  assessment date is on or after 2 December 2026 or not given, the result
-  is prohibited, and the status and change
-  answers are now not used: the reports for a status of true, false and
-  unset are equal apart from the "not used" sentence, and neither the
-  Art. 111(2) comparison nor the Art. 111(3) check runs.
-- The two "not used" sentences of the Art. 111(2) check say "a high-risk
-  system that is not prohibited" instead of "with no prohibited practice
-  screened".
-- The guided intake follows the engine. It asks the change answer and the
-  status exactly where the engine reads them, for a declared point (ba) or
-  (bb) too (`intake.HIGH_RISK_ROUTE` now reads the assessment date and the
-  roles). The high-risk questions asked before the assessment date (the two
-  Art. 27 status questions, establishment outside the EU, the authorised
-  representative and the value chain) use a condition without the date
-  (`intake.HIGH_RISK_ROUTE_EARLY`): they are asked for every declared point
-  (ba) or (bb) without a point (a) to (h).
-- `docs/methodology.md`, `docs/reviewer-notes.md` and the Art. 111(2) row
-  of `docs/REGULATORY_CLAIM_LEDGER.md` (reworded against the code on
-  23 November 2026; the provision was not re-read) say what the engine
-  does now.
-- `tests/test_intake.py` adds the declared points (ba), (bb), both, and (ba)
-  with (c), assessed on 2026-12-01, on 2026-12-02 and undated, and a
-  distributor role to both grids, so the skip check, the fail-closed check
-  and the checks of the "not used" sentences cover them; the first grid
-  grows from 1,041 to 3,237 states and the second from 4,870 to 9,478, and
-  the file runs about two and a half times as long.
-  `tests/test_deployer_status.py` covers a declared point that does not yet
-  apply and a point the element facts establish on or after
-  2 December 2026. `tests/test_intake.py` also checks every point (a) to
-  (h) against both route conditions. The browser fixtures add
-  five declared-point profiles.
-
-#### Known limits
-
-- This closes the first 0.4.0 known limit below (a declared point (ba) or
-  (bb) that does not yet apply, and its mirror case of a point the element
-  facts establish). The second stays open: a status given as
-  true for a legacy or undated system ends determined although the report
-  asks to confirm the intended use, because `public_authority_use` is a
-  plain bool, so an answer of no could not close a question on it without a
-  change to the profile schema.
-
-#### Upgrade notes
-
-- A deployer profile with a declared `5.1.ba` or `5.1.bb` and no point (a)
-  to (h), assessed before 2026-12-02, on an Annex I route without an
-  Annex III area, for a system placed on the market or put into service
-  before its Chapter III date, or undated, that is no Section B product and
-  has no `public_authority_use`: where `deployer_public_authority` is unset,
-  the report now has the Art. 111(2) open question on it. The open question
-  on an unset `significant_change_after_application_date` was already raised
-  for a dated legacy system, and on an Annex III point the status question
-  was already raised. These profiles
-  already ended `requires_review` on the point's own open question; a
-  reviewer who settles the point must now answer the status question as
-  well to reach a determined result.
-- A profile with a declared `5.1.ba` or `5.1.bb` and no point (a) to (h),
-  assessed before 2026-12-02 or holding the point in none of the provider,
-  importer and deployer roles, now gets the Art. 111(2) comparison where it
-  is on a high-risk route, and the Art. 111(3) check where it is a
-  general-purpose AI model, on a high-risk route or not. Before, the report
-  said that the Art. 111(2) check was not applied or that a given answer
-  was not used, or gave no Art. 111(3) check.
-- In the guided intake the same profiles now get the Art. 27 status, the
-  establishment, authorised representative and value-chain questions, the
-  change question and the status question where they apply. A profile with a
-  declared point (ba) or (bb) and no point (a) to (h), held in a provider,
-  importer or deployer role and assessed on or after 2026-12-02, or undated,
-  is prohibited and also gets the questions asked before the assessment
-  date, although its result does not change with them.
-- A JSON profile whose element facts establish point (ba) or (bb) for a
-  provider, importer or deployer role, assessed on or after 2026-12-02 or
-  undated, and that gives `deployer_public_authority` or a dated legacy system's
-  `significant_change_after_application_date` now gets the "not used"
-  sentence, and no longer the Art. 111(2) comparison or the Art. 111(3)
-  check.
-
-## 0.4.0 (2026-11-20)
-
-#### Upgrade notes
-
-Profiles, reports and CI jobs that pass on 0.3.0 can fail or change on 0.4.0.
-The sections below give the detail. 0.3.0 was not published to PyPI and will
-not be: 0.4.0 is the first PyPI release since 0.2.2, so an upgrade from PyPI
-also brings the 0.3.0 changes. Read the 0.3.0 upgrade notes below as well.
-Pinning `eu-ai-act-classifier==0.2.2` keeps the 0.2.2 behaviour while you
-update.
-
-- A breaking input change: `roles` must hold at least one role. A profile,
-  playground draft, share link, MCP call or inventory file with
-  `"roles": []` is rejected; the CLI exits 2 ("Operator roles reach the
-  review gate").
-- `--strict` exits 1 for more profiles, because each now has an open
-  question and the disposition is `requires_review`:
-  - a high-risk tier with no operator role for the system, `is_gpai_model`
-    without the `gpai_provider` role, or `gpai_provider` without
-    `is_gpai_model` ("Operator roles reach the review gate");
-  - an Annex I, Section B product that also falls in an Annex III area
-    ("Section B flags reach the review gate");
-  - a deployer whose `deployer_public_authority` is not given where it
-    changes the result: every Annex III point, and an Annex I route for a
-    legacy or undated system as the section on the deployer status
-    describes. State the status to keep such a profile `determined`.
-
-  The two new Art. 27 questions change no disposition.
-- Every report carries `classifier_version`, and the report schema requires
-  it, so a report written before 0.4.0 no longer validates against
-  `schemas/classification-report.v1.schema.json` ("Version stamp").
-- `report.obligations` changes shape: an Annex III provider report has 22
-  entries instead of 15, entries for up to 12 articles are new and the
-  requirement strings of 12 existing kinds of entry change. The obligation
-  graph gains the Arts. 9 to 15 items and three GPAI items, and the
-  requirement text of nine existing graph items (Arts. 16, 17, 18, 24, 25,
-  26, 41, 53(1)(a) and 53(1)(c)) follows the Official Journal wording. Code
-  that counts entries, matches their text or keys on the set of articles
-  must be updated ("One source for the obligations list and the obligation
-  graph").
-- A deployer of a system that is high-risk only through Annex I no longer
-  gets the Art. 27 FRIA item ("The FRIA follows Art. 27(1)").
-- The example inventory run outside a clone's root reports
-  `review_required` with a warning instead of an empty `determined`
-  inventory ("Inventory outside a clone").
-- The example inventory changes in 0.4.0, so the first collaboration action
-  that saves or takes a snapshot (not the cockpit's read-only evidence view)
-  sets a workspace saved by an earlier release aside as
-  `collaboration-workspace.stale-<UTC time>.json` and starts a new one. Its
-  review cells, overrides and comments do not carry over, and an import
-  rejects the file as stale, so copy what you need from it by hand. An
-  earlier release rejects a workspace saved by 0.4.0 as stale on every
-  action: move `runtime-data/collaboration-workspace.json` aside before going
-  back ("Collaboration store and bridge errors", "Obligation evidence tracker
-  (S4)"). `local_api` prints a short error summary instead of pydantic's
-  message and a traceback.
-- The cockpit listens on `127.0.0.1` only (`npm run dev` and `npm run
-  start`). Its POST routes answer 415 to a body that is not
-  `application/json`, and every API route but `/api/health` answers 403 to a
-  `Host` or `Origin` other than `localhost` or `127.0.0.1` at the server's
-  port, so reach it from the same machine and send JSON. `/api/health`
-  reports `persistence: "local_file"` ("Cockpit API
-  routes reject cross-site requests", "Docs and the cockpit health route say
-  what the code does").
 
 ### Documentation upkeep
 
@@ -617,10 +610,15 @@ update.
   questions. `high_risk.evaluate` now adds the open question
   "Art. 2(2) AIA and Art. 6(2) AIA", repeating the flag, as
   `prohibited.evaluate` does for Art. 5 and `transparency.evaluate` for
-  Art. 50. Such a report is now `requires_review`. The duties stay listed. Other counsel flags, such as the Art. 113 dating flags on a
-  plain Annex III report and the Art. 50 flag for a high-risk system already
-  on the market, do not change the disposition: `examples/credit_scoring.json`
-  and a plain Annex III(5)(b) provider report stay `determined`.
+  Art. 50. Where the result is high-risk, such a report is now
+  `requires_review` and the duties stay listed. Where a prohibited practice
+  makes the result prohibited, `engine.classify` drops the question and the
+  report lists no Annex III duties ("A prohibited Section B report keeps no
+  Annex III duties"). Other counsel flags, such as the Art. 113 dating flags
+  on a plain Annex III report and the Art. 50 flag for a high-risk system
+  already on the market, do not change the disposition:
+  `examples/credit_scoring.json` and a plain Annex III(5)(b) provider report
+  stay `determined`.
   `docs/methodology.md` ("High-Risk Logic") states the rule.
 
 ### Cockpit sets every Art. 50 fact
@@ -799,17 +797,11 @@ update.
 
 #### Known limits
 
-- A declared Art. 5(1)(ba) or (bb) point that does not yet apply on the
-  assessment date leaves the result high-risk. The engine still reads the
-  status there (the Art. 49(3) and Art. 111(2) items follow it, and on an
-  Annex III point an unset status is still asked), but the report says it
-  is not used and the guided intake does not ask for it; the Art. 111(2)
-  change answer is treated the same way. In the mirror case, where the
-  element facts establish point (ba) or (bb) without a declared practice,
-  the result is prohibited and the Art. 111(2) check still runs.
 - A status given as true for a legacy or undated system ends determined
-  although the report asks to confirm the intended use.
-- These were so before this change and are left to a follow-up.
+  although the report asks to confirm the intended use, because
+  `public_authority_use` is a plain bool, so an answer of no could not close
+  a question on it without a change to the profile schema. This was so
+  before this change and is left to a follow-up.
 - The Art. 111(2) status question is asked after an asserted significant
   change too, where the status changes only the wording of the report.
 
@@ -838,8 +830,10 @@ update.
   token set: text at 4.5:1 on its surface, the focus ring at 3:1, in the
   dark set also the control-line tokens at 3:1; that the two dark blocks
   are identical; and that no colour is written outside the token sets.
-  The playground's search field and guided-answer cards keep the divider
-  line, below 3:1 in both sets.
+  The playground's search field and the guided-answer cards at rest keep
+  the divider line, below 3:1 in both sets; the primary button and a
+  checked guided-answer card take the accent, and the JSON field, the text
+  buttons and the finding summaries have no line.
 
 #### Changed
 
@@ -850,7 +844,7 @@ update.
 - Accessibility, so that axe (WCAG 2.2 AA tags) reports nothing on either
   surface in either scheme: the playground's brand link takes its name
   from its text; in the cockpit, muted text on the tinted surface uses
-  `--muted-on-tint` (it was 4.47:1), the review-note field has a label,
+  `--muted-on-tint` (it was 4.48:1), the review-note field has a label,
   and tables and code blocks that scroll can be reached by keyboard.
 
 #### Follow-up: the five points left open by the review
@@ -962,7 +956,8 @@ update.
 ### CI
 
 - The coverage floor rises from 95 % to 96 % (`--cov-fail-under=96`), the
-  integer part of the measured total of 96.37 %.
+  integer part of the measured total. The comment in
+  `.github/workflows/ci.yml` gives that total, 96.90 % on 23 November 2026.
 
 ## 0.3.0 (2026-11-16, not published)
 
