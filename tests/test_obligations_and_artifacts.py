@@ -1402,6 +1402,56 @@ def test_section_b_annex_iii_flag_is_also_an_open_question(derogation: bool) -> 
     assert {"Art. 9 AIA", "Art. 2(2) AIA"} <= {ob.article for ob in report.obligations}
 
 
+@pytest.mark.parametrize("derogation", [False, True], ids=["no-derogation", "derogation"])
+def test_prohibited_section_b_report_does_not_say_it_keeps_the_annex_iii_duties(
+    derogation: bool,
+) -> None:
+    # A prohibited report lists no Annex III duties, so neither the Art. 6(2) question nor
+    # the Art. 6(1) finding may say that the report keeps them. The Art. 5 Section B
+    # question still sends the report to review.
+    facts = {
+        "name": "x",
+        "roles": [Role.PROVIDER],
+        "annex_iii_area": AnnexIII.CREDITWORTHINESS,
+        "derogation": Derogation(narrow_procedural_task=derogation),
+        **SECTION_B,
+    }
+    report = classify(SystemProfile(prohibited_practices=["5.1.c"], **facts))
+
+    assert report.risk_tier is RiskTier.PROHIBITED
+    assert report.disposition is Disposition.REQUIRES_REVIEW
+    assert not any("keeps the Annex III duties" in q for q in report.open_questions)
+    assert not any("keeps the Annex III duties" in f.detail for f in report.findings)
+    assert not any(q.startswith(SECTION_B_ANNEX_III_QUESTION) for q in report.open_questions)
+    assert any(q.startswith("Art. 2(2) AIA and Art. 5 AIA: ") for q in report.open_questions)
+    (finding,) = [f for f in report.findings if f.rule_id == "HIGHRISK.6.1"]
+    assert finding.detail.endswith(
+        "in which case only the Art. 2(2) provisions apply."
+        if derogation
+        else "is also classified high-risk under Art. 6(2) and Annex III."
+    )
+    assert "Art. 9 AIA" not in {ob.article for ob in report.obligations}
+
+    # Without the practice the report is high-risk and keeps the question.
+    plain = classify(SystemProfile(**facts))
+    assert plain.risk_tier is RiskTier.HIGH
+    (question,) = [q for q in plain.open_questions if q.startswith(SECTION_B_ANNEX_III_QUESTION)]
+    assert "keeps the Annex III duties as the conservative reading" in question
+
+    # The final tier decides, not a declared practice: point (ba) declared before it
+    # applies (2 December 2026) leaves the report high-risk, so the Annex III duties stay
+    # listed and the question and the kept clause stay as well.
+    early = classify(
+        SystemProfile(prohibited_practices=["5.1.ba"], assessment_date="2026-11-16", **facts)
+    )
+    assert early.risk_tier is RiskTier.HIGH
+    (question,) = [q for q in early.open_questions if q.startswith(SECTION_B_ANNEX_III_QUESTION)]
+    assert "keeps the Annex III duties as the conservative reading" in question
+    (finding,) = [f for f in early.findings if f.rule_id == "HIGHRISK.6.1"]
+    assert "keeps the Annex III duties as the conservative reading" in finding.detail
+    assert "Art. 9 AIA" in {ob.article for ob in early.obligations}
+
+
 def test_section_b_derogation_finding_states_the_art_2_2_effect() -> None:
     # The Section B branch of the Art. 6(3) derogation finding (rules/high_risk.py). Its
     # last sentence is the "if it is established" clause of the PENDING Art. 2(2) row in

@@ -184,7 +184,7 @@ Print / PDF, A4 (same at 375 px preview)
 | Ink / text | `#172b35` | `#17202a` |
 | Accent / links | `#2c4f7c` (also used for the limited tier) | `#1f5eff` |
 | Background | `#f4f5f2` | `#f6f7f8` |
-| Muted | `#5d6a70` | `#64717f`; new `--muted-on-tint #525e6b` for text on tinted surfaces (4.47:1 was below AA; measured) |
+| Muted | `#5d6a70` | `#64717f` on the access date; new `--muted-on-tint #525e6b` for text on tinted surfaces (4.48:1 was below AA; measured). Update 2026-11-23: `--muted` is now `#63707e`, 4.54:1 on `--surface-muted` (measured) |
 | Type | Georgia headings, system sans | Inter stack |
 | Theme | light only | light only |
 

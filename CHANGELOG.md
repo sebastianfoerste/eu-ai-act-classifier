@@ -5,7 +5,176 @@ pull requests.
 
 ## Unreleased
 
-Nothing yet.
+#### Upgrade notes
+
+- A report for an Annex I, Section B product in an Annex III area whose
+  result is prohibited no longer carries the open question
+  "Art. 2(2) AIA and Art. 6(2) AIA", and its Art. 6(1) finding
+  (`HIGHRISK.6.1`) no longer ends with the clause that the report keeps the
+  Annex III duties. The disposition stays `requires_review`. Code that
+  matches that question or the finding detail must be updated ("A
+  prohibited Section B report keeps no Annex III duties").
+
+### A prohibited Section B report keeps no Annex III duties
+
+#### Fixed
+
+- A report for an Annex I, Section B product that also falls in an Annex III
+  area said in its Art. 6(1) finding, and since 0.4.0 also in the open
+  question "Art. 2(2) AIA and Art. 6(2) AIA", that the report keeps the
+  Annex III duties as the conservative reading. Where a prohibited practice
+  made the result prohibited, the report listed no Annex III duties, so both
+  statements were untrue. `engine.classify` now drops that question and that
+  clause where the final tier is prohibited. Where the result is high-risk,
+  both stay, also when a point (ba) or (bb) is declared before it applies
+  on 2 December 2026. The Art. 5 Section B question still sends a prohibited
+  report to review, so no disposition changes. `catalog.py` holds the
+  question's prefix and the clause as `SECTION_B_ANNEX_III_QUESTION` and
+  `SECTION_B_ANNEX_III_KEPT`, and `rules/high_risk.py` writes the question
+  with the constant. The playground wheel is rebuilt.
+  `tests/test_obligations_and_artifacts.py` covers the prohibited result
+  with and without an asserted Art. 6(3) derogation, the same facts without
+  the practice, and point (ba) declared before 2 December 2026, which stays
+  high-risk and keeps the question and the clause.
+- `docs/methodology.md` ("High-Risk Logic"), `docs/reviewer-notes.md`,
+  `docs/FEATURES.md` and the PENDING claim-ledger row on Art. 2(2) and the
+  Annex III duties say that the Annex III duties, the Art. 6(2) question and
+  the kept clause hold where the result is high-risk. All but
+  `docs/FEATURES.md` add that a prohibited report goes to review through
+  the Art. 5 question. The ledger's note of
+  23 November 2026 records that the row's classifier statements were
+  updated against the changed code and that the provision was not re-read.
+- The 0.4.0 entry "Section B flags reach the review gate" below says that
+  `high_risk.evaluate` adds the open question
+  "Art. 2(2) AIA and Art. 6(2) AIA" and that the duties stay listed. Both
+  hold only where the result is high-risk. A prohibited report lists no
+  Annex III duties, and from this release on it raises no such question.
+
+### Records say what the code does
+
+#### Fixed
+
+- The VERIFIED claim-ledger row "For a Section B product the report keeps
+  Art. 5 and Art. 50" said that the report raises an open question for each.
+  It raises the Art. 5 question where a prohibition applies or a point (ba)
+  or (bb) is met, also before 2 December 2026, and the Art. 50 question
+  wherever an Art. 50 duty is triggered. The row, the C6 interpretation in
+  `tests/legal/fixtures/annex_i_sections.json`, the C6 item in
+  `docs/methodology.md` and the row (2) quote in `docs/omnibus-coverage.md`
+  now say so. A dated note in the ledger records that the provision was not
+  re-read, so the row's access date and the Stand date stay.
+- `docs/methodology.md` said that the transitional status names the date to
+  compare with whenever the profile gives `public_authority_use` or
+  `deployer_public_authority`. It names the date where `public_authority_use`
+  is true, or where a deployer's `deployer_public_authority` is true and the
+  engine uses it, for a high-risk system with no prohibited practice
+  screened that is not a Section B product without an Annex III area.
+- `PRIVACY.md` names the empty lock file
+  `runtime-data/collaboration-workspace.json.lock`, which the bridge keeps
+  from the first time the workspace is opened, and says that activity
+  entries, comments and cell locks carry a name and a time stamp.
+- `docs/adr/0004-cockpit-styling-without-tailwind.md` and
+  `docs/research/design-teardown.md` gave the old cockpit `--muted` on
+  `--surface-muted` as 4.47:1. The measured ratio is 4.48:1. Both now also
+  record the new value ("Cockpit: muted text and new guards").
+- `tests/test_deployer_status.py` pins the article label of the intake's
+  deployer status question, "Art. 49(3), Art. 49(5) and Art. 111(2) AIA".
+- The CI comment on the coverage floor gives the measured total of 96.86 %
+  on 23 November 2026. The floor stays at 96 %.
+
+### Playground: focus rings and theme tests
+
+#### Fixed
+
+- The mode switch (Guided questions, JSON editor) and the result's finding
+  summaries clip their content, so the focus ring, drawn 3px outside a
+  control, was cut off there. The ring is now drawn 3px inside a mode button
+  and a finding summary, as it already was in the JSON field. On the pressed
+  mode button it takes `--on-ink` and sits 6px inside, so the `--ink` fill
+  shows on both sides of it.
+
+#### Changed
+
+- `tests/playground/theme.test.mjs` checks more:
+  - the three token blocks are all that comes before the rules, and the
+    rules declare no token and no `color-scheme`;
+  - every token is an opaque colour (`#rgb` or `#rrggbb`); only `--shadow`
+    may carry an alpha channel;
+  - every line on a control and every focus-ring rule is one of the listed
+    declarations, so a later override or a descendant rule that moves a
+    control to another line or puts a clipped ring back outside fails;
+  - the focus ring reaches 3:1 also on a checked guided-answer card, on a
+    hovered mode button and, as `--on-ink` on `--ink`, on the pressed mode
+    button;
+  - the light control lines are pinned at today's ratios (1.46, 1.33, 1.74
+    and 1.76:1, below 3:1), so a change shows up; the dark ones reach 3:1.
+- Theme storage: the wiring test checks that `app.mjs` hands the Theme
+  button a storage getter that returns null where reading
+  `window.localStorage` throws. A
+  new test runs `theme.js` and the button wiring against a recording
+  storage with no stored choice, with "dark" and with a foreign value, and
+  fails on any use of the storage other than reading the choice:
+  `setItem`, `removeItem`, `clear()` or a property write.
+- `tests/playground/timeline.test.mjs` checks that the application-date
+  timeline, which scrolls sideways, has `tabIndex` 0.
+- The comments in `docs/playground/styles.css` and the test file claim only
+  what the tests check. Both name the three controls that are not on a
+  control-line token in either set: the search field and the guided-answer
+  cards at rest keep the divider line, and the JSON field has no line.
+- The 0.4.0 entry "Dark mode on the playground and the cockpit" below says
+  that the playground's search field and guided-answer cards keep the
+  divider line. In full: the search field and the guided-answer cards at
+  rest keep the divider line, and the JSON field has no line.
+
+### Cockpit: muted text and new guards
+
+#### Changed
+
+- The light `--muted` changes from `#64717f` to `#63707e`: 4.54:1 on
+  `--surface-muted`, 5.06:1 on `--surface` and 4.72:1 on `--background`.
+  The old value measured 4.48:1 on `--surface-muted`, below 4.5:1. The
+  0.4.0 entry "Dark mode on the playground and the cockpit" below gives that
+  old value as 4.47:1. `--muted-on-tint` stays for muted text on tinted
+  containers.
+- The light control lines stay below 3:1 at today's values, by a recorded
+  decision of the owner that is open for change. `web/lib/theme.test.ts`
+  pins the six light pairs at their ratios and notes that WCAG 2.2
+  SC 1.4.11 may require 3:1 for the line of a text field; the dark pairs
+  reach 3:1.
+
+#### Fixed
+
+- The tri-state buttons (`.triState button`) set a background but no text
+  colour, so their text took the browser's button text colour, not a token.
+  They now use `--text`.
+
+#### Added
+
+- New guards in `web/lib/theme.test.ts`:
+  - control lines: each control rule draws its line with `--control-border`
+    or `--input-border`, and any other line on a control names only those,
+    `--blue`, `0` or `none`;
+  - muted text in tinted containers: the tinted containers are read from
+    the stylesheet, and a rule that sets `--muted` text in one fails; the
+    overrides of the global muted rules there use `--muted-on-tint` or
+    `--violet`;
+  - every control with a background sets a token text colour;
+  - tokens are declared in the three blocks only, nothing else comes before
+    the rules, and every `var(--...)` names a declared token;
+  - deprecated system colours such as `WindowText` and vendor keywords such
+    as `-webkit-link` fail "writes no colour outside the token sets" where
+    they draw a colour;
+  - no component or page has an inline style;
+  - restoring a stored choice and a page load only read the stored choice,
+    also with a foreign value (`web/lib/theme.test.ts` and
+    `web/components/theme-toggle.test.tsx`);
+  - `--red` on `--surface` is a text pair and `--blue` on `--danger-bg` a
+    focus pair.
+- `web/components/scroll-regions.test.ts` (new) finds the scrolling table
+  wrappers (`tableWrap`, `scrollX`) and the code blocks in the components
+  and pages, all but the print-only one, and checks that each has a role, a
+  name that resolves in its file and `tabIndex={0}`, and that the
+  stylesheet keeps their focus ring.
 
 ## 0.4.0 (2026-11-20)
 
