@@ -29,6 +29,8 @@ from eu_ai_act_classifier.intake import (
     ANNEX_III_AREAS,
     BLOCK,
     CHANGE_OPEN,
+    HIGH_RISK_ROUTE,
+    HIGH_RISK_ROUTE_EARLY,
     IN_SCOPE,
     NOT_ASKED,
     PUBLIC_AUTHORITY_STATUS_OPEN,
@@ -43,7 +45,11 @@ from eu_ai_act_classifier.intake import (
     write_field,
 )
 from eu_ai_act_classifier.models import AnnexIII, Derogation, ProhibitedPractice
-from eu_ai_act_classifier.transitions import change_used, public_authority_status_used
+from eu_ai_act_classifier.transitions import (
+    change_used,
+    prohibition_applies,
+    public_authority_status_used,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ROOT / "sources"
@@ -123,21 +129,44 @@ def test_examples_round_trip_through_the_intake(key: str) -> None:
 
 # --- A grid of earlier answers ------------------------------------------------
 
+# Declared practices with the assessment date. The engine applies Art. 5(1)(ba) and (bb)
+# AIA from 2 December 2026 and only to a placing or use role
+# (transitions.prohibition_applies), so a declared point (ba) or (bb) leaves the high-risk
+# route open before that date, or for a distributor, and closes it from that date or with
+# no date for the other roles.
+_LATER_POINTS = [
+    (practices, assessment_date)
+    for practices in (["5.1.ba"], ["5.1.bb"], ["5.1.ba", "5.1.bb"], ["5.1.ba", "5.1.c"])
+    for assessment_date in ("2026-12-01", "2026-12-02", None)
+]
 _GRID_AXES = {
     "roles": [["provider"], ["deployer"], ["importer", "gpai_provider"]],
     "scope": [(True, True), (False, True), (True, False)],
-    "prohibited_practices": [[], ["5.1.c"]],
+    "prohibited": [([], None), (["5.1.c"], None)],
     "annex_i": [(False, False), (True, False), (True, True)],
     "annex_iii_area": [None, "III.2", "III.4.a", "III.5.b", "III.unsure"],
     "derogation": [{}, {"performs_profiling": True}, {"narrow_procedural_task": True}],
     "gpai": [(False, None, False), (True, None, False), (True, 2e25, True)],
     "outside_eu": [False, True],
 }
+# The same grid for the Art. 5(1)(ba) and (bb) points, with a distributor added as the
+# role no point binds. Scope stays fixed, as every condition that reads the declared points
+# also requires the system in scope; two derogation states and no general-purpose AI model
+# keep the product small (tests/test_deployer_status.py covers the Art. 111(3) check with
+# these points).
+_GRID_LATER_AXES = {
+    **_GRID_AXES,
+    "roles": [*_GRID_AXES["roles"], ["distributor"]],
+    "scope": [(True, True)],
+    "prohibited": _LATER_POINTS,
+    "derogation": [{}, {"narrow_procedural_task": True}],
+    "gpai": [(False, None, False)],
+}
 
 
-def _grid() -> list[dict]:
+def _grid(axes: dict[str, list]) -> list[dict]:
     profiles = []
-    for combo in itertools.product(*_GRID_AXES.values()):
+    for combo in itertools.product(*axes.values()):
         roles, scope, prohibited, annex_i, annex_iii, derogation, gpai, outside_eu = combo
         profiles.append(
             {
@@ -145,7 +174,8 @@ def _grid() -> list[dict]:
                 "roles": roles,
                 "is_ai_system": scope[0],
                 "eu_nexus": scope[1],
-                "prohibited_practices": prohibited,
+                "prohibited_practices": prohibited[0],
+                "assessment_date": prohibited[1],
                 "annex_i_safety_component": annex_i[0],
                 "annex_i_third_party_assessment": annex_i[1],
                 "annex_iii_area": annex_iii,
@@ -186,7 +216,7 @@ def _distinct(profiles: list[dict]) -> list[dict]:
     return list(seen.values())
 
 
-GRID = _distinct([_reachable(p) for p in _grid()])
+GRID = _distinct([_reachable(p) for p in _grid(_GRID_AXES) + _grid(_GRID_LATER_AXES)])
 
 # The Art. 111 transitions, the Annex I section and Art. 49(3) read facts the grid
 # above holds fixed, so a second grid varies them. Of the transparency flags only the
@@ -196,7 +226,7 @@ GRID = _distinct([_reachable(p) for p in _grid()])
 _TRANSITION_AXES = {
     "roles": [["provider"], ["deployer"], ["importer"]],
     "scope": [(True, True), (False, True)],
-    "prohibited_practices": [[], ["5.1.c"]],
+    "prohibited": [([], None), (["5.1.c"], None)],
     "annex_i": [
         (False, False, None),
         (True, False, None),
@@ -218,11 +248,29 @@ _TRANSITION_AXES = {
     "deployer_public_authority": [False, True],
     "generates_synthetic_content": [False, True],
 }
+# The Art. 5(1)(ba) and (bb) points as in _GRID_LATER_AXES. The change answer and the
+# deployer status stay at one value: the skip check tries every answer to both, and so do
+# the two checks of the "not used" sentences. The Art. 50(2) flag is set, so an unscreened
+# later point stays open; the Annex I state with no third-party assessment, which opens no
+# high-risk route, a general-purpose AI model, whose Art. 111(3) check with these points
+# tests/test_deployer_status.py covers, and the second legacy date pair are left out.
+_TRANSITION_LATER_AXES = {
+    **_TRANSITION_AXES,
+    "roles": [*_TRANSITION_AXES["roles"], ["distributor"]],
+    "scope": [(True, True)],
+    "prohibited": _LATER_POINTS,
+    "annex_i": [state for state in _TRANSITION_AXES["annex_i"] if state[:2] != (True, False)],
+    "dates": _TRANSITION_AXES["dates"][:4],
+    "significant_change": [False],
+    "gpai": [(False, None)],
+    "deployer_public_authority": [False],
+    "generates_synthetic_content": [True],
+}
 
 
-def _transition_grid() -> list[dict]:
+def _transition_grid(axes: dict[str, list]) -> list[dict]:
     profiles = []
-    for combo in itertools.product(*_TRANSITION_AXES.values()):
+    for combo in itertools.product(*axes.values()):
         roles, scope, prohibited, annex_i, annex_iii, authority, dates, change, gpai, dpa, art50 = (
             combo
         )
@@ -232,7 +280,8 @@ def _transition_grid() -> list[dict]:
                 "roles": roles,
                 "is_ai_system": scope[0],
                 "eu_nexus": scope[1],
-                "prohibited_practices": prohibited,
+                "prohibited_practices": prohibited[0],
+                "assessment_date": prohibited[1],
                 "annex_i_safety_component": annex_i[0],
                 "annex_i_third_party_assessment": annex_i[1],
                 "annex_i_legislation": annex_i[2],
@@ -252,7 +301,12 @@ def _transition_grid() -> list[dict]:
     return profiles
 
 
-TRANSITION_GRID = _distinct([_reachable(p) for p in _transition_grid()])
+TRANSITION_GRID = _distinct(
+    [
+        _reachable(p)
+        for p in _transition_grid(_TRANSITION_AXES) + _transition_grid(_TRANSITION_LATER_AXES)
+    ]
+)
 
 # A skipped question may change the report only by the engine's own statement that the
 # value is not used: a section without the Art. 6(1) route, a model date without a
@@ -266,14 +320,14 @@ _GPAI_DATE_UNUSED = (
 )
 _CHANGE_UNUSED = (
     "Article 111(2) check: significant_change_after_application_date is given, but it is not "
-    "used: it matters only for a high-risk system, with no prohibited practice screened, "
-    "placed on the market or put into service before its Chapter III date."
+    "used: it matters only for a high-risk system that is not prohibited, placed on the "
+    "market or put into service before its Chapter III date."
 )
 _PUBLIC_AUTHORITY_STATUS_UNUSED = (
     "Article 111(2) check: deployer_public_authority is given, but it is not used: it "
     "describes the profile's own deployer role, so it matters only where the profile holds "
-    "that role for a high-risk system with no prohibited practice screened: on an Annex III "
-    "point, and on an Annex I route without one only for a system placed on the market or "
+    "that role for a high-risk system that is not prohibited: on an Annex III point, and on "
+    "an Annex I route without one only for a system placed on the market or "
     "put into service before its Chapter III date, or undated, that is no Section B product "
     "and has no public_authority_use."
 )
@@ -398,17 +452,21 @@ def test_the_change_question_follows_the_engines_legacy_test() -> None:
             for area in (None, "III.2")
         ),
     ]
+    # A declared point (ba) counts only from its date and for a placing or use role.
+    prohibited_states = [([], None), (["5.1.c"], None), *_LATER_POINTS[:3]]
     checked = 0
-    for route, placed, served, prohibited, in_scope in itertools.product(
-        routes, dates, dates[:3], ([], ["5.1.c"]), (True, False)
+    for route, placed, served, (prohibited, assessed), held, in_scope in itertools.product(
+        routes, dates, dates[:3], prohibited_states, (["provider"], ["distributor"]), (True, False)
     ):
         profile = _normalised(
             {
                 "name": "x",
                 **route,
+                "roles": held,
                 "placing_on_market_date": placed,
                 "putting_into_service_date": served,
                 "prohibited_practices": prohibited,
+                "assessment_date": assessed,
                 "is_ai_system": in_scope,
             }
         )
@@ -459,9 +517,10 @@ def test_the_public_authority_question_follows_the_engines_deployer_test() -> No
         ["importer", "distributor"],
         ["gpai_provider"],
     ]
+    prohibited_states = [([], None), (["5.1.c"], None), *_LATER_POINTS[:3]]
     checked = 0
-    for route, held, prohibited, in_scope in itertools.product(
-        routes, roles, ([], ["5.1.c"]), (True, False)
+    for route, held, (prohibited, assessed), in_scope in itertools.product(
+        routes, roles, prohibited_states, (True, False)
     ):
         profile = _normalised(
             {
@@ -469,6 +528,7 @@ def test_the_public_authority_question_follows_the_engines_deployer_test() -> No
                 **route,
                 "roles": held,
                 "prohibited_practices": prohibited,
+                "assessment_date": assessed,
                 "is_ai_system": in_scope,
             }
         )
@@ -494,6 +554,56 @@ def test_the_public_authority_status_is_reported_as_not_used_exactly_where_it_is
             assert (_PUBLIC_AUTHORITY_STATUS_UNUSED in text) is (status is not None and not used)
             checked += 1
     assert checked
+
+
+# The grids above hold only point (c) as a point (a) to (h), so every such point is checked
+# here once, alone and with a declared point (ba), on a legacy Annex III route. The list is
+# written out, not derived from catalog.LATER_PROHIBITIONS as the intake derives it.
+_EARLIER_POINTS = [
+    practice.value for practice in ProhibitedPractice if practice.value not in {"5.1.ba", "5.1.bb"}
+]
+
+
+def _earlier_point_profile(practices: list[str]) -> dict:
+    return _normalised(
+        {
+            "name": "x",
+            "roles": ["deployer"],
+            "annex_iii_area": "III.4.a",
+            "placing_on_market_date": "2026-07-01",
+            "prohibited_practices": practices,
+            "assessment_date": "2026-12-01",
+        }
+    )
+
+
+@pytest.mark.parametrize("practice", _EARLIER_POINTS)
+@pytest.mark.parametrize("with_ba", [False, True])
+def test_every_earlier_point_closes_the_high_risk_route(practice: str, with_ba: bool) -> None:
+    # A point (a) to (h) applies whatever the date and role, so before 2 December 2026 the
+    # change and status questions stay closed, as the engine does not read the answers.
+    profile = _earlier_point_profile([practice, "5.1.ba"] if with_ba else [practice])
+    engine_profile = SystemProfile.model_validate(profile)
+    assert prohibition_applies(engine_profile)
+    assert not change_used(engine_profile)
+    assert not public_authority_status_used(engine_profile)
+    assert not holds(HIGH_RISK_ROUTE, profile)
+    assert not holds(CHANGE_OPEN, profile)
+    assert not holds(PUBLIC_AUTHORITY_STATUS_OPEN, profile)
+
+
+@pytest.mark.parametrize("practice", _EARLIER_POINTS)
+def test_the_early_high_risk_questions_skip_every_earlier_point(practice: str) -> None:
+    # The questions asked before the assessment date keep a declared point (ba) or (bb)
+    # alone, and only that: a point (a) to (h) closes them whatever the other points.
+    later_only = _earlier_point_profile(["5.1.ba"])
+    assert holds(HIGH_RISK_ROUTE_EARLY, later_only)
+    for practices in ([practice], [practice, "5.1.ba"]):
+        profile = _earlier_point_profile(practices)
+        assert not holds(HIGH_RISK_ROUTE_EARLY, profile), practices
+        early = [q for q in QUESTIONS if q.get("show_if") is HIGH_RISK_ROUTE_EARLY]
+        assert early
+        assert not any(holds(q["show_if"], profile) for q in early), practices
 
 
 def test_an_unknown_change_answer_survives_a_compact_round_trip() -> None:

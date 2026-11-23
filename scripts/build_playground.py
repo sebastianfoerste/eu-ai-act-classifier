@@ -397,6 +397,27 @@ def build_intake_fixtures() -> dict:
             cases[f"edge+public-authority:{label}:{answer}"] = {
                 "answers": {**held, "deployer_public_authority": answer}
             }
+    # A declared Art. 5(1)(ba) point ends the high-risk route only from 2 December 2026 and
+    # only for a placing or use role, so the conditions read the assessment date and roles.
+    for label, extra in {
+        "deployer-day-before": {"roles": ["deployer"], "assessment_date": "2026-12-01"},
+        "deployer-on-the-day": {"roles": ["deployer"], "assessment_date": "2026-12-02"},
+        "deployer-undated": {"roles": ["deployer"]},
+        "distributor-on-the-day": {"roles": ["distributor"], "assessment_date": "2026-12-02"},
+        "with-point-c": {
+            "roles": ["deployer"],
+            "assessment_date": "2026-12-01",
+            "prohibited_practices": ["5.1.ba", "5.1.c"],
+        },
+    }.items():
+        later = {
+            "name": "x",
+            "annex_iii_area": "III.4.a",
+            "placing_on_market_date": "2026-07-01",
+            "prohibited_practices": ["5.1.ba"],
+            **extra,
+        }
+        cases[f"edge+later-point:{label}"] = {"answers": profile_to_answers(later)}
     # Unicode digits and whitespace beyond ASCII: str.strip() and String.prototype.trim()
     # remove different sets, so both interpreters trim ASCII whitespace only.
     unicode_numbers = ("\u0661\u0662", "\uff11\uff12", "\ufeff5", "\xa05", "5\u2028", "\u30005")

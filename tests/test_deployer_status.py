@@ -17,8 +17,15 @@ from pathlib import Path
 import pytest
 
 from eu_ai_act_classifier import AnnexIII, Role, SystemProfile, classify
-from eu_ai_act_classifier.intake import QUESTIONS
+from eu_ai_act_classifier.intake import (
+    CHANGE_OPEN,
+    PUBLIC_AUTHORITY_STATUS_OPEN,
+    QUESTIONS,
+    holds,
+)
 from eu_ai_act_classifier.models import ClassificationReport
+from eu_ai_act_classifier.rules.scope import _PUBLIC_AUTHORITY_STATUS_UNUSED
+from eu_ai_act_classifier.transitions import change_used, public_authority_status_used
 
 ROOT = Path(__file__).resolve().parents[1]
 ANNEX_I = {"annex_i_safety_component": True, "annex_i_third_party_assessment": True}
@@ -186,6 +193,169 @@ def test_no_status_question_without_the_deployer_role() -> None:
     report = _report((Role.PROVIDER,), annex_i_legislation="I.A.2", **ANNEX_I)
 
     assert _status_questions(report) == []
+
+
+# Art. 5(1)(ba) and (bb) AIA apply from 2 December 2026 (Art. 113, third paragraph, point
+# (a) AIA), so the engine tests the Art. 5 gate's vote, not the declared list
+# (transitions.prohibition_applies).
+_STATUS_UNUSED = "deployer_public_authority is given, but it is not used"
+_CHANGE_UNUSED = "significant_change_after_application_date is given, but it is not used"
+_NO_TRANSITION = "No transitional limitation identified from the submitted facts."
+_LEGACY_ANNEX_I = {
+    **ANNEX_I,
+    "annex_i_legislation": "I.A.11",
+    "placing_on_market_date": "2026-07-01",
+}
+
+
+@pytest.mark.parametrize("practice", ["5.1.ba", "5.1.bb"])
+@pytest.mark.parametrize("assessed", ["2026-11-16", "2026-12-01"])
+def test_a_declared_point_that_does_not_yet_apply_leaves_the_status_and_change_in_use(
+    practice: str, assessed: str
+) -> None:
+    facts = {**_LEGACY_ANNEX_I, "prohibited_practices": [practice], "assessment_date": assessed}
+    profile = SystemProfile(name="x", roles=[Role.DEPLOYER], **facts)
+    unknown = _report(**facts)
+
+    assert unknown.risk_tier.value == "high_risk"
+    assert public_authority_status_used(profile) and change_used(profile)
+    (question,) = _status_questions(unknown)
+    assert question.startswith("Art. 111(2) AIA: the system was")
+    assert any("(significant_change_after_application_date)" in q for q in unknown.open_questions)
+    assert "not applied, as an Art. 5 prohibited practice" not in unknown.scope.transitional_status
+    data = profile.model_dump(mode="json")
+    assert holds(PUBLIC_AUTHORITY_STATUS_OPEN, data) and holds(CHANGE_OPEN, data)
+    stated = {
+        status: _report(
+            **facts,
+            deployer_public_authority=status,
+            significant_change_after_application_date=status,
+        )
+        for status in (True, False)
+    }
+    for report in stated.values():
+        assert _status_questions(report) == []
+        assert _STATUS_UNUSED not in report.scope.transitional_status
+        assert _CHANGE_UNUSED not in report.scope.transitional_status
+    assert stated[True].model_dump() != stated[False].model_dump()
+
+
+@pytest.mark.parametrize("assessed", ["2026-12-02", None])
+def test_a_declared_point_that_applies_leaves_the_status_unused(assessed: str | None) -> None:
+    facts = {**_LEGACY_ANNEX_I, "prohibited_practices": ["5.1.ba"], "assessment_date": assessed}
+    unknown = _report(**facts)
+
+    assert unknown.risk_tier.value == "prohibited"
+    assert _status_questions(unknown) == []
+    stated = _report(**facts, deployer_public_authority=True)
+    assert _STATUS_UNUSED in stated.scope.transitional_status
+
+
+def test_a_declared_point_before_its_date_asks_the_art_49_3_status() -> None:
+    facts = {
+        "annex_iii_area": AnnexIII.EMPLOYMENT_SELECTION,
+        "prohibited_practices": ["5.1.ba"],
+        "assessment_date": "2026-11-16",
+        **FRIA_SETTLED,
+    }
+    (question,) = _status_questions(_report(**facts))
+
+    assert question.startswith("Art. 49(3) AIA: the deployer's status is not given.")
+    assert (
+        _STATUS_UNUSED
+        not in _report(**facts, deployer_public_authority=True).scope.transitional_status
+    )
+
+
+_ESTABLISHING_SCREENS = {
+    "intimate_imagery": {
+        "generates_material": True,
+        "consent_ensured": False,
+        "intended_purpose": True,
+        "deployer_uses_for_that_purpose": True,
+    },
+    "child_sexual_abuse_material": {
+        "generates_or_manipulates": True,
+        "without_right_defence_applies": False,
+        "intended_purpose": True,
+        "deployer_uses_for_that_purpose": True,
+    },
+}
+_ROUTES = {
+    "annex-i-dated": _LEGACY_ANNEX_I,
+    "annex-i-undated": {**ANNEX_I, "annex_i_legislation": "I.A.11"},
+    "annex-iii": {"annex_iii_area": AnnexIII.EMPLOYMENT_SELECTION},
+}
+
+
+def _without_status_unused(report: ClassificationReport) -> dict:
+    # The scope note repeats the transitional status, which falls back to a fixed
+    # sentence when nothing else is left (as in tests/test_intake.py).
+    data = report.model_dump(mode="json")
+    scope = data["scope"]
+
+    def drop(text: str) -> str:
+        return " ".join(text.replace(_PUBLIC_AUTHORITY_STATUS_UNUSED, "").split())
+
+    scope["notes"] = [note for note in map(drop, scope["notes"]) if note]
+    scope["transitional_status"] = drop(scope["transitional_status"]) or _NO_TRANSITION
+    return data
+
+
+@pytest.mark.parametrize("screen", sorted(_ESTABLISHING_SCREENS))
+@pytest.mark.parametrize("route", sorted(_ROUTES))
+@pytest.mark.parametrize("assessed", ["2026-12-02", None])
+def test_a_point_established_by_its_element_facts_leaves_the_status_unused(
+    screen: str, route: str, assessed: str | None
+) -> None:
+    facts = {
+        **_ROUTES[route],
+        screen: _ESTABLISHING_SCREENS[screen],
+        "generates_synthetic_content": True,
+        "assessment_date": assessed,
+    }
+    profile = SystemProfile(name="x", roles=[Role.DEPLOYER], **facts)
+    reports = {
+        status: _report(**facts, deployer_public_authority=status) for status in (True, False, None)
+    }
+
+    assert profile.prohibited_practices == []
+    assert reports[None].risk_tier.value == "prohibited"
+    assert not public_authority_status_used(profile) and not change_used(profile)
+    assert _status_questions(reports[None]) == []
+    assert _STATUS_UNUSED in reports[True].scope.transitional_status
+    compared = [_without_status_unused(report) for report in reports.values()]
+    assert compared[0] == compared[1] == compared[2]
+    status = reports[None].scope.transitional_status
+    assert "Article 111(2) check: the system was" not in status
+    assert ("Article 111(2) check: not applied, as an Art. 5 prohibited practice" in status) is (
+        route == "annex-i-dated"
+    )
+
+
+def test_a_point_established_by_its_element_facts_skips_the_art_111_3_check() -> None:
+    facts = {
+        "is_gpai_model": True,
+        "gpai_model_placing_on_market_date": "2025-01-01",
+        "intimate_imagery": _ESTABLISHING_SCREENS["intimate_imagery"],
+        "generates_synthetic_content": True,
+    }
+    roles = (Role.PROVIDER, Role.GPAI_PROVIDER)
+    prohibited = _report(roles, **facts, assessment_date="2026-12-02")
+    declared_early = _report(
+        roles,
+        **{k: v for k, v in facts.items() if k != "intimate_imagery"},
+        prohibited_practices=["5.1.ba"],
+        assessment_date="2026-12-01",
+    )
+
+    assert prohibited.risk_tier.value == "prohibited"
+    assert "Article 111(3) check" not in prohibited.scope.transitional_status
+    assert declared_early.risk_tier.value != "prohibited"
+    assert (
+        "Article 111(3) check: the general-purpose AI model was placed on the market on 2025-01-01"
+        in (declared_early.scope.transitional_status)
+    )
 
 
 def test_the_intake_records_i_dont_know_as_null() -> None:

@@ -43,8 +43,11 @@ review on every Annex III point. Point 2
 is excepted: a public-authority deployer there gets an Art. 49(5) pointer to
 national registration, and an unset status raises the question with that pointer.
 On an Annex I route without an Annex III area, a deployer profile for a legacy or
-undated system without `public_authority_use` that is no Section B product asks for
-the status as well, for the Art. 111(2) 2030 date.
+undated system without `public_authority_use` that is no Section B product and is
+not prohibited asks for the status as well, for the Art. 111(2) 2030 date. A declared
+point (ba) or (bb) that does not yet apply on the assessment date does not make the
+system prohibited here; a point (ba) or (bb) that the element facts establish does
+where the assessment date is on or after 2 December 2026 or not given.
 
 ### Annex I, Section B Products
 

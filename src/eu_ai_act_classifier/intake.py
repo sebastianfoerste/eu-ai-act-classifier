@@ -27,7 +27,8 @@ import math
 import re
 from typing import Any
 
-from .citations import POINT_C_ANNEX_I, POINT_C_ANNEX_III
+from .catalog import LATER_PROHIBITIONS
+from .citations import POINT_A_EXCEPTION_DATE, POINT_C_ANNEX_I, POINT_C_ANNEX_III
 from .labels import DEROGATION_LABELS, option_label
 from .models import (
     AnnexIII,
@@ -68,11 +69,56 @@ ANNEX_I_ROUTE = {
     ]
 }
 # Facts the engine reads only once the system is high-risk (Art. 6 AIA) and not
-# prohibited: a prohibited practice dominates every other tier.
+# prohibited: a prohibited practice dominates every other tier. The Art. 5 gate votes the
+# prohibited tier for a declared point (a) to (h) whatever the date and roles, and for a
+# declared point (ba) or (bb) only from 2 December 2026 and only for a placing or use
+# role (transitions.prohibition_applies); before that date, or for another role, the
+# system keeps its high-risk route.
+_NO_EARLIER_POINT = {
+    "all": [
+        {"not": {"field": "prohibited_practices", "has": practice.value}}
+        for practice in ProhibitedPractice
+        if practice not in LATER_PROHIBITIONS
+    ]
+}
+_NO_PLACING_OR_USE_ROLE = {
+    "all": [
+        {"not": {"field": "roles", "has": role.value}}
+        for role in (Role.PROVIDER, Role.IMPORTER, Role.DEPLOYER)
+    ]
+}
+_NOT_PROHIBITED = {
+    "any": [
+        {"field": "prohibited_practices", "empty": True},
+        {
+            "all": [
+                _NO_EARLIER_POINT,
+                {
+                    "any": [
+                        {"field": "assessment_date", "before": POINT_A_EXCEPTION_DATE},
+                        _NO_PLACING_OR_USE_ROLE,
+                    ]
+                },
+            ]
+        },
+    ]
+}
+# The exact test, for questions asked after the dates question (CHANGE_OPEN and
+# PUBLIC_AUTHORITY_STATUS_OPEN).
 HIGH_RISK_ROUTE = {
     "all": [
         IN_SCOPE,
-        {"field": "prohibited_practices", "empty": True},
+        _NOT_PROHIBITED,
+        {"any": [ANNEX_III_ANY, ANNEX_I_ROUTE]},
+    ]
+}
+# A date-free test for the questions asked before the assessment date is known: a
+# declared point (ba) or (bb) alone keeps them. On a profile prohibited from
+# 2 December 2026 they are then asked although the engine does not read them there.
+HIGH_RISK_ROUTE_EARLY = {
+    "all": [
+        IN_SCOPE,
+        {"any": [{"field": "prohibited_practices", "empty": True}, _NO_EARLIER_POINT]},
         {"any": [ANNEX_III_ANY, ANNEX_I_ROUTE]},
     ]
 }
@@ -81,7 +127,7 @@ HIGH_RISK_ROUTE = {
 # 5(b) and 5(c) always need one, point 2 never does.
 FRIA_OPEN = {
     "all": [
-        HIGH_RISK_ROUTE,
+        HIGH_RISK_ROUTE_EARLY,
         ANNEX_III_ANY,
         {"field": "roles", "has": Role.DEPLOYER.value},
         {
@@ -143,7 +189,12 @@ CHANGE_OPEN = {
 # only for a system dated before the Annex I date, or undated, that is no Section B product
 # and has no public_authority_use (the Art. 111(2) 2030 date). Exactly there, for a
 # profile in scope, an unknown status raises an open question, so the intake asks it
-# there and nowhere else.
+# there and, among the states the intake can reach, nowhere else. A profile whose element
+# screens for Art. 5(1)(ba) or (bb) establish a point (intimate_imagery,
+# child_sexual_abuse_material) is prohibited without a declared point from 2 December 2026,
+# or with no assessment date, for a placing or use role; the intake never
+# asks those screens (NOT_ASKED), so such a JSON profile may hold this condition where the
+# engine does not read the status.
 _UNDATED = {
     "all": [
         {"field": "placing_on_market_date", "is": None},
@@ -407,7 +458,7 @@ QUESTIONS: list[dict[str, Any]] = [
         "field": "provider_established_outside_eu",
         "title": "Is the provider established outside the EU?",
         "article": "Art. 22 AIA",
-        "show_if": HIGH_RISK_ROUTE,
+        "show_if": HIGH_RISK_ROUTE_EARLY,
         "unknown": BLOCK,
     },
     {
@@ -417,7 +468,7 @@ QUESTIONS: list[dict[str, Any]] = [
         "title": "Has the provider appointed an authorised representative in the EU?",
         "article": "Art. 22 AIA",
         "show_if": {
-            "all": [HIGH_RISK_ROUTE, {"field": "provider_established_outside_eu", "is": True}]
+            "all": [HIGH_RISK_ROUTE_EARLY, {"field": "provider_established_outside_eu", "is": True}]
         },
         "unknown": BLOCK,
     },
@@ -435,7 +486,7 @@ QUESTIONS: list[dict[str, Any]] = [
             {"field": "substantially_modifies_system", "label": "Substantially modifies it"},
         ],
         "none_label": "Neither",
-        "show_if": HIGH_RISK_ROUTE,
+        "show_if": HIGH_RISK_ROUTE_EARLY,
         "unknown": BLOCK,
     },
     {

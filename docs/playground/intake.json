@@ -782,8 +782,64 @@
                 ]
               },
               {
-                "field": "prohibited_practices",
-                "empty": true
+                "any": [
+                  {
+                    "field": "prohibited_practices",
+                    "empty": true
+                  },
+                  {
+                    "all": [
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.a"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.b"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.c"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.d"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.e"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.f"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.g"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.h"
+                        }
+                      }
+                    ]
+                  }
+                ]
               },
               {
                 "any": [
@@ -860,8 +916,64 @@
                 ]
               },
               {
-                "field": "prohibited_practices",
-                "empty": true
+                "any": [
+                  {
+                    "field": "prohibited_practices",
+                    "empty": true
+                  },
+                  {
+                    "all": [
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.a"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.b"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.c"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.d"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.e"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.f"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.g"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.h"
+                        }
+                      }
+                    ]
+                  }
+                ]
               },
               {
                 "any": [
@@ -936,8 +1048,64 @@
             ]
           },
           {
-            "field": "prohibited_practices",
-            "empty": true
+            "any": [
+              {
+                "field": "prohibited_practices",
+                "empty": true
+              },
+              {
+                "all": [
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.a"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.b"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.c"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.d"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.e"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.f"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.g"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.h"
+                    }
+                  }
+                ]
+              }
+            ]
           },
           {
             "any": [
@@ -992,8 +1160,64 @@
                 ]
               },
               {
-                "field": "prohibited_practices",
-                "empty": true
+                "any": [
+                  {
+                    "field": "prohibited_practices",
+                    "empty": true
+                  },
+                  {
+                    "all": [
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.a"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.b"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.c"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.d"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.e"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.f"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.g"
+                        }
+                      },
+                      {
+                        "not": {
+                          "field": "prohibited_practices",
+                          "has": "5.1.h"
+                        }
+                      }
+                    ]
+                  }
+                ]
               },
               {
                 "any": [
@@ -1063,8 +1287,64 @@
             ]
           },
           {
-            "field": "prohibited_practices",
-            "empty": true
+            "any": [
+              {
+                "field": "prohibited_practices",
+                "empty": true
+              },
+              {
+                "all": [
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.a"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.b"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.c"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.d"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.e"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.f"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.g"
+                    }
+                  },
+                  {
+                    "not": {
+                      "field": "prohibited_practices",
+                      "has": "5.1.h"
+                    }
+                  }
+                ]
+              }
+            ]
           },
           {
             "any": [
@@ -1318,8 +1598,98 @@
                 ]
               },
               {
-                "field": "prohibited_practices",
-                "empty": true
+                "any": [
+                  {
+                    "field": "prohibited_practices",
+                    "empty": true
+                  },
+                  {
+                    "all": [
+                      {
+                        "all": [
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.a"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.b"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.c"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.d"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.e"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.f"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.g"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.h"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "any": [
+                          {
+                            "field": "assessment_date",
+                            "before": "2026-12-02"
+                          },
+                          {
+                            "all": [
+                              {
+                                "not": {
+                                  "field": "roles",
+                                  "has": "provider"
+                                }
+                              },
+                              {
+                                "not": {
+                                  "field": "roles",
+                                  "has": "importer"
+                                }
+                              },
+                              {
+                                "not": {
+                                  "field": "roles",
+                                  "has": "deployer"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               },
               {
                 "any": [
@@ -1444,8 +1814,98 @@
                 ]
               },
               {
-                "field": "prohibited_practices",
-                "empty": true
+                "any": [
+                  {
+                    "field": "prohibited_practices",
+                    "empty": true
+                  },
+                  {
+                    "all": [
+                      {
+                        "all": [
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.a"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.b"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.c"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.d"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.e"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.f"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.g"
+                            }
+                          },
+                          {
+                            "not": {
+                              "field": "prohibited_practices",
+                              "has": "5.1.h"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "any": [
+                          {
+                            "field": "assessment_date",
+                            "before": "2026-12-02"
+                          },
+                          {
+                            "all": [
+                              {
+                                "not": {
+                                  "field": "roles",
+                                  "has": "provider"
+                                }
+                              },
+                              {
+                                "not": {
+                                  "field": "roles",
+                                  "has": "importer"
+                                }
+                              },
+                              {
+                                "not": {
+                                  "field": "roles",
+                                  "has": "deployer"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               },
               {
                 "any": [

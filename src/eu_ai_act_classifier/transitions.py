@@ -158,14 +158,28 @@ def legacy_dates(profile: SystemProfile, cut_off: str) -> list[tuple[str, str]]:
     return [(label, value) for label, value in market_dates(profile) if before(value, cut_off)]
 
 
+def prohibition_applies(profile: SystemProfile) -> bool:
+    """Whether the Art. 5 AIA gate votes the prohibited tier: for a declared point (a) to
+    (h), or for a point (ba) or (bb), declared or established by its element facts for a
+    placing or use role, unless the assessment date is before 2 December 2026. A declared
+    point (ba) or (bb) that does not yet apply on the assessment date, or that the
+    profile holds in no placing or use role, leaves the system to its other tiers."""
+
+    # Imported here: rules.prohibited imports this module.
+    from .models import RiskTier
+    from .rules import prohibited
+
+    return prohibited.evaluate(profile).tier_vote is RiskTier.PROHIBITED
+
+
 def change_used(profile: SystemProfile) -> bool:
     """Whether ``significant_change_after_application_date`` can change the result: only
-    for a high-risk system, with no prohibited practice screened, placed on the market or
-    put into service before its Chapter III date (Art. 111(2) AIA)."""
+    for a high-risk system that is not prohibited (``prohibition_applies``), placed on the
+    market or put into service before its Chapter III date (Art. 111(2) AIA)."""
 
     cut_off = chapter_iii_date(profile)
     return (
-        not profile.prohibited_practices
+        not prohibition_applies(profile)
         and cut_off is not None
         and bool(legacy_dates(profile, cut_off))
     )
@@ -200,15 +214,17 @@ def public_authority_status_used(profile: SystemProfile) -> bool:
     """Whether ``deployer_public_authority`` can change the result of a profile in scope
     (outside scope nothing reads it). It describes the
     profile's own deployer role, so only where the profile holds that role for a high-risk
-    system with no prohibited practice screened: on every Annex III point (Art. 49(3) AIA,
-    or Art. 49(5) for point 2), and on an Annex I route without one only for a system
-    placed on the market or put into service before its Chapter III date, or undated,
-    that is no Section B product and has no public_authority_use (the 2030 date of
-    Art. 111(2), second sentence, AIA). Exactly there, in scope, an unknown status is
-    asked. As in ``change_used``, any declared prohibited practice counts, also a point
-    (ba) or (bb) that does not yet apply on the assessment date."""
+    system that is not prohibited: on every Annex III point (Art. 49(3) AIA, or Art. 49(5)
+    for point 2), and on an Annex I route without one only for a system placed on the
+    market or put into service before its Chapter III date, or undated, that is no
+    Section B product and has no public_authority_use (the 2030 date of Art. 111(2),
+    second sentence, AIA). Exactly there, in scope, an unknown status is asked. As in
+    ``change_used``, the test is the Art. 5 gate's vote (``prohibition_applies``), so a
+    declared point (ba) or (bb) that does not yet apply on the assessment date does not
+    count, and a point (ba) or (bb) established by its element facts counts from
+    2 December 2026, or with no assessment date, as a declared one does."""
 
-    if not profile.is_deployer or profile.prohibited_practices:
+    if not profile.is_deployer or prohibition_applies(profile):
         return False
     if profile.annex_iii_area is not None:
         return True
