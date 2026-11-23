@@ -53,11 +53,15 @@ where the assessment date is on or after 2 December 2026 or not given.
 
 Art. 2(2) AIA lists neither Art. 5 nor Art. 50 for a Section B product. The
 report keeps both as the conservative reading, and a Section B product also in
-an Annex III area keeps the Annex III duties. Each kept position is flagged
-"Literal reading, confirm with counsel" for the reviewer to confirm: Art. 5 on
-its finding, Art. 50 on its finding and items, and the Annex III duties on the
-Art. 6(1) finding and the Art. 2(2) item. Each flag is also an open question,
-so a report that carries one is never `determined`. A Section B product with no
+an Annex III area keeps the Annex III duties where the result is high-risk.
+Each kept position is flagged "Literal reading, confirm with counsel" for the
+reviewer to confirm: Art. 5 on its finding, Art. 50 on its finding and items,
+and the Annex III duties on the Art. 6(1) finding and the Art. 2(2) item. Each
+flag is also an open question, so a report that carries one is never
+`determined`. The Annex III flag on a prohibited report is the exception:
+that report lists no Annex III duties, its Art. 6(1) finding states the literal
+reading without saying that the report keeps them, and it raises no Art. 6(2)
+question; the Art. 5 question sends it to review. A Section B product with no
 Annex III area and no Art. 5 or Art. 50 screen carries none of the three flags,
 and its report can stay `determined`. Answer each question by confirming
 whether the kept duties apply to the product.

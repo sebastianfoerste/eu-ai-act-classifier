@@ -250,6 +250,14 @@ def section_b_kept_flag(provision: str, kept: str) -> str:
     )
 
 
+# The engine drops this question and clause on a prohibited report, which lists no
+# Annex III duties. The question's prefix is the one rules/high_risk.py writes.
+SECTION_B_ANNEX_III_QUESTION = "Art. 2(2) AIA and Art. 6(2) AIA:"
+SECTION_B_ANNEX_III_KEPT = (
+    ", and this report keeps the Annex III duties as the conservative reading."
+)
+
+
 def section_b_annex_iii_flag(derogation_asserted: bool) -> str:
     """A Section B product also in an Annex III area: the report keeps the Annex III
     duties, although on its wording Art. 2(2) AIA leaves only the listed provisions."""
@@ -264,7 +272,7 @@ def section_b_annex_iii_flag(derogation_asserted: bool) -> str:
         "Literal reading, confirm with counsel: on its wording Art. 2(2) AIA covers any AI "
         "system classified high-risk in accordance with Art. 6(1) for a Section B product, and "
         "Art. 6(2) is not among the provisions it lists, so only those would apply. This system "
-        f"{classified}, and this report keeps the Annex III duties as the conservative reading."
+        f"{classified}{SECTION_B_ANNEX_III_KEPT}"
     )
 
 

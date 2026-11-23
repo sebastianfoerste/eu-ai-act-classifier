@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import type { ReactElement, ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { THEME_KEY } from "../lib/theme";
+import { THEME_INIT_SCRIPT, THEME_KEY } from "../lib/theme";
 
 // The repository has no DOM test environment and adds no dependency for one. These tests
 // call the component as a function with two React hooks replaced: state lives in `state`
@@ -31,14 +31,17 @@ type Props = { children?: ReactNode; onClick?: () => void; role?: string };
 function fakeBrowser(stored: Record<string, string> | "blocked") {
   const data = new Map(Object.entries(stored === "blocked" ? {} : stored));
   const listeners = new Set<Listener>();
+  // Each read of window.localStorage returns a new object, so the record of storage
+  // calls lives here, next to the data.
+  const calls: string[] = [];
   const document = { documentElement: { dataset: {} as Record<string, string | undefined> } };
   const window = {
     get localStorage() {
       if (stored === "blocked") throw new Error("blocked");
       return {
-        getItem: (key: string) => data.get(key) ?? null,
-        setItem: (key: string, value: string) => void data.set(key, value),
-        removeItem: (key: string) => void data.delete(key),
+        getItem: (key: string) => (calls.push("getItem"), data.get(key) ?? null),
+        setItem: (key: string, value: string) => (calls.push("setItem"), void data.set(key, value)),
+        removeItem: (key: string) => (calls.push("removeItem"), void data.delete(key)),
       };
     },
     addEventListener: (_type: string, listener: Listener) => void listeners.add(listener),
@@ -46,7 +49,15 @@ function fakeBrowser(stored: Record<string, string> | "blocked") {
   };
   vi.stubGlobal("document", document);
   vi.stubGlobal("window", window);
-  return { data, listeners, dataset: document.documentElement.dataset, root: document.documentElement };
+  return {
+    data,
+    calls,
+    listeners,
+    window,
+    document,
+    dataset: document.documentElement.dataset,
+    root: document.documentElement,
+  };
 }
 
 // One render: the button and the status element of the fragment the component returns.
@@ -111,6 +122,19 @@ describe("ThemeToggle", () => {
     expect(browser.dataset).toEqual({});
     expect(render().announcement).toBe("Theme set to System");
   });
+
+  // The inline script of the layout, then the button's mount: two reads, no write, and a
+  // value the page does not understand stays where it is.
+  it.each<Record<string, string>>([{}, { [THEME_KEY]: "dark" }, { [THEME_KEY]: "light" }, { [THEME_KEY]: "sepia" }])(
+    "a page load only reads the stored choice: %j",
+    (stored) => {
+      const browser = fakeBrowser(stored);
+      new Function("window", "document", THEME_INIT_SCRIPT)(browser.window, browser.document);
+      render();
+      expect(browser.calls).toEqual(["getItem", "getItem"]);
+      expect(Object.fromEntries(browser.data)).toEqual(stored);
+    },
+  );
 
   it("keeps a choice across mounts when storage is blocked", () => {
     const browser = fakeBrowser("blocked");

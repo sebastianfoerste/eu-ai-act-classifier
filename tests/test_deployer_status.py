@@ -364,6 +364,7 @@ def test_the_intake_records_i_dont_know_as_null() -> None:
     (question,) = [q for q in QUESTIONS if q["id"] == "deployer_public_authority"]
 
     assert question["unknown"] == {"value": None}
+    assert question["article"] == "Art. 49(3), Art. 49(5) and Art. 111(2) AIA"
 
 
 @pytest.mark.parametrize("name", ["credit_scoring_deployer.json", "life_insurer_pricing.json"])

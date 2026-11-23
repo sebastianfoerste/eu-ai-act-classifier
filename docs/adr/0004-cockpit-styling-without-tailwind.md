@@ -10,7 +10,7 @@ Status: Accepted
 
 Move both pages to a small set of plain classes in `globals.css` on the existing cockpit tokens. Do not add Tailwind.
 
-Text on tinted surfaces uses a new `--muted-on-tint` token, because `--muted` on `--surface-muted` measured 4.47:1, below WCAG AA.
+Text on tinted surfaces uses a new `--muted-on-tint` token, because `--muted` on `--surface-muted` measured 4.48:1, below WCAG AA. Update of 23 November 2026: `--muted` changed from `#64717f` to `#63707e` and now measures 4.54:1 on `--surface-muted`; `--muted-on-tint` stays for the text on tinted surfaces.
 
 ## Consequences
 

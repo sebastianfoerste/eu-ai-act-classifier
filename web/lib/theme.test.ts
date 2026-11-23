@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   THEMES,
@@ -17,15 +17,26 @@ import {
 } from "./theme";
 
 const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+// The stylesheet without comments, so a note that names a token or a colour is not read
+// as a declaration.
+const bare = css.replace(/\/\*[\s\S]*?\*\//g, "");
+// Every innermost rule: the rules inside @media come out without their wrapper.
+const rules = [...bare.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(([, selector, body]) => ({
+  selector: selector.trim().replace(/\s+/g, " "),
+  body,
+}));
+// A rule that styles a button, select, input or text field.
+const CONTROL =
+  /(?:^|[\s,>])(?:button|input|select|textarea)\b|\.(?:iconButton|primaryButton|secondaryButton|inventoryItem|textInput)\b|\.triState button/;
 
 // The three token blocks: light, dark by system setting, dark by stored choice.
 function tokenBlocks() {
-  return [...css.matchAll(/(:root[^{]*)\{\s*color-scheme: (light|dark);([^}]*)\}/g)].map(
+  return [...bare.matchAll(/(:root[^{]*)\{\s*color-scheme: (light|dark);([^}]*)\}/g)].map(
     ([, selector, scheme, body]) => ({
       selector: selector.trim(),
       scheme,
       tokens: Object.fromEntries(
-        [...body.matchAll(/--([a-z-]+): ([^;]+);/g)].map(([, name, value]) => [name, value]),
+        [...body.matchAll(/--([\w-]+): ([^;]+);/g)].map(([, name, value]) => [name, value]),
       ),
     }),
   );
@@ -51,6 +62,7 @@ const TEXT: Array<[string, string]> = [
   ["text", "surface-muted"],
   ["muted", "background"],
   ["muted", "surface"],
+  ["muted", "surface-muted"],
   ["muted-on-tint", "surface-muted"],
   ["blue", "background"],
   ["blue", "surface"],
@@ -58,6 +70,8 @@ const TEXT: Array<[string, string]> = [
   ["on-primary", "blue"],
   ["green", "success-bg"],
   ["amber", "warning-bg"],
+  // .rowMessage.error in a table cell.
+  ["red", "surface"],
   ["red", "danger-bg"],
   ["violet", "surface"],
   ["violet", "surface-muted"],
@@ -65,9 +79,6 @@ const TEXT: Array<[string, string]> = [
   ["info-muted", "info-bg-soft"],
   ["code-text", "code-bg"],
 ];
-// Below 4.5:1 in the light set, which is why --muted-on-tint exists and no rule puts
-// --muted on --surface-muted. The dark set needs no such exception.
-const LIGHT_BELOW: Array<[string, string]> = [["muted", "surface-muted"]];
 // The line around a button, select or input, in the dark set: 3:1.
 const DARK_LINES: Array<[string, string]> = [
   ["control-border", "surface"],
@@ -77,11 +88,25 @@ const DARK_LINES: Array<[string, string]> = [
   ["input-border", "surface"],
   ["input-border", "surface-muted"],
 ];
+// The same lines in the light set stay below 3:1, at the ratios recorded here. This is a
+// recorded design decision of the owner and open for change. WCAG 2.2 SC 1.4.11 may
+// require 3:1 for the line of a text field, where the line alone shows the control.
+// Changing a light line token fails this test on purpose, so the change is made here too.
+const LIGHT_LINES_BELOW: Array<[string, string, string]> = [
+  ["control-border", "surface", "1.37"],
+  ["control-border", "surface-muted", "1.23"],
+  ["control-border", "background", "1.28"],
+  ["control-border", "danger-bg", "1.24"],
+  ["input-border", "surface", "2.48"],
+  ["input-border", "surface-muted", "2.22"],
+];
 // The focus ring, in both sets: 3:1.
 const FOCUS: Array<[string, string]> = [
   ["blue", "background"],
   ["blue", "surface"],
   ["blue", "surface-muted"],
+  // The Retry metadata button inside .errorBanner.
+  ["blue", "danger-bg"],
 ];
 
 // Every way CSS writes a colour without a token: hex, a colour function, one of the 148
@@ -119,8 +144,26 @@ const COLOUR = new RegExp(
 function strayColours(rules: string): string[] {
   const found: string[] = [];
   for (const [, property, value] of rules.matchAll(/([a-z-]+)\s*:\s*([^;{}]+)(?=[;}])/g)) {
-    const bare = value.replace(/var\(--[a-z-]+\)|url\([^)]*\)|"[^"]*"|'[^']*'/g, " ");
-    for (const match of bare.match(COLOUR) ?? []) found.push(`${property}: ${match}`);
+    const plain = value.replace(/var\(--[\w-]+\)|url\([^)]*\)|"[^"]*"|'[^']*'/g, " ");
+    for (const match of plain.match(COLOUR) ?? []) found.push(`${property}: ${match}`);
+  }
+  return found;
+}
+
+// Deprecated system colours such as WindowText, and vendor keywords such as
+// -webkit-link. These words are also common property names or values elsewhere
+// (`transition: background`), so they are searched only in properties that draw a
+// colour, anywhere in the value.
+const DEPRECATED_COLOUR =
+  /(?<![\w-])(?:activeborder|activecaption|appworkspace|background|buttonhighlight|buttonshadow|captiontext|inactive\w+|infobackground|infotext|menu|menutext|scrollbar|threed\w+|window|windowframe|windowtext)(?![\w-])|(?<![\w-])-(?:webkit|moz)-[a-z-]+/gi;
+const COLOUR_PROPERTY =
+  /^(?:color|background(?:-[a-z-]+)?|border(?:-[a-z-]+)?|outline(?:-color)?|box-shadow|text-shadow|fill|stroke|caret-color|accent-color|column-rule(?:-color)?|text-decoration(?:-color)?|text-emphasis(?:-color)?|scrollbar-color|stop-color|flood-color|lighting-color|-webkit-[a-z-]+)$/;
+function deprecatedColours(rules: string): string[] {
+  const found: string[] = [];
+  for (const [, property, value] of rules.matchAll(/([a-z-]+)\s*:\s*([^;{}]+)(?=[;}])/g)) {
+    if (!COLOUR_PROPERTY.test(property)) continue;
+    const plain = value.replace(/var\(--[\w-]+\)|url\([^)]*\)|"[^"]*"|'[^']*'/g, " ");
+    for (const match of plain.match(DEPRECATED_COLOUR) ?? []) found.push(`${property}: ${match}`);
   }
   return found;
 }
@@ -135,19 +178,63 @@ describe("colour tokens", () => {
       /@media screen and \(prefers-color-scheme: dark\) \{\s*:root:not\(\[data-theme="light"\]\) \{/,
     );
     expect(css).toMatch(/@media screen \{\s*:root\[data-theme="dark"\] \{/);
-    expect(css.match(/color-scheme: dark;/g)).toHaveLength(2);
+    expect(bare.match(/color-scheme: dark;/g)).toHaveLength(2);
+    // The light block and the two dark blocks, and no rule that switches the scheme.
+    expect(bare.match(/(?<![\w-])color-scheme:/g)).toHaveLength(3);
     expect(darkBySystem.tokens).toEqual(darkByChoice.tokens);
     expect(Object.keys(darkBySystem.tokens)).toEqual(Object.keys(light.tokens));
     expect(Object.keys(light.tokens).length).toBeGreaterThan(25);
   });
 
+  it("declares tokens in the three blocks only, and nothing else before the rules", () => {
+    const declared = bare.match(/(?<![\w(-])--[\w-]+\s*:/g) ?? [];
+    expect(declared).toHaveLength(3 * Object.keys(light.tokens).length);
+    // Three blocks and the two @media screen wrappers of the dark blocks.
+    const head = bare.slice(0, bare.indexOf("* {"));
+    expect(head.match(/\{/g)).toHaveLength(5);
+    // Nor a rule without braces, such as an @import whose stylesheet no check here reads.
+    const rest = head.replace(/:root[^{]*\{[^{}]*\}/g, "").replace(/@media screen[^{]*\{\s*\}/g, "");
+    expect(rest.trim()).toBe("");
+    for (const [, name] of bare.matchAll(/var\(\s*--([\w-]+)/g)) {
+      expect(Object.keys(light.tokens), name).toContain(name);
+    }
+  });
+
   it("writes no colour outside the token sets", () => {
-    const rules = css.slice(css.indexOf("* {"));
-    expect(strayColours(rules)).toEqual([]);
+    const body = bare.slice(bare.indexOf("* {"));
+    expect(strayColours(body)).toEqual([]);
+    expect(deprecatedColours(bare)).toEqual([]);
     // Hex anywhere in the rules, also outside a declaration.
-    expect(rules.match(/#[0-9a-fA-F]{3,8}\b/g)).toBeNull();
-    for (const [, name] of rules.matchAll(/var\(--([a-z-]+)\)/g)) {
-      expect(Object.keys(light.tokens)).toContain(name);
+    expect(body.match(/#[0-9a-fA-F]{3,8}\b/g)).toBeNull();
+  });
+
+  it("finds deprecated and vendor colour keywords only where they draw a colour", () => {
+    for (const declaration of [
+      "color: WindowText", "color: WindowText !important", "background: InfoBackground",
+      "border: WindowText 1px solid", "border: 1px solid -webkit-link", "color: -webkit-link",
+      "outline: -webkit-focus-ring-color auto 1px", "border-top-color: ThreeDShadow",
+      "scrollbar-color: WindowText", "background-image: linear-gradient(Window, red)",
+    ]) {
+      expect(deprecatedColours(`a { ${declaration}; }`), declaration).toHaveLength(1);
+    }
+    for (const declaration of [
+      "transition: background 0.2s", "background: var(--surface)", "font-family: -apple-system",
+      "-webkit-appearance: none", "border: 1px solid var(--control-border)",
+      "background-repeat: no-repeat", "background-image: url(menu.svg)",
+    ]) {
+      expect(deprecatedColours(`a { ${declaration}; }`), declaration).toEqual([]);
+    }
+  });
+
+  // An inline style would bypass the stylesheet and every check in this file.
+  it("has no inline style in the components and pages", () => {
+    for (const dir of ["../components/", "../app/"]) {
+      const files = readdirSync(new URL(dir, import.meta.url), { recursive: true, encoding: "utf8" });
+      const sources = files.filter((file) => file.endsWith(".tsx") && !file.includes(".test."));
+      expect(sources.length, dir).toBeGreaterThan(2);
+      for (const file of sources) {
+        expect(readFileSync(new URL(dir + file, import.meta.url), "utf8"), file).not.toMatch(/\bstyle=/);
+      }
     }
   });
 
@@ -188,17 +275,44 @@ describe("colour tokens", () => {
     expect(contrast(light.tokens["print-ink"], light.tokens.surface).toFixed(2)).toBe("21.00");
   });
 
-  it("dark: no pair is excepted, light keeps its known one", () => {
-    for (const [text, surface] of LIGHT_BELOW) {
-      expect(contrast(light.tokens[text], light.tokens[surface])).toBeLessThan(4.5);
-      expect(contrast(darkBySystem.tokens[text], darkBySystem.tokens[surface])).toBeGreaterThanOrEqual(4.5);
+  // --muted reaches 4.5:1 on --surface-muted with little margin, so text on a tinted
+  // container uses the stronger --muted-on-tint. Limit: this reads selectors, not markup.
+  // It catches a rule that names a tinted container, not one that reaches a tinted
+  // element through the markup alone (for example `.orphanedEvidence li`).
+  it("puts no muted text inside a tinted container", () => {
+    const TINT = /background(?:-color)?: var\(--surface-muted\);/;
+    const tintedSelectors = rules
+      .filter((rule) => TINT.test(rule.body))
+      .flatMap((rule) => rule.selector.split(","))
+      .map((selector) => selector.trim());
+    // A tint on an element alone (th, thead, li) names no container this test can follow,
+    // and the global muted rules for small, .meta and th would land on it.
+    expect(tintedSelectors.filter((selector) => !/\.[A-Za-z]/.test(selector))).toEqual([]);
+    const tinted = [
+      ...new Set(
+        tintedSelectors
+          .map((selector) => selector.match(/\.[A-Za-z]+(?:\.[A-Za-z]+)?/)?.[0])
+          .filter((name): name is string => Boolean(name)),
+      ),
+    ].sort();
+    expect(tinted).toEqual([
+      ".blockHeader", ".dataTable", ".notesList", ".plainList", ".promptBrief", ".questionList",
+      ".riskMap", ".secondaryButton", ".statusPill.neutral", ".triState",
+    ]);
+    for (const rule of rules.filter((r) => /(?:^|\s)color: var\(--muted\);/.test(r.body))) {
+      expect(TINT.test(rule.body), rule.selector).toBe(false);
+      for (const selector of rule.selector.split(",").map((part) => part.trim())) {
+        // .triState > span is the question label above the buttons, on --surface.
+        if (selector === ".triState > span") continue;
+        for (const name of tinted) {
+          expect(selector.includes(name), `${selector} sets --muted inside ${name}`).toBe(false);
+        }
+      }
     }
-  });
-
-  it("puts no muted text on the tinted surface in one rule", () => {
-    for (const [rule] of css.matchAll(/[^{}]+\{[^{}]*\}/g)) {
-      const tinted = rule.includes("background: var(--surface-muted);");
-      expect(tinted && rule.includes("color: var(--muted);"), rule.split("{")[0].trim()).toBe(false);
+    // The global muted rules (small, .panel p, .meta, th) are overridden where they land on the tint.
+    for (const override of [".promptBrief small", ".promptBrief p", ".plainList .meta", ".questionList .meta", ".dataTable th"]) {
+      const rule = rules.find((r) => r.selector.split(",").some((s) => s.trim() === override));
+      expect(rule?.body ?? "", override).toMatch(/color: var\(--(?:muted-on-tint|violet)\);/);
     }
   });
 
@@ -208,6 +322,55 @@ describe("colour tokens", () => {
         contrast(darkBySystem.tokens[line], darkBySystem.tokens[surface]),
         `--${line} on --${surface}`,
       ).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it("light: control lines stay at the recorded ratios below 3:1", () => {
+    expect(LIGHT_LINES_BELOW.map(([line, surface]) => [line, surface])).toEqual(DARK_LINES);
+    for (const [line, surface, ratio] of LIGHT_LINES_BELOW) {
+      const measured = contrast(light.tokens[line], light.tokens[surface]);
+      expect(measured, `--${line} on --${surface}`).toBeLessThan(3);
+      expect(measured.toFixed(2), `--${line} on --${surface}`).toBe(ratio);
+    }
+  });
+
+  // A token on the line, so it follows the scheme; the three tokens a control line may use.
+  it("draws every control line with a control token", () => {
+    const controls = rules.filter((rule) => CONTROL.test(rule.selector));
+    const lines = controls.filter((rule) => /(?:^|\s)border:/.test(rule.body));
+    expect(lines.map((rule) => rule.selector)).toEqual([
+      ".iconButton, .primaryButton, .secondaryButton",
+      ".inventoryItem",
+      "input, select, textarea",
+      ".triState button",
+      ".textInput",
+    ]);
+    for (const rule of lines) {
+      expect(rule.body, rule.selector).toMatch(/border: 1px solid var\(--(?:control-border|input-border)\);/);
+    }
+    // Every other line on a control, also a side or logical side shorthand or a colour
+    // longhand, and also the last declaration without a semicolon, may only name a line
+    // token or the accent, or draw no line at all.
+    const LINE = /^border(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?(?:-color)?$/;
+    for (const rule of controls) {
+      for (const [, property, value] of rule.body.matchAll(/([a-z-]+)\s*:\s*([^;}]+)(?:;|$)/g)) {
+        if (!LINE.test(property)) continue;
+        const where = `${rule.selector} { ${property}: ${value.trim()} }`;
+        if (/^(?:0|none)$/.test(value.trim())) continue;
+        const tokens = [...value.matchAll(/var\(\s*--([\w-]+)/g)].map(([, name]) => name);
+        expect(tokens.length, where).toBeGreaterThan(0);
+        for (const name of tokens) expect(["control-border", "input-border", "blue"], where).toContain(name);
+      }
+    }
+  });
+
+  // Without its own colour a control takes the browser's ButtonText or FieldText, which
+  // this file cannot check against the token background.
+  it("gives every control with a background a token text colour", () => {
+    const filled = rules.filter((rule) => CONTROL.test(rule.selector) && /background(?:-color)?:/.test(rule.body));
+    expect(filled.length).toBeGreaterThan(5);
+    for (const rule of filled) {
+      expect(rule.body, rule.selector).toMatch(/(?:^|\s)color: var\(--[\w-]+\);/);
     }
   });
 
@@ -228,11 +391,13 @@ describe("colour tokens", () => {
 
 function memoryStorage(initial: Record<string, string> = {}) {
   const data = new Map(Object.entries(initial));
+  const calls: string[] = [];
   return {
-    getItem: (key: string) => data.get(key) ?? null,
-    setItem: (key: string, value: string) => void data.set(key, value),
-    removeItem: (key: string) => void data.delete(key),
+    getItem: (key: string) => (calls.push("getItem"), data.get(key) ?? null),
+    setItem: (key: string, value: string) => (calls.push("setItem"), void data.set(key, value)),
+    removeItem: (key: string) => (calls.push("removeItem"), void data.delete(key)),
     data,
+    calls,
   };
 }
 
@@ -307,6 +472,17 @@ describe("theme choice", () => {
     restoreTheme(root, memoryStorage({ [THEME_KEY]: "light" }));
     expect(root.dataset).toEqual({ theme: "light" });
   });
+
+  // A page load must not change what is stored, also not a value it does not understand.
+  it.each<Record<string, string>>([{}, { [THEME_KEY]: "dark" }, { [THEME_KEY]: "light" }, { [THEME_KEY]: "sepia" }])(
+    "restores by reading only, and keeps the store as it was: %j",
+    (initial) => {
+      const storage = memoryStorage(initial);
+      restoreTheme({ dataset: {} }, storage);
+      expect(storage.calls).toEqual(["getItem"]);
+      expect(Object.fromEntries(storage.data)).toEqual(initial);
+    },
+  );
 
   it("shows a choice made in another tab until it stops listening", () => {
     const listeners = new Set<(event: { key: string | null }) => void>();
