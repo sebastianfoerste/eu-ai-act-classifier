@@ -79,26 +79,30 @@ const TEXT: Array<[string, string]> = [
   ["info-muted", "info-bg-soft"],
   ["code-text", "code-bg"],
 ];
-// The line around a button, select or input, in the dark set: 3:1.
-const DARK_LINES: Array<[string, string]> = [
+// The line around a button, the tri-state buttons and an inventory item, in the dark
+// set: 3:1.
+const DARK_CONTROL_LINES: Array<[string, string]> = [
   ["control-border", "surface"],
   ["control-border", "surface-muted"],
   ["control-border", "background"],
   ["control-border", "danger-bg"],
-  ["input-border", "surface"],
-  ["input-border", "surface-muted"],
 ];
 // The same lines in the light set stay below 3:1, at the ratios recorded here. This is a
-// recorded design decision of the owner and open for change. WCAG 2.2 SC 1.4.11 may
-// require 3:1 for the line of a text field, where the line alone shows the control.
-// Changing a light line token fails this test on purpose, so the change is made here too.
-const LIGHT_LINES_BELOW: Array<[string, string, string]> = [
+// recorded design decision of the owner and open for change. Changing a light control
+// line token fails this test on purpose, so the change is made here too.
+const LIGHT_CONTROL_LINES_BELOW: Array<[string, string, string]> = [
   ["control-border", "surface", "1.37"],
   ["control-border", "surface-muted", "1.23"],
   ["control-border", "background", "1.28"],
   ["control-border", "danger-bg", "1.24"],
-  ["input-border", "surface", "2.48"],
-  ["input-border", "surface-muted", "2.22"],
+];
+// The line around a text field, select or text area, where the line alone shows the
+// field, in both sets: 3:1 (WCAG 2.2 SC 1.4.11; owner's decision of 23 November 2026).
+const FIELD_LINES: Array<[string, string]> = [
+  ["input-border", "surface"],
+  ["input-border", "surface-muted"],
+  ["input-border", "background"],
+  ["input-border", "danger-bg"],
 ];
 // The focus ring, in both sets: 3:1.
 const FOCUS: Array<[string, string]> = [
@@ -317,7 +321,7 @@ describe("colour tokens", () => {
   });
 
   it("dark: control lines reach 3:1", () => {
-    for (const [line, surface] of DARK_LINES) {
+    for (const [line, surface] of DARK_CONTROL_LINES) {
       expect(
         contrast(darkBySystem.tokens[line], darkBySystem.tokens[surface]),
         `--${line} on --${surface}`,
@@ -326,11 +330,20 @@ describe("colour tokens", () => {
   });
 
   it("light: control lines stay at the recorded ratios below 3:1", () => {
-    expect(LIGHT_LINES_BELOW.map(([line, surface]) => [line, surface])).toEqual(DARK_LINES);
-    for (const [line, surface, ratio] of LIGHT_LINES_BELOW) {
+    expect(LIGHT_CONTROL_LINES_BELOW.map(([line, surface]) => [line, surface])).toEqual(DARK_CONTROL_LINES);
+    for (const [line, surface, ratio] of LIGHT_CONTROL_LINES_BELOW) {
       const measured = contrast(light.tokens[line], light.tokens[surface]);
       expect(measured, `--${line} on --${surface}`).toBeLessThan(3);
       expect(measured.toFixed(2), `--${line} on --${surface}`).toBe(ratio);
+    }
+  });
+
+  it.each([
+    ["light", () => light],
+    ["dark", () => darkBySystem],
+  ])("%s: field lines reach 3:1", (_scheme, set) => {
+    for (const [line, surface] of FIELD_LINES) {
+      expect(contrast(set().tokens[line], set().tokens[surface]), `--${line} on --${surface}`).toBeGreaterThanOrEqual(3);
     }
   });
 
@@ -347,6 +360,11 @@ describe("colour tokens", () => {
     ]);
     for (const rule of lines) {
       expect(rule.body, rule.selector).toMatch(/border: 1px solid var\(--(?:control-border|input-border)\);/);
+    }
+    // A field takes the field line, which reaches 3:1 in both sets; a button does not need it.
+    for (const field of ["input, select, textarea", ".textInput"]) {
+      const rule = lines.find((r) => r.selector === field);
+      expect(rule?.body ?? "", field).toMatch(/border: 1px solid var\(--input-border\);/);
     }
     // Every other line on a control, also a side or logical side shorthand or a colour
     // longhand, and also the last declaration without a semicolon, may only name a line

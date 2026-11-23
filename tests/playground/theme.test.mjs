@@ -52,14 +52,17 @@ const TEXT = [
 // button, and the ring of the pressed mode button, which takes --on-ink on its --ink fill.
 const FOCUS = [["focus", "bg"], ["focus", "paper"], ["focus", "surface-subtle"], ["focus", "surface-sunken"],
   ["focus", "selected"], ["focus", "hover"], ["on-ink", "ink"]];
-// The line around a button, a select, the mode switch, a hovered guided-answer card and a
-// guided text field: 3:1 in the dark set. The light set keeps the control lines it had
-// before dark mode; they are below 3:1 and pinned at today's values so that a change
-// shows up. Some controls are not on a control-line token in either set: the search
-// field and the guided-answer cards at rest keep the divider line, the primary button and
-// a checked guided-answer card take the accent, and the JSON field, the text buttons and
-// the finding summaries have no line.
-const CONTROLS = [["control-line", "paper"], ["control-line", "bg"], ["control-line-hover", "paper"], ["input-line", "paper"]];
+// The line around a button, the mode switch and a hovered guided-answer card: 3:1 in the
+// dark set. The light set keeps the control lines it had before dark mode; they are below
+// 3:1 and pinned at today's values so that a change shows up. Some controls are not on a
+// control-line token in either set: the guided-answer cards at rest keep the divider
+// line, the primary button and a checked guided-answer card take the accent, and the JSON
+// field, the text buttons and the finding summaries have no line.
+const CONTROLS = [["control-line", "paper"], ["control-line", "bg"], ["control-line-hover", "paper"]];
+// The line around a select, the search field and a guided text field, where the line
+// alone shows the field: 3:1 in both sets (WCAG 2.2 SC 1.4.11; owner's decision of
+// 23 November 2026). The surfaces are those the fields and their panels sit on.
+const FIELD_LINES = [["input-line", "paper"], ["input-line", "bg"], ["input-line", "surface-subtle"], ["input-line", "surface-sunken"]];
 
 test("the stylesheet has a light token set and two identical dark ones", () => {
   assert.equal(light.selector, ":root");
@@ -129,12 +132,12 @@ test("every line on a control is one of the listed declarations", () => {
   const lines = declarations((property, selector) => /^border(?!.*radius)/.test(property) && stylesControl(selector));
   assert.deepEqual(lines, [
     ["button", "border: 1px solid var(--control-line)"],
-    ["select", "border: 1px solid var(--control-line)"],
+    // A field takes the field line, which reaches 3:1 in both sets.
+    ["select", "border: 1px solid var(--input-line)"],
     [".text-button", "border: 0"],
     ["textarea", "border: 0"],
     [".primary", "border-color: var(--accent)"],
-    // The search field keeps the divider line.
-    ["#search", "border: 1px solid var(--line)"],
+    ["#search", "border: 1px solid var(--input-line)"],
     [".mode-switch", "border: 1px solid var(--control-line)"],
     [".mode-switch button", "border: 0"],
     [".mode-switch button + button", "border-left: 1px solid var(--control-line)"],
@@ -269,8 +272,17 @@ test("dark: the listed control lines reach 3:1", () => {
 
 test("light: the listed control lines keep today's contrast", () => {
   const ratios = CONTROLS.map(([line, surface]) => contrast(light.tokens[line], light.tokens[surface]).toFixed(2));
-  assert.deepEqual(ratios, ["1.46", "1.33", "1.74", "1.76"]);
+  assert.deepEqual(ratios, ["1.46", "1.33", "1.74"]);
 });
+
+for (const [scheme, tokens] of [["light", light.tokens], ["dark", darkBySystem.tokens]]) {
+  test(`${scheme}: the field line reaches 3:1 on the listed surfaces`, () => {
+    for (const [line, surface] of FIELD_LINES) {
+      const ratio = contrast(tokens[line], tokens[surface]);
+      assert.ok(ratio >= 3, `--${line} on --${surface}: ${ratio.toFixed(2)}:1`);
+    }
+  });
+}
 
 test("the contrast function gives the WCAG reference values", () => {
   assert.equal(contrast("#000000", "#ffffff").toFixed(2), "21.00");

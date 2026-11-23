@@ -1,19 +1,21 @@
 /* Colour tokens. The dark set applies with the system setting unless the Theme button
    stored "light", and always when it stored "dark" (theme.js sets data-theme). The two
    dark blocks must stay identical; tests/playground/theme.test.mjs checks that, the
-   contrast of the listed text and focus-ring pairs in both sets, and the listed
-   control-line pairs: 3:1 in the dark set, today's lower values in the light set. Some
-   controls are not on a control-line token in either set: the search field and the
-   guided-answer cards at rest keep the divider line, the primary button and a checked
-   guided-answer card take the accent, and the JSON field, the text buttons and the
-   finding summaries have no line. Both dark blocks are for screens only, so a page printed from a dark screen uses the light
+   contrast of the listed text and focus-ring pairs in both sets, the field line
+   (--input-line, around a select, the search field and a guided text field) at 3:1 in
+   both sets, and the other listed control-line pairs: 3:1 in the dark set, today's lower
+   values in the light set. Some controls are not on a control-line token in either set:
+   the guided-answer cards at rest keep the divider line, the primary button and a
+   checked guided-answer card take the accent, and the JSON field, the text buttons and
+   the finding summaries have no line. Both dark blocks are for screens only, so a page
+   printed from a dark screen uses the light
    set. */
 :root { color-scheme: light;
   --ink: #172b35; --ink-soft: #4d5c62; --code: #344e52; --muted: #5d6a70; --heading-muted: #61716c;
   --placeholder: #65736f; --bg: #f4f5f2; --paper: #fff; --surface-subtle: #fbfcfa; --surface-sunken: #f6f8f4;
   --chip: #f2f4f2; --hover: #eef2f7; --selected: #f1f4f9; --line: #dce2df; --line-soft: #edf0eb;
   --line-strong: #aab4b0; --chip-line: #e8ece8; --rule-accent: #c9d4e4; --control-line: #cfd8d3;
-  --control-line-hover: #b8c6d6; --input-line: #b9c6c0; --focus: #5d81b0; --accent: #5a3e85;
+  --control-line-hover: #b8c6d6; --input-line: #7b8783; --focus: #5d81b0; --accent: #5a3e85;
   --accent-strong: #46306a; --on-accent: #fff; --accent-tint: #e5eaf2; --on-ink: #fff; --brand-tick: #bdd6c0;
   --red: #a44033; --red-tint: #f9eee9; --amber: #876013; --amber-tint: #faf3e0; --blue: #2c4f7c;
   --blue-tint: #e9eef6; --green: #28634e; --green-tint: #eaf2e9; --grey-tint: #eff1ee; --error-ink: #91372c;
@@ -90,7 +92,7 @@ h2 { font-size: 18px; font-weight: 600; letter-spacing: -.35px; margin: 4px 0 0;
 .draft-controls { padding: 20px 24px 16px; }
 .draft-controls label { display: block; font-size: 12px; font-weight: 550; margin-bottom: 8px; }
 .example-row { display: flex; gap: 8px; }
-select { min-width: 0; width: 100%; padding: 9px 10px; border: 1px solid var(--control-line); border-radius: 5px; background: var(--paper); font-size: 12px; color: var(--ink); }
+select { min-width: 0; width: 100%; padding: 9px 10px; border: 1px solid var(--input-line); border-radius: 5px; background: var(--paper); font-size: 12px; color: var(--ink); }
 .import-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; font-size: 11px; color: var(--muted); flex-wrap: wrap; }
 .text-button { border: 0; padding: 2px 0; background: transparent; border-radius: 2px; color: var(--accent); font-size: 12px; font-weight: 550; }
 .text-button:hover:not(:disabled) { background: transparent; text-decoration: underline; text-underline-offset: 3px; }
@@ -134,7 +136,7 @@ textarea:focus-visible { outline-offset: -3px; }
 .metrics label { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; }
 .review-boundary { margin: 11px 24px 20px; font-size: 11px; color: var(--muted); }
 .finding-toolbar { padding: 0 24px; }
-#search { width: 100%; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-subtle); padding: 9px 12px; font-size: 12px; color: var(--ink); }
+#search { width: 100%; border: 1px solid var(--input-line); border-radius: 5px; background: var(--surface-subtle); padding: 9px 12px; font-size: 12px; color: var(--ink); }
 /* opacity: Firefox dims a placeholder by default, which would undercut the measured contrast. */
 #search::placeholder, textarea::placeholder, .text-input::placeholder { color: var(--placeholder); opacity: 1; }
 .visible-count { margin: 12px 24px 8px; font-size: 10px; color: var(--muted); }
