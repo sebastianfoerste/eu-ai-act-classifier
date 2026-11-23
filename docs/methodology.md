@@ -418,7 +418,7 @@ The scope gate's transitional status states the same comparison in words:
 which dates were given, the Chapter III date and its point, whether the system
 predates it, the significant-change position, for a legacy system the
 Art. 111(1) carve-out, and the 2030 deadline for public-authority use. Where
-the profile gives no date but `public_authority_use` or, for a profile that
+the profile gives no date but a `public_authority_use` of true or, for a profile that
 holds the deployer role, a `deployer_public_authority` of true that the
 engine uses, it names the date to compare with, for a high-risk system with
 no prohibited practice screened that is not a Section B product without an

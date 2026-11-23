@@ -2,10 +2,11 @@
    stored "light", and always when it stored "dark" (theme.js sets data-theme). The two
    dark blocks must stay identical; tests/playground/theme.test.mjs checks that, the
    contrast of the listed text and focus-ring pairs in both sets, and the listed
-   control-line pairs: 3:1 in the dark set, today's lower values in the light set. Three
+   control-line pairs: 3:1 in the dark set, today's lower values in the light set. Some
    controls are not on a control-line token in either set: the search field and the
-   guided-answer cards at rest keep the divider line, and the JSON field has no line. Both
-   dark blocks are for screens only, so a page printed from a dark screen uses the light
+   guided-answer cards at rest keep the divider line, the primary button and a checked
+   guided-answer card take the accent, and the JSON field, the text buttons and the
+   finding summaries have no line. Both dark blocks are for screens only, so a page printed from a dark screen uses the light
    set. */
 :root { color-scheme: light;
   --ink: #172b35; --ink-soft: #4d5c62; --code: #344e52; --muted: #5d6a70; --heading-muted: #61716c;

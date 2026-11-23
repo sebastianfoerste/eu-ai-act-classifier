@@ -36,19 +36,21 @@ pull requests.
   with and without an asserted Art. 6(3) derogation, the same facts without
   the practice, and point (ba) declared before 2 December 2026, which stays
   high-risk and keeps the question and the clause.
-- `docs/methodology.md` ("High-Risk Logic"), `docs/reviewer-notes.md`,
-  `docs/FEATURES.md` and the PENDING claim-ledger row on Art. 2(2) and the
-  Annex III duties say that the Annex III duties, the Art. 6(2) question and
-  the kept clause hold where the result is high-risk. All but
-  `docs/FEATURES.md` add that a prohibited report goes to review through
-  the Art. 5 question. The ledger's note of
+- `docs/methodology.md` ("High-Risk Logic"), `docs/reviewer-notes.md` and
+  the PENDING claim-ledger row on Art. 2(2) and the Annex III duties say
+  that the Annex III duties, the Art. 6(2) question and the kept clause hold
+  where the result is high-risk, and add that a prohibited report goes to
+  review through the Art. 5 question. `docs/FEATURES.md` says that the
+  Annex III duties are kept where the result is high-risk and that a
+  prohibited report lists none. The ledger's note of
   23 November 2026 records that the row's classifier statements were
   updated against the changed code and that the provision was not re-read.
 - The 0.4.0 entry "Section B flags reach the review gate" below says that
   `high_risk.evaluate` adds the open question
-  "Art. 2(2) AIA and Art. 6(2) AIA" and that the duties stay listed. Both
-  hold only where the result is high-risk. A prohibited report lists no
-  Annex III duties, and from this release on it raises no such question.
+  "Art. 2(2) AIA and Art. 6(2) AIA" and that the duties stay listed. The
+  report keeps both only where the result is high-risk:
+  `high_risk.evaluate` still adds the question, and `engine.classify` drops
+  it from a prohibited report, which lists no Annex III duties.
 
 ### Records say what the code does
 
@@ -71,15 +73,17 @@ pull requests.
   screened that is not a Section B product without an Annex III area.
 - `PRIVACY.md` names the empty lock file
   `runtime-data/collaboration-workspace.json.lock`, which the bridge keeps
-  from the first time the workspace is opened, and says that activity
-  entries, comments and cell locks carry a name and a time stamp.
+  from the first time the workspace is opened, and says that comments,
+  cell locks and the activity entries for locks, comments, reviews and
+  evidence changes carry a name and a time stamp, and that the entry for a
+  recovered file carries only the time.
 - `docs/adr/0004-cockpit-styling-without-tailwind.md` and
   `docs/research/design-teardown.md` gave the old cockpit `--muted` on
   `--surface-muted` as 4.47:1. The measured ratio is 4.48:1. Both now also
   record the new value ("Cockpit: muted text and new guards").
 - `tests/test_deployer_status.py` pins the article label of the intake's
   deployer status question, "Art. 49(3), Art. 49(5) and Art. 111(2) AIA".
-- The CI comment on the coverage floor gives the measured total of 96.86 %
+- The CI comment on the coverage floor gives the measured total of 96.89 %
   on 23 November 2026. The floor stays at 96 %.
 
 ### Playground: focus rings and theme tests
@@ -118,13 +122,17 @@ pull requests.
 - `tests/playground/timeline.test.mjs` checks that the application-date
   timeline, which scrolls sideways, has `tabIndex` 0.
 - The comments in `docs/playground/styles.css` and the test file claim only
-  what the tests check. Both name the three controls that are not on a
-  control-line token in either set: the search field and the guided-answer
-  cards at rest keep the divider line, and the JSON field has no line.
+  what the tests check. Both name the controls whose line is not a
+  control-line token in either set: the search field and the guided-answer cards at rest keep the divider
+  line, the primary button and a checked guided-answer card take the accent,
+  and the JSON field, the text buttons and the finding summaries have no
+  line.
 - The 0.4.0 entry "Dark mode on the playground and the cockpit" below says
   that the playground's search field and guided-answer cards keep the
-  divider line. In full: the search field and the guided-answer cards at
-  rest keep the divider line, and the JSON field has no line.
+  divider line. In full: the search field and the guided-answer cards at rest keep the divider
+  line, the primary button and a checked guided-answer card take the accent,
+  and the JSON field, the text buttons and the finding summaries have no
+  line.
 
 ### Cockpit: muted text and new guards
 

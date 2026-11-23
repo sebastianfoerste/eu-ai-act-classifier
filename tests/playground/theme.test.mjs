@@ -55,9 +55,10 @@ const FOCUS = [["focus", "bg"], ["focus", "paper"], ["focus", "surface-subtle"],
 // The line around a button, a select, the mode switch, a hovered guided-answer card and a
 // guided text field: 3:1 in the dark set. The light set keeps the control lines it had
 // before dark mode; they are below 3:1 and pinned at today's values so that a change
-// shows up. Three controls are not on a control-line token in either set: the search
-// field and the guided-answer cards at rest keep the divider line, and the JSON field has
-// no line.
+// shows up. Some controls are not on a control-line token in either set: the search
+// field and the guided-answer cards at rest keep the divider line, the primary button and
+// a checked guided-answer card take the accent, and the JSON field, the text buttons and
+// the finding summaries have no line.
 const CONTROLS = [["control-line", "paper"], ["control-line", "bg"], ["control-line-hover", "paper"], ["input-line", "paper"]];
 
 test("the stylesheet has a light token set and two identical dark ones", () => {
