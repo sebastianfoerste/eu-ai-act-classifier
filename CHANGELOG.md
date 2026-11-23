@@ -184,6 +184,106 @@ pull requests.
   name that resolves in its file and `tabIndex={0}`, and that the
   stylesheet keeps their focus ring.
 
+### Not-yet-applicable Art. 5(1)(ba) and (bb) points
+
+#### Changed
+
+- Whether a system is prohibited is now the Art. 5 gate's vote
+  (`transitions.prohibition_applies`), not the list of declared practices,
+  wherever the engine decides whether the Art. 111(2) change answer and the
+  deployer's public-authority status are used (`transitions.change_used`,
+  `transitions.public_authority_status_used`) and whether the Art. 111(2)
+  and Art. 111(3) checks run. A declared Art. 5(1)(ba) or (bb) point leaves
+  the system at its other tier, high-risk on a high-risk route, where it
+  does not yet apply on the assessment date (before 2 December 2026) or
+  where the profile holds it in no provider, importer or deployer role. The
+  engine already read both answers there, except the status of a deployer
+  of an undated system on an Annex I route without an Annex III area, and
+  already asked for an unset change answer and, on an Annex III point, for
+  an unset status. The report now runs the Art. 111(2) and Art. 111(3)
+  checks there and no longer says that the answers are not used. The one
+  new open question is the status question for a deployer on an Annex I
+  route without an Annex III area (the Art. 111(2) 2030 date).
+- Where the element facts in `intimate_imagery` or
+  `child_sexual_abuse_material` establish point (ba) or (bb) without a
+  declared practice for a provider, importer or deployer role, and the
+  assessment date is on or after 2 December 2026 or not given, the result
+  is prohibited, and the status and change
+  answers are now not used: the reports for a status of true, false and
+  unset are equal apart from the "not used" sentence, and neither the
+  Art. 111(2) comparison nor the Art. 111(3) check runs.
+- The two "not used" sentences of the Art. 111(2) check say "a high-risk
+  system that is not prohibited" instead of "with no prohibited practice
+  screened".
+- The guided intake follows the engine. It asks the change answer and the
+  status exactly where the engine reads them, for a declared point (ba) or
+  (bb) too (`intake.HIGH_RISK_ROUTE` now reads the assessment date and the
+  roles). The high-risk questions asked before the assessment date (the two
+  Art. 27 status questions, establishment outside the EU, the authorised
+  representative and the value chain) use a condition without the date
+  (`intake.HIGH_RISK_ROUTE_EARLY`): they are asked for every declared point
+  (ba) or (bb) without a point (a) to (h).
+- `docs/methodology.md`, `docs/reviewer-notes.md` and the Art. 111(2) row
+  of `docs/REGULATORY_CLAIM_LEDGER.md` (reworded against the code on
+  23 November 2026; the provision was not re-read) say what the engine
+  does now.
+- `tests/test_intake.py` adds the declared points (ba), (bb), both, and (ba)
+  with (c), assessed on 2026-12-01, on 2026-12-02 and undated, and a
+  distributor role to both grids, so the skip check, the fail-closed check
+  and the checks of the "not used" sentences cover them; the first grid
+  grows from 1,041 to 3,237 states and the second from 4,870 to 9,478, and
+  the file runs about two and a half times as long.
+  `tests/test_deployer_status.py` covers a declared point that does not yet
+  apply and a point the element facts establish on or after
+  2 December 2026. `tests/test_intake.py` also checks every point (a) to
+  (h) against both route conditions. The browser fixtures add
+  five declared-point profiles.
+
+#### Known limits
+
+- This closes the first 0.4.0 known limit below (a declared point (ba) or
+  (bb) that does not yet apply, and its mirror case of a point the element
+  facts establish). The second stays open: a status given as
+  true for a legacy or undated system ends determined although the report
+  asks to confirm the intended use, because `public_authority_use` is a
+  plain bool, so an answer of no could not close a question on it without a
+  change to the profile schema.
+
+#### Upgrade notes
+
+- A deployer profile with a declared `5.1.ba` or `5.1.bb` and no point (a)
+  to (h), assessed before 2026-12-02, on an Annex I route without an
+  Annex III area, for a system placed on the market or put into service
+  before its Chapter III date, or undated, that is no Section B product and
+  has no `public_authority_use`: where `deployer_public_authority` is unset,
+  the report now has the Art. 111(2) open question on it. The open question
+  on an unset `significant_change_after_application_date` was already raised
+  for a dated legacy system, and on an Annex III point the status question
+  was already raised. These profiles
+  already ended `requires_review` on the point's own open question; a
+  reviewer who settles the point must now answer the status question as
+  well to reach a determined result.
+- A profile with a declared `5.1.ba` or `5.1.bb` and no point (a) to (h),
+  assessed before 2026-12-02 or holding the point in none of the provider,
+  importer and deployer roles, now gets the Art. 111(2) comparison where it
+  is on a high-risk route, and the Art. 111(3) check where it is a
+  general-purpose AI model, on a high-risk route or not. Before, the report
+  said that the Art. 111(2) check was not applied or that a given answer
+  was not used, or gave no Art. 111(3) check.
+- In the guided intake the same profiles now get the Art. 27 status, the
+  establishment, authorised representative and value-chain questions, the
+  change question and the status question where they apply. A profile with a
+  declared point (ba) or (bb) and no point (a) to (h), held in a provider,
+  importer or deployer role and assessed on or after 2026-12-02, or undated,
+  is prohibited and also gets the questions asked before the assessment
+  date, although its result does not change with them.
+- A JSON profile whose element facts establish point (ba) or (bb) for a
+  provider, importer or deployer role, assessed on or after 2026-12-02 or
+  undated, and that gives `deployer_public_authority` or a dated legacy system's
+  `significant_change_after_application_date` now gets the "not used"
+  sentence, and no longer the Art. 111(2) comparison or the Art. 111(3)
+  check.
+
 ## 0.4.0 (2026-11-20)
 
 #### Upgrade notes

@@ -28,6 +28,7 @@ from ..transitions import (
     gpai_model_date,
     legacy_dates,
     market_dates,
+    prohibition_applies,
     public_authority_deployer,
     public_authority_sentence,
     public_authority_status_used,
@@ -158,16 +159,16 @@ def _transitional_status(profile: SystemProfile) -> str:
 # never alters the rest of the check (the guided intake skips the question there).
 _CHANGE_UNUSED = (
     "Article 111(2) check: significant_change_after_application_date is given, but it is not "
-    "used: it matters only for a high-risk system, with no prohibited practice screened, "
-    "placed on the market or put into service before its Chapter III date."
+    "used: it matters only for a high-risk system that is not prohibited, placed on the "
+    "market or put into service before its Chapter III date."
 )
 # The same for a deployer status given where the engine does not use it
 # (public_authority_status_used).
 _PUBLIC_AUTHORITY_STATUS_UNUSED = (
     "Article 111(2) check: deployer_public_authority is given, but it is not used: it "
     "describes the profile's own deployer role, so it matters only where the profile holds "
-    "that role for a high-risk system with no prohibited practice screened: on an Annex III "
-    "point, and on an Annex I route without one only for a system placed on the market or "
+    "that role for a high-risk system that is not prohibited: on an Annex III point, and on "
+    "an Annex I route without one only for a system placed on the market or "
     "put into service before its Chapter III date, or undated, that is no Section B product "
     "and has no public_authority_use."
 )
@@ -198,9 +199,12 @@ def _art_111_2_check(profile: SystemProfile) -> str:
     )
     if not facts:
         return ""
-    if profile.prohibited_practices:
+    if prohibition_applies(profile):
         # Reached with a date or public_authority_use only: a deployer status alone is no
         # fact here, as the prohibition applies whatever it is (public_authority_status_used).
+        # The test is the Art. 5 gate's vote, so a declared point (ba) or (bb) that does not
+        # yet apply leaves the check to run, and one its element facts establish stops it
+        # from 2 December 2026, or with no assessment date, as a declared one does.
         return (
             "Article 111(2) check: not applied, as an Art. 5 prohibited practice is screened. "
             "Art. 111(2) is without prejudice to Art. 5, so the transition does not defer the "
@@ -289,7 +293,7 @@ def _art_111_3_status(profile: SystemProfile) -> str:
             "not used."
         )
     model_date, fallback = gpai_model_date(profile)
-    if model_date is None or profile.prohibited_practices:
+    if model_date is None or prohibition_applies(profile):
         return ""
     if fallback:
         dated = (
