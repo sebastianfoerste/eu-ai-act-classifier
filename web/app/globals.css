@@ -10,11 +10,13 @@
   --surface: #ffffff;
   --surface-muted: #f0f3f5;
   --border: #d7dde3;
-  /* The line around a button, select or input; 3:1 on its surface in the dark set. In
-     the light set it stays below 3:1 by the owner's decision (LIGHT_LINES_BELOW in
-     lib/theme.test.ts). */
+  /* The line around a button, the tri-state buttons and an inventory item; 3:1 on its
+     surface in the dark set. In the light set it stays below 3:1 by the owner's decision
+     (LIGHT_CONTROL_LINES_BELOW in lib/theme.test.ts). */
   --control-border: #d7dde3;
-  --input-border: #9aa6b2;
+  /* The line around a text field, select or text area, which alone shows the field:
+     3:1 in both sets (WCAG 2.2 SC 1.4.11; owner's decision of 23 November 2026). */
+  --input-border: #7a8794;
   --text: #17202a;
   /* 4.54:1 on --surface-muted. The earlier #64717f reached 4.48:1 there, below 4.5:1. */
   --muted: #63707e;
@@ -551,7 +553,7 @@ input,
 select,
 textarea {
   background: var(--surface);
-  border: 1px solid var(--control-border);
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   color: var(--text);
   min-height: 38px;

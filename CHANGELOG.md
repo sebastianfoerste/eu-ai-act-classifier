@@ -144,11 +144,20 @@ pull requests.
   0.4.0 entry "Dark mode on the playground and the cockpit" below gives that
   old value as 4.47:1. `--muted-on-tint` stays for muted text on tinted
   containers.
-- The light control lines stay below 3:1 at today's values, by a recorded
-  decision of the owner that is open for change. `web/lib/theme.test.ts`
-  pins the six light pairs at their ratios and notes that WCAG 2.2
-  SC 1.4.11 may require 3:1 for the line of a text field; the dark pairs
-  reach 3:1.
+- Text fields, selects and text areas now draw their line with
+  `--input-border`, and its light value changes from `#9aa6b2` to
+  `#7a8794`, the dark value: 3.67:1 on `--surface`, 3.29:1 on
+  `--surface-muted`, 3.45:1 on `--background` and 3.34:1 on `--danger-bg`.
+  Before, the `input, select, textarea` rule used `--control-border`
+  (1.23 to 1.37:1 in light), and `.textInput` reached 2.48:1. Where the
+  line alone shows the field, WCAG 2.2 SC 1.4.11 asks for 3:1; this is the
+  owner's decision of 23 November 2026. `web/lib/theme.test.ts` checks the
+  field line at 3:1 in both sets on all four surfaces and that both field
+  rules use it.
+- The other light control lines (buttons, the tri-state buttons, the
+  inventory items) stay below 3:1 at today's values, by a recorded decision
+  of the owner. `web/lib/theme.test.ts` pins the four light pairs at their
+  ratios; the dark pairs reach 3:1.
 
 #### Fixed
 
