@@ -372,7 +372,10 @@ the provider items too where the profile also holds the provider role, never
 for importer, distributor or authorised-representative items. For a profile
 without the deployer role the intended use is `public_authority_use` alone.
 On an Annex I route without an Annex III area, a profile that holds the
-deployer role raises an open question for both where a legacy or undated
+deployer role for a system that is not prohibited (the Art. 5 gate votes no
+prohibited tier, so a declared point (ba) or (bb) that does not yet apply on
+the assessment date does not count) raises an open question for both where a
+legacy or undated
 system that is no Section B product has neither `public_authority_use` nor
 the deployer's status, as the 2030 date may turn on them. The question for
 an undated system also asks for the date, and it names the contested
@@ -418,20 +421,26 @@ The scope gate's transitional status states the same comparison in words:
 which dates were given, the Chapter III date and its point, whether the system
 predates it, the significant-change position, for a legacy system the
 Art. 111(1) carve-out, and the 2030 deadline for public-authority use. Where
-the profile gives no date but a `public_authority_use` of true or, for a profile that
-holds the deployer role, a `deployer_public_authority` of true that the
-engine uses, it names the date to compare with, for a high-risk system with
-no prohibited practice screened that is not a Section B product without an
-Annex III area; where it
-gives a date but no high-risk route, it says there is no Chapter III date to
+the profile gives no date but a `public_authority_use` of true or, for a
+profile that holds the deployer role, a `deployer_public_authority` of true
+that the engine uses, it names the date to compare with, for a high-risk
+system that is not prohibited and is not a Section B product without an
+Annex III area; where it gives a date but no high-risk route, it says there is no Chapter III date to
 compare with. A `significant_change_after_application_date` answer counts
-only for a high-risk system, with no prohibited practice screened, placed on
-the market or put into service before its Chapter III date; elsewhere the
-check states that the answer is not used. In the same way it states that a
+only for a high-risk system that is not prohibited, placed on the market or
+put into service before its Chapter III date; elsewhere the check states that
+the answer is not used. In the same way it states that a
 `deployer_public_authority` answer is not used unless the profile holds the
-deployer role for a high-risk system with no prohibited practice screened, on
-an Annex III point or, on an Annex I route, for a legacy or undated system that
-is no Section B product and has no `public_authority_use`. It
+deployer role for a high-risk system that is not prohibited, on an Annex III
+point or, on an Annex I route, for a legacy or undated system that is no
+Section B product and has no `public_authority_use`. "Not prohibited" is the
+Art. 5 gate's vote (`transitions.prohibition_applies`), not the list of
+declared practices: a declared point (ba) or (bb) that does not yet apply on
+the assessment date, or that the profile holds in no provider, importer or
+deployer role, leaves both answers in use. A point (ba) or (bb) that the
+element facts establish for such a role takes them out of use where the
+assessment date is on or after 2 December 2026 or not given, as it stops the
+Art. 111(2) and Art. 111(3) checks; before that date it leaves them in use. It
 also states the Art. 111(3)
 check for a general-purpose AI model and the Art. 111(4) check for a system
 generating synthetic content where the profile gives the date they turn on.
@@ -571,6 +580,15 @@ putting into service or use under assessment:
   sends the result to review (C4);
 - with no assessment date, the prohibited tier is kept and an open question
   asks for the date (C4).
+
+Where the tier is not raised, before 2 December 2026 or for a declared point
+the profile holds in no provider, importer or deployer role, the system keeps
+its other tier, and a high-risk system reads the Art. 111(2) change answer and
+the deployer's status as any other does. The guided intake asks them there.
+The high-risk questions that come before the assessment date (the Art. 27
+status, establishment outside the EU, the value chain) are asked for every
+declared point (ba) or (bb) without a point (a) to (h), so on a profile
+prohibited from 2 December 2026 they are asked although they change nothing.
 
 A system that generates synthetic content or deep fakes and neither declares
 nor screens a point is asked about it, as the interim screen of #63 does; a
