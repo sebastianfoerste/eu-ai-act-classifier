@@ -265,6 +265,16 @@ update.
 
 #### Changed
 
+- A select, the search field and a guided text field now draw their line
+  with `--input-line`, and its light value changes from `#b9c6c0` to
+  `#7b8783`: 3.73:1 on `--paper`, 3.41:1 on `--bg`, 3.62:1 on
+  `--surface-subtle` and 3.49:1 on `--surface-sunken`. Before, a select
+  used `--control-line` (1.46:1 on `--paper`), the search field the divider
+  line `--line`, and a guided text field 1.76:1. Where the line alone shows
+  the field, WCAG 2.2 SC 1.4.11 asks for 3:1; this is the owner's decision
+  of 23 November 2026, as for the cockpit's fields. The dark value
+  (`#6b818a`) already reached 3:1. Buttons and the mode switch keep
+  `--control-line`.
 - `tests/playground/theme.test.mjs` checks more:
   - the three token blocks are all that comes before the rules, and the
     rules declare no token and no `color-scheme`;
@@ -276,8 +286,10 @@ update.
   - the focus ring reaches 3:1 also on a checked guided-answer card, on a
     hovered mode button and, as `--on-ink` on `--ink`, on the pressed mode
     button;
-  - the light control lines are pinned at today's ratios (1.46, 1.33, 1.74
-    and 1.76:1, below 3:1), so a change shows up; the dark ones reach 3:1.
+  - the field line reaches 3:1 in both sets on the four surfaces the fields
+    sit on; the other light control lines are pinned at today's ratios
+    (1.46, 1.33 and 1.74:1, below 3:1), so a change shows up; the dark ones
+    reach 3:1.
 - Theme storage: the wiring test checks that `app.mjs` hands the Theme
   button a storage getter that returns null where reading
   `window.localStorage` throws. A
@@ -289,8 +301,8 @@ update.
   timeline, which scrolls sideways, has `tabIndex` 0.
 - The comments in `docs/playground/styles.css` and the test file claim only
   what the tests check. Both name the controls whose line is not a
-  control-line token in either set: the search field and the guided-answer cards at rest keep the divider
-  line, the primary button and a checked guided-answer card take the accent,
+  control-line token in either set: the guided-answer cards at rest keep
+  the divider line, the primary button and a checked guided-answer card take the accent,
   and the JSON field, the text buttons and the finding summaries have no
   line.
 
@@ -830,8 +842,8 @@ update.
   token set: text at 4.5:1 on its surface, the focus ring at 3:1, in the
   dark set also the control-line tokens at 3:1; that the two dark blocks
   are identical; and that no colour is written outside the token sets.
-  The playground's search field and the guided-answer cards at rest keep
-  the divider line, below 3:1 in both sets; the primary button and a
+  The playground's guided-answer cards at rest keep the divider line,
+  below 3:1 in both sets; the primary button and a
   checked guided-answer card take the accent, and the JSON field, the text
   buttons and the finding summaries have no line.
 
