@@ -397,8 +397,9 @@ def build_intake_fixtures() -> dict:
             cases[f"edge+public-authority:{label}:{answer}"] = {
                 "answers": {**held, "deployer_public_authority": answer}
             }
-    # A declared Art. 5(1)(ba) point ends the high-risk route only from 2 December 2026 and
-    # only for a placing or use role, so the conditions read the assessment date and roles.
+    # A declared Art. 5(1)(ba) point ends the high-risk route only from 2 December 2026, or
+    # with no assessment date, and only for a placing or use role, so the conditions read
+    # the assessment date and roles.
     for label, extra in {
         "deployer-day-before": {"roles": ["deployer"], "assessment_date": "2026-12-01"},
         "deployer-on-the-day": {"roles": ["deployer"], "assessment_date": "2026-12-02"},

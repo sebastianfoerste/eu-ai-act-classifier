@@ -15,11 +15,13 @@ pull requests.
   deployer's public-authority status are used (`transitions.change_used`,
   `transitions.public_authority_status_used`) and whether the Art. 111(2)
   and Art. 111(3) checks run. A declared Art. 5(1)(ba) or (bb) point leaves
-  the result high-risk where it does not yet apply on the assessment date
-  (before 2 December 2026) or where the profile holds it in no provider,
-  importer or deployer role. The engine already read both answers there,
-  and already asked for an unset change answer and, on an Annex III point,
-  for an unset status. The report now runs the Art. 111(2) and Art. 111(3)
+  the system at its other tier, high-risk on a high-risk route, where it
+  does not yet apply on the assessment date (before 2 December 2026) or
+  where the profile holds it in no provider, importer or deployer role. The
+  engine already read both answers there, except the status of a deployer
+  of an undated system on an Annex I route without an Annex III area, and
+  already asked for an unset change answer and, on an Annex III point, for
+  an unset status. The report now runs the Art. 111(2) and Art. 111(3)
   checks there and no longer says that the answers are not used. The one
   new open question is the status question for a deployer on an Annex I
   route without an Annex III area (the Art. 111(2) 2030 date).
@@ -83,17 +85,19 @@ pull requests.
   reviewer who settles the point must now answer the status question as
   well to reach a determined result.
 - A profile with a declared `5.1.ba` or `5.1.bb` and no point (a) to (h),
-  on a high-risk route, assessed before 2026-12-02 or holding the point in
-  none of the provider, importer and deployer roles, now gets the
-  Art. 111(2) comparison, and for a general-purpose AI model the
-  Art. 111(3) check, where the report said that the Art. 111(2) check was
-  not applied or that a given answer was not used.
+  assessed before 2026-12-02 or holding the point in none of the provider,
+  importer and deployer roles, now gets the Art. 111(2) comparison where it
+  is on a high-risk route, and the Art. 111(3) check where it is a
+  general-purpose AI model, on a high-risk route or not. Before, the report
+  said that the Art. 111(2) check was not applied or that a given answer
+  was not used, or gave no Art. 111(3) check.
 - In the guided intake the same profiles now get the Art. 27 status, the
   establishment, authorised representative and value-chain questions, the
   change question and the status question where they apply. A profile with a
-  declared point (ba) or (bb) assessed on or after 2026-12-02, or undated, is
-  prohibited and also gets the questions asked before the assessment date,
-  although its result does not change with them.
+  declared point (ba) or (bb) and no point (a) to (h), held in a provider,
+  importer or deployer role and assessed on or after 2026-12-02, or undated,
+  is prohibited and also gets the questions asked before the assessment
+  date, although its result does not change with them.
 - A JSON profile whose element facts establish point (ba) or (bb) for a
   provider, importer or deployer role, assessed on or after 2026-12-02 or
   undated, and that gives `deployer_public_authority` or a dated legacy system's

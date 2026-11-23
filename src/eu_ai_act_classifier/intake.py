@@ -71,9 +71,9 @@ ANNEX_I_ROUTE = {
 # Facts the engine reads only once the system is high-risk (Art. 6 AIA) and not
 # prohibited: a prohibited practice dominates every other tier. The Art. 5 gate votes the
 # prohibited tier for a declared point (a) to (h) whatever the date and roles, and for a
-# declared point (ba) or (bb) only from 2 December 2026 and only for a placing or use
-# role (transitions.prohibition_applies); before that date, or for another role, the
-# system keeps its high-risk route.
+# declared point (ba) or (bb) only for a placing or use role and only from 2 December 2026
+# or with no assessment date (transitions.prohibition_applies); before that date, or for
+# another role, the system keeps its high-risk route.
 _NO_EARLIER_POINT = {
     "all": [
         {"not": {"field": "prohibited_practices", "has": practice.value}}

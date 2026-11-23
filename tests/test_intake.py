@@ -557,8 +557,9 @@ def test_the_public_authority_status_is_reported_as_not_used_exactly_where_it_is
 
 
 # The grids above hold only point (c) as a point (a) to (h), so every such point is checked
-# here once, alone and with a declared point (ba), on a legacy Annex III route. The list is
-# written out, not derived from catalog.LATER_PROHIBITIONS as the intake derives it.
+# here once, alone and with a declared point (ba), on a legacy Annex III route. The two
+# later points are written out here, not taken from catalog.LATER_PROHIBITIONS as the
+# intake takes them.
 _EARLIER_POINTS = [
     practice.value for practice in ProhibitedPractice if practice.value not in {"5.1.ba", "5.1.bb"}
 ]
