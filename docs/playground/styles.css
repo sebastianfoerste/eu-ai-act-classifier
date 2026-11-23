@@ -1,8 +1,12 @@
 /* Colour tokens. The dark set applies with the system setting unless the Theme button
    stored "light", and always when it stored "dark" (theme.js sets data-theme). The two
-   dark blocks must stay identical; tests/playground/theme.test.mjs checks that and the
-   contrast of every text and control pair in both sets. Both dark blocks are for screens
-   only, so a page printed from a dark screen uses the light set. */
+   dark blocks must stay identical; tests/playground/theme.test.mjs checks that, the
+   contrast of the listed text and focus-ring pairs in both sets, and the listed
+   control-line pairs: 3:1 in the dark set, today's lower values in the light set. Three
+   controls are not on a control-line token in either set: the search field and the
+   guided-answer cards at rest keep the divider line, and the JSON field has no line. Both
+   dark blocks are for screens only, so a page printed from a dark screen uses the light
+   set. */
 :root { color-scheme: light;
   --ink: #172b35; --ink-soft: #4d5c62; --code: #344e52; --muted: #5d6a70; --heading-muted: #61716c;
   --placeholder: #65736f; --bg: #f4f5f2; --paper: #fff; --surface-subtle: #fbfcfa; --surface-sunken: #f6f8f4;
@@ -145,6 +149,8 @@ textarea:focus-visible { outline-offset: -3px; }
 .finding summary::after { content: "+"; color: var(--muted); margin-left: auto; }
 .finding[open] summary::after { content: "−"; }
 .finding summary:hover { background: var(--surface-subtle); }
+/* .finding clips its content, so the ring is drawn inside the toggle. */
+.finding summary:focus-visible { outline-offset: -3px; }
 .finding summary > div { min-width: 0; }
 .finding-label { font-size: 12px; font-weight: 550; display: block; overflow-wrap: anywhere; }
 .finding-id { font: 9px/1.6 monospace; color: var(--muted); display: block; margin-top: 5px; overflow-wrap: anywhere; }
@@ -237,6 +243,10 @@ footer a { margin-left: 18px; }
 .mode-switch button + button { border-left: 1px solid var(--control-line); }
 .mode-switch button[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); }
 .mode-switch button[aria-pressed="true"]:hover { background: var(--ink); }
+/* .mode-switch clips its buttons, so the ring is drawn inside. On the pressed button it
+   takes the text colour and sits 6px in, so the --ink fill shows on both sides of it. */
+.mode-switch button:focus-visible { outline-offset: -3px; }
+.mode-switch button[aria-pressed="true"]:focus-visible { outline-color: var(--on-ink); outline-offset: -6px; }
 .guided { padding: 4px 24px 6px; border-top: 1px solid var(--line); }
 .question, .check-answers { padding: 16px 0 4px; }
 .question fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }

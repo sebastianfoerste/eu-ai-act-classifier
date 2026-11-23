@@ -47,10 +47,17 @@ const TEXT = [
   ["green", "bg"], ["green", "paper"], ["green", "green-tint"],
   ["error-ink", "error-bg"], ["notice-ink", "notice-bg"],
 ];
-// The focus ring on every surface, and in the dark set the line that marks a button, a
-// select or a text input: 3:1. The light set keeps the control lines it had before
-// dark mode; they are below 3:1 and listed here so that a change shows up.
-const FOCUS = [["focus", "bg"], ["focus", "paper"], ["focus", "surface-subtle"], ["focus", "surface-sunken"]];
+// The focus ring on the listed surfaces, in both sets: 3:1. The last three are the ring
+// of a radio or checkbox on a checked guided-answer card, the ring inside a hovered mode
+// button, and the ring of the pressed mode button, which takes --on-ink on its --ink fill.
+const FOCUS = [["focus", "bg"], ["focus", "paper"], ["focus", "surface-subtle"], ["focus", "surface-sunken"],
+  ["focus", "selected"], ["focus", "hover"], ["on-ink", "ink"]];
+// The line around a button, a select, the mode switch, a hovered guided-answer card and a
+// guided text field: 3:1 in the dark set. The light set keeps the control lines it had
+// before dark mode; they are below 3:1 and pinned at today's values so that a change
+// shows up. Three controls are not on a control-line token in either set: the search
+// field and the guided-answer cards at rest keep the divider line, and the JSON field has
+// no line.
 const CONTROLS = [["control-line", "paper"], ["control-line", "bg"], ["control-line-hover", "paper"], ["input-line", "paper"]];
 
 test("the stylesheet has a light token set and two identical dark ones", () => {
@@ -67,6 +74,96 @@ test("the stylesheet has a light token set and two identical dark ones", () => {
   assert.deepEqual(darkBySystem.tokens, darkByChoice.tokens);
   assert.deepEqual(Object.keys(darkBySystem.tokens), Object.keys(light.tokens));
   assert.ok(Object.keys(light.tokens).length > 40);
+});
+
+test("the three token blocks are all that comes before the rules, and the rules declare no token", () => {
+  // Comments aside, the head holds exactly the three blocks, each with its selector and
+  // its media wrapper, and nothing but token declarations inside them.
+  const start = css.indexOf("* { box-sizing");
+  const head = css.slice(0, start).replace(/\/\*[\s\S]*?\*\//g, "");
+  const TOKENS = String.raw`(?:\s*--[a-z-]+: #[0-9a-f]{3,8};)+\s*`;
+  assert.match(head, new RegExp(String.raw`^\s*:root \{ color-scheme: light;${TOKENS}\}` +
+    String.raw`\s*@media screen and \(prefers-color-scheme: dark\) \{ :root:not\(\[data-theme="light"\]\) \{ color-scheme: dark;${TOKENS}\} \}` +
+    String.raw`\s*@media screen \{ :root\[data-theme="dark"\] \{ color-scheme: dark;${TOKENS}\} \}\s*$`));
+  const rules = css.slice(start);
+  assert.deepEqual(rules.match(/(?<![\w(-])--[a-z-]+\s*:/g), null);
+  assert.equal(rules.includes("color-scheme"), false);
+});
+
+test("every token is an opaque colour, except the shadow", () => {
+  for (const { scheme, tokens } of [light, darkBySystem, darkByChoice]) {
+    for (const [name, value] of Object.entries(tokens)) {
+      // The shadow is the one token allowed an alpha channel (8 hex digits; it has one in
+      // all three sets). The contrast checks read only the first six digits, so any other
+      // token must have none.
+      const pattern = name === "shadow" ? /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/ : /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/;
+      assert.match(value, pattern, `${scheme}: --${name}: ${value}`);
+    }
+  }
+});
+
+// Every rule after the token blocks, comments removed, as [selector, declaration] for each
+// declaration whose property passes the filter, in stylesheet order. A rule inside @media
+// comes out like any other rule, without its media condition.
+function declarations(keep) {
+  const rules = css.slice(css.indexOf("* { box-sizing")).replace(/\/\*[\s\S]*?\*\//g, "");
+  const found = [];
+  for (const [, selector, block] of rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    for (const declaration of block.split(";").map(d => d.trim()).filter(Boolean)) {
+      if (keep(declaration.slice(0, declaration.indexOf(":")).trim(), selector.trim())) found.push([selector.trim(), declaration]);
+    }
+  }
+  return found;
+}
+
+// A selector styles a control when the last compound selector of one of its parts names
+// one: an element, an id or a class that the page puts on a control.
+const CONTROL = /^(?:button|select|textarea|input|summary|#(?:search|example|input|file|advisory|mode-guided|mode-json|theme-toggle)|\.(?:mode-switch|text-input|choice|primary|text-button|back-link|save-draft|theme-toggle))(?![\w-])/;
+const stylesControl = selector => selector.split(",").some(part =>
+  CONTROL.test(part.replace(/\([^()]*\)/g, "()").trim().split(/\s*[\s>+~]\s*/).pop()));
+
+test("every line on a control is one of the listed declarations", () => {
+  // Any other rule that draws or recolours the line of a control, a later override or a
+  // descendant selector included, adds an entry and fails here.
+  const lines = declarations((property, selector) => /^border(?!.*radius)/.test(property) && stylesControl(selector));
+  assert.deepEqual(lines, [
+    ["button", "border: 1px solid var(--control-line)"],
+    ["select", "border: 1px solid var(--control-line)"],
+    [".text-button", "border: 0"],
+    ["textarea", "border: 0"],
+    [".primary", "border-color: var(--accent)"],
+    // The search field keeps the divider line.
+    ["#search", "border: 1px solid var(--line)"],
+    [".mode-switch", "border: 1px solid var(--control-line)"],
+    [".mode-switch button", "border: 0"],
+    [".mode-switch button + button", "border-left: 1px solid var(--control-line)"],
+    // A guided-answer card keeps the divider line at rest and takes a control line on hover.
+    [".choice", "border: 1px solid var(--line)"],
+    [".choice:hover", "border-color: var(--control-line-hover)"],
+    [".choice:has(input:checked)", "border-color: var(--accent)"],
+    [".text-input", "border: 1px solid var(--input-line)"],
+  ]);
+});
+
+test("every focus ring rule is listed: 3px of --focus, drawn inside where a container clips it", () => {
+  // The universal rule draws the ring for every control. .mode-switch and .finding have
+  // overflow: hidden, and their controls reach the container's edge, so a ring 3px outside
+  // them would be cut off; the JSON field fills its panel in the same way. Any other rule
+  // that changes a ring, a later override included, adds an entry and fails here.
+  assert.deepEqual(declarations(property => property.startsWith("outline")), [
+    [":focus-visible", "outline: 3px solid var(--focus)"],
+    [":focus-visible", "outline-offset: 3px"],
+    ["textarea:focus-visible", "outline-offset: -3px"],
+    [".finding summary:focus-visible", "outline-offset: -3px"],
+    [".mode-switch button:focus-visible", "outline-offset: -3px"],
+    ['.mode-switch button[aria-pressed="true"]:focus-visible', "outline-color: var(--on-ink)"],
+    ['.mode-switch button[aria-pressed="true"]:focus-visible', "outline-offset: -6px"],
+    [".question-title:focus", "outline: none"],
+    [".question-title:focus-visible", "outline: 3px solid var(--focus)"],
+    [".question-title:focus-visible", "outline-offset: 3px"],
+    [".error-summary:focus", "outline: 3px solid var(--focus)"],
+    [".error-summary:focus", "outline-offset: 2px"],
+  ]);
 });
 
 // Every way CSS writes a colour without a token: hex, a colour function, one of the 148
@@ -154,7 +251,7 @@ for (const [scheme, tokens] of [["light", light.tokens], ["dark", darkBySystem.t
       assert.ok(ratio >= 4.5, `--${text} on --${surface}: ${ratio.toFixed(2)}:1`);
     }
   });
-  test(`${scheme}: the focus ring reaches 3:1 on every surface`, () => {
+  test(`${scheme}: the focus ring reaches 3:1 on the listed surfaces`, () => {
     for (const [ring, surface] of FOCUS) {
       const ratio = contrast(tokens[ring], tokens[surface]);
       assert.ok(ratio >= 3, `--${ring} on --${surface}: ${ratio.toFixed(2)}:1`);
@@ -162,11 +259,16 @@ for (const [scheme, tokens] of [["light", light.tokens], ["dark", darkBySystem.t
   });
 }
 
-test("dark: the line around a button, select or text input reaches 3:1", () => {
+test("dark: the listed control lines reach 3:1", () => {
   for (const [line, surface] of CONTROLS) {
     const ratio = contrast(darkBySystem.tokens[line], darkBySystem.tokens[surface]);
     assert.ok(ratio >= 3, `--${line} on --${surface}: ${ratio.toFixed(2)}:1`);
   }
+});
+
+test("light: the listed control lines keep today's contrast", () => {
+  const ratios = CONTROLS.map(([line, surface]) => contrast(light.tokens[line], light.tokens[surface]).toFixed(2));
+  assert.deepEqual(ratios, ["1.46", "1.33", "1.74", "1.76"]);
 });
 
 test("the contrast function gives the WCAG reference values", () => {
@@ -336,5 +438,32 @@ test("the page wires the button, a hidden status element and all three names", (
 :root[data-theme="dark"] .theme-name[data-theme-name="dark"] { display: inline; }`));
   const app = read("app.mjs");
   assert.match(app, /wireThemeToggle\(\{\s*root: document\.documentElement,\s*button: \$\("theme-toggle"\),\s*status: \$\("theme-status"\),/);
+  assert.match(app, /storage: \(\) => \{ try \{ return window\.localStorage; \} catch \{ return null; \} \},/);
   assert.match(app, /events: window,/);
+});
+
+test("a page load reads the stored choice and writes nothing, also with a foreign value", () => {
+  for (const stored of [{}, { [THEME_KEY]: "dark" }, { [THEME_KEY]: "sepia" }]) {
+    const storage = memoryStorage(stored);
+    const reads = [];
+    const other = [];
+    // Records every use of the storage object: a getItem call as a read, and anything
+    // else (setItem, removeItem, clear, a property write or delete) as something else,
+    // also when the code then throws and swallows the error.
+    const recording = new Proxy(storage, {
+      get: (target, property) => {
+        if (property === "getItem") return key => { reads.push(key); return target.getItem(key); };
+        other.push(["get", String(property)]);
+        return target[property];
+      },
+      set: (target, property, value) => { other.push(["set", String(property), value]); return true; },
+      deleteProperty: (target, property) => { other.push(["delete", String(property)]); return true; },
+      defineProperty: (target, property) => { other.push(["define", String(property)]); return true; },
+    });
+    // theme.js in the head, then the button wiring in app.mjs.
+    wired(recording, runEarlyScript(recording));
+    assert.deepEqual(reads, [THEME_KEY], JSON.stringify(stored));
+    assert.deepEqual(other, [], JSON.stringify(stored));
+    assert.deepEqual(Object.fromEntries(storage.data), stored);
+  }
 });
